@@ -529,14 +529,11 @@ function updateCapacity(block, newSlots, newTier) {
     activeCapacity[block].tier = Number(newTier);
   }
 
-  // RUMUS UTAMA ❤️
   activeCapacity[block].cap =
     Math.round(activeCapacity[block].slots * activeCapacity[block].tier * 6);
 
-  // Simpan ke localStorage
   localStorage.setItem("yardCapData", JSON.stringify(activeCapacity));
 
-  // Render ulang biar langsung keliatan
   renderOverview();
 }
 
@@ -553,7 +550,6 @@ function updateCapacity(block, newSlots, newTier) {
                 const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
                 const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""});
                 
-                // --- Simple Logic V.06 ---
                 let hIdx = -1;
                 let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1 };
                 
@@ -882,9 +878,6 @@ const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
 const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:""});
 let h = json[0].map(c => cleanStr(c));
 
-// --- BAGIAN INI YANG HARUS DIEDIT/DIGANTI ---
-// Lama: let nIdx = h.findIndex(x => x.includes('carrier') || x.includes('vessel'));
-// Baru (Tambahkan !x.includes('type')):
 let nIdx = h.findIndex(x => (x.includes('carrier') || x.includes('vessel')) && !x.includes('type'));
 // -------------------------------------------
 
@@ -1253,4 +1246,5 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
     .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 </style>
 </body>
+
 </html>
