@@ -1,0 +1,67 @@
+
+    body {
+        background-color: #f8fafc;
+        background-image: 
+            radial-gradient(at 0% 0%, hsla(215, 95%, 93%, 1) 0, transparent 50%), 
+            radial-gradient(at 100% 0%, hsla(266, 60%, 94%, 1) 0, transparent 50%);
+    }
+    .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    
+    /* Tab Buttons */
+    .tab-btn { @apply px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 border border-transparent flex items-center gap-2 shadow-sm; }
+    .tab-btn.active { @apply bg-white text-primary border-slate-200 shadow-md transform -translate-y-0.5; }
+    .tab-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-white/60; }
+
+    /* Clash Visuals */
+    .slot-track { height: 20px; background: #e2e8f0; border-radius: 4px; position: relative; width: 100%; overflow: hidden; margin-top: 6px; border: 1px solid rgba(0,0,0,0.05); }
+    /* Enhanced Visibility for Bar Text */
+    .slot-bar { height: 100%; position: absolute; top: 0; opacity: 1; border-radius: 2px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .slot-bar span { font-size: 11px; font-weight: 900; color: #ffffff; padding: 0 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); z-index: 10; letter-spacing: 0.5px; }
+
+    .clash-card { transition: all 0.2s; border-left: 4px solid transparent; }
+    .clash-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .clash-high { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, white); }
+    .clash-medium { border-left-color: #f59e0b; background: linear-gradient(to right, #fffbeb, white); }
+    
+    /* Interactive Row */
+    .stats-row { cursor: pointer; transition: background-color 0.15s; }
+    .stats-row:hover { background-color: #f1f5f9; }
+    .stats-row.active-filter { background-color: #eff6ff; border-left: 3px solid #3b82f6; }
+
+    /* Animations */
+    .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease; overflow: hidden; }
+    .progress-ring__circle { transition: stroke-dashoffset 0.6s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+    /* Overview Table Colors */
+    .row-dg td      { background-color: #fee2e2 !important; color: #991b1b !important; } 
+    .row-export td  { background-color: #dcfce7 !important; color: #166534 !important; } 
+    .row-import td  { background-color: #fef9c3 !important; color: #854d0e !important; } 
+    .row-mixed td   { background-color: #f3e8ff !important; color: #6b21a8 !important; } 
+    .row-oog td     { background-color: #ffedd5 !important; color: #9a3412 !important; } 
+    .row-reefer td  { background-color: #cff4fc !important; color: #075985 !important; } 
+    .col-detail { display: none; }
+    .show-details .col-detail { display: table-cell; }
+
+.row-zero {
+  background: linear-gradient(90deg, #f1f5f9, #ffffff);
+  color: #64748b;
+}
+
+/* Main table font size (first tab) */
+#tab-overview #mainTable,
+#tab-overview #mainTable th,
+#tab-overview #mainTable td {
+        font-size: 18px;
+}
+
+/* Occupancy percentage specific style */
+#tab-overview #mainTable td .occupancy-pct {
+        font-size: 22px;
+        font-weight: 700;
+}
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
