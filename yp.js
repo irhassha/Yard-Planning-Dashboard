@@ -225,7 +225,6 @@ if (b === "OOG") {
                         <div class="flex items-center gap-2">
                             <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden shadow-inner"><div class="${barColor} h-full" style="width:${Math.min(occ,100)}%"></div></div>
                             <span class="w-10 text-right font-mono occupancy-pct">${Math.round(occ)}%</span>
-</span>
 
                         </div>
                     </td>
@@ -660,9 +659,8 @@ a.download = `NPCT1_Yard_${fileName}_${Date.now()}.jpg`;
 a.href = canvas.toDataURL("image/jpeg", 0.9);
 a.click();
 });
-}
-        // Prepare capture that adjusts cloned DOM to preserve table layout
-        const capture = () => {
+    // Prepare capture that adjusts cloned DOM to preserve table layout
+    const capture = () => {
             return html2canvas(el, {
                 scale: 3,
                 backgroundColor: "#ffffff",
