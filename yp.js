@@ -65,7 +65,7 @@ function updateCapacity(block, newSlots, newTier) {
             
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1 };
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1 };
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -81,6 +81,8 @@ function updateCapacity(block, newSlots, newTier) {
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         // LOGIC BARU: Deteksi kolom Load Status
                         if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
+                        // Detect Service column (e.g., "service", "serviceout", "service out")
+                        if(c.includes("service")) colMap.service = idx;
                     });
                     break;
                 }
@@ -114,7 +116,8 @@ function updateCapacity(block, newSlots, newTier) {
                     carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
                     move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
                     // UPDATE: Simpan Load Status
-                    loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL"
+                    loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
+                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : ""
                 });
             }
 
@@ -804,7 +807,11 @@ function renderEmptySummary() {
     const expBody = document.getElementById('emptyExportBody');
     
     // 1. Filter Data: Hanya yang statusnya Empty/MT
-    let emptyData = invData.filter(d => d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT');
+    // EXCLUDE entries where block or slot starts with '8'
+    let emptyData = invData.filter(d => (d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT') && !(String(d.block || '').startsWith('8') || String(d.slot || '').startsWith('8')));
+
+    // Normalize service values
+    emptyData.forEach(d => { if(!d.service) d.service = ""; });
 
     // 2. IMPORT LOGIC (Summarize by Length Only)
     let impStats = { c20: 0, c40: 0, c45: 0, total: 0 };
@@ -834,51 +841,60 @@ function renderEmptySummary() {
         </div>
     `;
 
-    // 3. EXPORT LOGIC (Summarize by Carrier & Length)
+    // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
     let expStats = {};
     emptyData.filter(d => d.move.includes('export')).forEach(d => {
-        let c = d.carrier;
-        if(!expStats[c]) expStats[c] = { c20: 0, c40: 0, c45: 0, total: 0 };
+        let key = `${d.carrier}||${d.service || ''}`;
+        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0 };
         
-        if(d.length.startsWith('20')) expStats[c].c20++;
-        else if(d.length.startsWith('45')) expStats[c].c45++;
-        else expStats[c].c40++;
-        expStats[c].total++;
+        if(d.length.startsWith('20')) expStats[key].c20++;
+        else if(d.length.startsWith('45')) expStats[key].c45++;
+        else expStats[key].c40++;
+        expStats[key].total++;
     });
 
     // Sort by Total Descending
-    let sortedExp = Object.entries(expStats).sort((a,b) => b[1].total - a[1].total);
+    let sortedExp = Object.values(expStats).sort((a,b) => b.total - a.total);
     
     expBody.innerHTML = '';
     if(sortedExp.length === 0) {
         expBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
     } else {
-        sortedExp.forEach(([carrier, s]) => {
+        sortedExp.forEach(s => {
+            const carrier = s.carrier || '-';
+            const service = s.service || '-';
+            const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
             expBody.innerHTML += `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
+                    <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
                     <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
                     <td class="px-6 py-3 text-center">${s.c40 || '-'}</td>
                     <td class="px-6 py-3 text-center">${s.c45 || '-'}</td>
                     <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
+                    <td class="px-6 py-3 text-center font-bold text-emerald-600">${Number(totalTeus.toFixed(2))}</td>
                 </tr>
             `;
         });
         // Add Grand Total Row
+        // Recompute grand totals including TEUs
         let grand = sortedExp.reduce((acc, curr) => ({
-            c20: acc.c20 + curr[1].c20,
-            c40: acc.c40 + curr[1].c40,
-            c45: acc.c45 + curr[1].c45,
-            total: acc.total + curr[1].total
-        }), {c20:0, c40:0, c45:0, total:0});
+            c20: acc.c20 + curr.c20,
+            c40: acc.c40 + curr.c40,
+            c45: acc.c45 + curr.c45,
+            total: acc.total + curr.total,
+            teus: acc.teus + ((curr.c20 * 1) + (curr.c40 * 2) + (curr.c45 * 2.25))
+        }), {c20:0, c40:0, c45:0, total:0, teus:0});
         
         expBody.innerHTML += `
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
+                <td class="px-6 py-3 text-center text-slate-700">-</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c40}</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c45}</td>
                 <td class="px-6 py-3 text-center text-emerald-600 text-lg">${grand.total}</td>
+                <td class="px-6 py-3 text-center text-emerald-700 text-lg">${Number(grand.teus.toFixed(2))}</td>
             </tr>
         `;
     }
