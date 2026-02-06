@@ -802,9 +802,39 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
     }
 
 // --- TAB 4: EMPTY SUMMARY RENDER ---
+let emptySelectedLines = new Set(); // Store selected lines for filtering
+
+function toggleAllLines() {
+    const checkboxes = document.querySelectorAll('.line-filter-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+        handleLineFilterChange(cb);
+    });
+}
+
+function handleLineFilterChange(checkbox) {
+    if(checkbox.checked) {
+        emptySelectedLines.add(checkbox.value);
+    } else {
+        emptySelectedLines.delete(checkbox.value);
+    }
+    renderEmptySummary();
+}
+
+function toggleBreakdown(carrierId) {
+    const breakdownRow = document.getElementById(`breakdown-${carrierId}`);
+    const expandIcon = document.getElementById(`expand-icon-${carrierId}`);
+    if(breakdownRow) {
+        breakdownRow.classList.toggle('hidden');
+        expandIcon.style.transform = breakdownRow.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(90deg)';
+    }
+}
+
 function renderEmptySummary() {
     const impDiv = document.getElementById('emptyImportSummary');
     const expBody = document.getElementById('emptyExportBody');
+    const filterContainer = document.getElementById('lineFilterContainer');
     
     // 1. Filter Data: Hanya yang statusnya Empty/MT
     // EXCLUDE entries where block or slot starts with '8'
@@ -848,29 +878,73 @@ function renderEmptySummary() {
 
     // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
     let expStats = {};
+    let allLines = new Set();
+    
     emptyData.filter(d => d.move.includes('export')).forEach(d => {
         let key = `${d.carrier}||${d.service || ''}`;
-        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0 };
+        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, breakdownData: {} };
+        
+        // Track all lines for filter
+        allLines.add(d.service || 'UNSPECIFIED');
         
         if(d.length.startsWith('20')) expStats[key].c20++;
         else if(d.length.startsWith('45')) expStats[key].c45++;
         else expStats[key].c40++;
         expStats[key].total++;
+        
+        // Build breakdown data: ISO -> count
+        let iso = d.length.startsWith('20') ? "20'" : (d.length.startsWith('45') ? "45'" : "40'");
+        if(!expStats[key].breakdownData[iso]) expStats[key].breakdownData[iso] = 0;
+        expStats[key].breakdownData[iso]++;
     });
 
-    // Sort by Total Descending
-    let sortedExp = Object.values(expStats).sort((a,b) => b.total - a.total);
+    // 4. Render Line Filter Checkboxes
+    filterContainer.innerHTML = '';
+    if(allLines.size > 0) {
+        // First checkbox is "UNSPECIFIED"
+        const unspecLines = Array.from(allLines).sort((a, b) => {
+            if(a === 'UNSPECIFIED') return 1;
+            if(b === 'UNSPECIFIED') return -1;
+            return a.localeCompare(b);
+        });
+        
+        unspecLines.forEach(line => {
+            const isChecked = emptySelectedLines.size === 0 || emptySelectedLines.has(line);
+            filterContainer.innerHTML += `
+                <label class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                    <input type="checkbox" class="line-filter-checkbox rounded" value="${line}" ${isChecked ? 'checked' : ''} onchange="handleLineFilterChange(this)">
+                    <span class="text-xs font-medium text-slate-600">${line}</span>
+                </label>
+            `;
+            if(isChecked) emptySelectedLines.add(line);
+        });
+    }
+
+    // 5. Filter and Sort Export Data
+    let sortedExp = Object.values(expStats).filter(s => {
+        // If no lines selected, show all
+        if(emptySelectedLines.size === 0) return true;
+        // Otherwise show only if service is in selected lines
+        return emptySelectedLines.has(s.service || 'UNSPECIFIED');
+    }).sort((a,b) => b.total - a.total);
     
     expBody.innerHTML = '';
     if(sortedExp.length === 0) {
-        expBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
+        expBody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
     } else {
-        sortedExp.forEach(s => {
+        sortedExp.forEach((s, idx) => {
             const carrier = s.carrier || '-';
             const service = s.service || '-';
             const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
+            const carrierId = `${idx}-${carrier}-${service}`;
+            
             expBody.innerHTML += `
                 <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3 text-center">
+                        <button onclick="toggleBreakdown('${carrierId}')" class="inline-flex items-center justify-center w-6 h-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors">
+                            <span id="expand-icon-${carrierId}" class="material-symbols-outlined text-sm transition-transform">chevron_right</span>
+                        </button>
+                    </td>
                     <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
                     <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
                     <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
@@ -879,10 +953,23 @@ function renderEmptySummary() {
                     <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
                     <td class="px-6 py-3 text-center font-bold text-emerald-600">${Number(totalTeus.toFixed(2))}</td>
                 </tr>
+                <tr id="breakdown-${carrierId}" class="hidden bg-slate-50">
+                    <td colspan="8" class="px-6 py-3">
+                        <div class="text-xs font-bold text-slate-600 mb-2">Breakdown by ISO:</div>
+                        <div class="grid grid-cols-3 gap-4">
+                            ${Object.entries(s.breakdownData).map(([iso, cnt]) => `
+                                <div class="bg-white p-3 rounded border border-slate-200">
+                                    <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">ISO ${iso}</div>
+                                    <div class="text-xl font-black text-blue-600">${cnt}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </td>
+                </tr>
             `;
         });
+        
         // Add Grand Total Row
-        // Recompute grand totals including TEUs
         let grand = sortedExp.reduce((acc, curr) => ({
             c20: acc.c20 + curr.c20,
             c40: acc.c40 + curr.c40,
@@ -893,6 +980,7 @@ function renderEmptySummary() {
         
         expBody.innerHTML += `
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
+                <td class="px-6 py-3"></td>
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
                 <td class="px-6 py-3 text-center text-slate-700">-</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
