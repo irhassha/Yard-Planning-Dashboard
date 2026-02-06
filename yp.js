@@ -813,38 +813,53 @@ function renderEmptySummary() {
     // Normalize service values
     emptyData.forEach(d => { if(!d.service) d.service = ""; });
 
-    // 2. IMPORT LOGIC (Summarize by Length Only)
-    let impStats = { c20: 0, c40: 0, c45: 0, total: 0 };
-    emptyData.filter(d => d.move.includes('import')).forEach(d => {
-        if(d.length.startsWith('20')) impStats.c20++;
-        else if(d.length.startsWith('45')) impStats.c45++;
-        else impStats.c40++;
-        impStats.total++;
-    });
+// 2. IMPORT LOGIC (Summarize by Length + TEUS)
+let impStats = {
+  c20: 0,
+  c40: 0,
+  c45: 0,
+  total: 0,
+  teus: 0
+};
 
-    // Compute TEUs for empty imports
-    const impTeus = (impStats.c20 * 1) + (impStats.c40 * 2) + (impStats.c45 * 2.25);
+emptyData
+  .filter(d => d.move.includes('import'))
+  .forEach(d => {
+    if (d.length.startsWith('20')) {
+      impStats.c20++;
+      impStats.teus += 1;
+    } else if (d.length.startsWith('45')) {
+      impStats.c45++;
+      impStats.teus += 2.25;
+    } else {
+      impStats.c40++;
+      impStats.teus += 2;
+    }
+    impStats.total++;
+  });
 
-    impDiv.innerHTML = `
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">20' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c20}</div>
-        </div>
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">40' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c40}</div>
-        </div>
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">45' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c45}</div>
-        </div>
-        <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100 ring-2 ring-emerald-100">
-            <div class="text-xs text-emerald-600 font-bold uppercase mb-1">Total Import</div>
-            <div class="text-2xl font-black text-emerald-600">${impStats.total}</div>
-            <div class="text-xs text-slate-500 mt-1">TEUs</div>
-            <div class="text-2xl font-black text-emerald-700">${Number(impTeus.toFixed(2))}</div>
-        </div>
-    `;
+impDiv.innerHTML = `
+  <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+      <div class="text-xs text-slate-500 font-bold uppercase mb-1">20' Empty</div>
+      <div class="text-2xl font-black text-blue-600">${impStats.c20}</div>
+  </div>
+  <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+      <div class="text-xs text-slate-500 font-bold uppercase mb-1">40' Empty</div>
+      <div class="text-2xl font-black text-blue-600">${impStats.c40}</div>
+  </div>
+  <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+      <div class="text-xs text-slate-500 font-bold uppercase mb-1">45' Empty</div>
+      <div class="text-2xl font-black text-blue-600">${impStats.c45}</div>
+  </div>
+  <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100 ring-2 ring-emerald-100">
+      <div class="text-xs text-emerald-600 font-bold uppercase mb-1">Total Import</div>
+      <div class="text-3xl font-black text-emerald-600">${impStats.total}</div>
+      <div class="text-xs font-mono text-emerald-700 mt-1">
+        ${impStats.teus.toFixed(1)} TEUs
+      </div>
+  </div>
+`;
+
 
     // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
     let expStats = {};
