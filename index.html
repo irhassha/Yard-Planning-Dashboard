@@ -433,22 +433,12 @@
                     Export Empty Summary
                 </h3>
             </div>
-            
-            <!-- Line Filter Section -->
-            <div class="p-4 border-b border-slate-200/50 bg-slate-50/50">
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Filter by Line:</span>
-                    <button onclick="toggleAllLines()" class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 font-medium transition-colors">Select/Clear All</button>
-                </div>
-                <div id="lineFilterContainer" class="flex flex-wrap gap-2"></div>
-            </div>
-            
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
                         <tr>
                             <th class="px-6 py-3 border-b">Carrier</th>
-                            <th class="px-6 py-3 border-b text-center">Line</th>
+                            <th class="px-6 py-3 border-b text-center">Service</th>
                             <th class="px-6 py-3 border-b text-center">20'</th>
                             <th class="px-6 py-3 border-b text-center">40'</th>
                             <th class="px-6 py-3 border-b text-center">45'</th>
@@ -461,9 +451,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Empty Breakdown Cards -->
-        <div id="emptyBreakdownCards" class="mt-4"></div>
 
     </div>
 </div>
