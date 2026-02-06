@@ -53,80 +53,85 @@ function updateCapacity(block, newSlots, newTier) {
 
     // --- MAIN FILE UPLOAD (Overview) ---
     document.getElementById('fileInv').addEventListener('change', function(e) {
-        if(!e.target.files[0]) return;
-        const loader = document.getElementById('loadingOverlay');
-        loader.classList.remove('hidden');
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            try {
-                setProgress(20, "Parsing Data...");
-                const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
-                const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""});
-                
-                let hIdx = -1;
-                let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1 };
-                
-                for(let i=0; i<Math.min(json.length, 30); i++) {
-                    let rStr = json[i].map(c => cleanStr(c)).join(" ");
-                    if((rStr.includes("area") || rStr.includes("block") || rStr.includes("slot")) && 
-                       (rStr.includes("vessel") || rStr.includes("carrier") || rStr.includes("line"))) {
-                        hIdx = i;
-                        json[i].forEach((cell, idx) => {
-                            let c = cleanStr(cell).replace(/[\s_]+/g, "");
-                            if(c.includes("area") || c.includes("block")) colMap.block = idx;
-                            if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                            if(c === "carrier" || c === "vessel" || c === "line") colMap.carrier = idx;
-                            if(c === "move" || c === "status" || c === "category") colMap.move = idx;
-                            if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
-                            else if (c === "slot" && colMap.slot === -1) colMap.slot = idx;
-                        });
-                        break;
-                    }
-                }
-
-                if(hIdx === -1 || colMap.carrier === -1) throw new Error("Format kolom tidak dikenali.");
-
-                invData = [];
-                for(let i=hIdx+1; i<json.length; i++) {
-                    let row = json[i];
-                    if(!row[colMap.block] && !row[colMap.slot]) continue;
-                    
-                    let slotStr = colMap.slot !== -1 ? String(row[colMap.slot] || "") : "";
-                    let parsedBlock = "N", parsedSlotNum = 0;
-                    
-                    if(slotStr.includes('-')) {
-                        let parts = slotStr.split('-');
-                        parsedBlock = parts[0].trim();
-                        if (parts.length >= 2) parsedSlotNum = parseInt(parts[1]) || 0;
-                    } else if(colMap.block !== -1 && row[colMap.block]) {
-                        parsedBlock = String(row[colMap.block]).trim();
-                        if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot]) || 0;
-                    } else if(slotStr !== "") {
-                        parsedSlotNum = parseInt(slotStr) || 0;
-                    }
-
-                    invData.push({
-                        block: parsedBlock.toUpperCase(),
-                        slot: parsedSlotNum,
-                        length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
-                        carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
-                        move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import"
+    if(!e.target.files[0]) return;
+    const loader = document.getElementById('loadingOverlay');
+    loader.classList.remove('hidden');
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        try {
+            setProgress(20, "Parsing Data...");
+            const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
+            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""});
+            
+            let hIdx = -1;
+            // UPDATE: Tambahkan loadStatus ke colMap
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1 };
+            
+            for(let i=0; i<Math.min(json.length, 30); i++) {
+                let rStr = json[i].map(c => cleanStr(c)).join(" ");
+                if((rStr.includes("area") || rStr.includes("block") || rStr.includes("slot")) && 
+                   (rStr.includes("vessel") || rStr.includes("carrier") || rStr.includes("line"))) {
+                    hIdx = i;
+                    json[i].forEach((cell, idx) => {
+                        let c = cleanStr(cell).replace(/[\s_]+/g, "");
+                        if(c.includes("area") || c.includes("block")) colMap.block = idx;
+                        if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
+                        if(c === "carrier" || c === "vessel" || c === "line") colMap.carrier = idx;
+                        if(c === "move" || c === "status" || c === "category") colMap.move = idx;
+                        if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
+                        // LOGIC BARU: Deteksi kolom Load Status
+                        if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                     });
+                    break;
+                }
+            }
+
+            if(hIdx === -1 || colMap.carrier === -1) throw new Error("Format kolom tidak dikenali.");
+
+            invData = [];
+            for(let i=hIdx+1; i<json.length; i++) {
+                let row = json[i];
+                if(!row[colMap.block] && !row[colMap.slot]) continue;
+                
+                // Parsing Slot & Block (Logic Lama)
+                let slotStr = colMap.slot !== -1 ? String(row[colMap.slot] || "") : "";
+                let parsedBlock = "N", parsedSlotNum = 0;
+                if(slotStr.includes('-')) {
+                    let parts = slotStr.split('-');
+                    parsedBlock = parts[0].trim();
+                    if (parts.length >= 2) parsedSlotNum = parseInt(parts[1]) || 0;
+                } else if(colMap.block !== -1 && row[colMap.block]) {
+                    parsedBlock = String(row[colMap.block]).trim();
+                    if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot]) || 0;
+                } else if(slotStr !== "") {
+                    parsedSlotNum = parseInt(slotStr) || 0;
                 }
 
-                isInvLoaded = true;
-                document.getElementById('resetBtn').classList.remove('hidden');
-                
-                // Render Tabs
-                renderOverview();
-                renderClusterSpreading();
-                
-                setProgress(100, "Selesai!");
-                setTimeout(() => loader.classList.add('hidden'), 500);
-            } catch(err) { alert("Error: " + err.message); loader.classList.add('hidden'); }
-        };
-        reader.readAsArrayBuffer(e.target.files[0]);
-    });
+                invData.push({
+                    block: parsedBlock.toUpperCase(),
+                    slot: parsedSlotNum,
+                    length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
+                    carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
+                    move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
+                    // UPDATE: Simpan Load Status
+                    loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL"
+                });
+            }
+
+            isInvLoaded = true;
+            document.getElementById('resetBtn').classList.remove('hidden');
+            
+            // Render All Tabs
+            renderOverview();
+            renderClusterSpreading();
+            renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            
+            setProgress(100, "Selesai!");
+            setTimeout(() => loader.classList.add('hidden'), 500);
+        } catch(err) { alert("Error: " + err.message); loader.classList.add('hidden'); }
+    };
+    reader.readAsArrayBuffer(e.target.files[0]);
+});
 
     // --- TAB 1: OVERVIEW RENDER ---
     function renderOverview() {
@@ -595,26 +600,66 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     // --- NAVIGATION & UTILS ---
-    function switchTab(t) {
-        ['overview', 'analytics', 'clash'].forEach(id => {
-            document.getElementById('tab-'+id).classList.add('hidden');
-            document.getElementById('btn-'+id).classList.replace('active', 'inactive');
-        });
-        document.getElementById('tab-'+t).classList.remove('hidden');
-        document.getElementById('btn-'+t).classList.replace('inactive', 'active');
-        document.getElementById('tab-'+t).classList.add('animate-fade-in');
+    // --- UPDATE NAVIGATION FUNCTIONS ---
+
+function switchTab(t) {
+    // Tambahkan 'empty' ke dalam array daftar tab
+    ['overview', 'analytics', 'clash', 'empty'].forEach(id => {
+        const tabEl = document.getElementById('tab-' + id);
+        const btnEl = document.getElementById('btn-' + id);
+        
+        if (tabEl && btnEl) {
+            tabEl.classList.add('hidden');
+            btnEl.classList.replace('active', 'inactive');
+        }
+    });
+
+    // Aktifkan tab yang dipilih
+    const targetTab = document.getElementById('tab-' + t);
+    const targetBtn = document.getElementById('btn-' + t);
+    
+    if (targetTab && targetBtn) {
+        targetTab.classList.remove('hidden');
+        targetBtn.classList.replace('inactive', 'active');
+        targetTab.classList.add('animate-fade-in');
+    }
+}
+
+function toggleDetails() { 
+    document.getElementById('mainTable').classList.toggle('show-details'); 
+}
+
+function clearCache() { 
+    if(confirm("Clear data?")){ location.reload(); } 
+}
+
+function downloadImage() {
+    // Tentukan area mana yang mau di-capture berdasarkan tab yang sedang terbuka
+    let activeId = 'captureArea'; // Default (Overview)
+    let fileName = 'Overview';
+
+    if (!document.getElementById('tab-analytics').classList.contains('hidden')) {
+        activeId = 'captureAreaAnalytics';
+        fileName = 'Analytics';
+    } else if (!document.getElementById('tab-clash').classList.contains('hidden')) {
+        activeId = 'captureAreaClash';
+        fileName = 'Clash_Analysis';
+    } else if (!document.getElementById('tab-empty').classList.contains('hidden')) {
+        // LOGIC BARU: Cek jika tab Empty sedang aktif
+        activeId = 'captureAreaEmpty';
+        fileName = 'Empty_Summary';
     }
 
-    function toggleDetails() { document.getElementById('mainTable').classList.toggle('show-details'); }
-    function clearCache() { if(confirm("Clear data?")){ location.reload(); } }
-
-    function downloadImage() {
-        let activeId = 'captureArea';
-        if(!document.getElementById('tab-analytics').classList.contains('hidden')) activeId = 'captureAreaAnalytics';
-        if(!document.getElementById('tab-clash').classList.contains('hidden')) activeId = 'captureAreaClash';
-
-        const el = document.getElementById(activeId);
-
+    const element = document.getElementById(activeId);
+    
+    // Proses Screenshot
+    html2canvas(element, { scale: 2, backgroundColor: "#f8fafc" }).then(canvas => {
+        let link = document.createElement('a');
+        link.download = `NPCT1_Yard_${fileName}_${new Date().getTime()}.jpg`;
+        link.href = canvas.toDataURL("image/jpeg", 0.9);
+        link.click();
+    });
+}
         // Prepare capture that adjusts cloned DOM to preserve table layout
         const capture = () => {
             return html2canvas(el, {
@@ -753,3 +798,89 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
 
         XLSX.writeFile(wb, "Yard_Planning_Report_Integrated.xlsx");
     }
+
+// --- TAB 4: EMPTY SUMMARY RENDER ---
+function renderEmptySummary() {
+    const impDiv = document.getElementById('emptyImportSummary');
+    const expBody = document.getElementById('emptyExportBody');
+    
+    // 1. Filter Data: Hanya yang statusnya Empty/MT
+    let emptyData = invData.filter(d => d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT');
+
+    // 2. IMPORT LOGIC (Summarize by Length Only)
+    let impStats = { c20: 0, c40: 0, c45: 0, total: 0 };
+    emptyData.filter(d => d.move.includes('import')).forEach(d => {
+        if(d.length.startsWith('20')) impStats.c20++;
+        else if(d.length.startsWith('45')) impStats.c45++;
+        else impStats.c40++;
+        impStats.total++;
+    });
+
+    impDiv.innerHTML = `
+        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+            <div class="text-xs text-slate-500 font-bold uppercase mb-1">20' Empty</div>
+            <div class="text-2xl font-black text-blue-600">${impStats.c20}</div>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+            <div class="text-xs text-slate-500 font-bold uppercase mb-1">40' Empty</div>
+            <div class="text-2xl font-black text-blue-600">${impStats.c40}</div>
+        </div>
+        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+            <div class="text-xs text-slate-500 font-bold uppercase mb-1">45' Empty</div>
+            <div class="text-2xl font-black text-blue-600">${impStats.c45}</div>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100 ring-2 ring-emerald-100">
+            <div class="text-xs text-emerald-600 font-bold uppercase mb-1">Total Import</div>
+            <div class="text-3xl font-black text-emerald-600">${impStats.total}</div>
+        </div>
+    `;
+
+    // 3. EXPORT LOGIC (Summarize by Carrier & Length)
+    let expStats = {};
+    emptyData.filter(d => d.move.includes('export')).forEach(d => {
+        let c = d.carrier;
+        if(!expStats[c]) expStats[c] = { c20: 0, c40: 0, c45: 0, total: 0 };
+        
+        if(d.length.startsWith('20')) expStats[c].c20++;
+        else if(d.length.startsWith('45')) expStats[c].c45++;
+        else expStats[c].c40++;
+        expStats[c].total++;
+    });
+
+    // Sort by Total Descending
+    let sortedExp = Object.entries(expStats).sort((a,b) => b[1].total - a[1].total);
+    
+    expBody.innerHTML = '';
+    if(sortedExp.length === 0) {
+        expBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
+    } else {
+        sortedExp.forEach(([carrier, s]) => {
+            expBody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
+                    <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
+                    <td class="px-6 py-3 text-center">${s.c40 || '-'}</td>
+                    <td class="px-6 py-3 text-center">${s.c45 || '-'}</td>
+                    <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
+                </tr>
+            `;
+        });
+        // Add Grand Total Row
+        let grand = sortedExp.reduce((acc, curr) => ({
+            c20: acc.c20 + curr[1].c20,
+            c40: acc.c40 + curr[1].c40,
+            c45: acc.c45 + curr[1].c45,
+            total: acc.total + curr[1].total
+        }), {c20:0, c40:0, c45:0, total:0});
+        
+        expBody.innerHTML += `
+            <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
+                <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
+                <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
+                <td class="px-6 py-3 text-center text-blue-600">${grand.c40}</td>
+                <td class="px-6 py-3 text-center text-blue-600">${grand.c45}</td>
+                <td class="px-6 py-3 text-center text-emerald-600 text-lg">${grand.total}</td>
+            </tr>
+        `;
+    }
+}
