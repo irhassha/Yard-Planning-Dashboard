@@ -64,8 +64,8 @@ function updateCapacity(block, newSlots, newTier) {
             const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""});
             
             let hIdx = -1;
-            // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1 };
+            // UPDATE: Tambahkan loadStatus, line, iso ke colMap
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, iso: -1 };
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -76,13 +76,17 @@ function updateCapacity(block, newSlots, newTier) {
                         let c = cleanStr(cell).replace(/[\s_]+/g, "");
                         if(c.includes("area") || c.includes("block")) colMap.block = idx;
                         if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                        if(c === "carrier" || c === "vessel" || c === "line") colMap.carrier = idx;
+                        if(c === "carrier" || c === "vessel") colMap.carrier = idx;
+                        // Detect Line column (but not as carrier)
+                        if(c === "line" && colMap.carrier === -1) colMap.line = idx;
                         if(c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         // LOGIC BARU: Deteksi kolom Load Status
                         if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                         // Detect Service column (e.g., "service", "serviceout", "service out")
                         if(c.includes("service")) colMap.service = idx;
+                        // Detect ISO column
+                        if(c === "iso" || c.includes("iso")) colMap.iso = idx;
                     });
                     break;
                 }
@@ -115,9 +119,11 @@ function updateCapacity(block, newSlots, newTier) {
                     length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
                     carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
                     move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
-                    // UPDATE: Simpan Load Status
+                    // UPDATE: Simpan Load Status, Line, dan ISO
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
-                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : ""
+                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
+                    line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "",
+                    iso: colMap.iso !== -1 ? String(row[colMap.iso] || "").toUpperCase().trim() : ""
                 });
             }
 
@@ -822,15 +828,6 @@ function handleLineFilterChange(checkbox) {
     renderEmptySummary();
 }
 
-function toggleBreakdown(carrierId) {
-    const breakdownRow = document.getElementById(`breakdown-${carrierId}`);
-    const expandIcon = document.getElementById(`expand-icon-${carrierId}`);
-    if(breakdownRow) {
-        breakdownRow.classList.toggle('hidden');
-        expandIcon.style.transform = breakdownRow.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(90deg)';
-    }
-}
-
 function renderEmptySummary() {
     const impDiv = document.getElementById('emptyImportSummary');
     const expBody = document.getElementById('emptyExportBody');
@@ -839,9 +836,6 @@ function renderEmptySummary() {
     // 1. Filter Data: Hanya yang statusnya Empty/MT
     // EXCLUDE entries where block or slot starts with '8'
     let emptyData = invData.filter(d => (d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT') && !(String(d.block || '').startsWith('8') || String(d.slot || '').startsWith('8')));
-
-    // Normalize service values
-    emptyData.forEach(d => { if(!d.service) d.service = ""; });
 
     // 2. IMPORT LOGIC (Summarize by Length Only)
     let impStats = { c20: 0, c40: 0, c45: 0, total: 0 };
@@ -876,39 +870,34 @@ function renderEmptySummary() {
         </div>
     `;
 
-    // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
+    // 3. EXPORT LOGIC (Summarize by Carrier & Line & Length)
     let expStats = {};
     let allLines = new Set();
     
     emptyData.filter(d => d.move.includes('export')).forEach(d => {
-        let key = `${d.carrier}||${d.service || ''}`;
-        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, breakdownData: {} };
+        let key = `${d.carrier}||${d.line || 'UNSPECIFIED'}`;
+        if(!expStats[key]) expStats[key] = { carrier: d.carrier, line: d.line || 'UNSPECIFIED', c20: 0, c40: 0, c45: 0, total: 0 };
         
         // Track all lines for filter
-        allLines.add(d.service || 'UNSPECIFIED');
+        allLines.add(d.line || 'UNSPECIFIED');
         
         if(d.length.startsWith('20')) expStats[key].c20++;
         else if(d.length.startsWith('45')) expStats[key].c45++;
         else expStats[key].c40++;
         expStats[key].total++;
-        
-        // Build breakdown data: ISO -> count
-        let iso = d.length.startsWith('20') ? "20'" : (d.length.startsWith('45') ? "45'" : "40'");
-        if(!expStats[key].breakdownData[iso]) expStats[key].breakdownData[iso] = 0;
-        expStats[key].breakdownData[iso]++;
     });
 
     // 4. Render Line Filter Checkboxes
     filterContainer.innerHTML = '';
     if(allLines.size > 0) {
-        // First checkbox is "UNSPECIFIED"
-        const unspecLines = Array.from(allLines).sort((a, b) => {
+        // Sort lines with UNSPECIFIED at the end
+        const sortedLines = Array.from(allLines).sort((a, b) => {
             if(a === 'UNSPECIFIED') return 1;
             if(b === 'UNSPECIFIED') return -1;
             return a.localeCompare(b);
         });
         
-        unspecLines.forEach(line => {
+        sortedLines.forEach(line => {
             const isChecked = emptySelectedLines.size === 0 || emptySelectedLines.has(line);
             filterContainer.innerHTML += `
                 <label class="flex items-center gap-2 px-3 py-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
@@ -920,51 +909,41 @@ function renderEmptySummary() {
         });
     }
 
-    // 5. Filter and Sort Export Data
+    // 5. Filter and Sort Export Data by Line
     let sortedExp = Object.values(expStats).filter(s => {
         // If no lines selected, show all
         if(emptySelectedLines.size === 0) return true;
-        // Otherwise show only if service is in selected lines
-        return emptySelectedLines.has(s.service || 'UNSPECIFIED');
+        // Otherwise show only if line is in selected lines
+        return emptySelectedLines.has(s.line);
     }).sort((a,b) => b.total - a.total);
+    
+    // 6. Calculate General Breakdown (ALL filtered export data)
+    let generalBreakdown = { c20: 0, c40: 0, c45: 0, total: 0 };
+    sortedExp.forEach(s => {
+        generalBreakdown.c20 += s.c20;
+        generalBreakdown.c40 += s.c40;
+        generalBreakdown.c45 += s.c45;
+        generalBreakdown.total += s.total;
+    });
     
     expBody.innerHTML = '';
     if(sortedExp.length === 0) {
         expBody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
     } else {
-        sortedExp.forEach((s, idx) => {
+        sortedExp.forEach((s) => {
             const carrier = s.carrier || '-';
-            const service = s.service || '-';
+            const line = s.line || '-';
             const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
-            const carrierId = `${idx}-${carrier}-${service}`;
             
             expBody.innerHTML += `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-3 text-center">
-                        <button onclick="toggleBreakdown('${carrierId}')" class="inline-flex items-center justify-center w-6 h-6 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors">
-                            <span id="expand-icon-${carrierId}" class="material-symbols-outlined text-sm transition-transform">chevron_right</span>
-                        </button>
-                    </td>
                     <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
-                    <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
+                    <td class="px-6 py-3 text-center font-medium text-slate-600">${line}</td>
                     <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
                     <td class="px-6 py-3 text-center">${s.c40 || '-'}</td>
                     <td class="px-6 py-3 text-center">${s.c45 || '-'}</td>
                     <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
                     <td class="px-6 py-3 text-center font-bold text-emerald-600">${Number(totalTeus.toFixed(2))}</td>
-                </tr>
-                <tr id="breakdown-${carrierId}" class="hidden bg-slate-50">
-                    <td colspan="8" class="px-6 py-3">
-                        <div class="text-xs font-bold text-slate-600 mb-2">Breakdown by ISO:</div>
-                        <div class="grid grid-cols-3 gap-4">
-                            ${Object.entries(s.breakdownData).map(([iso, cnt]) => `
-                                <div class="bg-white p-3 rounded border border-slate-200">
-                                    <div class="text-slate-500 text-[10px] uppercase font-bold mb-1">ISO ${iso}</div>
-                                    <div class="text-xl font-black text-blue-600">${cnt}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </td>
                 </tr>
             `;
         });
@@ -980,7 +959,6 @@ function renderEmptySummary() {
         
         expBody.innerHTML += `
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
-                <td class="px-6 py-3"></td>
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
                 <td class="px-6 py-3 text-center text-slate-700">-</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
@@ -991,4 +969,49 @@ function renderEmptySummary() {
             </tr>
         `;
     }
+    
+    // 7. Display General Breakdown (like Yard Density tab) - show summary cards at the top if export empty exists
+    if(sortedExp.length > 0) {
+        // Inject breakdown cards below the table in a separate section would be ideal
+        // For now, we can add it programmatically or you can update HTML to have a breakdown section
+        renderEmptyBreakdownCards(generalBreakdown);
+    }
+}
+
+function renderEmptyBreakdownCards(breakdown) {
+    // Display general ISO breakdown cards
+    let breakdownDiv = document.getElementById('emptyBreakdownCards');
+    if(!breakdownDiv) return;
+    
+    const totalTeus = (breakdown.c20 * 1) + (breakdown.c40 * 2) + (breakdown.c45 * 2.25);
+    breakdownDiv.innerHTML = `
+        <div class="glass-panel rounded-2xl shadow-glass p-6 border border-white/40">
+            <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-blue-500">inventory_2</span>
+                Empty Export Breakdown by ISO
+            </h3>
+            <div class="grid grid-cols-5 gap-4">
+                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+                    <div class="text-xs text-slate-500 font-bold uppercase mb-1">20'</div>
+                    <div class="text-2xl font-black text-blue-600">${breakdown.c20}</div>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+                    <div class="text-xs text-slate-500 font-bold uppercase mb-1">40'</div>
+                    <div class="text-2xl font-black text-blue-600">${breakdown.c40}</div>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
+                    <div class="text-xs text-slate-500 font-bold uppercase mb-1">45'</div>
+                    <div class="text-2xl font-black text-blue-600">${breakdown.c45}</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl text-center border border-slate-100">
+                    <div class="text-xs text-slate-500 font-bold uppercase mb-1">Total Units</div>
+                    <div class="text-2xl font-black text-slate-600">${breakdown.total}</div>
+                </div>
+                <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100 ring-2 ring-emerald-100">
+                    <div class="text-xs text-emerald-600 font-bold uppercase mb-1">Total TEUs</div>
+                    <div class="text-2xl font-black text-emerald-700">${Number(totalTeus.toFixed(2))}</div>
+                </div>
+            </div>
+        </div>
+    `;
 }
