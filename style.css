@@ -1,67 +1,155 @@
+body {
+    background: #F5F7FA;
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+}
 
-    body {
-        background-color: #f8fafc;
-        background-image: 
-            radial-gradient(at 0% 0%, hsla(215, 95%, 93%, 1) 0, transparent 50%), 
-            radial-gradient(at 100% 0%, hsla(266, 60%, 94%, 1) 0, transparent 50%);
-    }
-    .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
-    
-    /* Tab Buttons */
-    .tab-btn { @apply px-5 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 border border-transparent flex items-center gap-2 shadow-sm; }
-    .tab-btn.active { @apply bg-white text-primary border-slate-200 shadow-md transform -translate-y-0.5; }
-    .tab-btn.inactive { @apply text-slate-500 hover:text-slate-700 hover:bg-white/60; }
+.hero-shell {
+    position: relative;
+    background-image: linear-gradient(120deg, rgba(0, 46, 102, 0.65), rgba(0, 100, 210, 0.5)), url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=2000&q=80');
+    background-size: cover;
+    background-position: center;
+}
 
-    /* Clash Visuals */
-    .slot-track { height: 20px; background: #e2e8f0; border-radius: 4px; position: relative; width: 100%; overflow: hidden; margin-top: 6px; border: 1px solid rgba(0,0,0,0.05); }
-    /* Enhanced Visibility for Bar Text */
-    .slot-bar { height: 100%; position: absolute; top: 0; opacity: 1; border-radius: 2px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-    .slot-bar span { font-size: 11px; font-weight: 900; color: #ffffff; padding: 0 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); z-index: 10; letter-spacing: 0.5px; }
+.floating-control-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 1.25rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E6ECF5;
+}
 
-    .clash-card { transition: all 0.2s; border-left: 4px solid transparent; }
-    .clash-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-    .clash-high { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, white); }
-    .clash-medium { border-left-color: #f59e0b; background: linear-gradient(to right, #fffbeb, white); }
-    
-    /* Interactive Row */
-    .stats-row { cursor: pointer; transition: background-color 0.15s; }
-    .stats-row:hover { background-color: #f1f5f9; }
-    .stats-row.active-filter { background-color: #eff6ff; border-left: 3px solid #3b82f6; }
+.secondary-pill,
+.cta-upload-btn {
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+}
 
-    /* Animations */
-    .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease; overflow: hidden; }
-    .progress-ring__circle { transition: stroke-dashoffset 0.6s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
 
-    /* Overview Table Colors */
-    .row-dg td      { background-color: #fee2e2 !important; color: #991b1b !important; } 
-    .row-export td  { background-color: #dcfce7 !important; color: #166534 !important; } 
-    .row-import td  { background-color: #fef9c3 !important; color: #854d0e !important; } 
-    .row-mixed td   { background-color: #f3e8ff !important; color: #6b21a8 !important; } 
-    .row-oog td     { background-color: #ffedd5 !important; color: #9a3412 !important; } 
-    .row-reefer td  { background-color: #cff4fc !important; color: #075985 !important; } 
-    .col-detail { display: none; }
-    .show-details .col-detail { display: table-cell; }
+.cta-upload-btn {
+    background: #0064D2;
+    color: #FFFFFF;
+    padding: 0.7rem 1.15rem;
+    box-shadow: 0 8px 24px rgba(0, 100, 210, 0.28);
+}
+
+.secondary-pill {
+    background: #FFFFFF;
+    color: #516173;
+    border: 1px solid #D6E0EE;
+    padding: 0.65rem 1rem;
+}
+
+.glass-panel {
+    background: #FFFFFF;
+    border: 1px solid #E4EBF6;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+
+.tab-btn {
+    border-radius: 999px;
+    padding: 0.6rem 1rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.tab-btn.active {
+    background: #0064D2;
+    color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(0, 100, 210, 0.25);
+}
+
+.tab-btn.inactive {
+    color: #64748B;
+}
+
+.tab-btn.inactive:hover {
+    background: #FFFFFF;
+    color: #0F172A;
+}
+
+
+.reference-guide-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.35rem 0.45rem;
+}
+
+.reference-guide-summary::-webkit-details-marker {
+    display: none;
+}
+
+.reference-guide-summary .material-symbols-outlined:last-child {
+    transition: transform 0.2s ease;
+}
+
+.reference-guide-details[open] .reference-guide-summary .material-symbols-outlined:last-child {
+    transform: rotate(180deg);
+}
+
+/* Clash Visuals */
+.slot-track { height: 20px; background: #e2e8f0; border-radius: 999px; position: relative; width: 100%; overflow: hidden; margin-top: 6px; border: 1px solid rgba(0,0,0,0.05); }
+.slot-bar { height: 100%; position: absolute; top: 0; opacity: 1; border-radius: 999px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.slot-bar span { font-size: 11px; font-weight: 900; color: #ffffff; padding: 0 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.9); z-index: 10; letter-spacing: 0.5px; }
+
+.clash-card { transition: all 0.2s; border-left: 4px solid transparent; }
+.clash-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+.clash-high { border-left-color: #ef4444; background: linear-gradient(to right, #fef2f2, white); }
+.clash-medium { border-left-color: #f59e0b; background: linear-gradient(to right, #fffbeb, white); }
+
+.stats-row { cursor: pointer; transition: background-color 0.15s; }
+.stats-row:hover { background-color: #f1f5f9; }
+.stats-row.active-filter { background-color: #eff6ff; border-left: 3px solid #0064D2; }
+
+.accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease; overflow: hidden; }
+.progress-ring__circle { transition: stroke-dashoffset 0.6s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+.row-dg td      { background-color: #fee2e2 !important; color: #991b1b !important; }
+.row-export td  { background-color: #dcfce7 !important; color: #166534 !important; }
+.row-import td  { background-color: #fef9c3 !important; color: #854d0e !important; }
+.row-mixed td   { background-color: #f3e8ff !important; color: #6b21a8 !important; }
+.row-oog td     { background-color: #ffedd5 !important; color: #9a3412 !important; }
+.row-reefer td  { background-color: #cff4fc !important; color: #075985 !important; }
+.col-detail { display: none; }
+.show-details .col-detail { display: table-cell; }
 
 .row-zero {
   background: linear-gradient(90deg, #f1f5f9, #ffffff);
   color: #64748b;
 }
 
-/* Main table font size (first tab) */
 #tab-overview #mainTable,
 #tab-overview #mainTable th,
 #tab-overview #mainTable td {
-        font-size: 18px;
+  font-size: 15px;
 }
 
-/* Occupancy percentage specific style */
 #tab-overview #mainTable td .occupancy-pct {
-        font-size: 22px;
-        font-weight: 700;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+#tab-overview #mainTable td .w-full.bg-slate-200 {
+    background: #E7ECF2;
+    border-radius: 999px;
+    height: 0.55rem;
+}
+
+#tab-overview #mainTable td .w-full.bg-slate-200 > div {
+    border-radius: 999px;
+}
+
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
