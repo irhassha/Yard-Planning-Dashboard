@@ -826,23 +826,26 @@ function renderEmptySummary() {
     const impTeus = (impStats.c20 * 1) + (impStats.c40 * 2) + (impStats.c45 * 2.25);
 
     impDiv.innerHTML = `
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">20' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c20}</div>
+        <div class="bg-white p-4 rounded-2xl text-center border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wide mb-1">20' Empty</div>
+            <div class="text-3xl font-extrabold text-[#0064D2]">${impStats.c20}</div>
         </div>
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">40' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c40}</div>
+        <div class="bg-white p-4 rounded-2xl text-center border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wide mb-1">40' Empty</div>
+            <div class="text-3xl font-extrabold text-[#0064D2]">${impStats.c40}</div>
         </div>
-        <div class="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-            <div class="text-xs text-slate-500 font-bold uppercase mb-1">45' Empty</div>
-            <div class="text-2xl font-black text-blue-600">${impStats.c45}</div>
+        <div class="bg-white p-4 rounded-2xl text-center border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wide mb-1">45' Empty</div>
+            <div class="text-3xl font-extrabold text-[#0064D2]">${impStats.c45}</div>
         </div>
-        <div class="bg-emerald-50 p-4 rounded-xl text-center border border-emerald-100 ring-2 ring-emerald-100">
-            <div class="text-xs text-emerald-600 font-bold uppercase mb-1">Total Import</div>
-            <div class="text-2xl font-black text-emerald-600">${impStats.total}</div>
-            <div class="text-xs text-slate-500 mt-1">TEUs</div>
-            <div class="text-2xl font-black text-emerald-700">${Number(impTeus.toFixed(2))}</div>
+        <div id="cardTotalImport" class="bg-gradient-to-br from-amber-50 to-yellow-50 p-4 rounded-2xl text-center border border-amber-200 shadow-sm">
+            <div class="text-[11px] text-amber-700 font-bold uppercase tracking-wide mb-1">Total Import (Boxes)</div>
+            <div class="text-3xl font-extrabold text-amber-600">${impStats.total}</div>
+        </div>
+        <div id="cardTotalTeus" class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-2xl text-center border border-emerald-200 shadow-sm">
+            <div class="text-[11px] text-emerald-700 font-bold uppercase tracking-wide mb-1">Total TEUs</div>
+            <div class="text-3xl font-extrabold text-emerald-600">${Number(impTeus.toFixed(2))}</div>
+            <div class="text-xs text-emerald-700/80 mt-1">Equivalent Units</div>
         </div>
     `;
 
