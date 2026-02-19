@@ -845,7 +845,6 @@ function renderEmptySummary() {
         <div id="cardTotalTeus" class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-2xl text-center border border-emerald-200 shadow-sm">
             <div class="text-[11px] text-emerald-700 font-bold uppercase tracking-wide mb-1">Total TEUs</div>
             <div class="text-3xl font-extrabold text-emerald-600">${Number(impTeus.toFixed(2))}</div>
-            <div class="text-xs text-emerald-700/80 mt-1">Equivalent Units</div>
         </div>
     `;
 
