@@ -838,12 +838,11 @@ function renderEmptySummary() {
             <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wide mb-1">45' Empty</div>
             <div class="text-3xl font-extrabold text-[#0064D2]">${impStats.c45}</div>
         </div>
-        <div class="bg-gradient-to-br from-amber-50 to-yellow-50 p-4 rounded-2xl text-center border border-amber-200 shadow-sm">
-            <div class="text-[11px] text-amber-700 font-bold uppercase tracking-wide mb-1">Total Import</div>
+        <div id="cardTotalImport" class="bg-gradient-to-br from-amber-50 to-yellow-50 p-4 rounded-2xl text-center border border-amber-200 shadow-sm">
+            <div class="text-[11px] text-amber-700 font-bold uppercase tracking-wide mb-1">Total Import (Boxes)</div>
             <div class="text-3xl font-extrabold text-amber-600">${impStats.total}</div>
-            <div class="text-xs text-amber-700/80 mt-1">Boxes</div>
         </div>
-        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-2xl text-center border border-emerald-200 shadow-sm">
+        <div id="cardTotalTeus" class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-2xl text-center border border-emerald-200 shadow-sm">
             <div class="text-[11px] text-emerald-700 font-bold uppercase tracking-wide mb-1">Total TEUs</div>
             <div class="text-3xl font-extrabold text-emerald-600">${Number(impTeus.toFixed(2))}</div>
             <div class="text-xs text-emerald-700/80 mt-1">Equivalent Units</div>
