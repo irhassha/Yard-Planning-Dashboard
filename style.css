@@ -5,7 +5,7 @@ body {
 
 .hero-shell {
     position: relative;
-    background-image: linear-gradient(120deg, rgba(0, 46, 102, 0.65), rgba(0, 100, 210, 0.5)), url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=2000&q=80');
+    background-image: linear-gradient(120deg, rgba(0, 46, 102, 0.65), rgba(0, 100, 210, 0.5)), url('https://lh3.googleusercontent.com/pw/AP1GczMlYa7Iz-Ebhl_q87Z_68-8T2flAE7vkteUGdjC_eZYOVtqUVGmrESfZDXImZCylDPVO-tAasYd0H3kOqxFzw6NBJp27KxabJ2H5OFd_a5RG6HW-aeKiXFPrM6L2PpXVNcwDlRKwSDGyq8PrFTLuex6=w1910-h704-s-no');
     background-size: cover;
     background-position: center;
 }
