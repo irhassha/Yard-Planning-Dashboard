@@ -926,7 +926,13 @@ function normalizeProjectionType(rawType = '', blockHint = '') {
     return 'Fixed Import';
 }
 
+function getSlotBoxCapacity() {
+    const val = Number(document.getElementById('slotBoxCapacity')?.value || 27);
+    return Number.isFinite(val) && val > 0 ? val : 27;
+}
+
 function calculateCurrentSpace() {
+    const slotCap = getSlotBoxCapacity();
     const byType = PROJECTION_TYPES.reduce((acc, type) => {
         acc[type] = {
             maxCapacityTEU: 0,
@@ -934,7 +940,8 @@ function calculateCurrentSpace() {
             actualAvailableTEU: 0,
             balance20Current: 0,
             balance40Current: 0,
-            freeSlotsEXE: 0
+            freeSlotsEXE: 0,
+            freeSlotList: []
         };
         return acc;
     }, {});
@@ -973,16 +980,19 @@ function calculateCurrentSpace() {
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
         const maxSlots = Number(activeCapacity[blockName]?.slots || 0);
-        byType[type].maxCapacityTEU += (maxSlots * 27);
+        byType[type].maxCapacityTEU += (maxSlots * slotCap);
 
         for (let slotNo = 1; slotNo <= maxSlots; slotNo++) {
             const occ = Number(slotOccupancyByBlock[block]?.[slotNo] || 0);
-            const remaining = Math.max(27 - occ, 0);
+            const remaining = Math.max(slotCap - occ, 0);
 
             byType[type].currentOccupancyTEU += occ;
             byType[type].balance20Current += remaining;
             byType[type].balance40Current += Math.floor(remaining / 2);
-            if (occ === 0) byType[type].freeSlotsEXE += 1;
+            if (occ === 0) {
+                byType[type].freeSlotsEXE += 1;
+                byType[type].freeSlotList.push(`${block}-${String(slotNo).padStart(2, '0')}`);
+            }
         }
     });
 
@@ -991,6 +1001,29 @@ function calculateCurrentSpace() {
     });
 
     return byType;
+}
+
+function showFreeSlotModal(type, freeSlotList) {
+    const modal = document.getElementById('freeSlotModal');
+    const title = document.getElementById('freeSlotModalTitle');
+    const body = document.getElementById('freeSlotModalBody');
+    if (!modal || !title || !body) return;
+
+    title.textContent = `Free Slot List - ${type}`;
+    if (!freeSlotList.length) {
+        body.innerHTML = '<p class="text-slate-500 italic">No free EXE slots.</p>';
+    } else {
+        body.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">${freeSlotList.map(s => `<span class="px-2 py-1 rounded bg-slate-100 border text-center font-mono text-xs">${s}</span>`).join('')}</div>`;
+    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeFreeSlotModal() {
+    const modal = document.getElementById('freeSlotModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
 }
 
 function renderProjectionTable(rows, spaceByType) {
@@ -1004,48 +1037,65 @@ function renderProjectionTable(rows, spaceByType) {
 
     body.innerHTML = '';
 
-    rows.forEach(row => {
-        const space = spaceByType[row.type] || {
+    PROJECTION_TYPES.forEach(type => {
+        const typeRows = rows.filter(r => r.type === type);
+        if (!typeRows.length) return;
+
+        const space = spaceByType[type] || {
             maxCapacityTEU: 0,
             currentOccupancyTEU: 0,
             actualAvailableTEU: 0,
-            balance20Current: 0,
-            balance40Current: 0,
-            freeSlotsEXE: 0
+            freeSlotsEXE: 0,
+            freeSlotList: []
         };
 
-        const incomingBox20 = Number(row.box20 || 0);
-        const incomingBox40 = Number(row.box40 || 0);
-        const incomingTEU = incomingBox20 + (incomingBox40 * 2);
+        body.innerHTML += `<tr class="bg-slate-100"><td colspan="8" class="px-4 py-2 text-center font-bold text-slate-700">${type}</td></tr>`;
 
-        const freeTEUAfterIncoming = space.actualAvailableTEU - incomingTEU;
-        const balance20 = freeTEUAfterIncoming >= 0 ? freeTEUAfterIncoming : 0;
-        const balance40 = freeTEUAfterIncoming >= 0 ? Math.floor(freeTEUAfterIncoming / 2) : 0;
+        // Running balance across all vessels in same type
+        let runningFreeTEU = space.actualAvailableTEU;
 
-        const maxCapacity = space.maxCapacityTEU;
-        const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
-        const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
-        const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
+        typeRows.forEach(row => {
+            const incomingBox20 = Number(row.box20 || 0);
+            const incomingBox40 = Number(row.box40 || 0);
+            const incomingTEU = incomingBox20 + (incomingBox40 * 2);
+            runningFreeTEU -= incomingTEU;
 
-        body.innerHTML += `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
-                <td class="px-4 py-3 text-slate-600">${row.type}</td>
-                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-bold ${space.freeSlotsEXE === 0 ? 'text-slate-500' : 'text-blue-700'}">${Math.round(space.freeSlotsEXE).toLocaleString()}</td>
-                <td class="px-4 py-3">
-                    <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
-                        <div class="h-full bg-blue-500" style="width:${Math.min(occPct, 100)}%"></div>
-                        <div class="h-full ${overCap ? 'bg-red-500' : 'bg-amber-400'}" style="width:${Math.min(incomingPct, 100)}%"></div>
-                    </div>
-                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)} | Free EXE ${space.freeSlotsEXE}</div>
-                </td>
-            </tr>
-        `;
+            const balance20 = runningFreeTEU >= 0 ? runningFreeTEU : 0;
+            const balance40 = runningFreeTEU >= 0 ? Math.floor(runningFreeTEU / 2) : 0;
+
+            const maxCapacity = space.maxCapacityTEU;
+            const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
+            const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
+            const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
+
+            body.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
+                    <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-bold">
+                        <button onclick='showFreeSlotModal(${JSON.stringify(type)}, ${JSON.stringify(space.freeSlotList)})' class="text-blue-700 underline hover:text-blue-900">${Math.round(space.freeSlotsEXE).toLocaleString()}</button>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
+                            <div class="h-full bg-blue-500" style="width:${Math.min(occPct, 100)}%"></div>
+                            <div class="h-full ${overCap ? 'bg-red-500' : 'bg-amber-400'}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono mt-1 text-center">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)}</div>
+                    </td>
+                </tr>
+            `;
+        });
     });
+}
+
+function refreshProjectionTable() {
+    if (!projectionPreplanRows.length) return;
+    const spaceByType = calculateCurrentSpace();
+    renderProjectionTable(projectionPreplanRows, spaceByType);
 }
 
 async function parsePreplanProjection(event) {
