@@ -131,7 +131,7 @@ function updateCapacity(block, newSlots, newTier) {
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
             const projectionBody = document.getElementById('projectionBody');
-            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -916,152 +916,167 @@ function renderEmptySummary() {
 }
 
 
-function normalizeProjectionType(rawType, blockHint = '') {
+function normalizeProjectionType(rawType = '', blockHint = '') {
     const txt = cleanStr(rawType);
     const block = String(blockHint || '').toUpperCase();
 
-    if (txt.includes('reef') || txt.includes('rc9') || txt.includes('br9') || block.includes('RC') || block.includes('BR')) return 'Reefer';
-    if (txt.includes('oog') || block === 'OOG') return 'OOG';
-    if (txt.includes('imdg') || txt.includes('dg') || block === 'C01' || block === 'C02') return 'IMDG';
+    if (txt.includes('reefer') || txt.includes('refer') || txt.includes('rf') || txt.includes('rc') || txt.includes('br') || block.includes('RC') || block.includes('BR')) return 'Reefer';
+    if (txt.includes('oog') || txt.includes('special') || block.includes('OOG')) return 'OOG';
+    if (txt.includes('imdg') || txt.includes('dg') || block.includes('C01') || block.includes('C02')) return 'IMDG';
     return 'Fixed Import';
 }
 
 function calculateCurrentSpace() {
     const byType = PROJECTION_TYPES.reduce((acc, type) => {
         acc[type] = {
-            totalMaxSlots: 0,
-            totalOccupiedSlots: 0,
-            totalYardCap: 0,
-            totalBoxOccupancy: 0,
-            actualAvailableSpace: 0
+            maxCapacityTEU: 0,
+            currentOccupancyTEU: 0,
+            actualAvailableTEU: 0
         };
         return acc;
     }, {});
 
-    const getTypeFromBlock = (blockName) => {
+    // A. Max Capacity (TEU) from activeCapacity
+    Object.keys(activeCapacity).forEach(blockName => {
         const block = String(blockName || '').toUpperCase();
-        if (block === 'BR9' || block === 'RC9') return 'Reefer';
-        if (block === 'OOG') return 'OOG';
-        if (block === 'C01' || block === 'C02') return 'IMDG';
-        return 'Fixed Import';
-    };
+        const type = normalizeProjectionType('', block);
 
-    // Step A: Max capacity by type (exclude EXPORT_DEFAULTS from Fixed Import)
-    Object.keys(activeCapacity).forEach(block => {
-        const type = getTypeFromBlock(block);
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
-        byType[type].totalMaxSlots += Number(activeCapacity[block]?.slots || 0);
+        const slots = Number(activeCapacity[blockName]?.slots || 0);
+        byType[type].maxCapacityTEU += (slots * 27);
     });
 
-    // Step B: Occupancy tracking
-    const occupiedSlotsByBlock = {};
-
+    // B. Current Occupancy (TEU) from invData (import only)
     invData.forEach(item => {
         const move = cleanStr(item.move);
         if (!move.includes('import')) return;
 
         const block = String(item.block || '').toUpperCase();
-        if (!activeCapacity[block]) return;
+        if (!block) return;
 
-        const type = getTypeFromBlock(block);
+        const type = normalizeProjectionType('', block);
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
-        const slot = parseInt(item.slot, 10);
-        if (!Number.isFinite(slot) || slot <= 0) return;
-
-        byType[type].totalBoxOccupancy += 1;
-
-        if (!occupiedSlotsByBlock[block]) occupiedSlotsByBlock[block] = new Set();
         const len = String(item.length || '').trim();
-
-        if (len.startsWith('40') || len.startsWith('45')) {
-            occupiedSlotsByBlock[block].add(slot);
-            occupiedSlotsByBlock[block].add(slot + 1);
-        } else {
-            occupiedSlotsByBlock[block].add(slot);
-        }
+        if (len.startsWith('40') || len.startsWith('45')) byType[type].currentOccupancyTEU += 2;
+        else byType[type].currentOccupancyTEU += 1;
     });
 
-    // Step C: Final space calculations
-    Object.keys(activeCapacity).forEach(block => {
-        const type = getTypeFromBlock(block);
-        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
-
-        const occupied = occupiedSlotsByBlock[block] ? occupiedSlotsByBlock[block].size : 0;
-        byType[type].totalOccupiedSlots += occupied;
-    });
-
+    // C. Actual Available (TEU)
     PROJECTION_TYPES.forEach(type => {
-        const row = byType[type];
-        row.totalYardCap = row.totalMaxSlots * 27;
-        row.actualAvailableSpace = row.totalYardCap - row.totalBoxOccupancy;
+        byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
     });
 
     return byType;
 }
 
-async function processPreplan() {
-    const file = document.getElementById('preplanInput')?.files?.[0];
+function renderProjectionTable(rows, spaceByType) {
+    const body = document.getElementById('projectionBody');
+    if (!body) return;
+
+    if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
+        return;
+    }
+
+    body.innerHTML = '';
+
+    rows.forEach(row => {
+        const space = spaceByType[row.type] || { maxCapacityTEU: 0, currentOccupancyTEU: 0, actualAvailableTEU: 0 };
+
+        // Incoming and free-space math in TEU
+        const incomingBox20 = Number(row.box20 || 0);
+        const incomingBox40 = Number(row.box40 || 0);
+        const incomingTEU = incomingBox20 + (incomingBox40 * 2);
+        const freeSlotTEU = space.actualAvailableTEU - incomingTEU;
+
+        // Requested split balance logic
+        const balance20 = freeSlotTEU >= 0 ? freeSlotTEU : 0;
+        const balance40 = freeSlotTEU >= 0 ? Math.floor(freeSlotTEU / 2) : 0;
+
+        const maxCapacity = space.maxCapacityTEU;
+        const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
+        const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
+        const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
+
+        body.innerHTML += `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
+                <td class="px-4 py-3 text-slate-600">${row.type}</td>
+                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-bold ${freeSlotTEU < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(freeSlotTEU).toLocaleString()}</td>
+                <td class="px-4 py-3">
+                    <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width:${Math.min(occPct, 100)}%"></div>
+                        <div class="h-full ${overCap ? 'bg-red-500' : 'bg-amber-400'}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)}</div>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+async function parsePreplanProjection(event) {
+    const file = event?.target?.files?.[0] || document.getElementById('preplanInput')?.files?.[0];
     const body = document.getElementById('projectionBody');
 
     if (!body) return;
     if (!file) {
-        alert('Please upload Preplan file first.');
+        body.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
         return;
     }
 
     try {
-        projectionPreplanRows = await parsePreplanProjection(file);
-        const currentSpace = calculateCurrentSpace();
-
-        if (!projectionPreplanRows.length) {
-            body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
-            return;
-        }
-
-        body.innerHTML = '';
-        projectionPreplanRows.forEach(row => {
-            const space = currentSpace[row.type] || {
-                totalYardCap: 0,
-                totalBoxOccupancy: 0,
-                actualAvailableSpace: 0
+        const reader = new FileReader();
+        const rows = await new Promise((resolve, reject) => {
+            reader.onload = evt => {
+                try {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+                    resolve(json);
+                } catch (e) {
+                    reject(e);
+                }
             };
-
-            const totalYardCap = space.totalYardCap;
-            const actualAvailable = space.actualAvailableSpace;
-            const balance = actualAvailable - row.incoming;
-
-            const bluePct = totalYardCap > 0 ? (space.totalBoxOccupancy / totalYardCap) * 100 : 0;
-            const incomingPct = totalYardCap > 0 ? (row.incoming / totalYardCap) * 100 : 0;
-            const incomingClass = (space.totalBoxOccupancy + row.incoming) > totalYardCap ? 'bg-red-500' : 'bg-amber-400';
-
-            body.innerHTML += `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
-                    <td class="px-4 py-3 text-slate-600">${row.type}</td>
-                    <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(row.incoming).toLocaleString()}</td>
-                    <td class="px-4 py-3 text-right font-bold ${balance < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(balance).toLocaleString()}</td>
-                    <td class="px-4 py-3">
-                        <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
-                            <div class="h-full bg-blue-500" style="width:${Math.min(bluePct, 100)}%"></div>
-                            <div class="h-full ${incomingClass}" style="width:${Math.min(incomingPct, 100)}%"></div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.totalBoxOccupancy)} | In ${Math.round(row.incoming)} | Cap ${Math.round(totalYardCap)}</div>
-                    </td>
-                </tr>
-            `;
+            reader.onerror = () => reject(new Error('Failed to read Preplan file.'));
+            reader.readAsArrayBuffer(file);
         });
+
+        const grouped = {};
+        rows.forEach(row => {
+            // strict vessel source: exact column names only
+            const carrierIn = String(row['Carrier In'] || '').trim();
+            const voyageIn = String(row['Voyage In'] || '').trim();
+            const vessel = `${carrierIn} ${voyageIn}`.trim();
+            if (!vessel) return;
+
+            const rawType = String(row['Type'] || '').toLowerCase();
+            let type = 'Fixed Import';
+            if (rawType.includes('reefer')) type = 'Reefer';
+            else if (rawType.includes('imdg') || rawType.includes('dg')) type = 'IMDG';
+            else if (rawType.includes('oog') || rawType.includes('special')) type = 'OOG';
+
+            const box20 = Number(row["Dis. to go 20'"] || row['1 TEU'] || 0) || 0;
+            const box40 = Number(row["Dis. to go 40'"] || row['2 TEU'] || 0) || 0;
+
+            const key = `${vessel}||${type}`;
+            if (!grouped[key]) grouped[key] = { vessel, type, box20: 0, box40: 0 };
+            grouped[key].box20 += box20;
+            grouped[key].box40 += box40;
+        });
+
+        projectionPreplanRows = Object.values(grouped);
+        const spaceByType = calculateCurrentSpace();
+        renderProjectionTable(projectionPreplanRows, spaceByType);
     } catch (err) {
         alert(`Preplan error: ${err.message}`);
     }
 }
 
-const preplanInputEl = document.getElementById('preplanInput');
-if (preplanInputEl) {
-    preplanInputEl.addEventListener('change', () => {
-        const body = document.getElementById('projectionBody');
-        if (!body) return;
-        body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Preplan selected. Click Analyze Projection.</td></tr>';
-    });
-}
+window.parsePreplanProjection = parsePreplanProjection;
+window.processPreplan = parsePreplanProjection;
