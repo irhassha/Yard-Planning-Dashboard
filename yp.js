@@ -922,13 +922,13 @@ function normalizeProjectionType(rawType = '', blockHint = '') {
 
     if (txt.includes('reefer') || txt.includes('refer') || txt.includes('rf') || txt.includes('rc') || txt.includes('br') || block.includes('RC') || block.includes('BR')) return 'Reefer';
     if (txt.includes('oog') || txt.includes('special') || block.includes('OOG')) return 'OOG';
-    if (txt.includes('imdg') || txt.includes('dg') || block.includes('C01') || block.includes('C02')) return 'IMDG';
+    if (txt.includes('imdg') || txt.includes('dg') || block.includes('C01') || block.includes('C02') || block.includes('D01')) return 'IMDG';
     return 'Fixed Import';
 }
 
 function isExcludedUsedSlotBlock(blockName) {
     const block = String(blockName || '').toUpperCase();
-    const excluded = new Set(['C01', 'C02', 'D01', 'OOG', 'RC9', 'BR9', 'CG1']);
+    const excluded = new Set(['CG1']);
     return excluded.has(block) || block.startsWith('8');
 }
 
@@ -966,7 +966,6 @@ function calculateCurrentSpace() {
         if (!move.includes('import')) return;
 
         const block = String(item.block || '').toUpperCase();
-        if (!activeCapacity[block]) return;
         if (isExcludedUsedSlotBlock(block)) return;
 
         const type = normalizeProjectionType('', block);
@@ -975,7 +974,6 @@ function calculateCurrentSpace() {
         const slot = parseInt(item.slot, 10);
         if (!Number.isFinite(slot) || slot <= 0) return;
 
-        if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
         const len = String(item.length || '').trim();
         const slotKey = `${block}-${String(slot).padStart(2, '0')}`;
 
@@ -984,13 +982,19 @@ function calculateCurrentSpace() {
             usedSlot40ByType[type].add(slotKey);
             byType[type].unitCount40 += 1;
 
-            // Physical occupancy for free-slot tracking
-            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
-            slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
+            // Physical occupancy for free-slot tracking (only blocks with configured capacity)
+            if (activeCapacity[block]) {
+                if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
+                slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+                slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
+            }
         } else {
             usedSlot20ByType[type].add(slotKey);
             byType[type].unitCount20 += 1;
-            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+            if (activeCapacity[block]) {
+                if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
+                slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+            }
         }
     });
 
