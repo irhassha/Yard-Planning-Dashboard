@@ -943,12 +943,16 @@ function calculateCurrentSpace() {
             freeSlotsEXE: 0,
             usedSlot20: 0,
             usedSlot40: 0,
+            unitCount20: 0,
+            unitCount40: 0,
             freeSlotList: []
         };
         return acc;
     }, {});
 
     const slotOccupancyByBlock = {};
+    const usedSlot20ByType = PROJECTION_TYPES.reduce((acc, type) => { acc[type] = new Set(); return acc; }, {});
+    const usedSlot40ByType = PROJECTION_TYPES.reduce((acc, type) => { acc[type] = new Set(); return acc; }, {});
 
     // A) Build slot occupancy from Unit List (import only)
     invData.forEach(item => {
@@ -966,18 +970,24 @@ function calculateCurrentSpace() {
 
         if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
         const len = String(item.length || '').trim();
+        const slotKey = `${block}-${String(slot).padStart(2, '0')}`;
 
         if (len.startsWith('40') || len.startsWith('45')) {
+            // Used Slot 40': unique by Row/Bay (EXE) value only
+            usedSlot40ByType[type].add(slotKey);
+            byType[type].unitCount40 += 1;
+
+            // Physical occupancy for free-slot tracking
             slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
             slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
-            byType[type].usedSlot40 += 2;
         } else {
+            usedSlot20ByType[type].add(slotKey);
+            byType[type].unitCount20 += 1;
             slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
-            byType[type].usedSlot20 += 1;
         }
     });
 
-    // B) Aggregate capacities/balances by type from all EXE slots
+    // B) Aggregate capacities and free EXE slots by type
     Object.keys(activeCapacity).forEach(blockName => {
         const block = String(blockName || '').toUpperCase();
         const type = normalizeProjectionType('', block);
@@ -988,11 +998,7 @@ function calculateCurrentSpace() {
 
         for (let slotNo = 1; slotNo <= maxSlots; slotNo++) {
             const occ = Number(slotOccupancyByBlock[block]?.[slotNo] || 0);
-            const remaining = Math.max(slotCap - occ, 0);
-
             byType[type].currentOccupancyTEU += occ;
-            byType[type].balance20Current += remaining;
-            byType[type].balance40Current += Math.floor(remaining / 2);
             if (occ === 0) {
                 byType[type].freeSlotsEXE += 1;
                 byType[type].freeSlotList.push(`${block}-${String(slotNo).padStart(2, '0')}`);
@@ -1001,6 +1007,10 @@ function calculateCurrentSpace() {
     });
 
     PROJECTION_TYPES.forEach(type => {
+        byType[type].usedSlot20 = usedSlot20ByType[type].size;
+        byType[type].usedSlot40 = usedSlot40ByType[type].size;
+        byType[type].balance20Current = (byType[type].usedSlot20 * slotCap) - byType[type].unitCount20;
+        byType[type].balance40Current = (byType[type].usedSlot40 * slotCap) - byType[type].unitCount40;
         byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
     });
 
@@ -1041,14 +1051,7 @@ function renderProjectionTable(rows, spaceByType) {
 
     body.innerHTML = '';
 
-    const typeBorder = {
-        'Fixed Import': 'border-l-4 border-r-4 border-blue-300',
-        'IMDG': 'border-l-4 border-r-4 border-amber-400',
-        'Reefer': 'border-l-4 border-r-4 border-emerald-400',
-        'OOG': 'border-l-4 border-r-4 border-orange-400'
-    };
-
-    PROJECTION_TYPES.forEach(type => {
+    PROJECTION_TYPES.forEach((type, typeIdx) => {
         const typeRows = rows.filter(r => r.type === type);
         if (!typeRows.length) return;
 
@@ -1059,31 +1062,38 @@ function renderProjectionTable(rows, spaceByType) {
             freeSlotsEXE: 0,
             usedSlot20: 0,
             usedSlot40: 0,
+            unitCount20: 0,
+            unitCount40: 0,
             freeSlotList: []
         };
 
-        let runningFreeTEU = space.actualAvailableTEU;
+        let cumulativeIncoming20 = 0;
+        let cumulativeIncoming40 = 0;
 
         typeRows.forEach((row, idx) => {
             const incomingBox20 = Number(row.box20 || 0);
             const incomingBox40 = Number(row.box40 || 0);
-            const incomingTEU = incomingBox20 + (incomingBox40 * 2);
-            runningFreeTEU -= incomingTEU;
+            const incomingTEU = incomingBox20 + incomingBox40;
+            cumulativeIncoming20 += incomingBox20;
+            cumulativeIncoming40 += incomingBox40;
 
-            const balance20 = runningFreeTEU >= 0 ? runningFreeTEU : 0;
-            const balance40 = runningFreeTEU >= 0 ? Math.floor(runningFreeTEU / 2) : 0;
+            // Requested formula:
+            // Balance = (used slot x slot capacity) - (count unit on used slot - incoming)
+            const slotCap = getSlotBoxCapacity();
+            const balance20 = (space.usedSlot20 * slotCap) - (space.unitCount20 - cumulativeIncoming20);
+            const balance40 = (space.usedSlot40 * slotCap) - (space.unitCount40 - cumulativeIncoming40);
 
             const maxCapacity = space.maxCapacityTEU;
             const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
             const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
             const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
 
-            const topBorder = idx === 0 ? ' border-t-4' : '';
-            const bottomBorder = idx === typeRows.length - 1 ? ' border-b-4' : '';
-            const borderClass = `${typeBorder[type] || 'border-l-4 border-r-4 border-slate-300'}${topBorder}${bottomBorder}`;
+            const topBorder = idx === 0 ? ' border-t-4 border-slate-400' : '';
+            const bottomBorder = idx === typeRows.length - 1 ? ' border-b-4 border-slate-400' : '';
+            const firstTypePad = typeIdx > 0 && idx === 0 ? ' border-t-8 border-slate-300' : '';
 
             body.innerHTML += `
-                <tr class="hover:bg-slate-50 transition-colors ${borderClass}">
+                <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}">
                     <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
                     <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot20).toLocaleString()}</td>
