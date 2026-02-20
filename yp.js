@@ -130,7 +130,8 @@ function updateCapacity(block, newSlots, newTier) {
             renderOverview();
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
-            renderDischargeProjection();
+            const projectionBody = document.getElementById('projectionBody');
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan then click Analyze Projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -925,162 +926,142 @@ function normalizeProjectionType(rawType, blockHint = '') {
     return 'Fixed Import';
 }
 
-function getProjectionGroundSlots() {
-    return {
-        'Fixed Import': Number(document.getElementById('ground-fixed-import')?.value || 0),
-        'IMDG': Number(document.getElementById('ground-imdg')?.value || 0),
-        'Reefer': Number(document.getElementById('ground-reefer')?.value || 0),
-        'OOG': Number(document.getElementById('ground-oog')?.value || 0)
-    };
-}
+function calculateCurrentSpace() {
+    const byType = PROJECTION_TYPES.reduce((acc, type) => {
+        acc[type] = {
+            totalMaxSlots: 0,
+            totalOccupiedSlots: 0,
+            totalYardCap: 0,
+            totalBoxOccupancy: 0,
+            actualAvailableSpace: 0
+        };
+        return acc;
+    }, {});
 
-function calculateCurrentImportSpaceByType() {
-    const slotMap = {};
+    const getTypeFromBlock = (blockName) => {
+        const block = String(blockName || '').toUpperCase();
+        if (block === 'BR9' || block === 'RC9') return 'Reefer';
+        if (block === 'OOG') return 'OOG';
+        if (block === 'C01' || block === 'C02') return 'IMDG';
+        return 'Fixed Import';
+    };
+
+    // Step A: Max capacity by type (exclude EXPORT_DEFAULTS from Fixed Import)
+    Object.keys(activeCapacity).forEach(block => {
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        byType[type].totalMaxSlots += Number(activeCapacity[block]?.slots || 0);
+    });
+
+    // Step B: Occupancy tracking
+    const occupiedSlotsByBlock = {};
 
     invData.forEach(item => {
         const move = cleanStr(item.move);
         if (!move.includes('import')) return;
 
         const block = String(item.block || '').toUpperCase();
-        const slot = Number(item.slot) || 0;
-        if (!block || slot <= 0) return;
+        if (!activeCapacity[block]) return;
 
-        const slotKey = `${block}-${slot}`;
-        if (!slotMap[slotKey]) slotMap[slotKey] = { block, slot, occ: 0 };
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
+        const slot = parseInt(item.slot, 10);
+        if (!Number.isFinite(slot) || slot <= 0) return;
+
+        byType[type].totalBoxOccupancy += 1;
+
+        if (!occupiedSlotsByBlock[block]) occupiedSlotsByBlock[block] = new Set();
         const len = String(item.length || '').trim();
-        if (len.startsWith('20')) {
-            slotMap[slotKey].occ += 1;
-        } else if (len.startsWith('40') || len.startsWith('45')) {
-            slotMap[slotKey].occ += 1;
-            const nextKey = `${block}-${slot + 1}`;
-            if (!slotMap[nextKey]) slotMap[nextKey] = { block, slot: slot + 1, occ: 0 };
-            slotMap[nextKey].occ += 1;
+
+        if (len.startsWith('40') || len.startsWith('45')) {
+            occupiedSlotsByBlock[block].add(slot);
+            occupiedSlotsByBlock[block].add(slot + 1);
+        } else {
+            occupiedSlotsByBlock[block].add(slot);
         }
     });
 
-    const summary = PROJECTION_TYPES.reduce((acc, type) => {
-        acc[type] = { capacity: 0, occupancy: 0, available: 0 };
-        return acc;
-    }, {});
+    // Step C: Final space calculations
+    Object.keys(activeCapacity).forEach(block => {
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
-    Object.values(slotMap).forEach(slotData => {
-        const type = normalizeProjectionType('', slotData.block);
-        summary[type].capacity += 27;
-        summary[type].occupancy += slotData.occ;
+        const occupied = occupiedSlotsByBlock[block] ? occupiedSlotsByBlock[block].size : 0;
+        byType[type].totalOccupiedSlots += occupied;
     });
 
     PROJECTION_TYPES.forEach(type => {
-        summary[type].available = summary[type].capacity - summary[type].occupancy;
+        const row = byType[type];
+        row.totalYardCap = row.totalMaxSlots * 27;
+        row.actualAvailableSpace = row.totalYardCap - row.totalBoxOccupancy;
     });
 
-    return summary;
+    return byType;
 }
 
-function parsePreplanProjection(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = evt => {
-            try {
-                const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-                if (!rows.length) return resolve([]);
-
-                const headers = Object.keys(rows[0]);
-                const findHeader = (keywords) => headers.find(h => {
-                    const normalized = cleanStr(h);
-                    return keywords.every(k => normalized.includes(k));
-                });
-
-                const carrierKey = findHeader(['carrier', 'in']);
-                const voyageKey = findHeader(['voyage', 'in']);
-                const typeKey = findHeader(['type']);
-                const dis20Key = findHeader(['dis', 'to', 'go', "20'"]) || findHeader(['dis', 'to', 'go', '20']);
-                const dis40Key = findHeader(['dis', 'to', 'go', "40'"]) || findHeader(['dis', 'to', 'go', '40']);
-
-                if (!carrierKey || !voyageKey || !typeKey || !dis20Key || !dis40Key) {
-                    throw new Error("Preplan columns not recognized. Required: Carrier In, Voyage In, Type, Dis. to go 20', Dis. to go 40'.");
-                }
-
-                const grouped = {};
-                rows.forEach(row => {
-                    const vessel = `${String(row[carrierKey] || '').trim()} ${String(row[voyageKey] || '').trim()}`.trim();
-                    if (!vessel) return;
-
-                    const type = normalizeProjectionType(row[typeKey]);
-                    const incoming = Number(row[dis20Key] || 0) + Number(row[dis40Key] || 0);
-                    const key = `${vessel}||${type}`;
-
-                    if (!grouped[key]) grouped[key] = { vessel, type, incoming: 0 };
-                    grouped[key].incoming += incoming;
-                });
-
-                resolve(Object.values(grouped).filter(row => row.incoming > 0));
-            } catch (err) {
-                reject(err);
-            }
-        };
-        reader.onerror = () => reject(new Error('Failed to read Preplan file.'));
-        reader.readAsArrayBuffer(file);
-    });
-}
-
-function renderDischargeProjection() {
+async function processPreplan() {
+    const file = document.getElementById('preplanInput')?.files?.[0];
     const body = document.getElementById('projectionBody');
-    if (!body) return;
 
-    if (!projectionPreplanRows.length) {
-        body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+    if (!body) return;
+    if (!file) {
+        alert('Please upload Preplan file first.');
         return;
     }
 
-    const currentSpace = calculateCurrentImportSpaceByType();
-    const groundSlots = getProjectionGroundSlots();
+    try {
+        projectionPreplanRows = await parsePreplanProjection(file);
+        const currentSpace = calculateCurrentSpace();
 
-    body.innerHTML = '';
-    projectionPreplanRows.forEach(row => {
-        const current = currentSpace[row.type] || { capacity: 0, occupancy: 0, available: 0 };
-        const actualAvailable = current.available + (groundSlots[row.type] || 0);
-        const totalCapacity = current.occupancy + actualAvailable;
-        const balance = actualAvailable - row.incoming;
+        if (!projectionPreplanRows.length) {
+            body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
+            return;
+        }
 
-        const bluePct = totalCapacity > 0 ? (current.occupancy / totalCapacity) * 100 : 0;
-        const incomingPct = totalCapacity > 0 ? (row.incoming / totalCapacity) * 100 : 0;
-        const incomingClass = (current.occupancy + row.incoming) > totalCapacity ? 'bg-red-500' : 'bg-amber-400';
+        body.innerHTML = '';
+        projectionPreplanRows.forEach(row => {
+            const space = currentSpace[row.type] || {
+                totalYardCap: 0,
+                totalBoxOccupancy: 0,
+                actualAvailableSpace: 0
+            };
 
-        body.innerHTML += `
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
-                <td class="px-4 py-3 text-slate-600">${row.type}</td>
-                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(row.incoming).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-bold ${balance < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(balance).toLocaleString()}</td>
-                <td class="px-4 py-3">
-                    <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
-                        <div class="h-full bg-blue-500" style="width:${Math.min(bluePct, 100)}%"></div>
-                        <div class="h-full ${incomingClass}" style="width:${Math.min(incomingPct, 100)}%"></div>
-                    </div>
-                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(current.occupancy)} | In ${Math.round(row.incoming)} | Cap ${Math.round(totalCapacity)}</div>
-                </td>
-            </tr>
-        `;
-    });
+            const totalYardCap = space.totalYardCap;
+            const actualAvailable = space.actualAvailableSpace;
+            const balance = actualAvailable - row.incoming;
+
+            const bluePct = totalYardCap > 0 ? (space.totalBoxOccupancy / totalYardCap) * 100 : 0;
+            const incomingPct = totalYardCap > 0 ? (row.incoming / totalYardCap) * 100 : 0;
+            const incomingClass = (space.totalBoxOccupancy + row.incoming) > totalYardCap ? 'bg-red-500' : 'bg-amber-400';
+
+            body.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
+                    <td class="px-4 py-3 text-slate-600">${row.type}</td>
+                    <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(row.incoming).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-right font-bold ${balance < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(balance).toLocaleString()}</td>
+                    <td class="px-4 py-3">
+                        <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
+                            <div class="h-full bg-blue-500" style="width:${Math.min(bluePct, 100)}%"></div>
+                            <div class="h-full ${incomingClass}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.totalBoxOccupancy)} | In ${Math.round(row.incoming)} | Cap ${Math.round(totalYardCap)}</div>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        alert(`Preplan error: ${err.message}`);
+    }
 }
 
 const preplanInputEl = document.getElementById('preplanInput');
 if (preplanInputEl) {
-    preplanInputEl.addEventListener('change', async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        try {
-            projectionPreplanRows = await parsePreplanProjection(file);
-            renderDischargeProjection();
-        } catch (err) {
-            alert(`Preplan error: ${err.message}`);
-        }
+    preplanInputEl.addEventListener('change', () => {
+        const body = document.getElementById('projectionBody');
+        if (!body) return;
+        body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Preplan selected. Click Analyze Projection.</td></tr>';
     });
 }
-
-document.querySelectorAll('.projection-ground-input').forEach(input => {
-    input.addEventListener('input', renderDischargeProjection);
-});
