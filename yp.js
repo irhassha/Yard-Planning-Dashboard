@@ -3,6 +3,8 @@
     let isInvLoaded = false;
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
+    let projectionPreplanRows = [];
+    const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -128,6 +130,8 @@ function updateCapacity(block, newSlots, newTier) {
             renderOverview();
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            const projectionBody = document.getElementById('projectionBody');
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan then click Analyze Projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -606,7 +610,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
 function switchTab(t) {
     // Tambahkan 'empty' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty'].forEach(id => {
+    ['overview', 'analytics', 'clash', 'empty', 'projection'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
         
@@ -649,6 +653,9 @@ fileName = "Clash";
 } else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
 activeId = "captureAreaEmpty";
 fileName = "Empty_Summary";
+} else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
+activeId = "captureAreaProjection";
+fileName = "Discharge_Projection";
 }
 
 
@@ -756,7 +763,8 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
     const nameMap = {
       captureArea: "Overview",
       captureAreaAnalytics: "Analytics",
-      captureAreaClash: "Clash"
+      captureAreaClash: "Clash",
+      captureAreaProjection: "Discharge_Projection"
     };
 
     let l = document.createElement('a');
@@ -905,4 +913,155 @@ function renderEmptySummary() {
             </tr>
         `;
     }
+}
+
+
+function normalizeProjectionType(rawType, blockHint = '') {
+    const txt = cleanStr(rawType);
+    const block = String(blockHint || '').toUpperCase();
+
+    if (txt.includes('reef') || txt.includes('rc9') || txt.includes('br9') || block.includes('RC') || block.includes('BR')) return 'Reefer';
+    if (txt.includes('oog') || block === 'OOG') return 'OOG';
+    if (txt.includes('imdg') || txt.includes('dg') || block === 'C01' || block === 'C02') return 'IMDG';
+    return 'Fixed Import';
+}
+
+function calculateCurrentSpace() {
+    const byType = PROJECTION_TYPES.reduce((acc, type) => {
+        acc[type] = {
+            totalMaxSlots: 0,
+            totalOccupiedSlots: 0,
+            totalYardCap: 0,
+            totalBoxOccupancy: 0,
+            actualAvailableSpace: 0
+        };
+        return acc;
+    }, {});
+
+    const getTypeFromBlock = (blockName) => {
+        const block = String(blockName || '').toUpperCase();
+        if (block === 'BR9' || block === 'RC9') return 'Reefer';
+        if (block === 'OOG') return 'OOG';
+        if (block === 'C01' || block === 'C02') return 'IMDG';
+        return 'Fixed Import';
+    };
+
+    // Step A: Max capacity by type (exclude EXPORT_DEFAULTS from Fixed Import)
+    Object.keys(activeCapacity).forEach(block => {
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        byType[type].totalMaxSlots += Number(activeCapacity[block]?.slots || 0);
+    });
+
+    // Step B: Occupancy tracking
+    const occupiedSlotsByBlock = {};
+
+    invData.forEach(item => {
+        const move = cleanStr(item.move);
+        if (!move.includes('import')) return;
+
+        const block = String(item.block || '').toUpperCase();
+        if (!activeCapacity[block]) return;
+
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        const slot = parseInt(item.slot, 10);
+        if (!Number.isFinite(slot) || slot <= 0) return;
+
+        byType[type].totalBoxOccupancy += 1;
+
+        if (!occupiedSlotsByBlock[block]) occupiedSlotsByBlock[block] = new Set();
+        const len = String(item.length || '').trim();
+
+        if (len.startsWith('40') || len.startsWith('45')) {
+            occupiedSlotsByBlock[block].add(slot);
+            occupiedSlotsByBlock[block].add(slot + 1);
+        } else {
+            occupiedSlotsByBlock[block].add(slot);
+        }
+    });
+
+    // Step C: Final space calculations
+    Object.keys(activeCapacity).forEach(block => {
+        const type = getTypeFromBlock(block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        const occupied = occupiedSlotsByBlock[block] ? occupiedSlotsByBlock[block].size : 0;
+        byType[type].totalOccupiedSlots += occupied;
+    });
+
+    PROJECTION_TYPES.forEach(type => {
+        const row = byType[type];
+        row.totalYardCap = row.totalMaxSlots * 27;
+        row.actualAvailableSpace = row.totalYardCap - row.totalBoxOccupancy;
+    });
+
+    return byType;
+}
+
+async function processPreplan() {
+    const file = document.getElementById('preplanInput')?.files?.[0];
+    const body = document.getElementById('projectionBody');
+
+    if (!body) return;
+    if (!file) {
+        alert('Please upload Preplan file first.');
+        return;
+    }
+
+    try {
+        projectionPreplanRows = await parsePreplanProjection(file);
+        const currentSpace = calculateCurrentSpace();
+
+        if (!projectionPreplanRows.length) {
+            body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = '';
+        projectionPreplanRows.forEach(row => {
+            const space = currentSpace[row.type] || {
+                totalYardCap: 0,
+                totalBoxOccupancy: 0,
+                actualAvailableSpace: 0
+            };
+
+            const totalYardCap = space.totalYardCap;
+            const actualAvailable = space.actualAvailableSpace;
+            const balance = actualAvailable - row.incoming;
+
+            const bluePct = totalYardCap > 0 ? (space.totalBoxOccupancy / totalYardCap) * 100 : 0;
+            const incomingPct = totalYardCap > 0 ? (row.incoming / totalYardCap) * 100 : 0;
+            const incomingClass = (space.totalBoxOccupancy + row.incoming) > totalYardCap ? 'bg-red-500' : 'bg-amber-400';
+
+            body.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
+                    <td class="px-4 py-3 text-slate-600">${row.type}</td>
+                    <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(row.incoming).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-right font-bold ${balance < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(balance).toLocaleString()}</td>
+                    <td class="px-4 py-3">
+                        <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
+                            <div class="h-full bg-blue-500" style="width:${Math.min(bluePct, 100)}%"></div>
+                            <div class="h-full ${incomingClass}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.totalBoxOccupancy)} | In ${Math.round(row.incoming)} | Cap ${Math.round(totalYardCap)}</div>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (err) {
+        alert(`Preplan error: ${err.message}`);
+    }
+}
+
+const preplanInputEl = document.getElementById('preplanInput');
+if (preplanInputEl) {
+    preplanInputEl.addEventListener('change', () => {
+        const body = document.getElementById('projectionBody');
+        if (!body) return;
+        body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Preplan selected. Click Analyze Projection.</td></tr>';
+    });
 }
