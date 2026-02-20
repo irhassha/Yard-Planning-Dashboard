@@ -931,39 +931,61 @@ function calculateCurrentSpace() {
         acc[type] = {
             maxCapacityTEU: 0,
             currentOccupancyTEU: 0,
-            actualAvailableTEU: 0
+            actualAvailableTEU: 0,
+            balance20Current: 0,
+            balance40Current: 0,
+            freeSlotsEXE: 0
         };
         return acc;
     }, {});
 
-    // A. Max Capacity (TEU) from activeCapacity
-    Object.keys(activeCapacity).forEach(blockName => {
-        const block = String(blockName || '').toUpperCase();
-        const type = normalizeProjectionType('', block);
+    const slotOccupancyByBlock = {};
 
-        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
-
-        const slots = Number(activeCapacity[blockName]?.slots || 0);
-        byType[type].maxCapacityTEU += (slots * 27);
-    });
-
-    // B. Current Occupancy (TEU) from invData (import only)
+    // A) Build slot occupancy from Unit List (import only)
     invData.forEach(item => {
         const move = cleanStr(item.move);
         if (!move.includes('import')) return;
 
         const block = String(item.block || '').toUpperCase();
-        if (!block) return;
+        if (!activeCapacity[block]) return;
 
         const type = normalizeProjectionType('', block);
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
+        const slot = parseInt(item.slot, 10);
+        if (!Number.isFinite(slot) || slot <= 0) return;
+
+        if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
         const len = String(item.length || '').trim();
-        if (len.startsWith('40') || len.startsWith('45')) byType[type].currentOccupancyTEU += 2;
-        else byType[type].currentOccupancyTEU += 1;
+
+        if (len.startsWith('40') || len.startsWith('45')) {
+            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+            slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
+        } else {
+            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+        }
     });
 
-    // C. Actual Available (TEU)
+    // B) Aggregate capacities/balances by type from all EXE slots
+    Object.keys(activeCapacity).forEach(blockName => {
+        const block = String(blockName || '').toUpperCase();
+        const type = normalizeProjectionType('', block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        const maxSlots = Number(activeCapacity[blockName]?.slots || 0);
+        byType[type].maxCapacityTEU += (maxSlots * 27);
+
+        for (let slotNo = 1; slotNo <= maxSlots; slotNo++) {
+            const occ = Number(slotOccupancyByBlock[block]?.[slotNo] || 0);
+            const remaining = Math.max(27 - occ, 0);
+
+            byType[type].currentOccupancyTEU += occ;
+            byType[type].balance20Current += remaining;
+            byType[type].balance40Current += Math.floor(remaining / 2);
+            if (occ === 0) byType[type].freeSlotsEXE += 1;
+        }
+    });
+
     PROJECTION_TYPES.forEach(type => {
         byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
     });
@@ -983,17 +1005,22 @@ function renderProjectionTable(rows, spaceByType) {
     body.innerHTML = '';
 
     rows.forEach(row => {
-        const space = spaceByType[row.type] || { maxCapacityTEU: 0, currentOccupancyTEU: 0, actualAvailableTEU: 0 };
+        const space = spaceByType[row.type] || {
+            maxCapacityTEU: 0,
+            currentOccupancyTEU: 0,
+            actualAvailableTEU: 0,
+            balance20Current: 0,
+            balance40Current: 0,
+            freeSlotsEXE: 0
+        };
 
-        // Incoming and free-space math in TEU
         const incomingBox20 = Number(row.box20 || 0);
         const incomingBox40 = Number(row.box40 || 0);
         const incomingTEU = incomingBox20 + (incomingBox40 * 2);
-        const freeSlotTEU = space.actualAvailableTEU - incomingTEU;
 
-        // Requested split balance logic
-        const balance20 = freeSlotTEU >= 0 ? freeSlotTEU : 0;
-        const balance40 = freeSlotTEU >= 0 ? Math.floor(freeSlotTEU / 2) : 0;
+        const freeTEUAfterIncoming = space.actualAvailableTEU - incomingTEU;
+        const balance20 = freeTEUAfterIncoming >= 0 ? freeTEUAfterIncoming : 0;
+        const balance40 = freeTEUAfterIncoming >= 0 ? Math.floor(freeTEUAfterIncoming / 2) : 0;
 
         const maxCapacity = space.maxCapacityTEU;
         const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
@@ -1008,13 +1035,13 @@ function renderProjectionTable(rows, spaceByType) {
                 <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
                 <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
                 <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right font-bold ${freeSlotTEU < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(freeSlotTEU).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-bold ${space.freeSlotsEXE === 0 ? 'text-slate-500' : 'text-blue-700'}">${Math.round(space.freeSlotsEXE).toLocaleString()}</td>
                 <td class="px-4 py-3">
                     <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
                         <div class="h-full bg-blue-500" style="width:${Math.min(occPct, 100)}%"></div>
                         <div class="h-full ${overCap ? 'bg-red-500' : 'bg-amber-400'}" style="width:${Math.min(incomingPct, 100)}%"></div>
                     </div>
-                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)}</div>
+                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)} | Free EXE ${space.freeSlotsEXE}</div>
                 </td>
             </tr>
         `;
@@ -1049,20 +1076,23 @@ async function parsePreplanProjection(event) {
 
         const grouped = {};
         rows.forEach(row => {
-            // strict vessel source: exact column names only
-            const carrierIn = String(row['Carrier In'] || '').trim();
-            const voyageIn = String(row['Voyage In'] || '').trim();
+            const keyMap = {};
+            Object.keys(row || {}).forEach(k => { keyMap[cleanStr(k)] = row[k]; });
+
+            // strict target columns by normalized exact name
+            const carrierIn = String(keyMap['carrier in'] || '').trim();
+            const voyageIn = String(keyMap['voyage in'] || '').trim();
             const vessel = `${carrierIn} ${voyageIn}`.trim();
             if (!vessel) return;
 
-            const rawType = String(row['Type'] || '').toLowerCase();
+            const rawType = String(keyMap['type'] || '').toLowerCase();
             let type = 'Fixed Import';
             if (rawType.includes('reefer')) type = 'Reefer';
             else if (rawType.includes('imdg') || rawType.includes('dg')) type = 'IMDG';
             else if (rawType.includes('oog') || rawType.includes('special')) type = 'OOG';
 
-            const box20 = Number(row["Dis. to go 20'"] || row['1 TEU'] || 0) || 0;
-            const box40 = Number(row["Dis. to go 40'"] || row['2 TEU'] || 0) || 0;
+            const box20 = Number(keyMap["dis. to go 20'"] || keyMap['1 teu'] || 0) || 0;
+            const box40 = Number(keyMap["dis. to go 40'"] || keyMap['2 teu'] || 0) || 0;
 
             const key = `${vessel}||${type}`;
             if (!grouped[key]) grouped[key] = { vessel, type, box20: 0, box40: 0 };
