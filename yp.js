@@ -131,7 +131,7 @@ function updateCapacity(block, newSlots, newTier) {
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
             const projectionBody = document.getElementById('projectionBody');
-            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -941,6 +941,8 @@ function calculateCurrentSpace() {
             balance20Current: 0,
             balance40Current: 0,
             freeSlotsEXE: 0,
+            usedSlot20: 0,
+            usedSlot40: 0,
             freeSlotList: []
         };
         return acc;
@@ -968,8 +970,10 @@ function calculateCurrentSpace() {
         if (len.startsWith('40') || len.startsWith('45')) {
             slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
             slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
+            byType[type].usedSlot40 += 2;
         } else {
             slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+            byType[type].usedSlot20 += 1;
         }
     });
 
@@ -1031,11 +1035,18 @@ function renderProjectionTable(rows, spaceByType) {
     if (!body) return;
 
     if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
+        body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
         return;
     }
 
     body.innerHTML = '';
+
+    const typeBorder = {
+        'Fixed Import': 'border-l-4 border-r-4 border-blue-300',
+        'IMDG': 'border-l-4 border-r-4 border-amber-400',
+        'Reefer': 'border-l-4 border-r-4 border-emerald-400',
+        'OOG': 'border-l-4 border-r-4 border-orange-400'
+    };
 
     PROJECTION_TYPES.forEach(type => {
         const typeRows = rows.filter(r => r.type === type);
@@ -1046,15 +1057,14 @@ function renderProjectionTable(rows, spaceByType) {
             currentOccupancyTEU: 0,
             actualAvailableTEU: 0,
             freeSlotsEXE: 0,
+            usedSlot20: 0,
+            usedSlot40: 0,
             freeSlotList: []
         };
 
-        body.innerHTML += `<tr class="bg-slate-100"><td colspan="8" class="px-4 py-2 text-center font-bold text-slate-700">${type}</td></tr>`;
-
-        // Running balance across all vessels in same type
         let runningFreeTEU = space.actualAvailableTEU;
 
-        typeRows.forEach(row => {
+        typeRows.forEach((row, idx) => {
             const incomingBox20 = Number(row.box20 || 0);
             const incomingBox40 = Number(row.box40 || 0);
             const incomingTEU = incomingBox20 + (incomingBox40 * 2);
@@ -1068,10 +1078,16 @@ function renderProjectionTable(rows, spaceByType) {
             const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
             const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
 
+            const topBorder = idx === 0 ? ' border-t-4' : '';
+            const bottomBorder = idx === typeRows.length - 1 ? ' border-b-4' : '';
+            const borderClass = `${typeBorder[type] || 'border-l-4 border-r-4 border-slate-300'}${topBorder}${bottomBorder}`;
+
             body.innerHTML += `
-                <tr class="hover:bg-slate-50 transition-colors">
+                <tr class="hover:bg-slate-50 transition-colors ${borderClass}">
                     <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
                     <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
@@ -1104,7 +1120,7 @@ async function parsePreplanProjection(event) {
 
     if (!body) return;
     if (!file) {
-        body.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+        body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
         return;
     }
 
