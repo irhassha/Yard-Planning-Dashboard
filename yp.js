@@ -3,6 +3,8 @@
     let isInvLoaded = false;
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
+    let projectionPreplanRows = [];
+    const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -128,6 +130,7 @@ function updateCapacity(block, newSlots, newTier) {
             renderOverview();
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            renderDischargeProjection();
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -606,7 +609,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
 function switchTab(t) {
     // Tambahkan 'empty' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty'].forEach(id => {
+    ['overview', 'analytics', 'clash', 'empty', 'projection'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
         
@@ -649,6 +652,9 @@ fileName = "Clash";
 } else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
 activeId = "captureAreaEmpty";
 fileName = "Empty_Summary";
+} else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
+activeId = "captureAreaProjection";
+fileName = "Discharge_Projection";
 }
 
 
@@ -756,7 +762,8 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
     const nameMap = {
       captureArea: "Overview",
       captureAreaAnalytics: "Analytics",
-      captureAreaClash: "Clash"
+      captureAreaClash: "Clash",
+      captureAreaProjection: "Discharge_Projection"
     };
 
     let l = document.createElement('a');
@@ -906,3 +913,174 @@ function renderEmptySummary() {
         `;
     }
 }
+
+
+function normalizeProjectionType(rawType, blockHint = '') {
+    const txt = cleanStr(rawType);
+    const block = String(blockHint || '').toUpperCase();
+
+    if (txt.includes('reef') || txt.includes('rc9') || txt.includes('br9') || block.includes('RC') || block.includes('BR')) return 'Reefer';
+    if (txt.includes('oog') || block === 'OOG') return 'OOG';
+    if (txt.includes('imdg') || txt.includes('dg') || block === 'C01' || block === 'C02') return 'IMDG';
+    return 'Fixed Import';
+}
+
+function getProjectionGroundSlots() {
+    return {
+        'Fixed Import': Number(document.getElementById('ground-fixed-import')?.value || 0),
+        'IMDG': Number(document.getElementById('ground-imdg')?.value || 0),
+        'Reefer': Number(document.getElementById('ground-reefer')?.value || 0),
+        'OOG': Number(document.getElementById('ground-oog')?.value || 0)
+    };
+}
+
+function calculateCurrentImportSpaceByType() {
+    const slotMap = {};
+
+    invData.forEach(item => {
+        const move = cleanStr(item.move);
+        if (!move.includes('import')) return;
+
+        const block = String(item.block || '').toUpperCase();
+        const slot = Number(item.slot) || 0;
+        if (!block || slot <= 0) return;
+
+        const slotKey = `${block}-${slot}`;
+        if (!slotMap[slotKey]) slotMap[slotKey] = { block, slot, occ: 0 };
+
+        const len = String(item.length || '').trim();
+        if (len.startsWith('20')) {
+            slotMap[slotKey].occ += 1;
+        } else if (len.startsWith('40') || len.startsWith('45')) {
+            slotMap[slotKey].occ += 1;
+            const nextKey = `${block}-${slot + 1}`;
+            if (!slotMap[nextKey]) slotMap[nextKey] = { block, slot: slot + 1, occ: 0 };
+            slotMap[nextKey].occ += 1;
+        }
+    });
+
+    const summary = PROJECTION_TYPES.reduce((acc, type) => {
+        acc[type] = { capacity: 0, occupancy: 0, available: 0 };
+        return acc;
+    }, {});
+
+    Object.values(slotMap).forEach(slotData => {
+        const type = normalizeProjectionType('', slotData.block);
+        summary[type].capacity += 27;
+        summary[type].occupancy += slotData.occ;
+    });
+
+    PROJECTION_TYPES.forEach(type => {
+        summary[type].available = summary[type].capacity - summary[type].occupancy;
+    });
+
+    return summary;
+}
+
+function parsePreplanProjection(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = evt => {
+            try {
+                const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+                if (!rows.length) return resolve([]);
+
+                const headers = Object.keys(rows[0]);
+                const findHeader = (keywords) => headers.find(h => {
+                    const normalized = cleanStr(h);
+                    return keywords.every(k => normalized.includes(k));
+                });
+
+                const carrierKey = findHeader(['carrier', 'in']);
+                const voyageKey = findHeader(['voyage', 'in']);
+                const typeKey = findHeader(['type']);
+                const dis20Key = findHeader(['dis', 'to', 'go', "20'"]) || findHeader(['dis', 'to', 'go', '20']);
+                const dis40Key = findHeader(['dis', 'to', 'go', "40'"]) || findHeader(['dis', 'to', 'go', '40']);
+
+                if (!carrierKey || !voyageKey || !typeKey || !dis20Key || !dis40Key) {
+                    throw new Error("Preplan columns not recognized. Required: Carrier In, Voyage In, Type, Dis. to go 20', Dis. to go 40'.");
+                }
+
+                const grouped = {};
+                rows.forEach(row => {
+                    const vessel = `${String(row[carrierKey] || '').trim()} ${String(row[voyageKey] || '').trim()}`.trim();
+                    if (!vessel) return;
+
+                    const type = normalizeProjectionType(row[typeKey]);
+                    const incoming = Number(row[dis20Key] || 0) + Number(row[dis40Key] || 0);
+                    const key = `${vessel}||${type}`;
+
+                    if (!grouped[key]) grouped[key] = { vessel, type, incoming: 0 };
+                    grouped[key].incoming += incoming;
+                });
+
+                resolve(Object.values(grouped).filter(row => row.incoming > 0));
+            } catch (err) {
+                reject(err);
+            }
+        };
+        reader.onerror = () => reject(new Error('Failed to read Preplan file.'));
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+function renderDischargeProjection() {
+    const body = document.getElementById('projectionBody');
+    if (!body) return;
+
+    if (!projectionPreplanRows.length) {
+        body.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+        return;
+    }
+
+    const currentSpace = calculateCurrentImportSpaceByType();
+    const groundSlots = getProjectionGroundSlots();
+
+    body.innerHTML = '';
+    projectionPreplanRows.forEach(row => {
+        const current = currentSpace[row.type] || { capacity: 0, occupancy: 0, available: 0 };
+        const actualAvailable = current.available + (groundSlots[row.type] || 0);
+        const totalCapacity = current.occupancy + actualAvailable;
+        const balance = actualAvailable - row.incoming;
+
+        const bluePct = totalCapacity > 0 ? (current.occupancy / totalCapacity) * 100 : 0;
+        const incomingPct = totalCapacity > 0 ? (row.incoming / totalCapacity) * 100 : 0;
+        const incomingClass = (current.occupancy + row.incoming) > totalCapacity ? 'bg-red-500' : 'bg-amber-400';
+
+        body.innerHTML += `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-3 font-bold text-slate-700">${row.vessel}</td>
+                <td class="px-4 py-3 text-slate-600">${row.type}</td>
+                <td class="px-4 py-3 text-right font-semibold text-slate-700">${Math.round(row.incoming).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right font-bold ${balance < 0 ? 'text-red-600' : 'text-emerald-600'}">${Math.round(balance).toLocaleString()}</td>
+                <td class="px-4 py-3">
+                    <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
+                        <div class="h-full bg-blue-500" style="width:${Math.min(bluePct, 100)}%"></div>
+                        <div class="h-full ${incomingClass}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono mt-1">Occ ${Math.round(current.occupancy)} | In ${Math.round(row.incoming)} | Cap ${Math.round(totalCapacity)}</div>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+const preplanInputEl = document.getElementById('preplanInput');
+if (preplanInputEl) {
+    preplanInputEl.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            projectionPreplanRows = await parsePreplanProjection(file);
+            renderDischargeProjection();
+        } catch (err) {
+            alert(`Preplan error: ${err.message}`);
+        }
+    });
+}
+
+document.querySelectorAll('.projection-ground-input').forEach(input => {
+    input.addEventListener('input', renderDischargeProjection);
+});
