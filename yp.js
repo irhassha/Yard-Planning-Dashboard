@@ -3,6 +3,8 @@
     let isInvLoaded = false;
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
+    let projectionPreplanRows = [];
+    const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -128,6 +130,8 @@ function updateCapacity(block, newSlots, newTier) {
             renderOverview();
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            const projectionBody = document.getElementById('projectionBody');
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
@@ -606,7 +610,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
 function switchTab(t) {
     // Tambahkan 'empty' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty'].forEach(id => {
+    ['overview', 'analytics', 'clash', 'empty', 'projection'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
         
@@ -649,6 +653,9 @@ fileName = "Clash";
 } else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
 activeId = "captureAreaEmpty";
 fileName = "Empty_Summary";
+} else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
+activeId = "captureAreaProjection";
+fileName = "Discharge_Projection";
 }
 
 
@@ -756,7 +763,8 @@ clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
     const nameMap = {
       captureArea: "Overview",
       captureAreaAnalytics: "Analytics",
-      captureAreaClash: "Clash"
+      captureAreaClash: "Clash",
+      captureAreaProjection: "Discharge_Projection"
     };
 
     let l = document.createElement('a');
@@ -906,3 +914,282 @@ function renderEmptySummary() {
         `;
     }
 }
+
+
+function normalizeProjectionType(rawType = '', blockHint = '') {
+    const txt = cleanStr(rawType);
+    const block = String(blockHint || '').toUpperCase();
+
+    if (txt.includes('reefer') || txt.includes('refer') || txt.includes('rf') || txt.includes('rc') || txt.includes('br') || block.includes('RC') || block.includes('BR')) return 'Reefer';
+    if (txt.includes('oog') || txt.includes('special') || block.includes('OOG')) return 'OOG';
+    if (txt.includes('imdg') || txt.includes('dg') || block.includes('C01') || block.includes('C02')) return 'IMDG';
+    return 'Fixed Import';
+}
+
+function isExcludedUsedSlotBlock(blockName) {
+    const block = String(blockName || '').toUpperCase();
+    const excluded = new Set(['C01', 'C02', 'D01', 'OOG', 'RC9', 'BR9', 'CG1']);
+    return excluded.has(block) || block.startsWith('8');
+}
+
+function getSlotBoxCapacity() {
+    const val = Number(document.getElementById('slotBoxCapacity')?.value || 27);
+    return Number.isFinite(val) && val > 0 ? val : 27;
+}
+
+function calculateCurrentSpace() {
+    const slotCap = getSlotBoxCapacity();
+    const byType = PROJECTION_TYPES.reduce((acc, type) => {
+        acc[type] = {
+            maxCapacityTEU: 0,
+            currentOccupancyTEU: 0,
+            actualAvailableTEU: 0,
+            balance20Current: 0,
+            balance40Current: 0,
+            freeSlotsEXE: 0,
+            usedSlot20: 0,
+            usedSlot40: 0,
+            unitCount20: 0,
+            unitCount40: 0,
+            freeSlotList: []
+        };
+        return acc;
+    }, {});
+
+    const slotOccupancyByBlock = {};
+    const usedSlot20ByType = PROJECTION_TYPES.reduce((acc, type) => { acc[type] = new Set(); return acc; }, {});
+    const usedSlot40ByType = PROJECTION_TYPES.reduce((acc, type) => { acc[type] = new Set(); return acc; }, {});
+
+    // A) Build slot occupancy from Unit List (import only)
+    invData.forEach(item => {
+        const move = cleanStr(item.move);
+        if (!move.includes('import')) return;
+
+        const block = String(item.block || '').toUpperCase();
+        if (!activeCapacity[block]) return;
+        if (isExcludedUsedSlotBlock(block)) return;
+
+        const type = normalizeProjectionType('', block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        const slot = parseInt(item.slot, 10);
+        if (!Number.isFinite(slot) || slot <= 0) return;
+
+        if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
+        const len = String(item.length || '').trim();
+        const slotKey = `${block}-${String(slot).padStart(2, '0')}`;
+
+        if (len.startsWith('40') || len.startsWith('45')) {
+            // Used Slot 40': unique by Row/Bay (EXE) value only
+            usedSlot40ByType[type].add(slotKey);
+            byType[type].unitCount40 += 1;
+
+            // Physical occupancy for free-slot tracking
+            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+            slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
+        } else {
+            usedSlot20ByType[type].add(slotKey);
+            byType[type].unitCount20 += 1;
+            slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
+        }
+    });
+
+    // B) Aggregate capacities and free EXE slots by type
+    Object.keys(activeCapacity).forEach(blockName => {
+        const block = String(blockName || '').toUpperCase();
+        if (isExcludedUsedSlotBlock(block)) return;
+        const type = normalizeProjectionType('', block);
+        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+
+        const maxSlots = Number(activeCapacity[blockName]?.slots || 0);
+        byType[type].maxCapacityTEU += (maxSlots * slotCap);
+
+        for (let slotNo = 1; slotNo <= maxSlots; slotNo++) {
+            const occ = Number(slotOccupancyByBlock[block]?.[slotNo] || 0);
+            byType[type].currentOccupancyTEU += occ;
+            if (occ === 0) {
+                byType[type].freeSlotsEXE += 1;
+                byType[type].freeSlotList.push(`${block}-${String(slotNo).padStart(2, '0')}`);
+            }
+        }
+    });
+
+    PROJECTION_TYPES.forEach(type => {
+        byType[type].usedSlot20 = usedSlot20ByType[type].size;
+        byType[type].usedSlot40 = usedSlot40ByType[type].size;
+        byType[type].balance20Current = (byType[type].usedSlot20 * slotCap) - byType[type].unitCount20;
+        byType[type].balance40Current = (byType[type].usedSlot40 * slotCap) - byType[type].unitCount40;
+        byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
+    });
+
+    return byType;
+}
+
+function showFreeSlotModal(type, freeSlotList) {
+    const modal = document.getElementById('freeSlotModal');
+    const title = document.getElementById('freeSlotModalTitle');
+    const body = document.getElementById('freeSlotModalBody');
+    if (!modal || !title || !body) return;
+
+    title.textContent = `Free Slot List - ${type}`;
+    if (!freeSlotList.length) {
+        body.innerHTML = '<p class="text-slate-500 italic">No free EXE slots.</p>';
+    } else {
+        body.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">${freeSlotList.map(s => `<span class="px-2 py-1 rounded bg-slate-100 border text-center font-mono text-xs">${s}</span>`).join('')}</div>`;
+    }
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeFreeSlotModal() {
+    const modal = document.getElementById('freeSlotModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function renderProjectionTable(rows, spaceByType) {
+    const body = document.getElementById('projectionBody');
+    if (!body) return;
+
+    if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">No incoming discharge rows found in Preplan.</td></tr>';
+        return;
+    }
+
+    body.innerHTML = '';
+
+    PROJECTION_TYPES.forEach((type, typeIdx) => {
+        const typeRows = rows.filter(r => r.type === type);
+        if (!typeRows.length) return;
+
+        const space = spaceByType[type] || {
+            maxCapacityTEU: 0,
+            currentOccupancyTEU: 0,
+            actualAvailableTEU: 0,
+            freeSlotsEXE: 0,
+            usedSlot20: 0,
+            usedSlot40: 0,
+            unitCount20: 0,
+            unitCount40: 0,
+            freeSlotList: []
+        };
+
+        // Running balance must decrease row by row
+        let runningBalance20 = space.balance20Current;
+        let runningBalance40 = space.balance40Current;
+
+        typeRows.forEach((row, idx) => {
+            const incomingBox20 = Number(row.box20 || 0);
+            const incomingBox40 = Number(row.box40 || 0);
+            const incomingTEU = incomingBox20 + incomingBox40;
+
+            runningBalance20 -= incomingBox20;
+            runningBalance40 -= incomingBox40;
+
+            const balance20 = Math.max(runningBalance20, 0);
+            const balance40 = Math.max(runningBalance40, 0);
+
+            const maxCapacity = space.maxCapacityTEU;
+            const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
+            const incomingPct = maxCapacity > 0 ? (incomingTEU / maxCapacity) * 100 : 0;
+            const overCap = (space.currentOccupancyTEU + incomingTEU) > maxCapacity;
+
+            const topBorder = idx === 0 ? ' border-t-4 border-slate-400' : '';
+            const bottomBorder = idx === typeRows.length - 1 ? ' border-b-4 border-slate-400' : '';
+            const firstTypePad = typeIdx > 0 && idx === 0 ? ' border-t-8 border-slate-300' : '';
+
+            body.innerHTML += `
+                <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}">
+                    <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
+                    <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-bold">
+                        <button onclick='showFreeSlotModal(${JSON.stringify(type)}, ${JSON.stringify(space.freeSlotList)})' class="text-blue-700 underline hover:text-blue-900">${Math.round(space.freeSlotsEXE).toLocaleString()}</button>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="w-full h-3 bg-slate-300 rounded-full overflow-hidden flex">
+                            <div class="h-full bg-blue-500" style="width:${Math.min(occPct, 100)}%"></div>
+                            <div class="h-full ${overCap ? 'bg-red-500' : 'bg-amber-400'}" style="width:${Math.min(incomingPct, 100)}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 font-mono mt-1 text-center">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)}</div>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+function refreshProjectionTable() {
+    if (!projectionPreplanRows.length) return;
+    const spaceByType = calculateCurrentSpace();
+    renderProjectionTable(projectionPreplanRows, spaceByType);
+}
+
+async function parsePreplanProjection(event) {
+    const file = event?.target?.files?.[0] || document.getElementById('preplanInput')?.files?.[0];
+    const body = document.getElementById('projectionBody');
+
+    if (!body) return;
+    if (!file) {
+        body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
+        return;
+    }
+
+    try {
+        const reader = new FileReader();
+        const rows = await new Promise((resolve, reject) => {
+            reader.onload = evt => {
+                try {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+                    resolve(json);
+                } catch (e) {
+                    reject(e);
+                }
+            };
+            reader.onerror = () => reject(new Error('Failed to read Preplan file.'));
+            reader.readAsArrayBuffer(file);
+        });
+
+        const grouped = {};
+        rows.forEach(row => {
+            const keyMap = {};
+            Object.keys(row || {}).forEach(k => { keyMap[cleanStr(k)] = row[k]; });
+
+            // strict target columns by normalized exact name
+            const carrierIn = String(keyMap['carrier in'] || '').trim();
+            const voyageIn = String(keyMap['voyage in'] || '').trim();
+            const vessel = `${carrierIn} ${voyageIn}`.trim();
+            if (!vessel) return;
+
+            const rawType = String(keyMap['type'] || '').toLowerCase();
+            let type = 'Fixed Import';
+            if (rawType.includes('reefer')) type = 'Reefer';
+            else if (rawType.includes('imdg') || rawType.includes('dg')) type = 'IMDG';
+            else if (rawType.includes('oog') || rawType.includes('special')) type = 'OOG';
+
+            const box20 = Number(keyMap["dis. to go 20'"] || keyMap['1 teu'] || 0) || 0;
+            const box40 = Number(keyMap["dis. to go 40'"] || keyMap['2 teu'] || 0) || 0;
+
+            const key = `${vessel}||${type}`;
+            if (!grouped[key]) grouped[key] = { vessel, type, box20: 0, box40: 0 };
+            grouped[key].box20 += box20;
+            grouped[key].box40 += box40;
+        });
+
+        projectionPreplanRows = Object.values(grouped);
+        const spaceByType = calculateCurrentSpace();
+        renderProjectionTable(projectionPreplanRows, spaceByType);
+    } catch (err) {
+        alert(`Preplan error: ${err.message}`);
+    }
+}
+
+window.parsePreplanProjection = parsePreplanProjection;
+window.processPreplan = parsePreplanProjection;
