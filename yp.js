@@ -131,7 +131,7 @@ function updateCapacity(block, newSlots, newTier) {
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
             const projectionBody = document.getElementById('projectionBody');
-            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan then click Analyze Projection.</td></tr>';
+            if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
             
             setProgress(100, "Selesai!");
             setTimeout(() => loader.classList.add('hidden'), 500);
