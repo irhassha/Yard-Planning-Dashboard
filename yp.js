@@ -926,6 +926,12 @@ function normalizeProjectionType(rawType = '', blockHint = '') {
     return 'Fixed Import';
 }
 
+function isExcludedUsedSlotBlock(blockName) {
+    const block = String(blockName || '').toUpperCase();
+    const excluded = new Set(['C01', 'C02', 'D01', 'OOG', 'RC9', 'BR9', 'CG1']);
+    return excluded.has(block) || block.startsWith('8');
+}
+
 function getSlotBoxCapacity() {
     const val = Number(document.getElementById('slotBoxCapacity')?.value || 27);
     return Number.isFinite(val) && val > 0 ? val : 27;
@@ -961,6 +967,7 @@ function calculateCurrentSpace() {
 
         const block = String(item.block || '').toUpperCase();
         if (!activeCapacity[block]) return;
+        if (isExcludedUsedSlotBlock(block)) return;
 
         const type = normalizeProjectionType('', block);
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
@@ -990,6 +997,7 @@ function calculateCurrentSpace() {
     // B) Aggregate capacities and free EXE slots by type
     Object.keys(activeCapacity).forEach(blockName => {
         const block = String(blockName || '').toUpperCase();
+        if (isExcludedUsedSlotBlock(block)) return;
         const type = normalizeProjectionType('', block);
         if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
 
@@ -1067,21 +1075,20 @@ function renderProjectionTable(rows, spaceByType) {
             freeSlotList: []
         };
 
-        let cumulativeIncoming20 = 0;
-        let cumulativeIncoming40 = 0;
+        // Running balance must decrease row by row
+        let runningBalance20 = space.balance20Current;
+        let runningBalance40 = space.balance40Current;
 
         typeRows.forEach((row, idx) => {
             const incomingBox20 = Number(row.box20 || 0);
             const incomingBox40 = Number(row.box40 || 0);
             const incomingTEU = incomingBox20 + incomingBox40;
-            cumulativeIncoming20 += incomingBox20;
-            cumulativeIncoming40 += incomingBox40;
 
-            // Requested formula:
-            // Balance = (used slot x slot capacity) - (count unit on used slot - incoming)
-            const slotCap = getSlotBoxCapacity();
-            const balance20 = (space.usedSlot20 * slotCap) - (space.unitCount20 - cumulativeIncoming20);
-            const balance40 = (space.usedSlot40 * slotCap) - (space.unitCount40 - cumulativeIncoming40);
+            runningBalance20 -= incomingBox20;
+            runningBalance40 -= incomingBox40;
+
+            const balance20 = Math.max(runningBalance20, 0);
+            const balance40 = Math.max(runningBalance40, 0);
 
             const maxCapacity = space.maxCapacityTEU;
             const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
