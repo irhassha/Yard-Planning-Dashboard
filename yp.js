@@ -185,9 +185,9 @@ let remark = "-";
 let rCls = "";
 
 // === SPECIAL BLOCKS (PRIORITY, JANGAN DITIMPA) ===
-if (b === "OOG") {
-  remark = "OOG Area";
-  rCls = "row-oog";
+if (b === "") {
+  remark = " Area";
+  rCls = "row-";
 
 } else if (b === "RC9" || b === "BR9") {
   remark = "Reefer Area";
@@ -1048,7 +1048,7 @@ function calculateCurrentSpace() {
     PROJECTION_TYPES.forEach(type => {
         byType[type].usedSlot20 = usedSlot20ByType[type].size;
         byType[type].usedSlot40 = usedSlot40ByType[type].size;
-        const balanceSlotFactor = type === 'OOG' ? 1 : slotCap;
+        const balanceSlotFactor = type === 'OOG' ? 6 : slotCap;
         byType[type].balance20Current = (byType[type].usedSlot20 * balanceSlotFactor) - byType[type].unitCount20;
         byType[type].balance40Current = (byType[type].usedSlot40 * balanceSlotFactor) - byType[type].unitCount40;
         byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
