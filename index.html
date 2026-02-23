@@ -476,12 +476,19 @@
         </div>
 
         <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-            <div class="p-4 border-b border-slate-200/50 bg-white/20 flex items-center justify-between gap-3">
+            <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                 <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                     <span class="material-symbols-outlined text-emerald-500">table_chart</span>
                     Balance Space Projection
                 </h3>
-                <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
+                <div class="flex flex-wrap items-center justify-end gap-2">
+                    <button onclick="setProjectionTypeFilter('ALL')" id="filter-ALL" class="secondary-pill text-xs projection-filter-btn active">ALL</button>
+                    <button onclick="setProjectionTypeFilter('Fixed Import')" id="filter-Fixed Import" class="secondary-pill text-xs projection-filter-btn">Fixed Import</button>
+                    <button onclick="setProjectionTypeFilter('IMDG')" id="filter-IMDG" class="secondary-pill text-xs projection-filter-btn">IMDG</button>
+                    <button onclick="setProjectionTypeFilter('Reefer')" id="filter-Reefer" class="secondary-pill text-xs projection-filter-btn">Reefer</button>
+                    <button onclick="setProjectionTypeFilter('OOG')" id="filter-OOG" class="secondary-pill text-xs projection-filter-btn">OOG</button>
+                    <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
+                </div>
             </div>
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-sm text-center">

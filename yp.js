@@ -5,6 +5,7 @@
     let activeFilterBlock = null;
     let projectionPreplanRows = [];
     const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
+    let projectionTypeFilter = 'ALL';
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -951,6 +952,14 @@ function toggleProjectionBreakdown() {
     if (btn) btn.textContent = isHidden ? 'Hide Breakdown' : 'Show Breakdown';
 }
 
+function setProjectionTypeFilter(type) {
+    projectionTypeFilter = type;
+    document.querySelectorAll('.projection-filter-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById(`filter-${type}`);
+    if (activeBtn) activeBtn.classList.add('active');
+    refreshProjectionTable();
+}
+
 function calculateCurrentSpace() {
     const slotCap = getSlotBoxCapacity();
     const byType = PROJECTION_TYPES.reduce((acc, type) => {
@@ -1039,8 +1048,9 @@ function calculateCurrentSpace() {
     PROJECTION_TYPES.forEach(type => {
         byType[type].usedSlot20 = usedSlot20ByType[type].size;
         byType[type].usedSlot40 = usedSlot40ByType[type].size;
-        byType[type].balance20Current = (byType[type].usedSlot20 * slotCap) - byType[type].unitCount20;
-        byType[type].balance40Current = (byType[type].usedSlot40 * slotCap) - byType[type].unitCount40;
+        const balanceSlotFactor = type === 'OOG' ? 1 : slotCap;
+        byType[type].balance20Current = (byType[type].usedSlot20 * balanceSlotFactor) - byType[type].unitCount20;
+        byType[type].balance40Current = (byType[type].usedSlot40 * balanceSlotFactor) - byType[type].unitCount40;
         byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
     });
 
@@ -1081,9 +1091,13 @@ function renderProjectionTable(rows, spaceByType) {
 
     body.innerHTML = '';
 
-    PROJECTION_TYPES.forEach((type, typeIdx) => {
+    const renderTypes = projectionTypeFilter === 'ALL' ? PROJECTION_TYPES : [projectionTypeFilter];
+
+    let renderedAny = false;
+    renderTypes.forEach((type, typeIdx) => {
         const typeRows = rows.filter(r => r.type === type);
         if (!typeRows.length) return;
+        renderedAny = true;
 
         const space = spaceByType[type] || {
             maxCapacityTEU: 0,
@@ -1145,7 +1159,12 @@ function renderProjectionTable(rows, spaceByType) {
             `;
         });
     });
+
+    if (!renderedAny) {
+        body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">No rows for selected type filter.</td></tr>';
+    }
 }
+
 
 function refreshProjectionTable() {
     if (!projectionPreplanRows.length) return;
