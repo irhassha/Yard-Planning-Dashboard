@@ -462,28 +462,26 @@
                 <span class="material-symbols-outlined text-blue-600">upload_file</span>
                 Preplan Input
             </h3>
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-3">
                 <input type="file" id="preplanInput" accept=".xlsx" onchange="parsePreplanProjection(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-300 rounded-lg bg-white/60"/>
-            </div>
-            <div class="mt-3 space-y-2">
-                <div class="flex items-center justify-between gap-3">
-                    <label for="slotBoxCapacity" class="text-xs font-bold text-slate-600 uppercase tracking-wide">Box/Slot Capacity</label>
-                    <span id="slotBoxCapacityVal" class="text-xs font-mono font-bold text-blue-700">27</span>
+                <div class="w-full lg:w-[320px] space-y-1">
+                    <div class="flex items-center justify-between gap-2">
+                        <label for="slotBoxCapacity" class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Box/Slot Capacity</label>
+                        <span id="slotBoxCapacityVal" class="text-xs font-mono font-bold text-blue-700">27</span>
+                    </div>
+                    <input id="slotBoxCapacity" type="range" min="10" max="36" value="27" class="w-full accent-blue-600" oninput="updateSlotCapacityLabel(this.value); refreshProjectionTable()">
                 </div>
-                <input id="slotBoxCapacity" type="range" min="10" max="40" value="27" class="w-full accent-blue-600" oninput="updateSlotCapacityLabel(this.value); refreshProjectionTable()">
-            </div>
-            <div class="mt-2">
-                <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
             </div>
             <p class="text-xs text-slate-500 mt-2">Upload only the Preplan file. Unit List will be taken from existing loaded data.</p>
         </div>
 
         <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-            <div class="p-4 border-b border-slate-200/50 bg-white/20">
+            <div class="p-4 border-b border-slate-200/50 bg-white/20 flex items-center justify-between gap-3">
                 <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                     <span class="material-symbols-outlined text-emerald-500">table_chart</span>
                     Balance Space Projection
                 </h3>
+                <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
             </div>
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-sm text-center">
@@ -507,7 +505,7 @@
                 </table>
             </div>
             <p class="px-4 py-3 text-[11px] text-slate-500 bg-slate-50 border-t border-slate-200">
-                Notes: Used/Free slot dihitung hanya untuk block terkonfigurasi, exclude <b>CG1</b> dan block awalan <b>8xx</b>. IMDG: C01/C02/D01, Reefer: BR9/RC9, OOG: OOG. Untuk Fixed Import, block di EXPORT_DEFAULTS tidak dihitung. Unit export yang berada di block terhitung tetap dianggap slot terisi (bukan free).
+                Notes: Only calculate pure import block only (A06, A07, A08, B06, B07, B08, C05, C06, C07, C08).
             </p>
         </div>
     </div>
