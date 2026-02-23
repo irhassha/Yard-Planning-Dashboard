@@ -937,6 +937,20 @@ function getSlotBoxCapacity() {
     return Number.isFinite(val) && val > 0 ? val : 27;
 }
 
+function updateSlotCapacityLabel(val) {
+    const el = document.getElementById('slotBoxCapacityVal');
+    if (el) el.textContent = String(val || getSlotBoxCapacity());
+}
+
+function toggleProjectionBreakdown() {
+    const cols = document.querySelectorAll('.projection-breakdown');
+    const btn = document.getElementById('btnProjectionBreakdown');
+    if (!cols.length) return;
+    const isHidden = cols[0].classList.contains('hidden');
+    cols.forEach(c => c.classList.toggle('hidden', !isHidden));
+    if (btn) btn.textContent = isHidden ? 'Hide Breakdown' : 'Show Breakdown';
+}
+
 function calculateCurrentSpace() {
     const slotCap = getSlotBoxCapacity();
     const byType = PROJECTION_TYPES.reduce((acc, type) => {
@@ -963,7 +977,7 @@ function calculateCurrentSpace() {
     // A) Build slot occupancy from Unit List (import only)
     invData.forEach(item => {
         const move = cleanStr(item.move);
-        if (!move.includes('import')) return;
+        const isImportMove = move.includes('import');
 
         const block = String(item.block || '').toUpperCase();
         if (isExcludedUsedSlotBlock(block)) return;
@@ -978,19 +992,23 @@ function calculateCurrentSpace() {
         const slotKey = `${block}-${String(slot).padStart(2, '0')}`;
 
         if (len.startsWith('40') || len.startsWith('45')) {
-            // Used Slot 40': unique by Row/Bay (EXE) value only
-            usedSlot40ByType[type].add(slotKey);
-            byType[type].unitCount40 += 1;
+            // Used Slot 40': unique by Row/Bay (EXE) value only (import move only)
+            if (isImportMove) {
+                usedSlot40ByType[type].add(slotKey);
+                byType[type].unitCount40 += 1;
+            }
 
-            // Physical occupancy for free-slot tracking (only blocks with configured capacity)
+            // Physical occupancy for free-slot tracking (all move types)
             if (activeCapacity[block]) {
                 if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
                 slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
                 slotOccupancyByBlock[block][slot + 1] = (slotOccupancyByBlock[block][slot + 1] || 0) + 1;
             }
         } else {
-            usedSlot20ByType[type].add(slotKey);
-            byType[type].unitCount20 += 1;
+            if (isImportMove) {
+                usedSlot20ByType[type].add(slotKey);
+                byType[type].unitCount20 += 1;
+            }
             if (activeCapacity[block]) {
                 if (!slotOccupancyByBlock[block]) slotOccupancyByBlock[block] = {};
                 slotOccupancyByBlock[block][slot] = (slotOccupancyByBlock[block][slot] || 0) + 1;
@@ -1107,8 +1125,8 @@ function renderProjectionTable(rows, spaceByType) {
                 <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}">
                     <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
                     <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
-                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot20).toLocaleString()}</td>
-                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(space.usedSlot40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700 projection-breakdown hidden">${Math.round(space.usedSlot20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold text-slate-700 projection-breakdown hidden">${Math.round(space.usedSlot40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
@@ -1197,3 +1215,5 @@ async function parsePreplanProjection(event) {
 
 window.parsePreplanProjection = parsePreplanProjection;
 window.processPreplan = parsePreplanProjection;
+
+updateSlotCapacityLabel(getSlotBoxCapacity());
