@@ -736,25 +736,20 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
-        const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
+        const apiKey = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI}`;
 
         const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [
-                    {
-                        role: 'user',
-                        parts: [{ text: `${systemPrompt}
+                contents: [{
+                    parts: [{
+                        text: `${systemPrompt}
 
-Pertanyaan user: ${userMessage}` }]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 0.3,
-                    topP: 0.9,
-                    maxOutputTokens: 700
-                }
+Pertanyaan user: ${userMessage}`
+                    }]
+                }]
             })
         });
 
