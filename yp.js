@@ -704,8 +704,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = '';
-    const keyPart2 = '';
+    const keyPart1 = 'AIzaSyCZfXJiIXQrcZ5';
+    const keyPart2 = 'YaDqOGgrHMeHSn9Zcr1Q';
     const apiKey = keyPart1 + keyPart2;
     let resolvedGeminiModel = null;
     let aiChatDragged = false;
@@ -842,10 +842,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
-
-        if (!apiKey) {
-            throw new Error('API key kosong. Isi keyPart1 dan keyPart2 terlebih dahulu.');
-        }
 
         const modelName = await resolveGeminiModelName();
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
