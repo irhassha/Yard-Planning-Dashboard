@@ -37,6 +37,76 @@
         return `${d}/${h}:${m}`;
     }
 
+
+    function getDashboardContext() {
+        const blockAgg = {};
+        const invRows = invData || [];
+
+        invRows.forEach(item => {
+            const block = String(item?.block || 'UNKNOWN');
+            const length = String(item?.length || '40');
+            const teus = length.startsWith('20') ? 1 : (length.startsWith('45') ? 2.25 : 2);
+
+            if (!blockAgg[block]) {
+                blockAgg[block] = { boxCount: 0, teus: 0, c20: 0, c40: 0, c45: 0 };
+            }
+
+            blockAgg[block].boxCount += 1;
+            blockAgg[block].teus += teus;
+            if (length.startsWith('20')) blockAgg[block].c20 += 1;
+            else if (length.startsWith('45')) blockAgg[block].c45 += 1;
+            else blockAgg[block].c40 += 1;
+        });
+
+        const totalCapacityTeus = Object.values(activeCapacity || {}).reduce((sum, c) => sum + Number(c?.cap || 0), 0);
+        const totalTeus = Object.values(blockAgg).reduce((sum, b) => sum + b.teus, 0);
+        const yorPct = totalCapacityTeus > 0 ? Number(((totalTeus / totalCapacityTeus) * 100).toFixed(2)) : 0;
+
+        const blockSummary = Object.entries(blockAgg)
+            .map(([block, v]) => ({
+                block,
+                boxCount: v.boxCount,
+                teus: Number(v.teus.toFixed(2)),
+                c20: v.c20,
+                c40: v.c40,
+                c45: v.c45,
+                capTeus: Number(activeCapacity?.[block]?.cap || 0),
+                occPct: Number(((v.teus / Number(activeCapacity?.[block]?.cap || 1)) * 100).toFixed(2))
+            }))
+            .sort((a, b) => b.occPct - a.occPct)
+            .slice(0, 20);
+
+        const clashByBlock = {};
+        (globalClashes || []).forEach(clash => {
+            const block = String(clash?.block || 'UNKNOWN');
+            clashByBlock[block] = (clashByBlock[block] || 0) + 1;
+        });
+        const topClashBlocks = Object.entries(clashByBlock)
+            .map(([block, count]) => ({ block, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        const compactContext = {
+            generatedAt: new Date().toISOString(),
+            status: {
+                inventoryLoaded: Boolean(isInvLoaded),
+                inventoryRows: invRows.length,
+                clashRows: (globalClashes || []).length,
+                projectionRows: (projectionPreplanRows || []).length
+            },
+            kpi: {
+                totalBoxes: Object.values(blockAgg).reduce((s, b) => s + b.boxCount, 0),
+                totalTeus: Number(totalTeus.toFixed(2)),
+                totalCapacityTeus,
+                yorPct
+            },
+            topDensityBlocks: blockSummary,
+            topClashBlocks
+        };
+
+        return JSON.stringify(compactContext);
+    }
+
 function updateCapacity(block, newSlots, newTier) {
   if (!activeCapacity[block]) return;
 
@@ -127,7 +197,7 @@ function updateCapacity(block, newSlots, newTier) {
             }
 
             isInvLoaded = true;
-            document.getElementById('resetBtn').classList.remove('hidden');
+            // AI chat button is always visible in control card.
             
             // Render All Tabs
             renderOverview();
@@ -606,6 +676,109 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         document.getElementById('activeFilterBadge').classList.add('hidden');
         document.querySelectorAll('.stats-row').forEach(row => row.classList.remove('active-filter'));
         renderCurrentClashes();
+    }
+
+    function toggleAiChatbox() {
+        const chatWindow = document.getElementById('aiChatWindow');
+        const toggleButton = document.getElementById('aiChatToggle');
+        if (!chatWindow || !toggleButton) return;
+
+        const isHidden = chatWindow.classList.contains('hidden');
+        chatWindow.classList.toggle('hidden');
+        toggleButton.setAttribute('aria-expanded', String(isHidden));
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    const keyPart1 = '';
+    const keyPart2 = '';
+    const apiKey = keyPart1 + keyPart2;
+
+    async function sendMessageToGemini(userMessage) {
+        const dashboardContext = getDashboardContext();
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `${systemPrompt}
+
+DATA JSON DASHBOARD:
+${dashboardContext}
+
+Pertanyaan user: ${userMessage}`
+                        }]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                if (response.status === 403) {
+                    throw new Error(`Akses ditolak (403). Periksa API restriction, origin localhost, dan enable Gemini API. Detail: ${errText}`);
+                }
+                throw new Error(`Gemini API error ${response.status}: ${errText}`);
+            }
+
+            const data = await response.json();
+            return data?.candidates?.[0]?.content?.parts?.[0]?.text
+                || 'Maaf, saya belum bisa menghasilkan jawaban saat ini.';
+        } catch (error) {
+            throw new Error(error?.message || 'Koneksi ke Gemini API gagal.');
+        }
+    }
+
+    async function sendAiChatMessage(event) {
+        event.preventDefault();
+
+        const input = document.getElementById('aiChatInput');
+        const history = document.getElementById('aiChatHistory');
+        if (!input || !history) return;
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble user">${escapeHtml(message)}</div>`);
+        input.value = '';
+
+        const loadingId = `aiTyping_${Date.now()}`;
+        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Typing...</div>`);
+        history.scrollTop = history.scrollHeight;
+        input.disabled = true;
+
+        try {
+            const aiReply = await sendMessageToGemini(message);
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) {
+                loadingEl.textContent = aiReply;
+            } else {
+                history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble bot">${escapeHtml(aiReply)}</div>`);
+            }
+        } catch (error) {
+            const loadingEl = document.getElementById(loadingId);
+            const errMessage = `Maaf, terjadi kendala saat menghubungi AI (${error.message}).`;
+            if (loadingEl) {
+                loadingEl.textContent = errMessage;
+            } else {
+                history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble bot">${escapeHtml(errMessage)}</div>`);
+            }
+        }
+
+        input.disabled = false;
+        input.focus();
+        history.scrollTop = history.scrollHeight;
     }
 
     // --- NAVIGATION & UTILS ---
