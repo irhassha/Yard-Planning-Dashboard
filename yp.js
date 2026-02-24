@@ -704,8 +704,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = 'AIzaSyCZfXJiIXQrcZ5';
-    const keyPart2 = 'YaDqOGgrHMeHSn9Zcr1Q';
+    const keyPart1 = 'AIzaSyB7F0FyfzndxInbN';
+    const keyPart2 = '1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
     let resolvedGeminiModel = null;
     let aiChatDragged = false;
