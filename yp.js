@@ -6,6 +6,8 @@
     let projectionPreplanRows = [];
     const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
     let projectionTypeFilter = 'ALL';
+    let projectionOrderByType = {};
+    let projectionDragState = { type: null, vessel: null };
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -952,8 +954,34 @@ function toggleProjectionBreakdown() {
     if (btn) btn.textContent = isHidden ? 'Hide Breakdown' : 'Show Breakdown';
 }
 
-function getProjectionVesselOrder() {
-    return document.getElementById('projectionVesselOrder')?.value || 'az';
+function startProjectionDrag(event, type, vessel) {
+    projectionDragState = { type, vessel };
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', `${type}||${vessel}`);
+}
+
+function allowProjectionDrop(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+}
+
+function dropProjectionRow(event, targetType, targetVessel) {
+    event.preventDefault();
+    const src = projectionDragState;
+    if (!src.type || !src.vessel || src.type !== targetType || src.vessel === targetVessel) return;
+
+    const currentOrder = projectionOrderByType[targetType] || [];
+    const normalized = currentOrder.length ? [...currentOrder] : projectionPreplanRows.filter(r => r.type === targetType).map(r => r.vessel);
+
+    const fromIdx = normalized.indexOf(src.vessel);
+    const toIdx = normalized.indexOf(targetVessel);
+    if (fromIdx === -1 || toIdx === -1) return;
+
+    const [moved] = normalized.splice(fromIdx, 1);
+    normalized.splice(toIdx, 0, moved);
+    projectionOrderByType[targetType] = normalized;
+
+    refreshProjectionTable();
 }
 
 function setProjectionTypeFilter(type) {
@@ -1103,8 +1131,13 @@ function renderProjectionTable(rows, spaceByType) {
         if (!typeRows.length) return;
         renderedAny = true;
 
-        const vesselOrder = getProjectionVesselOrder();
-        typeRows.sort((a, b) => vesselOrder === 'za' ? b.vessel.localeCompare(a.vessel) : a.vessel.localeCompare(b.vessel));
+        const existingOrder = projectionOrderByType[type] || [];
+        if (!existingOrder.length) {
+            projectionOrderByType[type] = typeRows.map(r => r.vessel);
+        }
+
+        const order = projectionOrderByType[type] || [];
+        typeRows.sort((a, b) => order.indexOf(a.vessel) - order.indexOf(b.vessel));
 
         const space = spaceByType[type] || {
             maxCapacityTEU: 0,
@@ -1143,7 +1176,7 @@ function renderProjectionTable(rows, spaceByType) {
             const firstTypePad = typeIdx > 0 && idx === 0 ? ' border-t-8 border-slate-300' : '';
 
             body.innerHTML += `
-                <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}">
+                <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}" draggable="true" ondragstart='startProjectionDrag(event, ${JSON.stringify(type)}, ${JSON.stringify(row.vessel)})' ondragover="allowProjectionDrop(event)" ondrop='dropProjectionRow(event, ${JSON.stringify(type)}, ${JSON.stringify(row.vessel)})'>
                     <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
                     <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700 projection-breakdown hidden">${Math.round(space.usedSlot20).toLocaleString()}</td>
@@ -1232,6 +1265,10 @@ async function parsePreplanProjection(event) {
         });
 
         projectionPreplanRows = Object.values(grouped);
+        projectionOrderByType = {};
+        PROJECTION_TYPES.forEach(t => {
+            projectionOrderByType[t] = projectionPreplanRows.filter(r => r.type === t).map(r => r.vessel);
+        });
         const spaceByType = calculateCurrentSpace();
         renderProjectionTable(projectionPreplanRows, spaceByType);
     } catch (err) {
