@@ -733,11 +733,52 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-async function sendMessageToGemini(userMessage) {
+    const GEMINI_API_KEY = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
+    let geminiResolvedModel = null;
+
+    async function resolveGeminiModel() {
+        if (geminiResolvedModel) return geminiResolvedModel;
+
+        const preferred = [
+            'models/gemini-1.5-flash',
+            'models/gemini-1.5-flash-latest',
+            'models/gemini-2.0-flash',
+            'models/gemini-2.0-flash-lite'
+        ];
+
+        const listEndpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
+        const res = await fetch(listEndpoint);
+        if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`ListModels error ${res.status}: ${errText}`);
+        }
+
+        const data = await res.json();
+        const models = (data?.models || []).filter(model =>
+            (model?.supportedGenerationMethods || []).includes('generateContent')
+        );
+
+        for (const wanted of preferred) {
+            const found = models.find(m => m?.name === wanted);
+            if (found) {
+                geminiResolvedModel = wanted;
+                return geminiResolvedModel;
+            }
+        }
+
+        if (!models.length) {
+            throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
+        }
+
+        geminiResolvedModel = models[0].name;
+        return geminiResolvedModel;
+    }
+
+    async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
-        const apiKey = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI'; 
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+        const modelName = await resolveGeminiModel();
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
 
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -745,7 +786,9 @@ async function sendMessageToGemini(userMessage) {
             body: JSON.stringify({
                 contents: [{
                     parts: [{
-                        text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
+                        text: `${systemPrompt}
+
+Pertanyaan user: ${userMessage}`
                     }]
                 }]
             })
