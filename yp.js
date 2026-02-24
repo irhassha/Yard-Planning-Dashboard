@@ -952,6 +952,10 @@ function toggleProjectionBreakdown() {
     if (btn) btn.textContent = isHidden ? 'Hide Breakdown' : 'Show Breakdown';
 }
 
+function getProjectionVesselOrder() {
+    return document.getElementById('projectionVesselOrder')?.value || 'az';
+}
+
 function setProjectionTypeFilter(type) {
     projectionTypeFilter = type;
     document.querySelectorAll('.projection-filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -1048,7 +1052,7 @@ function calculateCurrentSpace() {
     PROJECTION_TYPES.forEach(type => {
         byType[type].usedSlot20 = usedSlot20ByType[type].size;
         byType[type].usedSlot40 = usedSlot40ByType[type].size;
-        const balanceSlotFactor = type === 'OOG' ? 6 : slotCap;
+        const balanceSlotFactor = type === 'OOG' ? 1 : slotCap;
         byType[type].balance20Current = (byType[type].usedSlot20 * balanceSlotFactor) - byType[type].unitCount20;
         byType[type].balance40Current = (byType[type].usedSlot40 * balanceSlotFactor) - byType[type].unitCount40;
         byType[type].actualAvailableTEU = byType[type].maxCapacityTEU - byType[type].currentOccupancyTEU;
@@ -1099,6 +1103,9 @@ function renderProjectionTable(rows, spaceByType) {
         if (!typeRows.length) return;
         renderedAny = true;
 
+        const vesselOrder = getProjectionVesselOrder();
+        typeRows.sort((a, b) => vesselOrder === 'za' ? b.vessel.localeCompare(a.vessel) : a.vessel.localeCompare(b.vessel));
+
         const space = spaceByType[type] || {
             maxCapacityTEU: 0,
             currentOccupancyTEU: 0,
@@ -1123,8 +1130,8 @@ function renderProjectionTable(rows, spaceByType) {
             runningBalance20 -= incomingBox20;
             runningBalance40 -= incomingBox40;
 
-            const balance20 = Math.max(runningBalance20, 0);
-            const balance40 = Math.max(runningBalance40, 0);
+            const balance20 = runningBalance20;
+            const balance40 = runningBalance40;
 
             const maxCapacity = space.maxCapacityTEU;
             const occPct = maxCapacity > 0 ? (space.currentOccupancyTEU / maxCapacity) * 100 : 0;
@@ -1143,8 +1150,8 @@ function renderProjectionTable(rows, spaceByType) {
                     <td class="px-4 py-3 text-center font-semibold text-slate-700 projection-breakdown hidden">${Math.round(space.usedSlot40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox20).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(incomingBox40).toLocaleString()}</td>
-                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance20).toLocaleString()}</td>
-                    <td class="px-4 py-3 text-center font-semibold text-slate-700">${Math.round(balance40).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold ${balance20 < 0 ? 'text-red-600' : 'text-slate-700'}">${Math.round(balance20).toLocaleString()}</td>
+                    <td class="px-4 py-3 text-center font-semibold ${balance40 < 0 ? 'text-red-600' : 'text-slate-700'}">${Math.round(balance40).toLocaleString()}</td>
                     <td class="px-4 py-3 text-center font-bold">
                         <button onclick='showFreeSlotModal(${JSON.stringify(type)}, ${JSON.stringify(space.freeSlotList)})' class="text-blue-700 underline hover:text-blue-900">${Math.round(space.freeSlotsEXE).toLocaleString()}</button>
                     </td>

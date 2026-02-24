@@ -487,6 +487,10 @@
                     <button onclick="setProjectionTypeFilter('IMDG')" id="filter-IMDG" class="secondary-pill text-xs projection-filter-btn">IMDG</button>
                     <button onclick="setProjectionTypeFilter('Reefer')" id="filter-Reefer" class="secondary-pill text-xs projection-filter-btn">Reefer</button>
                     <button onclick="setProjectionTypeFilter('OOG')" id="filter-OOG" class="secondary-pill text-xs projection-filter-btn">OOG</button>
+                    <select id="projectionVesselOrder" onchange="refreshProjectionTable()" class="secondary-pill text-xs pr-8">
+                        <option value="az">Vessel A-Z</option>
+                        <option value="za">Vessel Z-A</option>
+                    </select>
                     <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
                 </div>
             </div>
