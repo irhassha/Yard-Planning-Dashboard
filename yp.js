@@ -844,10 +844,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
 
-        if (!apiKey) {
-            throw new Error('API key kosong. Isi keyPart1 dan keyPart2 terlebih dahulu.');
-        }
-
         const modelName = await resolveGeminiModelName();
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
 
