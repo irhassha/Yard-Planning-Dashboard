@@ -697,8 +697,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = '';
-    const keyPart2 = '';
+    const keyPart1 = 'AIzaSyCZfXJiIXQrcZ5Ya';
+    const keyPart2 = 'DqOGgrHMeHSn9Zcr1Q';
     const apiKey = keyPart1 + keyPart2;
 
     async function sendMessageToGemini(userMessage) {
