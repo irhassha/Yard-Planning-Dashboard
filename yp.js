@@ -187,9 +187,9 @@ let remark = "-";
 let rCls = "";
 
 // === SPECIAL BLOCKS (PRIORITY, JANGAN DITIMPA) ===
-if (b === "OOG") {
-  remark = "OOG Area";
-  rCls = "row-oog";
+if (b === "") {
+  remark = " Area";
+  rCls = "row-";
 
 } else if (b === "RC9" || b === "BR9") {
   remark = "Reefer Area";
