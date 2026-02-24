@@ -716,8 +716,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         const preferredModels = [
             'models/gemini-1.5-flash-latest',
             'models/gemini-1.5-flash',
-            'models/gemini-2.0-flash',
-            'models/gemini-2.0-flash-lite'
+            'models/gemini-1.5-pro-latest',
+            'models/gemini-1.5-pro'
         ];
 
         const listEndpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
@@ -743,8 +743,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
         }
 
-        resolvedGeminiModel = available[0].name;
-        return resolvedGeminiModel;
+        throw new Error('Model 1.5 tidak tersedia untuk API key ini. Buka ListModels di project Anda atau aktifkan billing/quota yang sesuai.');
     }
 
     function placeChatNearButton() {
@@ -873,6 +872,15 @@ Pertanyaan user: ${userMessage}`
                 if (response.status === 404) {
                     resolvedGeminiModel = null;
                     throw new Error(`Model tidak ditemukan (404). Pastikan model tersedia untuk API key ini. Detail: ${errText}`);
+                }
+                if (response.status === 429) {
+                    let retryInfo = '';
+                    try {
+                        const parsed = JSON.parse(errText);
+                        const retryDetail = (parsed?.error?.details || []).find(d => d['@type'] && d['@type'].includes('RetryInfo'));
+                        if (retryDetail?.retryDelay) retryInfo = ` Coba lagi dalam ${retryDetail.retryDelay}.`;
+                    } catch (_) {}
+                    throw new Error(`Kuota Gemini habis (429). Periksa billing, quota project, atau ganti model/key.${retryInfo}`);
                 }
                 throw new Error(`Gemini API error ${response.status}: ${errText}`);
             }
