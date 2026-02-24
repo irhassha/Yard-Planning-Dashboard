@@ -737,7 +737,7 @@ async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
         const apiKey = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI'; 
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
         const response = await fetch(endpoint, {
             method: 'POST',
