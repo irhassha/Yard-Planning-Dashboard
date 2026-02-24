@@ -733,11 +733,11 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    async function sendMessageToGemini(userMessage) {
+async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
-        const apiKey = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI}`;
+        const apiKey = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI'; 
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         const response = await fetch(endpoint, {
             method: 'POST',
@@ -745,9 +745,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             body: JSON.stringify({
                 contents: [{
                     parts: [{
-                        text: `${systemPrompt}
-
-Pertanyaan user: ${userMessage}`
+                        text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
                     }]
                 }]
             })
