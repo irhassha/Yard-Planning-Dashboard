@@ -37,6 +37,112 @@
         return `${d}/${h}:${m}`;
     }
 
+
+    function getDashboardContext() {
+        const yardByBlock = {};
+
+        Object.keys(activeCapacity || {}).forEach(block => {
+            yardByBlock[block] = {
+                boxCount: 0,
+                teus: 0,
+                importTeus: 0,
+                exportTeus: 0,
+                c20: 0,
+                c40: 0,
+                c45: 0,
+                capacityTeus: Number(activeCapacity[block]?.cap || 0)
+            };
+        });
+
+        (invData || []).forEach(item => {
+            const block = item?.block;
+            if (!yardByBlock[block]) return;
+
+            const len = String(item?.length || '40');
+            const teus = len.startsWith('20') ? 1 : (len.startsWith('45') ? 2.25 : 2);
+            const move = String(item?.move || '').toLowerCase();
+
+            yardByBlock[block].boxCount += 1;
+            yardByBlock[block].teus += teus;
+
+            if (len.startsWith('20')) yardByBlock[block].c20 += 1;
+            else if (len.startsWith('45')) yardByBlock[block].c45 += 1;
+            else yardByBlock[block].c40 += 1;
+
+            if (move.includes('import') || move.includes('disc') || move.includes('vessel')) {
+                yardByBlock[block].importTeus += teus;
+            } else {
+                yardByBlock[block].exportTeus += teus;
+            }
+        });
+
+        const blockSummary = Object.entries(yardByBlock).map(([block, stats]) => {
+            const cap = Number(stats.capacityTeus || 0);
+            const occPct = cap > 0 ? Number(((stats.teus / cap) * 100).toFixed(2)) : 0;
+            return {
+                block,
+                occPct,
+                teus: Number(stats.teus.toFixed(2)),
+                capTeus: cap,
+                boxCount: stats.boxCount,
+                importTeus: Number(stats.importTeus.toFixed(2)),
+                exportTeus: Number(stats.exportTeus.toFixed(2)),
+                c20: stats.c20,
+                c40: stats.c40,
+                c45: stats.c45
+            };
+        });
+
+        const topDenseBlocks = [...blockSummary]
+            .sort((a, b) => b.occPct - a.occPct)
+            .slice(0, 8);
+
+        const topClashBlocks = (() => {
+            const byBlock = {};
+            (globalClashes || []).forEach(clash => {
+                const block = String(clash?.block || '-');
+                if (!byBlock[block]) {
+                    byBlock[block] = { block, count: 0, totalVolume: 0, vessels: new Set() };
+                }
+                byBlock[block].count += 1;
+                byBlock[block].totalVolume += Number(clash?.volume || 0);
+                if (clash?.vessel) byBlock[block].vessels.add(String(clash.vessel));
+            });
+
+            return Object.values(byBlock)
+                .map(v => ({
+                    block: v.block,
+                    count: v.count,
+                    totalVolume: Number(v.totalVolume.toFixed(2)),
+                    vessels: Array.from(v.vessels).slice(0, 6)
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8);
+        })();
+
+        const context = {
+            generatedAt: new Date().toISOString(),
+            dataStatus: {
+                inventoryLoaded: Boolean(isInvLoaded),
+                inventoryRows: (invData || []).length,
+                clashRows: (globalClashes || []).length,
+                projectionRows: (projectionPreplanRows || []).length,
+                activeTabFilter: activeFilterBlock || null,
+                projectionTypeFilter: projectionTypeFilter || 'ALL'
+            },
+            totals: {
+                totalTeus: Number(blockSummary.reduce((s, b) => s + b.teus, 0).toFixed(2)),
+                totalCapacityTeus: blockSummary.reduce((s, b) => s + b.capTeus, 0),
+                totalBoxes: blockSummary.reduce((s, b) => s + b.boxCount, 0)
+            },
+            topDenseBlocks,
+            topClashBlocks,
+            blockSummary
+        };
+
+        return JSON.stringify(context);
+    }
+
 function updateCapacity(block, newSlots, newTier) {
   if (!activeCapacity[block]) return;
 
@@ -127,7 +233,7 @@ function updateCapacity(block, newSlots, newTier) {
             }
 
             isInvLoaded = true;
-            document.getElementById('resetBtn').classList.remove('hidden');
+            // AI chat button is always visible in control card.
             
             // Render All Tabs
             renderOverview();
@@ -606,6 +712,101 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         document.getElementById('activeFilterBadge').classList.add('hidden');
         document.querySelectorAll('.stats-row').forEach(row => row.classList.remove('active-filter'));
         renderCurrentClashes();
+    }
+
+    function toggleAiChatbox() {
+        const chatWindow = document.getElementById('aiChatWindow');
+        const toggleButton = document.getElementById('aiChatToggle');
+        if (!chatWindow || !toggleButton) return;
+
+        const isHidden = chatWindow.classList.contains('hidden');
+        chatWindow.classList.toggle('hidden');
+        toggleButton.setAttribute('aria-expanded', String(isHidden));
+    }
+
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    async function sendMessageToGemini(userMessage) {
+        const dashboardContext = getDashboardContext();
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
+        const endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [
+                    {
+                        role: 'user',
+                        parts: [{ text: `${systemPrompt}
+
+Pertanyaan user: ${userMessage}` }]
+                    }
+                ],
+                generationConfig: {
+                    temperature: 0.3,
+                    topP: 0.9,
+                    maxOutputTokens: 700
+                }
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Gemini API error ${response.status}: ${errText}`);
+        }
+
+        const data = await response.json();
+        return data?.candidates?.[0]?.content?.parts?.[0]?.text
+            || 'Maaf, saya belum bisa menghasilkan jawaban saat ini.';
+    }
+
+    async function sendAiChatMessage(event) {
+        event.preventDefault();
+
+        const input = document.getElementById('aiChatInput');
+        const history = document.getElementById('aiChatHistory');
+        if (!input || !history) return;
+
+        const message = input.value.trim();
+        if (!message) return;
+
+        history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble user">${escapeHtml(message)}</div>`);
+        input.value = '';
+
+        const loadingId = `aiTyping_${Date.now()}`;
+        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Typing...</div>`);
+        history.scrollTop = history.scrollHeight;
+        input.disabled = true;
+
+        try {
+            const aiReply = await sendMessageToGemini(message);
+            const loadingEl = document.getElementById(loadingId);
+            if (loadingEl) {
+                loadingEl.textContent = aiReply;
+            } else {
+                history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble bot">${escapeHtml(aiReply)}</div>`);
+            }
+        } catch (error) {
+            const loadingEl = document.getElementById(loadingId);
+            const errMessage = `Maaf, terjadi kendala saat menghubungi AI (${error.message}).`;
+            if (loadingEl) {
+                loadingEl.textContent = errMessage;
+            } else {
+                history.insertAdjacentHTML('beforeend', `<div class="ai-chat-bubble bot">${escapeHtml(errMessage)}</div>`);
+            }
+        }
+
+        input.disabled = false;
+        input.focus();
+        history.scrollTop = history.scrollHeight;
     }
 
     // --- NAVIGATION & UTILS ---
