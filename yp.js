@@ -39,108 +39,72 @@
 
 
     function getDashboardContext() {
-        const yardByBlock = {};
+        const blockAgg = {};
+        const invRows = invData || [];
 
-        Object.keys(activeCapacity || {}).forEach(block => {
-            yardByBlock[block] = {
-                boxCount: 0,
-                teus: 0,
-                importTeus: 0,
-                exportTeus: 0,
-                c20: 0,
-                c40: 0,
-                c45: 0,
-                capacityTeus: Number(activeCapacity[block]?.cap || 0)
-            };
-        });
+        invRows.forEach(item => {
+            const block = String(item?.block || 'UNKNOWN');
+            const length = String(item?.length || '40');
+            const teus = length.startsWith('20') ? 1 : (length.startsWith('45') ? 2.25 : 2);
 
-        (invData || []).forEach(item => {
-            const block = item?.block;
-            if (!yardByBlock[block]) return;
-
-            const len = String(item?.length || '40');
-            const teus = len.startsWith('20') ? 1 : (len.startsWith('45') ? 2.25 : 2);
-            const move = String(item?.move || '').toLowerCase();
-
-            yardByBlock[block].boxCount += 1;
-            yardByBlock[block].teus += teus;
-
-            if (len.startsWith('20')) yardByBlock[block].c20 += 1;
-            else if (len.startsWith('45')) yardByBlock[block].c45 += 1;
-            else yardByBlock[block].c40 += 1;
-
-            if (move.includes('import') || move.includes('disc') || move.includes('vessel')) {
-                yardByBlock[block].importTeus += teus;
-            } else {
-                yardByBlock[block].exportTeus += teus;
+            if (!blockAgg[block]) {
+                blockAgg[block] = { boxCount: 0, teus: 0, c20: 0, c40: 0, c45: 0 };
             }
+
+            blockAgg[block].boxCount += 1;
+            blockAgg[block].teus += teus;
+            if (length.startsWith('20')) blockAgg[block].c20 += 1;
+            else if (length.startsWith('45')) blockAgg[block].c45 += 1;
+            else blockAgg[block].c40 += 1;
         });
 
-        const blockSummary = Object.entries(yardByBlock).map(([block, stats]) => {
-            const cap = Number(stats.capacityTeus || 0);
-            const occPct = cap > 0 ? Number(((stats.teus / cap) * 100).toFixed(2)) : 0;
-            return {
+        const totalCapacityTeus = Object.values(activeCapacity || {}).reduce((sum, c) => sum + Number(c?.cap || 0), 0);
+        const totalTeus = Object.values(blockAgg).reduce((sum, b) => sum + b.teus, 0);
+        const yorPct = totalCapacityTeus > 0 ? Number(((totalTeus / totalCapacityTeus) * 100).toFixed(2)) : 0;
+
+        const blockSummary = Object.entries(blockAgg)
+            .map(([block, v]) => ({
                 block,
-                occPct,
-                teus: Number(stats.teus.toFixed(2)),
-                capTeus: cap,
-                boxCount: stats.boxCount,
-                importTeus: Number(stats.importTeus.toFixed(2)),
-                exportTeus: Number(stats.exportTeus.toFixed(2)),
-                c20: stats.c20,
-                c40: stats.c40,
-                c45: stats.c45
-            };
-        });
-
-        const topDenseBlocks = [...blockSummary]
+                boxCount: v.boxCount,
+                teus: Number(v.teus.toFixed(2)),
+                c20: v.c20,
+                c40: v.c40,
+                c45: v.c45,
+                capTeus: Number(activeCapacity?.[block]?.cap || 0),
+                occPct: Number(((v.teus / Number(activeCapacity?.[block]?.cap || 1)) * 100).toFixed(2))
+            }))
             .sort((a, b) => b.occPct - a.occPct)
-            .slice(0, 8);
+            .slice(0, 20);
 
-        const topClashBlocks = (() => {
-            const byBlock = {};
-            (globalClashes || []).forEach(clash => {
-                const block = String(clash?.block || '-');
-                if (!byBlock[block]) {
-                    byBlock[block] = { block, count: 0, totalVolume: 0, vessels: new Set() };
-                }
-                byBlock[block].count += 1;
-                byBlock[block].totalVolume += Number(clash?.volume || 0);
-                if (clash?.vessel) byBlock[block].vessels.add(String(clash.vessel));
-            });
+        const clashByBlock = {};
+        (globalClashes || []).forEach(clash => {
+            const block = String(clash?.block || 'UNKNOWN');
+            clashByBlock[block] = (clashByBlock[block] || 0) + 1;
+        });
+        const topClashBlocks = Object.entries(clashByBlock)
+            .map(([block, count]) => ({ block, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
 
-            return Object.values(byBlock)
-                .map(v => ({
-                    block: v.block,
-                    count: v.count,
-                    totalVolume: Number(v.totalVolume.toFixed(2)),
-                    vessels: Array.from(v.vessels).slice(0, 6)
-                }))
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 8);
-        })();
-
-        const context = {
+        const compactContext = {
             generatedAt: new Date().toISOString(),
-            dataStatus: {
+            status: {
                 inventoryLoaded: Boolean(isInvLoaded),
-                inventoryRows: (invData || []).length,
+                inventoryRows: invRows.length,
                 clashRows: (globalClashes || []).length,
-                projectionRows: (projectionPreplanRows || []).length,
-                activeTabFilter: activeFilterBlock || null,
-                projectionTypeFilter: projectionTypeFilter || 'ALL'
+                projectionRows: (projectionPreplanRows || []).length
             },
-            totals: {
-                totalTeus: Number(blockSummary.reduce((s, b) => s + b.teus, 0).toFixed(2)),
-                totalCapacityTeus: blockSummary.reduce((s, b) => s + b.capTeus, 0),
-                totalBoxes: blockSummary.reduce((s, b) => s + b.boxCount, 0)
+            kpi: {
+                totalBoxes: Object.values(blockAgg).reduce((s, b) => s + b.boxCount, 0),
+                totalTeus: Number(totalTeus.toFixed(2)),
+                totalCapacityTeus,
+                yorPct
             },
-            topDenseBlocks,
-            topClashBlocks,
-            blockSummary
+            topDensityBlocks: blockSummary,
+            topClashBlocks
         };
 
-        return JSON.stringify(context);
+        return JSON.stringify(compactContext);
     }
 
 function updateCapacity(block, newSlots, newTier) {
@@ -733,75 +697,47 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const GEMINI_API_KEY = 'AIzaSyBxOxkqudRq9bwPojgZCO2X2mxSwWIkdMI';
-    let geminiResolvedModel = null;
-
-    async function resolveGeminiModel() {
-        if (geminiResolvedModel) return geminiResolvedModel;
-
-        const preferred = [
-            'models/gemini-1.5-flash',
-            'models/gemini-1.5-flash-latest',
-            'models/gemini-2.0-flash',
-            'models/gemini-2.0-flash-lite'
-        ];
-
-        const listEndpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`;
-        const res = await fetch(listEndpoint);
-        if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`ListModels error ${res.status}: ${errText}`);
-        }
-
-        const data = await res.json();
-        const models = (data?.models || []).filter(model =>
-            (model?.supportedGenerationMethods || []).includes('generateContent')
-        );
-
-        for (const wanted of preferred) {
-            const found = models.find(m => m?.name === wanted);
-            if (found) {
-                geminiResolvedModel = wanted;
-                return geminiResolvedModel;
-            }
-        }
-
-        if (!models.length) {
-            throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
-        }
-
-        geminiResolvedModel = models[0].name;
-        return geminiResolvedModel;
-    }
+    const keyPart1 = '';
+    const keyPart2 = '';
+    const apiKey = keyPart1 + keyPart2;
 
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
-        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Gunakan data JSON berikut untuk menjawab pertanyaan user. Jawab dengan profesional dan gunakan istilah pelabuhan yang tepat. Berikut datanya: ${dashboardContext}`;
-        const modelName = await resolveGeminiModel();
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `${systemPrompt}
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `${systemPrompt}
+
+DATA JSON DASHBOARD:
+${dashboardContext}
 
 Pertanyaan user: ${userMessage}`
+                        }]
                     }]
-                }]
-            })
-        });
+                })
+            });
 
-        if (!response.ok) {
-            const errText = await response.text();
-            throw new Error(`Gemini API error ${response.status}: ${errText}`);
+            if (!response.ok) {
+                const errText = await response.text();
+                if (response.status === 403) {
+                    throw new Error(`Akses ditolak (403). Periksa API restriction, origin localhost, dan enable Gemini API. Detail: ${errText}`);
+                }
+                throw new Error(`Gemini API error ${response.status}: ${errText}`);
+            }
+
+            const data = await response.json();
+            return data?.candidates?.[0]?.content?.parts?.[0]?.text
+                || 'Maaf, saya belum bisa menghasilkan jawaban saat ini.';
+        } catch (error) {
+            throw new Error(error?.message || 'Koneksi ke Gemini API gagal.');
         }
-
-        const data = await response.json();
-        return data?.candidates?.[0]?.content?.parts?.[0]?.text
-            || 'Maaf, saya belum bisa menghasilkan jawaban saat ini.';
     }
 
     async function sendAiChatMessage(event) {
