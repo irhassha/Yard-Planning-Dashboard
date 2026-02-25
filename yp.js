@@ -688,10 +688,9 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         toggleButton.setAttribute('aria-expanded', String(willOpen));
 
         if (willOpen) {
-            initAiChatDrag();
-            if (!aiChatDragged) {
-                requestAnimationFrame(placeChatNearButton);
-            }
+            document.body.classList.add('ai-chat-sidebar-open');
+        } else {
+            document.body.classList.remove('ai-chat-sidebar-open');
         }
     }
 
@@ -704,109 +703,58 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = 'AIzaSyB7F0FyfzndxInbN';
-    const keyPart2 = '1b_G4xJXzQuIDPcgT8';
+    const keyPart1 = '';
+    const keyPart2 = '';
     const apiKey = keyPart1 + keyPart2;
-    let aiChatDragged = false;
+    let resolvedGeminiModel = null;
 
-    function placeChatNearButton() {
-        const chatWindow = document.getElementById('aiChatWindow');
-        const toggleButton = document.getElementById('aiChatToggle');
-        if (!chatWindow || !toggleButton) return;
+    async function resolveGeminiModelName() {
+        if (resolvedGeminiModel) return resolvedGeminiModel;
 
-        const btnRect = toggleButton.getBoundingClientRect();
-        const chatRect = chatWindow.getBoundingClientRect();
-        const gap = 12;
+        const preferredModels = [
+            'models/gemini-1.5-flash-latest',
+            'models/gemini-1.5-flash',
+            'models/gemini-1.5-pro-latest',
+            'models/gemini-1.5-pro'
+        ];
 
-        let left = btnRect.right + gap;
-        let top = btnRect.top + (btnRect.height / 2) - (chatRect.height / 2);
-
-        if (left + chatRect.width > window.innerWidth - 10) {
-            left = btnRect.left - chatRect.width - gap;
-        }
-        if (left < 10) left = 10;
-        if (top < 10) top = 10;
-        if (top + chatRect.height > window.innerHeight - 10) {
-            top = window.innerHeight - chatRect.height - 10;
+        const listEndpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+        const listResponse = await fetch(listEndpoint);
+        if (!listResponse.ok) {
+            const listErr = await listResponse.text();
+            throw new Error(`ListModels error ${listResponse.status}: ${listErr}`);
         }
 
-        chatWindow.style.left = `${left}px`;
-        chatWindow.style.top = `${top}px`;
-        chatWindow.style.right = 'auto';
-        chatWindow.style.bottom = 'auto';
-    }
+        const listData = await listResponse.json();
+        const available = (listData?.models || []).filter(m =>
+            (m?.supportedGenerationMethods || []).includes('generateContent')
+        );
 
-    function initAiChatDrag() {
-        const chatWindow = document.getElementById('aiChatWindow');
-        const header = chatWindow?.querySelector('.ai-chat-header');
-        if (!chatWindow || !header || header.dataset.dragReady === '1') return;
-
-        header.dataset.dragReady = '1';
-        let isDragging = false;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        const onMove = (clientX, clientY) => {
-            if (!isDragging) return;
-            aiChatDragged = true;
-            let left = clientX - offsetX;
-            let top = clientY - offsetY;
-            const rect = chatWindow.getBoundingClientRect();
-
-            left = Math.max(10, Math.min(left, window.innerWidth - rect.width - 10));
-            top = Math.max(10, Math.min(top, window.innerHeight - rect.height - 10));
-
-            chatWindow.style.left = `${left}px`;
-            chatWindow.style.top = `${top}px`;
-            chatWindow.style.right = 'auto';
-            chatWindow.style.bottom = 'auto';
-        };
-
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            const rect = chatWindow.getBoundingClientRect();
-            offsetX = e.clientX - rect.left;
-            offsetY = e.clientY - rect.top;
-            document.body.style.userSelect = 'none';
-            chatWindow.classList.add('dragging');
-        });
-
-        window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-            document.body.style.userSelect = '';
-            chatWindow.classList.remove('dragging');
-        });
-
-        header.addEventListener('touchstart', (e) => {
-            const t = e.touches[0];
-            const rect = chatWindow.getBoundingClientRect();
-            isDragging = true;
-            offsetX = t.clientX - rect.left;
-            offsetY = t.clientY - rect.top;
-            chatWindow.classList.add('dragging');
-        }, { passive: true });
-
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const t = e.touches[0];
-            onMove(t.clientX, t.clientY);
-        }, { passive: true });
-
-        window.addEventListener('touchend', () => { isDragging = false; chatWindow.classList.remove('dragging'); });
-
-        window.addEventListener('resize', () => {
-            if (!aiChatDragged && !chatWindow.classList.contains('hidden')) {
-                placeChatNearButton();
+        for (const preferred of preferredModels) {
+            if (available.some(m => m.name === preferred)) {
+                resolvedGeminiModel = preferred;
+                return resolvedGeminiModel;
             }
-        });
+        }
+
+        if (!available.length) {
+            throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
+        }
+
+        throw new Error('Model 1.5 tidak tersedia untuk API key ini. Buka ListModels di project Anda atau aktifkan billing/quota yang sesuai.');
     }
+
 
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
 
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        if (!apiKey) {
+            throw new Error('API key kosong. Isi keyPart1 dan keyPart2 terlebih dahulu.');
+        }
+
+        const modelName = await resolveGeminiModelName();
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
 
         try {
             const response = await fetch(endpoint, {
