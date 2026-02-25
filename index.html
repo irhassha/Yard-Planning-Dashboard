@@ -72,10 +72,36 @@
                 <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive"><span class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge Projection</button>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <button onclick="clearCache()" id="resetBtn" class="secondary-pill hidden">Reset</button>
+                <button id="aiChatToggle" class="secondary-pill ai-chat-trigger" type="button" onclick="toggleAiChatbox()" aria-expanded="false" aria-controls="aiChatWindow"><span class="material-symbols-outlined text-[18px]">smart_toy</span> YP Ai Assistant</button>
             </div>
         </div>
     </div>
+
+    <section id="aiChatWindow" class="ai-chat-window ai-chat-sidebar hidden" aria-label="AI Chatbox" aria-live="polite">
+            <header class="ai-chat-header">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                    <div>
+                        <p class="font-bold text-sm">YP Ai Assistant</p>
+                        <p class="text-[11px] text-blue-100">Online</p>
+                    </div>
+                </div>
+                <button type="button" class="ai-chat-close" onclick="toggleAiChatbox()" aria-label="Close chat">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </header>
+
+            <div id="aiChatHistory" class="ai-chat-history">
+                <div class="ai-chat-bubble bot">Halo! Saya siap bantu analisa data yard Anda.</div>
+            </div>
+
+            <form class="ai-chat-form" onsubmit="sendAiChatMessage(event)">
+                <input id="aiChatInput" type="text" placeholder="Ketik pertanyaan Anda..." autocomplete="off" />
+                <button type="submit" aria-label="Send message">
+                    <span class="material-symbols-outlined">send</span>
+                </button>
+            </form>
+    </section>
 
     <!-- TAB 1: OVERVIEW -->
 <div id="tab-overview" class="block mt-4">
@@ -538,7 +564,6 @@
 </body>
 
 </html>
-
 
 
 
