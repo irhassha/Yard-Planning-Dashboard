@@ -713,13 +713,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     async function resolveGeminiModelName() {
         if (resolvedGeminiModel) return resolvedGeminiModel;
 
-        const preferredModels = [
-            'models/gemini-1.5-flash-latest',
-            'models/gemini-1.5-flash',
-            'models/gemini-1.5-pro-latest',
-            'models/gemini-1.5-pro'
-        ];
-
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
         const listResponse = await fetch(listEndpoint);
         if (!listResponse.ok) {
