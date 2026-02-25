@@ -707,37 +707,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const keyPart1 = 'AIzaSyB7F0FyfzndxInbN';
     const keyPart2 = '1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
-    let resolvedGeminiModel = null;
     let aiChatDragged = false;
-
-    async function resolveGeminiModelName() {
-        if (resolvedGeminiModel) return resolvedGeminiModel;
-
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-        const listResponse = await fetch(listEndpoint);
-        if (!listResponse.ok) {
-            const listErr = await listResponse.text();
-            throw new Error(`ListModels error ${listResponse.status}: ${listErr}`);
-        }
-
-        const listData = await listResponse.json();
-        const available = (listData?.models || []).filter(m =>
-            (m?.supportedGenerationMethods || []).includes('generateContent')
-        );
-
-        for (const preferred of preferredModels) {
-            if (available.some(m => m.name === preferred)) {
-                resolvedGeminiModel = preferred;
-                return resolvedGeminiModel;
-            }
-        }
-
-        if (!available.length) {
-            throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
-        }
-
-        throw new Error('Model 1.5 tidak tersedia untuk API key ini. Buka ListModels di project Anda atau aktifkan billing/quota yang sesuai.');
-    }
 
     function placeChatNearButton() {
         const chatWindow = document.getElementById('aiChatWindow');
