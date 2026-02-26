@@ -140,7 +140,7 @@ function updateCapacity(block, newSlots, newTier) {
             
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1 };
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate};
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -158,6 +158,12 @@ function updateCapacity(block, newSlots, newTier) {
                         if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                         // Detect Service column (e.g., "service", "serviceout", "service out")
                         if(c.includes("service")) colMap.service = idx;
+                        // Deteksi kolom Line
+                        if(c === "line" || c.includes("Line")) colMap.pod = idx;
+                        // Deteksi date
+                        if(c === "arrivalDate" || (c.includes("arrival") && c.includes("date"))) {
+    colMap.arrivalDate = idx;
+}
                     });
                     break;
                 }
@@ -193,6 +199,10 @@ function updateCapacity(block, newSlots, newTier) {
                     // UPDATE: Simpan Load Status
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
                     service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : ""
+                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
+                    line: colMap.pod !== -1 ? String(row[colMap.pod] || "").toUpperCase().trim() : "UNKNOWN"
+                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
+                    arrivalDate: colMap.pod !== -1 ? String(row[colMap.pod] || "").toUpperCase().trim() : "UNKNOWN"
                 });
             }
 
@@ -739,6 +749,8 @@ ${dashboardContext}
 
 Data Rekapitulasi Kapal/Carrier (Gunakan ini untuk menjawab info Carrier/Empty):
 ${carrierDataText}`;
+${lineDataText}`;
+${podDataText}`;
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
