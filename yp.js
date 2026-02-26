@@ -731,22 +731,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 })
             });
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Error dari Google: ${response.status} - ${errText}`);
-            }
-
-            const data = await response.json();
-            const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            
-            return aiReply || "Maaf, AI tidak memberikan balasan.";
-
-        } catch (error) {
-            console.error("Gemini Error:", error);
-            return "Maaf, terjadi kesalahan teknis saat menghubungi AI. Coba lagi.";
-        }
-    }
-
 DATA JSON DASHBOARD:
 ${dashboardContext}
 
