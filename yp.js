@@ -763,7 +763,7 @@ Data Rekapitulasi Kapal/Carrier:
 ${carrierDataText}
 
 Data Line:
-${linedDataText}
+${lineDataText}
 
 Data Tanggal Kedatangan:
 ${arrivalDateDataText}`;
