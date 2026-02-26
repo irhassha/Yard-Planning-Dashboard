@@ -739,9 +739,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         
-async function sendMessageToGemini(userMessage) {
-        const dashboardContext = getDashboardContext();
-        
         // --- JALUR CERDAS: Rekapitulasi Data ---
         const carrierSummary = {};
         const lineSummary = {};
