@@ -739,25 +739,31 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         
-// --- JALUR CERDAS: Rekapitulasi Data ---
+async function sendMessageToGemini(userMessage) {
+        const dashboardContext = getDashboardContext();
+        
+        // --- JALUR CERDAS: Rekapitulasi Data ---
         const carrierSummary = {};
         const lineSummary = {};
         const arrivalSummary = {};
-        const podSummary = {}; // Jika ingin digunakan, tambahkan rekapnya di loop
-        const dwellSummary = { "0-3 Hari": 0, "Lebih dari 3 Hari": 0 };
+        const podSummary = {};
+        // UPDATE: Menambahkan kategori Lebih dari 30 Hari
+        const dwellSummary = { "0-3 Hari": 0, "3-30 Hari": 0, "Lebih dari 30 Hari": 0 };
         
         const todayMs = new Date().getTime();
         const invRows = typeof invData !== 'undefined' ? invData : [];
         
         invRows.forEach(item => {
-            // --- LOGIKA FILTER TRASH DATA ---
+            // --- 1. FILTER TRASH DATA (Abaikan Blok 8) ---
             const blockName = String(item.block || '').trim().toUpperCase();
             if (blockName.startsWith('8')) return; 
 
-            // 1. Rekap Carrier & Status
-            const carrier = item.carrier || item.Carrier || 'UNKNOWN';
             const status = String(item.loadStatus || item.Status || 'UNKNOWN').toUpperCase(); 
-            
+            const moveType = String(item.move || 'UNKNOWN').toUpperCase();
+            const carrier = item.carrier || item.Carrier || 'UNKNOWN';
+            const line = item.line || item.Line || 'UNKNOWN';
+
+            // --- 2. REKAP CARRIER ---
             if (!carrierSummary[carrier]) {
                 carrierSummary[carrier] = { EMPTY: 0, FULL: 0, TOTAL: 0 };
             }
@@ -768,10 +774,7 @@ async function sendMessageToGemini(userMessage) {
                 carrierSummary[carrier].FULL += 1;
             }
 
-            // 2. Rekap Line
-            const line = item.line || item.Line || 'UNKNOWN';
-            const moveType = String(item.move || 'UNKNOWN').toUpperCase();
-
+            // --- 3. REKAP LINE ---
             if (!lineSummary[line]) {
                 lineSummary[line] = { TOTAL: 0, IMPORT: 0, EXPORT: 0, FULL: 0, EMPTY: 0 };
             }
@@ -782,29 +785,34 @@ async function sendMessageToGemini(userMessage) {
             if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') lineSummary[line].EMPTY += 1;
             else lineSummary[line].FULL += 1;
 
-            // 3. Rekap POD (Opsional: Tambahkan jika ada kolomnya)
+            // --- 4. REKAP POD ---
             const pod = item.pod || 'UNKNOWN';
             podSummary[pod] = (podSummary[pod] || 0) + 1;
 
-            // 4. Rekap Arrival & Dwell Time (DIPERBAIKI: Tidak double hitung)
+            // --- 5. REKAP ARRIVAL & DWELL TIME (DENGAN LOGIKA > 30 HARI) ---
             const arrDateStr = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
             arrivalSummary[arrDateStr] = (arrivalSummary[arrDateStr] || 0) + 1;
 
-            if (arrDateStr !== 'UNKNOWN') {
+            // FILTER: Dwell Time hanya untuk unit IMPORT
+            if (arrDateStr !== 'UNKNOWN' && (moveType.includes('IMP') || moveType === 'I')) {
                 const parts = arrDateStr.split('/');
                 if (parts.length === 3) {
                     const arrDateObj = new Date(parts[2], parts[1] - 1, parts[0]).getTime();
                     const diffDays = Math.floor((todayMs - arrDateObj) / (1000 * 60 * 60 * 24));
                     
-                    if (diffDays > 3) dwellSummary["Lebih dari 3 Hari"] += 1;
-                    else dwellSummary["0-3 Hari"] += 1;
+                    if (diffDays > 30) {
+                        dwellSummary["Lebih dari 30 Hari"] += 1;
+                    } else if (diffDays > 3) {
+                        dwellSummary["3-30 Hari"] += 1;
+                    } else {
+                        dwellSummary["0-3 Hari"] += 1;
+                    }
                 }
             }
         });
 
-        // Pastikan semua variabel text dibuat di sini
         const carrierDataText = JSON.stringify(carrierSummary);
-        const lineDataText = JSON.stringify(lineSummary); // <--- Sekarang sudah ada
+        const lineDataText = JSON.stringify(lineSummary);
         const podDataText = JSON.stringify(podSummary);
         const arrivalDateDataText = JSON.stringify(arrivalSummary);
         const dwellDataText = JSON.stringify(dwellSummary);
@@ -821,12 +829,15 @@ ${carrierDataText}
 Data Line:
 ${lineDataText}
 
+Data Destinasi / POD:
+${podDataText}
+
 Data Tanggal Kedatangan:
 ${arrivalDateDataText}
 
-Data Lama Penumpukan (Dwell Time):
-${dwellDataText}`; // <--- Tanda tutup backtick di akhir semua teks
-    
+Data Lama Penumpukan (Khusus Unit IMPORT):
+${dwellDataText}`;
+
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
@@ -849,15 +860,14 @@ ${dwellDataText}`; // <--- Tanda tutup backtick di akhir semua teks
 
             const data = await response.json();
             const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            
             return aiReply || "Maaf, AI tidak memberikan balasan.";
 
         } catch (error) {
             console.error("Gemini Error:", error);
-            return "Maaf, terjadi kesalahan teknis saat menghubungi AI. Coba lagi.";
+            return "Maaf, terjadi kesalahan teknis. Coba lagi.";
         }
     }
-
+    
     async function sendAiChatMessage(event) {
         event.preventDefault();
 
