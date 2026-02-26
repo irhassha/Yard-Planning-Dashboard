@@ -703,8 +703,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = '';
-    const keyPart2 = '';
+    const keyPart1 = 'AIzaSyB7F0FyfzndxInb';
+    const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
     let resolvedGeminiModel = null;
 
