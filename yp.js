@@ -151,7 +151,7 @@ function updateCapacity(block, newSlots, newTier) {
                         let c = cleanStr(cell).replace(/[\s_]+/g, "");
                         if(c.includes("area") || c.includes("block")) colMap.block = idx;
                         if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                        if(c === "carrier" || c === "vessel" || c === "line") colMap.carrier = idx;
+                        if(c === "carrier" || c === "vessel") colMap.carrier = idx;
                         if(c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         // LOGIC BARU: Deteksi kolom Load Status
@@ -159,11 +159,11 @@ function updateCapacity(block, newSlots, newTier) {
                         // Detect Service column (e.g., "service", "serviceout", "service out")
                         if(c.includes("service")) colMap.service = idx;
                         // Deteksi kolom Line
-                        if(c === "line" || c.includes("Line")) colMap.pod = idx;
+                        if(c === "line" || c.includes("Line")) colMap.line = idx;
                         // Deteksi date
                         if(c === "arrivalDate" || (c.includes("arrival") && c.includes("date"))) {
-    colMap.arrivalDate = idx;
-}
+                        colMap.arrivalDate = idx;
+                        }
                     });
                     break;
                 }
@@ -750,7 +750,7 @@ ${dashboardContext}
 Data Rekapitulasi Kapal/Carrier (Gunakan ini untuk menjawab info Carrier/Empty):
 ${carrierDataText}`;
 ${lineDataText}`;
-${podDataText}`;
+${arrivalDateDataText}`;
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
