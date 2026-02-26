@@ -709,19 +709,13 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
+        cconst rawData = JSON.stringify(invData.slice(0, 20000));
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
+        Data Ringkasan Dashboard:
+        ${dashboardContext}
+        Data Detail Kontainer (Gunakan ini untuk melacak info Carrier, Move, Slot, dan status Full/Empty/LoadStatus):
+        ${rawData}`;
         
-        // 1. Ambil data detail (maksimal 20.000 baris agar tidak berat)
-        const rawData = JSON.stringify(invData.slice(0, 20000));
-
-        // 2. PENTING: Masukkan ${rawData} ke dalam systemPrompt!
-        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.
-        
-Data Ringkasan Dashboard:
-${dashboardContext}
-
-Data Detail Kontainer (Gunakan ini untuk melacak info Carrier, Move, Slot, dan status Full/Empty/LoadStatus):
-${rawData}`;
-
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
