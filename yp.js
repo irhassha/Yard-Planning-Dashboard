@@ -707,9 +707,38 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
 
-    async function sendMessageToGemini(userMessage) {
+async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
-        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
+        
+        // --- JALUR CERDAS: Menghitung rekap Carrier & Status ---
+        const carrierSummary = {};
+        const invRows = typeof invData !== 'undefined' ? invData : [];
+        
+        invRows.forEach(item => {
+            const carrier = item.carrier || item.Carrier || 'UNKNOWN';
+            const status = String(item.loadStatus || item.Status || 'UNKNOWN').toUpperCase(); 
+            
+            if (!carrierSummary[carrier]) {
+                carrierSummary[carrier] = { EMPTY: 0, FULL: 0, TOTAL: 0 };
+            }
+            
+            carrierSummary[carrier].TOTAL += 1;
+            if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') {
+                carrierSummary[carrier].EMPTY += 1;
+            } else {
+                carrierSummary[carrier].FULL += 1;
+            }
+        });
+
+        const carrierDataText = JSON.stringify(carrierSummary);
+
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. 
+        
+Data Ringkasan Dashboard:
+${dashboardContext}
+
+Data Rekapitulasi Kapal/Carrier (Gunakan ini untuk menjawab info Carrier/Empty):
+${carrierDataText}`;
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
@@ -720,7 +749,27 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `${systemPrompt}
+                            text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
+                        }]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`Error dari Google: ${response.status} - ${errText}`);
+            }
+
+            const data = await response.json();
+            const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            return aiReply || "Maaf, AI tidak memberikan balasan.";
+
+        } catch (error) {
+            console.error("Gemini Error:", error);
+            return "Maaf, terjadi kesalahan teknis saat menghubungi AI. Coba lagi.";
+        }
+    }
 
 DATA JSON DASHBOARD:
 ${dashboardContext}
