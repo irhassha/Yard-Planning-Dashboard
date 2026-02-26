@@ -720,7 +720,7 @@ async function sendMessageToGemini(userMessage) {
         
         // --- JALUR CERDAS: Rekapitulasi Data ---
         const carrierSummary = {};
-        const podSummary = {};
+        const lineSummary = {};
         const arrivalSummary = {};
         const invRows = typeof invData !== 'undefined' ? invData : [];
         
@@ -740,9 +740,9 @@ async function sendMessageToGemini(userMessage) {
                 carrierSummary[carrier].FULL += 1;
             }
 
-            // 2. Rekap POD
-            const pod = item.pod || 'UNKNOWN';
-            podSummary[pod] = (podSummary[pod] || 0) + 1;
+            // 2. Rekap Line
+            const line = item.line || 'UNKNOWN';
+            lineSummary[line] = (lineSummary[line] || 0) + 1;
 
             // 3. Rekap Arrival Date (Hanya ambil tanggal, buang jam)
             const arrDate = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
