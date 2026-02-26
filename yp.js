@@ -198,11 +198,9 @@ function updateCapacity(block, newSlots, newTier) {
                     move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
                     // UPDATE: Simpan Load Status
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
-                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : ""
                     service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
-                    line: colMap.pod !== -1 ? String(row[colMap.pod] || "").toUpperCase().trim() : "UNKNOWN"
-                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
-                    arrivalDate: colMap.pod !== -1 ? String(row[colMap.pod] || "").toUpperCase().trim() : "UNKNOWN"
+                    line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "UNKNOWN",
+                    arrivalDate: colMap.arrivalDate !== -1 ? String(row[colMap.arrivalDate] || "").toUpperCase().trim() : "UNKNOWN"
                 });
             }
 
