@@ -710,7 +710,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
-        // 1. ENDPOINT LANGSUNG DI-HARDCODE KE 2.5 FLASH (TANPA NGECEK-NGECEK LAGI)
+
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
@@ -720,12 +720,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
-                        }]
-                    }]
-                })
-            });
-
+                            text: `${systemPrompt}
 DATA JSON DASHBOARD:
 ${dashboardContext}
 
