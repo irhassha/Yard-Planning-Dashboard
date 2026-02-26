@@ -751,7 +751,7 @@ async function sendMessageToGemini(userMessage) {
 
         // Ubah semua rekap jadi JSON kecil
         const carrierDataText = JSON.stringify(carrierSummary);
-        const podDataText = JSON.stringify(podSummary);
+        const lineDataText = JSON.stringify(lineSummary);
         const arrivalDateDataText = JSON.stringify(arrivalSummary);
 
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. 
