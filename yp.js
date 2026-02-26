@@ -172,6 +172,26 @@ function updateCapacity(block, newSlots, newTier) {
             if(hIdx === -1 || colMap.carrier === -1) throw new Error("Format kolom tidak dikenali.");
 
             invData = [];
+            function formatExcelDate(excelSerial) {
+    if (!excelSerial) return "UNKNOWN";
+    
+    // Cek apakah nilainya adalah angka ribuan (seperti 46070)
+    if (!isNaN(excelSerial) && Number(excelSerial) > 30000) {
+        // Rumus sakti mengubah serial Excel menjadi Tanggal Javascript
+        const utc_days  = Math.floor(excelSerial - 25569);
+        const date_info = new Date(utc_days * 86400 * 1000);
+        
+        // Ambil Tanggal, Bulan, Tahun
+        const day = String(date_info.getDate()).padStart(2, '0');
+        const month = String(date_info.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+        const year = date_info.getFullYear();
+        
+        return `${day}/${month}/${year}`; // Hasilnya: "26/02/2026"
+    }
+    
+    // Kalau dari Excel sudah berbentuk teks normal, biarkan saja
+    return String(excelSerial).trim();
+}
             for(let i=hIdx+1; i<json.length; i++) {
                 let row = json[i];
                 if(!row[colMap.block] && !row[colMap.slot]) continue;
@@ -200,7 +220,8 @@ function updateCapacity(block, newSlots, newTier) {
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
                     service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
                     line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "UNKNOWN",
-                    arrivalDate: colMap.arrivalDate !== -1 ? String(row[colMap.arrivalDate] || "").toUpperCase().trim() : "UNKNOWN"
+                    // KODE BARU (Memakai fungsi formatExcelDate):
+                    arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : "UNKNOWN"
                 });
             }
 
