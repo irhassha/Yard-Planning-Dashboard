@@ -707,7 +707,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
 
-async function sendMessageToGemini(userMessage) {
+    async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         
         // --- JALUR CERDAS: Menghitung rekap Carrier & Status ---
@@ -768,44 +768,6 @@ ${carrierDataText}`;
         } catch (error) {
             console.error("Gemini Error:", error);
             return "Maaf, terjadi kesalahan teknis saat menghubungi AI. Coba lagi.";
-        }
-    }
-
-DATA JSON DASHBOARD:
-${dashboardContext}
-
-Pertanyaan user: ${userMessage}`
-                        }]
-                    }]
-                })
-            });
-
-            if (!response.ok) {
-                const errText = await response.text();
-                if (response.status === 403) {
-                    throw new Error(`Akses ditolak (403). Periksa API restriction, origin localhost, dan enable Gemini API. Detail: ${errText}`);
-                }
-                if (response.status === 404) {
-                    resolvedGeminiModel = null;
-                    throw new Error(`Model tidak ditemukan (404). Pastikan model tersedia untuk API key ini. Detail: ${errText}`);
-                }
-                if (response.status === 429) {
-                    let retryInfo = '';
-                    try {
-                        const parsed = JSON.parse(errText);
-                        const retryDetail = (parsed?.error?.details || []).find(d => d['@type'] && d['@type'].includes('RetryInfo'));
-                        if (retryDetail?.retryDelay) retryInfo = ` Coba lagi dalam ${retryDetail.retryDelay}.`;
-                    } catch (_) {}
-                    throw new Error(`Kuota Gemini habis (429). Periksa billing, quota project, atau ganti model/key.${retryInfo}`);
-                }
-                throw new Error(`Gemini API error ${response.status}: ${errText}`);
-            }
-
-            const data = await response.json();
-            return data?.candidates?.[0]?.content?.parts?.[0]?.text
-                || 'Maaf, saya belum bisa menghasilkan jawaban saat ini.';
-        } catch (error) {
-            throw new Error(error?.message || 'Koneksi ke Gemini API gagal.');
         }
     }
 
