@@ -140,7 +140,7 @@ function updateCapacity(block, newSlots, newTier) {
             
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate};
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1};
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
