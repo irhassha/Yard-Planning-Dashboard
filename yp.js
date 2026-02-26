@@ -706,55 +706,15 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const keyPart1 = 'AIzaSyB7F0FyfzndxInb';
     const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
-    let resolvedGeminiModel = null;
-
-    async function resolveGeminiModelName() {
-        if (resolvedGeminiModel) return resolvedGeminiModel;
-
-        const preferredModels = [
-            'models/gemini-1.5-flash-latest',
-            'models/gemini-1.5-flash',
-            'models/gemini-1.5-pro-latest',
-            'models/gemini-1.5-pro'
-        ];
-
-        const listEndpoint = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-        const listResponse = await fetch(listEndpoint);
-        if (!listResponse.ok) {
-            const listErr = await listResponse.text();
-            throw new Error(`ListModels error ${listResponse.status}: ${listErr}`);
-        }
-
-        const listData = await listResponse.json();
-        const available = (listData?.models || []).filter(m =>
-            (m?.supportedGenerationMethods || []).includes('generateContent')
-        );
-
-        for (const preferred of preferredModels) {
-            if (available.some(m => m.name === preferred)) {
-                resolvedGeminiModel = preferred;
-                return resolvedGeminiModel;
-            }
-        }
-
-        if (!available.length) {
-            throw new Error('Tidak ada model Gemini yang mendukung generateContent untuk API key ini.');
-        }
-
-        throw new Error('Model 1.5 tidak tersedia untuk API key ini. Buka ListModels di project Anda atau aktifkan billing/quota yang sesuai.');
-    }
-
 
     async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
-        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.`;
+        
+        // Gabungkan konteks langsung ke dalam system prompt
+        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.\n\nData Dashboard:\n${dashboardContext}`;
 
-        if (!apiKey) {
-            throw new Error('API key kosong. Isi keyPart1 dan keyPart2 terlebih dahulu.');
-        }
-
-        const modelName = await resolveGeminiModelName();
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`;
+        // 1. ENDPOINT LANGSUNG DI-HARDCODE KE 2.5 FLASH (TANPA NGECEK-NGECEK LAGI)
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
             const response = await fetch(endpoint, {
@@ -763,8 +723,29 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `${systemPrompt}
+                            text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
+                        }]
+                    }]
+                })
+            });
 
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`Error dari Google: ${response.status} - ${errText}`);
+            }
+
+            const data = await response.json();
+            
+            // Mengambil jawaban dari struktur JSON Gemini
+            const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            
+            return aiReply || "Maaf, AI tidak memberikan balasan.";
+
+        } catch (error) {
+            console.error("Gemini Error:", error);
+            return "Maaf, terjadi kesalahan teknis saat menghubungi AI. Coba lagi.";
+        }
+    }
 DATA JSON DASHBOARD:
 ${dashboardContext}
 
