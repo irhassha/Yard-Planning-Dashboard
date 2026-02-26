@@ -716,11 +716,11 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         // 2. PENTING: Masukkan ${rawData} ke dalam systemPrompt!
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. Jawab pertanyaan user berdasarkan data JSON berikut. Gunakan bahasa profesional dan istilah pelabuhan/terminal container yang tepat.
         
-Data Ringkasan Dashboard:
-${dashboardContext}
+        Data Ringkasan Dashboard:
+        ${dashboardContext}
 
-Data Detail Kontainer (Gunakan ini untuk melacak info Carrier, Move, Slot, dan status Full/Empty/LoadStatus):
-${rawData}`;
+        Data Detail Kontainer (Gunakan ini untuk melacak info Carrier, Move, Slot, dan status Full/Empty/LoadStatus):
+        ${rawData}`;
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
