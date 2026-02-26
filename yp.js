@@ -715,14 +715,17 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
     const apiKey = keyPart1 + keyPart2;
 
-    async function sendMessageToGemini(userMessage) {
+async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         
-        // --- JALUR CERDAS: Menghitung rekap Carrier & Status ---
+        // --- JALUR CERDAS: Rekapitulasi Data ---
         const carrierSummary = {};
+        const podSummary = {};
+        const arrivalSummary = {};
         const invRows = typeof invData !== 'undefined' ? invData : [];
         
         invRows.forEach(item => {
+            // 1. Rekap Carrier & Status
             const carrier = item.carrier || item.Carrier || 'UNKNOWN';
             const status = String(item.loadStatus || item.Status || 'UNKNOWN').toUpperCase(); 
             
@@ -736,18 +739,33 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             } else {
                 carrierSummary[carrier].FULL += 1;
             }
+
+            // 2. Rekap POD
+            const pod = item.pod || 'UNKNOWN';
+            podSummary[pod] = (podSummary[pod] || 0) + 1;
+
+            // 3. Rekap Arrival Date (Hanya ambil tanggal, buang jam)
+            const arrDate = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
+            arrivalSummary[arrDate] = (arrivalSummary[arrDate] || 0) + 1;
         });
 
+        // Ubah semua rekap jadi JSON kecil
         const carrierDataText = JSON.stringify(carrierSummary);
+        const podDataText = JSON.stringify(podSummary);
+        const arrivalDateDataText = JSON.stringify(arrivalSummary);
 
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. 
         
 Data Ringkasan Dashboard:
 ${dashboardContext}
 
-Data Rekapitulasi Kapal/Carrier (Gunakan ini untuk menjawab info Carrier/Empty):
-${carrierDataText}`;
-${lineDataText}`;
+Data Rekapitulasi Kapal/Carrier:
+${carrierDataText}
+
+Data Line:
+${linedDataText}
+
+Data Tanggal Kedatangan:
 ${arrivalDateDataText}`;
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -767,7 +785,7 @@ ${arrivalDateDataText}`;
 
             if (!response.ok) {
                 const errText = await response.text();
-                throw new Error(`Error dari Google: ${response.status} - ${errText}`);
+                throw new Error(`Error Google: ${response.status} - ${errText}`);
             }
 
             const data = await response.json();
