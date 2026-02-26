@@ -739,13 +739,21 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 async function sendMessageToGemini(userMessage) {
         const dashboardContext = getDashboardContext();
         
-        // --- JALUR CERDAS: Rekapitulasi Data ---
+// --- JALUR CERDAS: Rekapitulasi Data ---
         const carrierSummary = {};
         const lineSummary = {};
         const arrivalSummary = {};
+        const podSummary = {}; // Jika ingin digunakan, tambahkan rekapnya di loop
+        const dwellSummary = { "0-3 Hari": 0, "Lebih dari 3 Hari": 0 };
+        
+        const todayMs = new Date().getTime();
         const invRows = typeof invData !== 'undefined' ? invData : [];
         
         invRows.forEach(item => {
+            // --- LOGIKA FILTER TRASH DATA ---
+            const blockName = String(item.block || '').trim().toUpperCase();
+            if (blockName.startsWith('8')) return; 
+
             // 1. Rekap Carrier & Status
             const carrier = item.carrier || item.Carrier || 'UNKNOWN';
             const status = String(item.loadStatus || item.Status || 'UNKNOWN').toUpperCase(); 
@@ -753,7 +761,6 @@ async function sendMessageToGemini(userMessage) {
             if (!carrierSummary[carrier]) {
                 carrierSummary[carrier] = { EMPTY: 0, FULL: 0, TOTAL: 0 };
             }
-            
             carrierSummary[carrier].TOTAL += 1;
             if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') {
                 carrierSummary[carrier].EMPTY += 1;
@@ -762,21 +769,49 @@ async function sendMessageToGemini(userMessage) {
             }
 
             // 2. Rekap Line
-            const line = item.line || 'UNKNOWN';
-            lineSummary[line] = (lineSummary[line] || 0) + 1;
+            const line = item.line || item.Line || 'UNKNOWN';
+            const moveType = String(item.move || 'UNKNOWN').toUpperCase();
 
-            // 3. Rekap Arrival Date (Hanya ambil tanggal, buang jam)
-            const arrDate = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
-            arrivalSummary[arrDate] = (arrivalSummary[arrDate] || 0) + 1;
+            if (!lineSummary[line]) {
+                lineSummary[line] = { TOTAL: 0, IMPORT: 0, EXPORT: 0, FULL: 0, EMPTY: 0 };
+            }
+            lineSummary[line].TOTAL += 1;
+            if (moveType.includes('IMP') || moveType === 'I') lineSummary[line].IMPORT += 1;
+            else if (moveType.includes('EXP') || moveType === 'E') lineSummary[line].EXPORT += 1;
+
+            if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') lineSummary[line].EMPTY += 1;
+            else lineSummary[line].FULL += 1;
+
+            // 3. Rekap POD (Opsional: Tambahkan jika ada kolomnya)
+            const pod = item.pod || 'UNKNOWN';
+            podSummary[pod] = (podSummary[pod] || 0) + 1;
+
+            // 4. Rekap Arrival & Dwell Time (DIPERBAIKI: Tidak double hitung)
+            const arrDateStr = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
+            arrivalSummary[arrDateStr] = (arrivalSummary[arrDateStr] || 0) + 1;
+
+            if (arrDateStr !== 'UNKNOWN') {
+                const parts = arrDateStr.split('/');
+                if (parts.length === 3) {
+                    const arrDateObj = new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                    const diffDays = Math.floor((todayMs - arrDateObj) / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays > 3) dwellSummary["Lebih dari 3 Hari"] += 1;
+                    else dwellSummary["0-3 Hari"] += 1;
+                }
+            }
         });
 
-        // Ubah semua rekap jadi JSON kecil
+        // Pastikan semua variabel text dibuat di sini
         const carrierDataText = JSON.stringify(carrierSummary);
-        const lineDataText = JSON.stringify(lineSummary);
+        const lineDataText = JSON.stringify(lineSummary); // <--- Sekarang sudah ada
+        const podDataText = JSON.stringify(podSummary);
         const arrivalDateDataText = JSON.stringify(arrivalSummary);
+        const dwellDataText = JSON.stringify(dwellSummary);
 
         const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. 
-        
+Hari ini adalah tanggal: ${new Date().toLocaleDateString('id-ID')}
+
 Data Ringkasan Dashboard:
 ${dashboardContext}
 
@@ -787,8 +822,11 @@ Data Line:
 ${lineDataText}
 
 Data Tanggal Kedatangan:
-${arrivalDateDataText}`;
+${arrivalDateDataText}
 
+Data Lama Penumpukan (Dwell Time):
+${dwellDataText}`; // <--- Tanda tutup backtick di akhir semua teks
+    
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
