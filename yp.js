@@ -733,9 +733,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
-    const keyPart1 = 'AIzaSyB7F0FyfzndxInb';
-    const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
-    const apiKey = keyPart1 + keyPart2;
+    const AI_PROXY_ENDPOINT = '/api/ai/chat';
+    const AI_PROXY_FALLBACK_ENDPOINT = 'http://127.0.0.1:8787/api/ai/chat';
 
     function getOperationalSnapshot() {
         const contextRaw = getDashboardContext();
