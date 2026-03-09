@@ -734,6 +734,16 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     const AI_PROXY_ENDPOINT = '/api/ai/chat';
+    const AI_PROXY_FALLBACK_ENDPOINT = 'http://127.0.0.1:8787/api/ai/chat';
+
+    function getAiProxyCandidates() {
+        const custom = String(window.AI_PROXY_ENDPOINT || localStorage.getItem('aiProxyEndpoint') || '').trim();
+        const candidates = [];
+        if (custom) candidates.push(custom);
+        candidates.push(AI_PROXY_ENDPOINT);
+        candidates.push(AI_PROXY_FALLBACK_ENDPOINT);
+        return [...new Set(candidates)];
+    }
 
     function getOperationalSnapshot() {
         const contextRaw = getDashboardContext();
@@ -961,16 +971,33 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     async function callAiProxy(payload) {
-        const res = await fetch(AI_PROXY_ENDPOINT, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`AI Proxy Error: ${res.status} - ${errorText}`);
+        const endpoints = getAiProxyCandidates();
+        let lastError = null;
+
+        for (const endpoint of endpoints) {
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    lastError = new Error(`AI Proxy Error (${endpoint}): ${res.status} - ${errorText}`);
+                    if (res.status === 404 || res.status === 405 || res.status === 501) {
+                        continue;
+                    }
+                    throw lastError;
+                }
+
+                return res.json();
+            } catch (err) {
+                lastError = err;
+            }
         }
-        return res.json();
+
+        throw (lastError || new Error('AI Proxy Error: all proxy endpoints failed.'));
     }
 
     async function sendMessageToGemini(userMessage) {
