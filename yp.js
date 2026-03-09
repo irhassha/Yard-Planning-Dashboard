@@ -742,7 +742,7 @@ async function sendMessageToGemini(userMessage) {
         const systemInstruction = {
             role: "system",
             parts: [{
-                text: `Anda adalah AI Asisten operasional di New Priok Container Terminal 1 (NPCT1). Berikut adalah kondisi lapangan saat ini: ${dashboardContext}. Gunakan data ini untuk menjawab pertanyaan umum terkait status yard dengan cepat. Jika pengguna menanyakan detail spesifik per blok, tanggal tertentu, atau dwell time, Anda WAJIB menggunakan tools yang tersedia. Tolak pertanyaan di luar domain logistik pelabuhan.`
+                text: "Anda adalah AI Planning Assistant Manager di NPCT1. Kondisi lapangan saat ini: " + dashboardContext + ". Gunakan ringkasan ini untuk menjawab pertanyaan umum. JIKA pengguna bertanya detail spesifik per blok, tanggal kedatangan, atau dwell time, Anda WAJIB menggunakan tools yang tersedia. Tolak pertanyaan di luar domain logistik pelabuhan."
             }]
         };
 
@@ -750,139 +750,102 @@ async function sendMessageToGemini(userMessage) {
             functionDeclarations: [
                 {
                     name: "get_block_details",
-                    description: "Mencari detail inventori pada blok spesifik.",
+                    description: "Ambil detail inventori untuk block tertentu.",
                     parameters: {
                         type: "OBJECT",
                         properties: {
-                            blockName: { type: "STRING", description: "Nama block yard, contoh A01, B03, C04." }
+                            blockName: { type: "STRING", description: "Nama block, contoh A01." }
                         },
                         required: ["blockName"]
                     }
                 },
                 {
                     name: "get_dwell_time_summary",
-                    description: "Menghitung rekap dwell time import: 0-3 Hari, 3-30 Hari, Lebih dari 30 Hari.",
+                    description: "Hitung rekap dwell time untuk unit import/discharge.",
                     parameters: { type: "OBJECT", properties: {} }
                 },
                 {
                     name: "get_arrival_summary_by_date",
-                    description: "Menghitung total kontainer berdasarkan tanggal kedatangan tertentu.",
+                    description: "Hitung total box berdasarkan tanggal kedatangan.",
                     parameters: {
                         type: "OBJECT",
                         properties: {
-                            date: { type: "STRING", description: "Tanggal arrival format DD/MM/YYYY." }
+                            date: { type: "STRING", description: "Tanggal yang dicari, misal 26/02/2026." }
                         },
                         required: ["date"]
-                    }
-                },
-                {
-                    name: "get_vessel_clash_analysis",
-                    description: "Mengambil analisa benturan jadwal sandar kapal.",
-                    parameters: { type: "OBJECT", properties: {} }
-                },
-                {
-                    name: "switch_dashboard_tab",
-                    description: "Memindahkan tampilan dashboard ke tab tertentu.",
-                    parameters: {
-                        type: "OBJECT",
-                        properties: {
-                            tabId: { type: "STRING", description: "ID tab dashboard seperti overview, analytics, clash, empty, projection." }
-                        },
-                        required: ["tabId"]
                     }
                 }
             ]
         }];
 
-        const runTool = (toolName, args = {}) => {
-            if (toolName === 'get_block_details') {
-                const blockName = String(args.blockName || '').trim().toUpperCase();
-                if (!blockName) throw new Error('Parameter blockName wajib diisi.');
+        const safeInvData = Array.isArray(invData) ? invData : [];
+        const parseArrivalDate = (arrivalDateRaw) => {
+            const raw = String(arrivalDateRaw || '').trim();
+            if (!raw) return null;
+            const datePart = raw.split(' ')[0];
+            const parts = datePart.split('/');
+            if (parts.length !== 3) return null;
+            const day = Number(parts[0]);
+            const month = Number(parts[1]);
+            const year = Number(parts[2]);
+            if (!day || !month || !year) return null;
+            const parsed = new Date(year, month - 1, day);
+            return Number.isNaN(parsed.getTime()) ? null : parsed;
+        };
 
-                const rows = (invData || []).filter(item => String(item?.block || '').toUpperCase() === blockName);
-                if (!rows.length) throw new Error(`Data block ${blockName} tidak ditemukan.`);
+        const executeFunction = (functionName, functionArgs = {}) => {
+            if (functionName === 'get_block_details') {
+                const blockName = String(functionArgs.blockName || '').trim().toUpperCase();
+                if (!blockName) {
+                    return { error: 'Parameter blockName wajib diisi.' };
+                }
 
-                return {
-                    success: true,
-                    blockName,
-                    totalUnits: rows.length,
-                    rows: rows.slice(0, 200)
-                };
+                const rows = safeInvData.filter(item => String(item?.block || '').trim().toUpperCase() === blockName);
+                const summary = { totalBox: rows.length, box20ft: 0, box40ft: 0, box45ft: 0 };
+                rows.forEach(item => {
+                    const size = String(item?.length || '').trim();
+                    if (size.startsWith('20')) summary.box20ft += 1;
+                    else if (size.startsWith('45')) summary.box45ft += 1;
+                    else if (size.startsWith('40')) summary.box40ft += 1;
+                    else summary.box40ft += 1;
+                });
+
+                return { blockName, ...summary };
             }
 
-            if (toolName === 'get_dwell_time_summary') {
-                const dwellSummary = { "0-3 Hari": 0, "3-30 Hari": 0, "Lebih dari 30 Hari": 0 };
-                const todayMs = new Date().getTime();
+            if (functionName === 'get_dwell_time_summary') {
+                const result = { "0-3_Hari": 0, "3-30_Hari": 0, "Lebih_30_Hari": 0 };
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
 
-                (invData || []).forEach(item => {
+                safeInvData.forEach(item => {
                     const moveType = String(item?.move || '').toUpperCase();
-                    const arrDateStr = String(item?.arrivalDate || 'UNKNOWN').split(' ')[0];
-                    if (arrDateStr === 'UNKNOWN') return;
-                    if (!(moveType.includes('IMP') || moveType === 'I')) return;
+                    if (!(moveType.includes('IMPORT') || moveType.includes('DISC'))) return;
 
-                    const parts = arrDateStr.split('/');
-                    if (parts.length !== 3) return;
+                    const arrivalDate = parseArrivalDate(item?.arrivalDate);
+                    if (!arrivalDate) return;
+                    arrivalDate.setHours(0, 0, 0, 0);
 
-                    const arrDateMs = new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-                    if (Number.isNaN(arrDateMs)) return;
-
-                    const diffDays = Math.floor((todayMs - arrDateMs) / (1000 * 60 * 60 * 24));
-                    if (diffDays > 30) dwellSummary["Lebih dari 30 Hari"] += 1;
-                    else if (diffDays > 3) dwellSummary["3-30 Hari"] += 1;
-                    else dwellSummary["0-3 Hari"] += 1;
+                    const diffDays = Math.floor((today.getTime() - arrivalDate.getTime()) / (1000 * 60 * 60 * 24));
+                    if (diffDays <= 3) result["0-3_Hari"] += 1;
+                    else if (diffDays <= 30) result["3-30_Hari"] += 1;
+                    else result["Lebih_30_Hari"] += 1;
                 });
 
-                return { success: true, dwellSummary };
+                return result;
             }
 
-            if (toolName === 'get_arrival_summary_by_date') {
-                const targetDate = String(args.date || '').trim();
-                if (!targetDate) throw new Error('Parameter date wajib diisi (format DD/MM/YYYY).');
-
-                const matchedRows = (invData || []).filter(item => {
-                    const rowDate = String(item?.arrivalDate || 'UNKNOWN').split(' ')[0].trim();
-                    return rowDate === targetDate;
-                });
-
-                if (!matchedRows.length) {
-                    throw new Error(`Tidak ada data arrival pada tanggal ${targetDate}.`);
+            if (functionName === 'get_arrival_summary_by_date') {
+                const date = String(functionArgs.date || '').trim();
+                if (!date) {
+                    return { error: 'Parameter date wajib diisi.' };
                 }
 
-                return {
-                    success: true,
-                    date: targetDate,
-                    totalContainers: matchedRows.length,
-                    rows: matchedRows.slice(0, 200)
-                };
+                const totalBox = safeInvData.filter(item => String(item?.arrivalDate || '').includes(date)).length;
+                return { date, totalBox };
             }
 
-            if (toolName === 'get_vessel_clash_analysis') {
-                const clashes = globalClashes || [];
-                const clashByBlock = {};
-                clashes.forEach(clash => {
-                    const block = String(clash?.block || 'UNKNOWN');
-                    clashByBlock[block] = (clashByBlock[block] || 0) + 1;
-                });
-                return {
-                    success: true,
-                    totalClashes: clashes.length,
-                    clashByBlock,
-                    samples: clashes.slice(0, 100)
-                };
-            }
-
-            if (toolName === 'switch_dashboard_tab') {
-                const tabId = String(args.tabId || '').trim();
-                const allowedTabs = ['overview', 'analytics', 'clash', 'empty', 'projection'];
-                if (!allowedTabs.includes(tabId)) {
-                    throw new Error(`tabId tidak valid: ${tabId}. Gunakan salah satu: ${allowedTabs.join(', ')}.`);
-                }
-
-                switchTab(tabId);
-                return { success: true, tabId, message: `Berhasil pindah ke tab ${tabId}.` };
-            }
-
-            throw new Error(`Tool tidak dikenali: ${toolName}`);
+            return { error: `Function tidak dikenali: ${functionName}` };
         };
 
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -895,61 +858,57 @@ async function sendMessageToGemini(userMessage) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     systemInstruction,
-                    tools,
-                    contents: chatHistory
+                    contents: chatHistory,
+                    tools
                 })
             });
 
             if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Error Google (step-1): ${response.status} - ${errText}`);
+                const errorText = await response.text();
+                throw new Error(`Error Google (step-1): ${response.status} - ${errorText}`);
             }
 
             const data = await response.json();
-            const firstParts = data?.candidates?.[0]?.content?.parts || [];
-            const functionCall = firstParts.find(part => part?.functionCall)?.functionCall;
+            const responsePart = data?.candidates?.[0]?.content?.parts?.[0] || {};
 
-            if (functionCall) {
-                let functionResult;
-                try {
-                    functionResult = runTool(functionCall.name, functionCall.args || {});
-                } catch (toolErr) {
-                    functionResult = { success: false, error: toolErr.message };
-                }
+            if (responsePart.functionCall) {
+                const functionName = responsePart.functionCall.name;
+                const functionResult = executeFunction(functionName, responsePart.functionCall.args || {});
 
-                chatHistory.push({ role: "model", parts: [{ functionCall }] });
+                chatHistory.push({ role: "model", parts: [{ functionCall: responsePart.functionCall }] });
                 chatHistory.push({
                     role: "function",
-                    parts: [{ text: JSON.stringify({ name: functionCall.name, response: functionResult }) }]
+                    parts: [{ functionResponse: { name: functionName, response: { result: functionResult } } }]
                 });
 
-                const secondResponse = await fetch(endpoint, {
+                const response2 = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         systemInstruction,
-                        tools,
-                        contents: chatHistory
+                        contents: chatHistory,
+                        tools
                     })
                 });
 
-                if (!secondResponse.ok) {
-                    const errText2 = await secondResponse.text();
-                    throw new Error(`Error Google (step-2): ${secondResponse.status} - ${errText2}`);
+                if (!response2.ok) {
+                    const errorText2 = await response2.text();
+                    throw new Error(`Error Google (step-2): ${response2.status} - ${errorText2}`);
                 }
 
-                const secondData = await secondResponse.json();
-                const textAnswer = secondData?.candidates?.[0]?.content?.parts?.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
-                chatHistory.push({ role: "model", parts: [{ text: textAnswer }] });
-                return textAnswer;
+                const data2 = await response2.json();
+                const finalPart = data2?.candidates?.[0]?.content?.parts?.[0] || {};
+                const finalText = finalPart.text || "Maaf, AI tidak memberikan balasan.";
+                chatHistory.push({ role: "model", parts: [{ text: finalText }] });
+                return finalText;
             }
 
-            const textAnswer = firstParts.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
-            chatHistory.push({ role: "model", parts: [{ text: textAnswer }] });
-            return textAnswer;
+            chatHistory.push({ role: "model", parts: [responsePart] });
+            return responsePart.text || "Maaf, AI tidak memberikan balasan.";
         } catch (error) {
+            chatHistory.pop();
             console.error("Gemini Error:", error);
-            return "Maaf, koneksi ke layanan AI gagal. Silakan coba lagi beberapa saat.";
+            return String(error.message || error);
         }
     }
 
