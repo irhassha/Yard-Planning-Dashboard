@@ -738,32 +738,46 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const apiKey = keyPart1 + keyPart2;
 
 async function sendMessageToGemini(userMessage) {
+        const dashboardContext = getDashboardContext();
         const systemInstruction = {
             role: "system",
-            parts: [{ text: "Kamu adalah Planning Assistant Manager di New Priok Container Terminal 1 (NPCT1). Jawab hanya pertanyaan yang relevan dengan logistik, pelabuhan, operasional terminal, vessel planning, dan yard planning. Jika pertanyaan di luar domain tersebut, tolak dengan sopan dan arahkan user ke topik yang relevan." }]
+            parts: [{
+                text: `Anda adalah AI Asisten operasional di New Priok Container Terminal 1 (NPCT1). Berikut adalah kondisi lapangan saat ini: ${dashboardContext}. Gunakan data ini untuk menjawab pertanyaan umum terkait status yard dengan cepat. Jika pengguna menanyakan detail spesifik per blok, tanggal tertentu, atau dwell time, Anda WAJIB menggunakan tools yang tersedia. Tolak pertanyaan di luar domain logistik pelabuhan.`
+            }]
         };
 
         const tools = [{
             functionDeclarations: [
                 {
-                    name: "get_yard_overview",
-                    description: "Mengambil ringkasan KPI yard terkini dari dashboard.",
-                    parameters: { type: "OBJECT", properties: {} }
-                },
-                {
                     name: "get_block_details",
-                    description: "Mengambil detail inventori pada blok tertentu.",
+                    description: "Mencari detail inventori pada blok spesifik.",
                     parameters: {
                         type: "OBJECT",
                         properties: {
-                            blockName: { type: "STRING", description: "Nama block yard, contoh: A01, B03, C04." }
+                            blockName: { type: "STRING", description: "Nama block yard, contoh A01, B03, C04." }
                         },
                         required: ["blockName"]
                     }
                 },
                 {
+                    name: "get_dwell_time_summary",
+                    description: "Menghitung rekap dwell time import: 0-3 Hari, 3-30 Hari, Lebih dari 30 Hari.",
+                    parameters: { type: "OBJECT", properties: {} }
+                },
+                {
+                    name: "get_arrival_summary_by_date",
+                    description: "Menghitung total kontainer berdasarkan tanggal kedatangan tertentu.",
+                    parameters: {
+                        type: "OBJECT",
+                        properties: {
+                            date: { type: "STRING", description: "Tanggal arrival format DD/MM/YYYY." }
+                        },
+                        required: ["date"]
+                    }
+                },
+                {
                     name: "get_vessel_clash_analysis",
-                    description: "Mengambil analisa benturan jadwal vessel per block.",
+                    description: "Mengambil analisa benturan jadwal sandar kapal.",
                     parameters: { type: "OBJECT", properties: {} }
                 },
                 {
@@ -781,10 +795,6 @@ async function sendMessageToGemini(userMessage) {
         }];
 
         const runTool = (toolName, args = {}) => {
-            if (toolName === 'get_yard_overview') {
-                return { success: true, data: JSON.parse(getDashboardContext()) };
-            }
-
             if (toolName === 'get_block_details') {
                 const blockName = String(args.blockName || '').trim().toUpperCase();
                 if (!blockName) throw new Error('Parameter blockName wajib diisi.');
@@ -800,14 +810,65 @@ async function sendMessageToGemini(userMessage) {
                 };
             }
 
+            if (toolName === 'get_dwell_time_summary') {
+                const dwellSummary = { "0-3 Hari": 0, "3-30 Hari": 0, "Lebih dari 30 Hari": 0 };
+                const todayMs = new Date().getTime();
+
+                (invData || []).forEach(item => {
+                    const moveType = String(item?.move || '').toUpperCase();
+                    const arrDateStr = String(item?.arrivalDate || 'UNKNOWN').split(' ')[0];
+                    if (arrDateStr === 'UNKNOWN') return;
+                    if (!(moveType.includes('IMP') || moveType === 'I')) return;
+
+                    const parts = arrDateStr.split('/');
+                    if (parts.length !== 3) return;
+
+                    const arrDateMs = new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                    if (Number.isNaN(arrDateMs)) return;
+
+                    const diffDays = Math.floor((todayMs - arrDateMs) / (1000 * 60 * 60 * 24));
+                    if (diffDays > 30) dwellSummary["Lebih dari 30 Hari"] += 1;
+                    else if (diffDays > 3) dwellSummary["3-30 Hari"] += 1;
+                    else dwellSummary["0-3 Hari"] += 1;
+                });
+
+                return { success: true, dwellSummary };
+            }
+
+            if (toolName === 'get_arrival_summary_by_date') {
+                const targetDate = String(args.date || '').trim();
+                if (!targetDate) throw new Error('Parameter date wajib diisi (format DD/MM/YYYY).');
+
+                const matchedRows = (invData || []).filter(item => {
+                    const rowDate = String(item?.arrivalDate || 'UNKNOWN').split(' ')[0].trim();
+                    return rowDate === targetDate;
+                });
+
+                if (!matchedRows.length) {
+                    throw new Error(`Tidak ada data arrival pada tanggal ${targetDate}.`);
+                }
+
+                return {
+                    success: true,
+                    date: targetDate,
+                    totalContainers: matchedRows.length,
+                    rows: matchedRows.slice(0, 200)
+                };
+            }
+
             if (toolName === 'get_vessel_clash_analysis') {
                 const clashes = globalClashes || [];
-                const byBlock = {};
+                const clashByBlock = {};
                 clashes.forEach(clash => {
                     const block = String(clash?.block || 'UNKNOWN');
-                    byBlock[block] = (byBlock[block] || 0) + 1;
+                    clashByBlock[block] = (clashByBlock[block] || 0) + 1;
                 });
-                return { success: true, totalClashes: clashes.length, clashByBlock: byBlock, samples: clashes.slice(0, 100) };
+                return {
+                    success: true,
+                    totalClashes: clashes.length,
+                    clashByBlock,
+                    samples: clashes.slice(0, 100)
+                };
             }
 
             if (toolName === 'switch_dashboard_tab') {
@@ -816,6 +877,7 @@ async function sendMessageToGemini(userMessage) {
                 if (!allowedTabs.includes(tabId)) {
                     throw new Error(`tabId tidak valid: ${tabId}. Gunakan salah satu: ${allowedTabs.join(', ')}.`);
                 }
+
                 switchTab(tabId);
                 return { success: true, tabId, message: `Berhasil pindah ke tab ${tabId}.` };
             }
@@ -826,7 +888,7 @@ async function sendMessageToGemini(userMessage) {
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
         try {
-            chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -840,29 +902,25 @@ async function sendMessageToGemini(userMessage) {
 
             if (!response.ok) {
                 const errText = await response.text();
-                throw new Error(`Error Google: ${response.status} - ${errText}`);
+                throw new Error(`Error Google (step-1): ${response.status} - ${errText}`);
             }
 
             const data = await response.json();
             const firstParts = data?.candidates?.[0]?.content?.parts || [];
-            const functionCallPart = firstParts.find(part => part?.functionCall);
+            const functionCall = firstParts.find(part => part?.functionCall)?.functionCall;
 
-            if (functionCallPart?.functionCall) {
-                const functionCall = functionCallPart.functionCall;
-                const functionName = functionCall.name;
-                const functionArgs = functionCall.args || {};
-
+            if (functionCall) {
                 let functionResult;
                 try {
-                    functionResult = runTool(functionName, functionArgs);
+                    functionResult = runTool(functionCall.name, functionCall.args || {});
                 } catch (toolErr) {
                     functionResult = { success: false, error: toolErr.message };
                 }
 
-                chatHistory.push({ role: 'model', parts: [{ functionCall }] });
+                chatHistory.push({ role: "model", parts: [{ functionCall }] });
                 chatHistory.push({
-                    role: 'function',
-                    parts: [{ text: JSON.stringify({ name: functionName, response: functionResult }) }]
+                    role: "function",
+                    parts: [{ text: JSON.stringify({ name: functionCall.name, response: functionResult }) }]
                 });
 
                 const secondResponse = await fetch(endpoint, {
@@ -876,26 +934,25 @@ async function sendMessageToGemini(userMessage) {
                 });
 
                 if (!secondResponse.ok) {
-                    const secondErrText = await secondResponse.text();
-                    throw new Error(`Error Google step-2: ${secondResponse.status} - ${secondErrText}`);
+                    const errText2 = await secondResponse.text();
+                    throw new Error(`Error Google (step-2): ${secondResponse.status} - ${errText2}`);
                 }
 
                 const secondData = await secondResponse.json();
-                const finalReply = secondData?.candidates?.[0]?.content?.parts?.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
-                chatHistory.push({ role: 'model', parts: [{ text: finalReply }] });
-                return finalReply;
+                const textAnswer = secondData?.candidates?.[0]?.content?.parts?.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
+                chatHistory.push({ role: "model", parts: [{ text: textAnswer }] });
+                return textAnswer;
             }
 
-            const aiReply = firstParts.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
-            chatHistory.push({ role: 'model', parts: [{ text: aiReply }] });
-            return aiReply;
-
+            const textAnswer = firstParts.find(part => part?.text)?.text || "Maaf, AI tidak memberikan balasan.";
+            chatHistory.push({ role: "model", parts: [{ text: textAnswer }] });
+            return textAnswer;
         } catch (error) {
             console.error("Gemini Error:", error);
-            return "Maaf, terjadi kesalahan teknis. Coba lagi.";
+            return "Maaf, koneksi ke layanan AI gagal. Silakan coba lagi beberapa saat.";
         }
     }
-    
+
     async function sendAiChatMessage(event) {
         event.preventDefault();
 
@@ -910,7 +967,7 @@ async function sendMessageToGemini(userMessage) {
         input.value = '';
 
         const loadingId = `aiTyping_${Date.now()}`;
-        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Sedang menganalisa data...</div>`);
+        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Sedang menganalisa...</div>`);
         history.scrollTop = history.scrollHeight;
         input.disabled = true;
 
