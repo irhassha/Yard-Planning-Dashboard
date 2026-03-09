@@ -8,6 +8,7 @@
     let projectionTypeFilter = 'ALL';
     let projectionOrderByType = {};
     let projectionDragState = { type: null, vessel: null };
+    let chatHistory = [];
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -732,139 +733,335 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             .replace(/'/g, '&#039;');
     }
 
+    // API key dipecah jadi 2 bagian sesuai permintaan deployment static (GitHub Pages).
+    // Catatan: ini hanya obfuscation ringan, bukan pengamanan penuh.
     const keyPart1 = 'AIzaSyB7F0FyfzndxInb';
     const keyPart2 = 'N1b_G4xJXzQuIDPcgT8';
-    const apiKey = keyPart1 + keyPart2;
+    const apiKey = [keyPart1, keyPart2].join('');
 
-async function sendMessageToGemini(userMessage) {
-        const dashboardContext = getDashboardContext();
-        
-        // --- JALUR CERDAS: Rekapitulasi Data ---
-        const carrierSummary = {};
-        const lineSummary = {};
-        const arrivalSummary = {};
-        const podSummary = {};
-        // UPDATE: Menambahkan kategori Lebih dari 30 Hari
-        const dwellSummary = { "0-3 Hari": 0, "3-30 Hari": 0, "Lebih dari 30 Hari": 0 };
-        
-        const todayMs = new Date().getTime();
-        const invRows = typeof invData !== 'undefined' ? invData : [];
-        
-        invRows.forEach(item => {
-            // --- 1. FILTER TRASH DATA (Abaikan Blok 8) ---
-            const blockName = String(item.block || '').trim().toUpperCase();
-            if (blockName.startsWith('8')) return; 
+    function getGeminiApiKey() {
+        const runtimeKey = String(window.GEMINI_API_KEY || '').trim();
+        if (runtimeKey) return runtimeKey;
 
-            const status = String(item.loadStatus || item.Status || 'UNKNOWN').toUpperCase(); 
-            const moveType = String(item.move || 'UNKNOWN').toUpperCase();
-            const carrier = item.carrier || item.Carrier || 'UNKNOWN';
-            const line = item.line || item.Line || 'UNKNOWN';
+        const localKey = String((typeof keyPart1 !== 'undefined' ? keyPart1 : '') + (typeof keyPart2 !== 'undefined' ? keyPart2 : '')).trim();
+        if (localKey) return localKey;
 
-            // --- 2. REKAP CARRIER ---
-            if (!carrierSummary[carrier]) {
-                carrierSummary[carrier] = { EMPTY: 0, FULL: 0, TOTAL: 0 };
-            }
-            carrierSummary[carrier].TOTAL += 1;
-            if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') {
-                carrierSummary[carrier].EMPTY += 1;
-            } else {
-                carrierSummary[carrier].FULL += 1;
-            }
+        if (typeof apiKey !== 'undefined' && String(apiKey || '').trim()) {
+            return String(apiKey).trim();
+        }
 
-            // --- 3. REKAP LINE ---
-            if (!lineSummary[line]) {
-                lineSummary[line] = { TOTAL: 0, IMPORT: 0, EXPORT: 0, FULL: 0, EMPTY: 0 };
-            }
-            lineSummary[line].TOTAL += 1;
-            if (moveType.includes('IMP') || moveType === 'I') lineSummary[line].IMPORT += 1;
-            else if (moveType.includes('EXP') || moveType === 'E') lineSummary[line].EXPORT += 1;
+        throw new Error('apiKey is not defined. Set window.GEMINI_API_KEY or restore keyPart1/keyPart2 in yp.js');
+    }
 
-            if (status.includes('E') || status.includes('EMPTY') || status === 'MTY') lineSummary[line].EMPTY += 1;
-            else lineSummary[line].FULL += 1;
+    function getOperationalSnapshot() {
+        const contextRaw = getDashboardContext();
+        let context = {};
+        try {
+            context = JSON.parse(contextRaw || '{}');
+        } catch (_) {
+            context = {};
+        }
 
-            // --- 4. REKAP POD ---
-            const pod = item.pod || 'UNKNOWN';
-            podSummary[pod] = (podSummary[pod] || 0) + 1;
-
-            // --- 5. REKAP ARRIVAL & DWELL TIME (DENGAN LOGIKA > 30 HARI) ---
-            const arrDateStr = (item.arrivalDate || 'UNKNOWN').split(" ")[0];
-            arrivalSummary[arrDateStr] = (arrivalSummary[arrDateStr] || 0) + 1;
-
-            // FILTER: Dwell Time hanya untuk unit IMPORT
-            if (arrDateStr !== 'UNKNOWN' && (moveType.includes('IMP') || moveType === 'I')) {
-                const parts = arrDateStr.split('/');
-                if (parts.length === 3) {
-                    const arrDateObj = new Date(parts[2], parts[1] - 1, parts[0]).getTime();
-                    const diffDays = Math.floor((todayMs - arrDateObj) / (1000 * 60 * 60 * 24));
-                    
-                    if (diffDays > 30) {
-                        dwellSummary["Lebih dari 30 Hari"] += 1;
-                    } else if (diffDays > 3) {
-                        dwellSummary["3-30 Hari"] += 1;
-                    } else {
-                        dwellSummary["0-3 Hari"] += 1;
-                    }
-                }
-            }
+        const blocks = {};
+        const safeInvData = Array.isArray(invData) ? invData : [];
+        safeInvData.forEach(item => {
+            const block = String(item?.block || 'UNKNOWN').toUpperCase();
+            const len = String(item?.length || '40');
+            const teus = len.startsWith('20') ? 1 : (len.startsWith('45') ? 2.25 : 2);
+            if (!blocks[block]) blocks[block] = { boxCount: 0, teus: 0, c20: 0, c40: 0, c45: 0 };
+            blocks[block].boxCount += 1;
+            blocks[block].teus += teus;
+            if (len.startsWith('20')) blocks[block].c20 += 1;
+            else if (len.startsWith('45')) blocks[block].c45 += 1;
+            else blocks[block].c40 += 1;
         });
 
-        const carrierDataText = JSON.stringify(carrierSummary);
-        const lineDataText = JSON.stringify(lineSummary);
-        const podDataText = JSON.stringify(podSummary);
-        const arrivalDateDataText = JSON.stringify(arrivalSummary);
-        const dwellDataText = JSON.stringify(dwellSummary);
+        const blockDensity = Object.entries(blocks).map(([block, d]) => {
+            const cap = Number(activeCapacity?.[block]?.cap || 0);
+            const density = cap > 0 ? Number(((d.teus / cap) * 100).toFixed(2)) : 0;
+            return { block, density, capTeus: cap, ...d };
+        });
 
-        const systemPrompt = `Kamu adalah Asisten AI untuk Yard Planning di NPCT1. 
-Hari ini adalah tanggal: ${new Date().toLocaleDateString('id-ID')}
+        return {
+            context,
+            safeInvData,
+            blockDensity,
+            totalCapacityTeus: Number(context?.kpi?.totalCapacityTeus || 0),
+            totalTeus: Number(context?.kpi?.totalTeus || 0),
+            yorPct: Number(context?.kpi?.yorPct || 0)
+        };
+    }
 
-Data Ringkasan Dashboard:
-${dashboardContext}
+    function parseArrivalDate(arrivalDateRaw) {
+        const raw = String(arrivalDateRaw || '').trim();
+        if (!raw) return null;
+        const datePart = raw.split(' ')[0];
+        const parts = datePart.split('/');
+        if (parts.length !== 3) return null;
+        const day = Number(parts[0]);
+        const month = Number(parts[1]);
+        const year = Number(parts[2]);
+        if (!day || !month || !year) return null;
+        const parsed = new Date(year, month - 1, day);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
 
-Data Rekapitulasi Kapal/Carrier:
-${carrierDataText}
+    function detectIntent(userMessage) {
+        const text = String(userMessage || '').toLowerCase();
+        const blockMatch = text.match(/\b([abc][0-9]{2})\b/i);
+        const dateMatch = text.match(/\b\d{2}\/\d{2}\/\d{4}\b/);
 
-Data Line:
-${lineDataText}
+        if (text.includes('dwell')) return { intent: 'dwell_time', args: {} };
+        if ((text.includes('arrival') || text.includes('kedatangan')) && dateMatch) return { intent: 'arrival', args: { date: dateMatch[0] } };
+        if ((text.includes('congestion') || text.includes('kepadatan') || text.includes('risk')) && blockMatch) return { intent: 'block_congestion', args: { block_name: blockMatch[1].toUpperCase() } };
+        if ((text.includes('relocation') || text.includes('relokasi')) && blockMatch) return { intent: 'relocation', args: { block_name: blockMatch[1].toUpperCase() } };
+        if ((text.includes('blok') || text.includes('block')) && blockMatch) return { intent: 'block_detail', args: { blockName: blockMatch[1].toUpperCase() } };
+        if (text.includes('yor') && (text.includes('predict') || text.includes('prediksi'))) {
+            const countMatch = text.match(/\b(\d+)\b/);
+            return { intent: 'yor_prediction', args: { vessel_container_count: Number(countMatch?.[1] || 0) } };
+        }
+        if (text.includes('recommend') || text.includes('rekomendasi')) {
+            const type = text.includes('export') ? 'EXPORT' : (text.includes('reefer') ? 'REEFER' : 'IMPORT');
+            return { intent: 'recommend_block', args: { container_type: type } };
+        }
+        if (text.includes('yard state') || text.includes('kondisi yard') || text.includes('overview')) return { intent: 'yard_state', args: {} };
 
-Data Destinasi / POD:
-${podDataText}
+        return { intent: 'general', args: {} };
+    }
 
-Data Tanggal Kedatangan:
-${arrivalDateDataText}
+    function routeIntentToTool(intentPayload) {
+        const intent = intentPayload?.intent;
+        const args = intentPayload?.args || {};
+        const map = {
+            block_detail: { name: 'get_block_details', args },
+            dwell_time: { name: 'get_dwell_time_summary', args: {} },
+            arrival: { name: 'get_arrival_summary_by_date', args },
+            block_congestion: { name: 'get_block_congestion_risk', args },
+            yor_prediction: { name: 'predict_yor_after_discharge', args },
+            relocation: { name: 'suggest_relocation_plan', args },
+            recommend_block: { name: 'recommend_yard_block', args },
+            yard_state: { name: 'analyze_yard_state', args: {} }
+        };
+        return map[intent] || null;
+    }
 
-Data Lama Penumpukan (Khusus Unit IMPORT):
-${dwellDataText}`;
+    function executeTool(functionName, functionArgs = {}) {
+        const { safeInvData, blockDensity, totalCapacityTeus, totalTeus, yorPct } = getOperationalSnapshot();
 
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        if (functionName === 'get_block_details') {
+            const blockName = String(functionArgs.blockName || '').trim().toUpperCase();
+            if (!blockName) return { error: 'Parameter blockName wajib diisi.' };
+            const rows = safeInvData.filter(item => String(item?.block || '').trim().toUpperCase() === blockName);
+            const summary = { total_box: rows.length, box_20ft: 0, box_40ft: 0, box_45ft: 0 };
+            rows.forEach(item => {
+                const size = String(item?.length || '').trim();
+                if (size.startsWith('20')) summary.box_20ft += 1;
+                else if (size.startsWith('45')) summary.box_45ft += 1;
+                else summary.box_40ft += 1;
+            });
+            return { block: blockName, ...summary };
+        }
+
+        if (functionName === 'get_dwell_time_summary') {
+            const result = { "0-3_Hari": 0, "3-30_Hari": 0, "Lebih_30_Hari": 0 };
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            safeInvData.forEach(item => {
+                const moveType = String(item?.move || '').toUpperCase();
+                if (!(moveType.includes('IMPORT') || moveType.includes('DISC'))) return;
+                const arrivalDate = parseArrivalDate(item?.arrivalDate);
+                if (!arrivalDate) return;
+                arrivalDate.setHours(0, 0, 0, 0);
+                const diffDays = Math.floor((today.getTime() - arrivalDate.getTime()) / 86400000);
+                if (diffDays <= 3) result["0-3_Hari"] += 1;
+                else if (diffDays <= 30) result["3-30_Hari"] += 1;
+                else result["Lebih_30_Hari"] += 1;
+            });
+            return result;
+        }
+
+        if (functionName === 'get_arrival_summary_by_date') {
+            const date = String(functionArgs.date || '').trim();
+            if (!date) return { error: 'Parameter date wajib diisi.' };
+            const total_box = safeInvData.filter(item => String(item?.arrivalDate || '').includes(date)).length;
+            return { date, total_box };
+        }
+
+        if (functionName === 'get_block_congestion_risk') {
+            const blockName = String(functionArgs.block_name || functionArgs.blockName || '').trim().toUpperCase();
+            if (!blockName) return { error: 'Parameter block_name wajib diisi.' };
+            const found = blockDensity.find(b => b.block === blockName);
+            if (!found) return { error: `Block ${blockName} tidak ditemukan.` };
+            const risk_level = found.density >= 85 ? 'HIGH' : (found.density >= 70 ? 'MEDIUM' : 'LOW');
+            const recommendation = risk_level === 'HIGH' ? 'Avoid assigning additional containers to this block' : (risk_level === 'MEDIUM' ? 'Monitor inflow and prepare relocation option' : 'Block remains safe for additional allocation');
+            return { block: blockName, density: found.density, risk_level, recommendation };
+        }
+
+        if (functionName === 'predict_yor_after_discharge') {
+            const vesselCount = Number(functionArgs.vessel_container_count || functionArgs.vesselContainerCount || 0);
+            if (!Number.isFinite(vesselCount) || vesselCount < 0) return { error: 'Parameter vessel_container_count tidak valid.' };
+            const addedTeus = vesselCount * 2;
+            const predicted = totalCapacityTeus > 0 ? Number((((totalTeus + addedTeus) / totalCapacityTeus) * 100).toFixed(2)) : 0;
+            const risk_level = predicted >= 85 ? 'HIGH' : (predicted >= 75 ? 'MEDIUM' : 'LOW');
+            return {
+                current_yor: Number(yorPct.toFixed ? yorPct.toFixed(2) : yorPct),
+                predicted_yor: predicted,
+                risk_level,
+                note: risk_level === 'HIGH' ? 'YOR melewati batas operasional aman' : (risk_level === 'MEDIUM' ? 'YOR approaching operational limit' : 'YOR masih dalam rentang aman')
+            };
+        }
+
+        if (functionName === 'suggest_relocation_plan') {
+            const blockName = String(functionArgs.block_name || functionArgs.blockName || '').trim().toUpperCase();
+            if (!blockName) return { error: 'Parameter block_name wajib diisi.' };
+            const source = blockDensity.find(b => b.block === blockName);
+            if (!source) return { error: `Block ${blockName} tidak ditemukan.` };
+            const targets = blockDensity
+                .filter(b => b.block !== blockName && b.capTeus > 0)
+                .sort((a, b) => a.density - b.density)
+                .slice(0, 3)
+                .map(b => b.block);
+            return {
+                source_block: blockName,
+                recommended_target_blocks: targets,
+                reason: source.density >= 80 ? 'Lower density and available slots' : 'Source block is not yet critical; relocation optional'
+            };
+        }
+
+        if (functionName === 'recommend_yard_block') {
+            const ctype = String(functionArgs.container_type || functionArgs.containerType || 'IMPORT').toUpperCase();
+            const candidate = blockDensity
+                .filter(b => b.capTeus > 0 && !EXCLUDED_BLOCKS_YARD.includes(b.block))
+                .filter(b => ctype !== 'EXPORT' || EXPORT_DEFAULTS.includes(b.block))
+                .sort((a, b) => a.density - b.density)[0];
+            if (!candidate) return { error: 'Tidak ada block kandidat yang tersedia.' };
+            return {
+                container_type: ctype,
+                recommended_block: candidate.block,
+                reason: 'Low density and balanced yard distribution'
+            };
+        }
+
+        if (functionName === 'query_yard_data') {
+            const params = functionArgs.parameters || functionArgs || {};
+            const metric = String(params.metric || '').toLowerCase();
+            if (metric === 'density') {
+                const highest = [...blockDensity].sort((a, b) => b.density - a.density)[0] || null;
+                return highest ? { metric: 'density', highest_density_block: highest.block, value: highest.density } : { metric: 'density', value: 0 };
+            }
+            if (metric === 'inventory') {
+                return { metric: 'inventory', total_box: safeInvData.length };
+            }
+            if (metric === 'dwell_time') {
+                return executeTool('get_dwell_time_summary', {});
+            }
+            if (metric === 'arrival') {
+                const date = String(params.date || '').trim();
+                return executeTool('get_arrival_summary_by_date', { date });
+            }
+            return { error: `Metric ${metric} tidak didukung.` };
+        }
+
+        if (functionName === 'analyze_yard_state') {
+            const sorted = [...blockDensity].filter(b => b.capTeus > 0).sort((a, b) => b.density - a.density);
+            const congestion = sorted.filter(b => b.density >= 80).slice(0, 5).map(b => b.block);
+            const lowDensity = [...sorted].reverse().slice(0, 5).map(b => b.block);
+            const yor_status = yorPct >= 85 ? 'HIGH' : (yorPct >= 75 ? 'MEDIUM' : 'LOW');
+            return {
+                yor_status,
+                congestion_blocks: congestion,
+                low_density_blocks: lowDensity,
+                recommendation: lowDensity.length ? `Redirect new containers to ${lowDensity.slice(0,2).join(' or ')}` : 'Maintain current distribution and monitor congestion trend'
+            };
+        }
+
+        return { error: `Function tidak dikenali: ${functionName}` };
+    }
+
+    async function callAiProxy(payload) {
+        const resolvedApiKey = getGeminiApiKey();
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Gemini API Error: ${res.status} - ${errorText}`);
+        }
+
+        return res.json();
+    }
+
+    async function sendMessageToGemini(userMessage) {
+        const dashboardContext = getDashboardContext();
+        const systemInstruction = {
+            role: 'system',
+            parts: [{
+                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Tolak pertanyaan di luar domain logistik pelabuhan.`
+            }]
+        };
+
+        const tools = [{
+            functionDeclarations: [
+                { name: 'get_block_details', description: 'Get inventory composition by block.', parameters: { type: 'OBJECT', properties: { blockName: { type: 'STRING' } }, required: ['blockName'] } },
+                { name: 'get_dwell_time_summary', description: 'Get dwell time distribution.', parameters: { type: 'OBJECT', properties: {} } },
+                { name: 'get_arrival_summary_by_date', description: 'Get total inventory by arrival date string.', parameters: { type: 'OBJECT', properties: { date: { type: 'STRING' } }, required: ['date'] } },
+                { name: 'get_block_congestion_risk', description: 'Analyze congestion risk based on block density.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
+                { name: 'predict_yor_after_discharge', description: 'Predict yard occupancy after vessel discharge.', parameters: { type: 'OBJECT', properties: { vessel_container_count: { type: 'NUMBER' } }, required: ['vessel_container_count'] } },
+                { name: 'suggest_relocation_plan', description: 'Suggest relocation targets for congested block.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
+                { name: 'recommend_yard_block', description: 'Recommend block for incoming container type.', parameters: { type: 'OBJECT', properties: { container_type: { type: 'STRING' } }, required: ['container_type'] } },
+                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'analyze_yard_state', description: 'Summarize overall yard condition and recommendation.', parameters: { type: 'OBJECT', properties: {} } }
+            ]
+        }];
 
         try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `${systemPrompt}\n\nPertanyaan user: ${userMessage}`
-                        }]
-                    }]
-                })
-            });
+            chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Error Google: ${response.status} - ${errText}`);
+            // Explicit architecture: Intent Detection -> Tool Routing -> Tool Execution
+            const intentPayload = detectIntent(userMessage);
+            const routedTool = routeIntentToTool(intentPayload);
+            if (routedTool) {
+                const preResult = executeTool(routedTool.name, routedTool.args || {});
+                chatHistory.push({ role: 'model', parts: [{ functionCall: { name: routedTool.name, args: routedTool.args || {} } }] });
+                chatHistory.push({
+                    role: 'function',
+                    parts: [{ functionResponse: { name: routedTool.name, response: { result: preResult } } }]
+                });
             }
 
-            const data = await response.json();
-            const aiReply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            return aiReply || "Maaf, AI tidak memberikan balasan.";
+            const data = await callAiProxy({ systemInstruction, contents: chatHistory, tools });
+            const responsePart = data?.candidates?.[0]?.content?.parts?.[0] || {};
 
+            if (responsePart.functionCall) {
+                const functionName = responsePart.functionCall.name;
+                const functionResult = executeTool(functionName, responsePart.functionCall.args || {});
+
+                chatHistory.push({ role: 'model', parts: [{ functionCall: responsePart.functionCall }] });
+                chatHistory.push({
+                    role: 'function',
+                    parts: [{ functionResponse: { name: functionName, response: { result: functionResult } } }]
+                });
+
+                const data2 = await callAiProxy({ systemInstruction, contents: chatHistory, tools });
+                const finalPart = data2?.candidates?.[0]?.content?.parts?.[0] || {};
+                const finalText = finalPart.text || 'Maaf, AI tidak memberikan balasan.';
+                chatHistory.push({ role: 'model', parts: [{ text: finalText }] });
+                return finalText;
+            }
+
+            chatHistory.push({ role: 'model', parts: [responsePart] });
+            return responsePart.text || 'Maaf, AI tidak memberikan balasan.';
         } catch (error) {
-            console.error("Gemini Error:", error);
-            return "Maaf, terjadi kesalahan teknis. Coba lagi.";
+            chatHistory.pop();
+            console.error('Yard Agent Error:', error);
+            return String(error.message || error);
         }
     }
-    
+
     async function sendAiChatMessage(event) {
         event.preventDefault();
 
@@ -879,7 +1076,7 @@ ${dwellDataText}`;
         input.value = '';
 
         const loadingId = `aiTyping_${Date.now()}`;
-        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Typing...</div>`);
+        history.insertAdjacentHTML('beforeend', `<div id="${loadingId}" class="ai-chat-bubble bot">Sedang menganalisa...</div>`);
         history.scrollTop = history.scrollHeight;
         input.disabled = true;
 
