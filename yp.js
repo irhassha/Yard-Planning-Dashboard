@@ -736,15 +736,6 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const AI_PROXY_ENDPOINT = '/api/ai/chat';
     const AI_PROXY_FALLBACK_ENDPOINT = 'http://127.0.0.1:8787/api/ai/chat';
 
-    function getAiProxyCandidates() {
-        const custom = String(window.AI_PROXY_ENDPOINT || localStorage.getItem('aiProxyEndpoint') || '').trim();
-        const candidates = [];
-        if (custom) candidates.push(custom);
-        candidates.push(AI_PROXY_ENDPOINT);
-        candidates.push(AI_PROXY_FALLBACK_ENDPOINT);
-        return [...new Set(candidates)];
-    }
-
     function getOperationalSnapshot() {
         const contextRaw = getDashboardContext();
         let context = {};
@@ -971,33 +962,19 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     async function callAiProxy(payload) {
-        const endpoints = getAiProxyCandidates();
-        let lastError = null;
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-        for (const endpoint of endpoints) {
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    lastError = new Error(`AI Proxy Error (${endpoint}): ${res.status} - ${errorText}`);
-                    if (res.status === 404 || res.status === 405 || res.status === 501) {
-                        continue;
-                    }
-                    throw lastError;
-                }
-
-                return res.json();
-            } catch (err) {
-                lastError = err;
-            }
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`Gemini API Error: ${res.status} - ${errorText}`);
         }
 
-        throw (lastError || new Error('AI Proxy Error: all proxy endpoints failed.'));
+        return res.json();
     }
 
     async function sendMessageToGemini(userMessage) {
