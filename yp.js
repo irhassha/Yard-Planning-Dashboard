@@ -736,6 +736,20 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     const AI_PROXY_ENDPOINT = '/api/ai/chat';
     const AI_PROXY_FALLBACK_ENDPOINT = 'http://127.0.0.1:8787/api/ai/chat';
 
+    function getGeminiApiKey() {
+        const runtimeKey = String(window.GEMINI_API_KEY || '').trim();
+        if (runtimeKey) return runtimeKey;
+
+        const localKey = String((typeof keyPart1 !== 'undefined' ? keyPart1 : '') + (typeof keyPart2 !== 'undefined' ? keyPart2 : '')).trim();
+        if (localKey) return localKey;
+
+        if (typeof apiKey !== 'undefined' && String(apiKey || '').trim()) {
+            return String(apiKey).trim();
+        }
+
+        throw new Error('apiKey is not defined. Set window.GEMINI_API_KEY or restore keyPart1/keyPart2 in yp.js');
+    }
+
     function getOperationalSnapshot() {
         const contextRaw = getDashboardContext();
         let context = {};
@@ -962,7 +976,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     async function callAiProxy(payload) {
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const resolvedApiKey = getGeminiApiKey();
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
         const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
