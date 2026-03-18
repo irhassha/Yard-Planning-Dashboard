@@ -127,123 +127,219 @@ function updateCapacity(block, newSlots, newTier) {
 }
 
 
-    // --- MAIN FILE UPLOAD (Overview) ---
-    document.getElementById('fileInv').addEventListener('change', function(e) {
-    if(!e.target.files[0]) return;
-    const loader = document.getElementById('loadingOverlay');
-    loader.classList.remove('hidden');
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-        try {
-            setProgress(20, "Parsing Data...");
-            const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
-            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""});
-            
-            let hIdx = -1;
-            // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1};
-            
-            for(let i=0; i<Math.min(json.length, 30); i++) {
-                let rStr = json[i].map(c => cleanStr(c)).join(" ");
-                if((rStr.includes("area") || rStr.includes("block") || rStr.includes("slot")) && 
-                   (rStr.includes("vessel") || rStr.includes("carrier") || rStr.includes("line"))) {
-                    hIdx = i;
-                    json[i].forEach((cell, idx) => {
-                        let c = cleanStr(cell).replace(/[\s_]+/g, "");
-                        if(c.includes("area") || c.includes("block")) colMap.block = idx;
-                        if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                        if(c === "carrier" || c === "vessel") colMap.carrier = idx;
-                        if(c === "move" || c === "status" || c === "category") colMap.move = idx;
-                        if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
-                        // LOGIC BARU: Deteksi kolom Load Status
-                        if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
-                        // Detect Service column (e.g., "service", "serviceout", "service out")
-                        if(c.includes("service")) colMap.service = idx;
-                        // Deteksi kolom Line
-                        if(c === "line" || c.includes("Line")) colMap.line = idx;
-                        // Deteksi date
-                        if(c === "arrivalDate" || (c.includes("arrival") && c.includes("date"))) {
-                        colMap.arrivalDate = idx;
-                        }
-                    });
-                    break;
-                }
-            }
+    const PORTAL_URL = window.PLANNING_PORTAL_URL || "https://irhassha.github.io/planning-portal/";
+    const SUPABASE_URL = window.SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || '';
+    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || localStorage.getItem('SUPABASE_ANON_KEY') || '';
+    let supabaseClient = null;
+    let lastMasterTimestamp = null;
 
-            if(hIdx === -1 || colMap.carrier === -1) throw new Error("Format kolom tidak dikenali.");
-
-            invData = [];
-            function formatExcelDate(excelSerial) {
-    if (!excelSerial) return "UNKNOWN";
-    
-    // Cek apakah nilainya adalah angka ribuan (seperti 46070)
-    if (!isNaN(excelSerial) && Number(excelSerial) > 30000) {
-        // Rumus sakti mengubah serial Excel menjadi Tanggal Javascript
-        const utc_days  = Math.floor(excelSerial - 25569);
-        const date_info = new Date(utc_days * 86400 * 1000);
-        
-        // Ambil Tanggal, Bulan, Tahun
-        const day = String(date_info.getDate()).padStart(2, '0');
-        const month = String(date_info.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
-        const year = date_info.getFullYear();
-        
-        return `${day}/${month}/${year}`; // Hasilnya: "26/02/2026"
+    function cleanKey(key) {
+        return cleanStr(key).replace(/[\s_]+/g, '');
     }
-    
-    // Kalau dari Excel sudah berbentuk teks normal, biarkan saja
-    return String(excelSerial).trim();
-}
-            for(let i=hIdx+1; i<json.length; i++) {
-                let row = json[i];
-                if(!row[colMap.block] && !row[colMap.slot]) continue;
-                
-                // Parsing Slot & Block (Logic Lama)
-                let slotStr = colMap.slot !== -1 ? String(row[colMap.slot] || "") : "";
-                let parsedBlock = "N", parsedSlotNum = 0;
-                if(slotStr.includes('-')) {
-                    let parts = slotStr.split('-');
-                    parsedBlock = parts[0].trim();
-                    if (parts.length >= 2) parsedSlotNum = parseInt(parts[1]) || 0;
-                } else if(colMap.block !== -1 && row[colMap.block]) {
-                    parsedBlock = String(row[colMap.block]).trim();
-                    if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot]) || 0;
-                } else if(slotStr !== "") {
-                    parsedSlotNum = parseInt(slotStr) || 0;
-                }
 
-                invData.push({
-                    block: parsedBlock.toUpperCase(),
-                    slot: parsedSlotNum,
-                    length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
-                    carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
-                    move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
-                    // UPDATE: Simpan Load Status
-                    loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
-                    service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
-                    line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "UNKNOWN",
-                    // KODE BARU (Memakai fungsi formatExcelDate):
-                    arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : "UNKNOWN"
+    function normalize(value) {
+        return String(value || '').trim();
+    }
+
+    function goToPortal() {
+        window.location.href = PORTAL_URL;
+    }
+
+    function setSyncIndicator(isVisible, message = 'Syncing...') {
+        const indicator = document.getElementById('syncIndicator');
+        const indicatorText = document.getElementById('syncIndicatorText');
+        if (!indicator || !indicatorText) return;
+        indicatorText.innerText = message;
+        indicator.classList.toggle('hidden', !isVisible);
+        indicator.classList.toggle('inline-flex', isVisible);
+    }
+
+    function setMasterTimestampLabel(value) {
+        const target = document.getElementById('masterTimestamp');
+        if (!target) return;
+        target.innerText = `Timestamp File Master: ${value || '-'}`;
+    }
+
+    function formatMasterTimestamp(value) {
+        if (!value) return '-';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '-';
+        return new Intl.DateTimeFormat(undefined, {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    }
+
+    function extractStorageFileName(url) {
+        const raw = normalize(url);
+        if (!raw) return '';
+        try {
+            const parsed = new URL(raw);
+            return decodeURIComponent(parsed.pathname.split('/').pop() || '');
+        } catch (_) {
+            return decodeURIComponent(raw.split('/').pop() || '');
+        }
+    }
+
+    function formatExcelDate(excelSerial) {
+        if (!excelSerial) return 'UNKNOWN';
+        if (!isNaN(excelSerial) && Number(excelSerial) > 30000) {
+            const utc_days = Math.floor(excelSerial - 25569);
+            const date_info = new Date(utc_days * 86400 * 1000);
+            const day = String(date_info.getDate()).padStart(2, '0');
+            const month = String(date_info.getMonth() + 1).padStart(2, '0');
+            const year = date_info.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        return normalize(excelSerial) || 'UNKNOWN';
+    }
+
+    function mapInventoryRowsFromSheet(json) {
+        let hIdx = -1;
+        let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1 };
+
+        for (let i = 0; i < Math.min(json.length, 30); i++) {
+            let rStr = json[i].map(c => cleanStr(c)).join(' ');
+            if ((rStr.includes('area') || rStr.includes('block') || rStr.includes('slot')) &&
+                (rStr.includes('vessel') || rStr.includes('carrier') || rStr.includes('line'))) {
+                hIdx = i;
+                json[i].forEach((cell, idx) => {
+                    const c = cleanKey(cell);
+                    if (c.includes('area') || c.includes('block')) colMap.block = idx;
+                    if (c.includes('unitlength') || c.includes('size')) colMap.length = idx;
+                    if (c === 'carrier' || c === 'vessel') colMap.carrier = idx;
+                    if (c === 'move' || c === 'status' || c === 'category') colMap.move = idx;
+                    if (c.includes('slot') && c.includes('exe')) colMap.slot = idx;
+                    if (c.includes('load') && c.includes('status')) colMap.loadStatus = idx;
+                    if (c.includes('service')) colMap.service = idx;
+                    if (c === 'line') colMap.line = idx;
+                    if (c === 'arrivaldate' || (c.includes('arrival') && c.includes('date'))) colMap.arrivalDate = idx;
                 });
+                break;
+            }
+        }
+
+        if (hIdx === -1 || colMap.carrier === -1) {
+            throw new Error('Format kolom tidak dikenali.');
+        }
+
+        return json.slice(hIdx + 1).reduce((rows, row) => {
+            if (!row[colMap.block] && !row[colMap.slot]) return rows;
+
+            const slotStr = colMap.slot !== -1 ? normalize(row[colMap.slot]) : '';
+            let parsedBlock = 'N';
+            let parsedSlotNum = 0;
+
+            if (slotStr.includes('-')) {
+                const parts = slotStr.split('-');
+                parsedBlock = normalize(parts[0]) || 'N';
+                if (parts.length >= 2) parsedSlotNum = parseInt(parts[1], 10) || 0;
+            } else if (colMap.block !== -1 && row[colMap.block]) {
+                parsedBlock = normalize(row[colMap.block]) || 'N';
+                if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot], 10) || 0;
+            } else if (slotStr !== '') {
+                parsedSlotNum = parseInt(slotStr, 10) || 0;
             }
 
+            rows.push({
+                block: normalize(parsedBlock).toUpperCase(),
+                slot: parsedSlotNum,
+                length: colMap.length !== -1 ? normalize(row[colMap.length]) || '20' : '20',
+                carrier: normalize(row[colMap.carrier]).toUpperCase(),
+                move: colMap.move !== -1 ? normalize(row[colMap.move]).toLowerCase() : 'import',
+                loadStatus: colMap.loadStatus !== -1 ? normalize(row[colMap.loadStatus]).toUpperCase() : 'FULL',
+                service: colMap.service !== -1 ? normalize(row[colMap.service]).toUpperCase() : '',
+                line: colMap.line !== -1 ? normalize(row[colMap.line]).toUpperCase() || 'UNKNOWN' : 'UNKNOWN',
+                arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : 'UNKNOWN'
+            });
+            return rows;
+        }, []);
+    }
+
+    async function initSupabaseSync() {
+        if (!window.supabase?.createClient) {
+            alert('Supabase client gagal dimuat dari CDN.');
+            return;
+        }
+        if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+            alert('Konfigurasi Supabase belum tersedia. Isi window.SUPABASE_URL dan window.SUPABASE_ANON_KEY terlebih dahulu.');
+            return;
+        }
+
+        if (!supabaseClient) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+        if (userError) throw userError;
+        if (!userData?.user) {
+            alert('Akses Ditolak! Silakan login melalui Portal Utama.');
+            window.location.href = PORTAL_URL;
+            return;
+        }
+
+        setSyncIndicator(true, 'Syncing...');
+        const buttonText = document.getElementById('portalLoginBtnText');
+        if (buttonText) buttonText.innerText = 'Sinkronisasi data...';
+
+        try {
+            const { data: sharedFiles, error: fileError } = await supabaseClient
+                .from('shared_files')
+                .select('url, created_at')
+                .order('created_at', { ascending: false })
+                .limit(1);
+
+            if (fileError) throw fileError;
+            const latestFile = Array.isArray(sharedFiles) ? sharedFiles[0] : null;
+            if (!latestFile?.url) throw new Error('File master tidak ditemukan di shared_files.');
+
+            lastMasterTimestamp = latestFile.created_at || null;
+            setMasterTimestampLabel(formatMasterTimestamp(lastMasterTimestamp));
+
+            const namaFile = extractStorageFileName(latestFile.url);
+            if (!namaFile) throw new Error('Nama file master tidak valid.');
+
+            const { data: blob, error: downloadError } = await supabaseClient.storage.from('uploads').download(namaFile);
+            if (downloadError) throw downloadError;
+            if (!blob) throw new Error('Download file master gagal.');
+
+            setSyncIndicator(true, 'Processing master file...');
+            const arrayBuffer = await blob.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const wb = XLSX.read(data, { type: 'array' });
+            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '' });
+
+            invData = mapInventoryRowsFromSheet(json);
             isInvLoaded = true;
-            // AI chat button is always visible in control card.
-            
-            // Render All Tabs
+
             renderOverview();
             renderClusterSpreading();
-            renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            renderEmptySummary();
             const projectionBody = document.getElementById('projectionBody');
             if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
-            
-            setProgress(100, "Selesai!");
-            setTimeout(() => loader.classList.add('hidden'), 500);
-        } catch(err) { alert("Error: " + err.message); loader.classList.add('hidden'); }
-    };
-    reader.readAsArrayBuffer(e.target.files[0]);
-});
+
+            if (buttonText) buttonText.innerText = 'Data Tersinkronisasi';
+        } catch (err) {
+            if (buttonText) buttonText.innerText = 'Login ke Portal Utama';
+            alert(`Sync error: ${err.message || err}`);
+        } finally {
+            setSyncIndicator(false);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setMasterTimestampLabel(formatMasterTimestamp(lastMasterTimestamp));
+        initSupabaseSync().catch(err => {
+            setSyncIndicator(false);
+            alert(`Sync error: ${err.message || err}`);
+        });
+    });
 
     // --- TAB 1: OVERVIEW RENDER ---
+
     function renderOverview() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
