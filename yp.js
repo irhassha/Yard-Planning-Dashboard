@@ -277,14 +277,14 @@ function updateCapacity(block, newSlots, newTier) {
         const { data: userData, error: userError } = await supabaseClient.auth.getUser();
         if (userError) throw userError;
         if (!userData?.user) {
-            alert('Akses Ditolak! Silakan login melalui Portal Utama.');
+            alert('Acsess Denied! Please Login to Planning Portal.');
             window.location.href = PORTAL_URL;
             return;
         }
 
         setSyncIndicator(true, 'Syncing...');
         const buttonText = document.getElementById('portalLoginBtnText');
-        if (buttonText) buttonText.innerText = 'Sinkronisasi data...';
+        if (buttonText) buttonText.innerText = 'Synchronize data...';
 
         try {
             const { data: sharedFiles, error: fileError } = await supabaseClient
@@ -322,7 +322,7 @@ function updateCapacity(block, newSlots, newTier) {
             const projectionBody = document.getElementById('projectionBody');
             if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
 
-            if (buttonText) buttonText.innerText = 'Data Tersinkronisasi';
+            if (buttonText) buttonText.innerText = 'Data Synchronized';
         } catch (err) {
             if (buttonText) buttonText.innerText = 'Login ke Portal Utama';
             alert(`Sync error: ${err.message || err}`);
