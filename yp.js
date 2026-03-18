@@ -127,9 +127,10 @@ function updateCapacity(block, newSlots, newTier) {
 }
 
 
-    const PORTAL_URL = window.PLANNING_PORTAL_URL || "https://irhassha.github.io/planning-portal/";
-    const SUPABASE_URL = window.SUPABASE_URL || localStorage.getItem('SUPABASE_URL') || 'https://ipkgtglrhnocatrqfsda.supabase.co';
-    const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || localStorage.getItem('SUPABASE_ANON_KEY') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwa2d0Z2xyaG5vY2F0cnFmc2RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MjIxNzMsImV4cCI6MjA4OTI5ODE3M30.tHQ6IzJEMoQicDPfhgGIYPCk-6fmgJlHGv1VvsAHrx0';
+    const PORTAL_URL = "https://irhassha.github.io/planning-portal/";
+    const SUPABASE_URL = "https://ipkgtglrhnocatrqfsda.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlwa2d0Z2xyaG5vY2F0cnFmc2RhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MjIxNzMsImV4cCI6MjA4OTI5ODE3M30.tHQ6IzJEMoQicDPfhgGIYPCk-6fmgJlHGv1VvsAHrx0";
+    
     let supabaseClient = null;
     let lastMasterTimestamp = null;
 
