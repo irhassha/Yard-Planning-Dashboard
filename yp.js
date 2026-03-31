@@ -1314,7 +1314,7 @@ function renderEmptySummary() {
     
     // 1. Filter Data: Hanya yang statusnya Empty/MT
     // EXCLUDE entries where block or slot starts with '8'
-    let emptyData = invData.filter(d => (d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT') && !(String(d.block || '').startsWith('8') || String(d.slot || '').startsWith('8')));
+    let emptyData = invData.filter(d => (d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT') && !(String(d.block || '').startsWith('80') || String(d.slot || '').startsWith('80')));
 
     // Normalize service values
     emptyData.forEach(d => { if(!d.service) d.service = ""; });
