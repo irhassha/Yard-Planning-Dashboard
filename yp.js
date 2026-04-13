@@ -1030,29 +1030,32 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
     async function callAiProxy(payload) {
         // Prioritas: proxy server lokal agar API key aman.
-        let res = await fetch('/api/ai/chat', {
+        try {
+            const proxyRes = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (proxyRes.ok) return proxyRes.json();
+        } catch (_) {
+            // Ignore and continue with direct fallback.
+        }
+
+        // Fallback: direct Gemini call bila proxy gagal / tidak didukung (termasuk 405 pada static hosting).
+        const resolvedApiKey = getGeminiApiKey();
+        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
+        const directRes = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        // Fallback: direct Gemini call bila proxy tidak tersedia (mis. static hosting).
-        if (!res.ok && (res.status === 404 || res.status === 502 || res.status === 503)) {
-            const resolvedApiKey = getGeminiApiKey();
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
-            res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        if (!directRes.ok) {
+            const errorText = await directRes.text();
+            throw new Error(`Gemini API Error: ${directRes.status} - ${errorText}`);
         }
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`Gemini API Error: ${res.status} - ${errorText}`);
-        }
-
-        return res.json();
+        return directRes.json();
     }
 
     async function sendMessageToGemini(userMessage) {
