@@ -1028,6 +1028,38 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         return { error: `Function tidak dikenali: ${functionName}` };
     }
 
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function callGeminiDirectWithRetry(payload) {
+        const resolvedApiKey = getGeminiApiKey();
+        const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+        const retryableStatus = new Set([429, 500, 502, 503, 504]);
+        let lastError = null;
+
+        for (const modelName of modelsToTry) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${resolvedApiKey}`;
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) return res.json();
+
+                const errorText = await res.text();
+                lastError = new Error(`Gemini API Error: ${res.status} - ${errorText}`);
+
+                if (!retryableStatus.has(res.status)) break;
+                if (attempt < 3) await wait(400 * Math.pow(2, attempt - 1));
+            }
+        }
+
+        throw lastError || new Error('Gemini API Error: unknown failure');
+    }
+
     async function callAiProxy(payload) {
         // Prioritas: proxy server lokal agar API key aman.
         try {
@@ -1041,21 +1073,8 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             // Ignore and continue with direct fallback.
         }
 
-        // Fallback: direct Gemini call bila proxy gagal / tidak didukung (termasuk 405 pada static hosting).
-        const resolvedApiKey = getGeminiApiKey();
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
-        const directRes = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!directRes.ok) {
-            const errorText = await directRes.text();
-            throw new Error(`Gemini API Error: ${directRes.status} - ${errorText}`);
-        }
-
-        return directRes.json();
+        // Fallback: direct Gemini call dengan retry untuk beban tinggi (429/503).
+        return callGeminiDirectWithRetry(payload);
     }
 
     async function sendMessageToGemini(userMessage) {
