@@ -87,6 +87,18 @@
             .sort((a, b) => b.count - a.count)
             .slice(0, 10);
 
+        const moveDistribution = {};
+        const lineDistribution = {};
+        const serviceDistribution = {};
+        invRows.forEach(item => {
+            const move = String(item?.move || 'UNKNOWN').toUpperCase();
+            const line = String(item?.line || 'UNKNOWN').toUpperCase();
+            const service = String(item?.service || 'UNKNOWN').toUpperCase();
+            moveDistribution[move] = (moveDistribution[move] || 0) + 1;
+            lineDistribution[line] = (lineDistribution[line] || 0) + 1;
+            serviceDistribution[service] = (serviceDistribution[service] || 0) + 1;
+        });
+
         const compactContext = {
             generatedAt: new Date().toISOString(),
             status: {
@@ -100,6 +112,11 @@
                 totalTeus: Number(totalTeus.toFixed(2)),
                 totalCapacityTeus,
                 yorPct
+            },
+            distributions: {
+                move: moveDistribution,
+                line: lineDistribution,
+                service: serviceDistribution
             },
             topDensityBlocks: blockSummary,
             topClashBlocks
@@ -806,6 +823,15 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         return Number.isNaN(parsed.getTime()) ? null : parsed;
     }
 
+    function normalizeDateToDmy(rawDate) {
+        const parsed = parseArrivalDate(rawDate);
+        if (!parsed) return '';
+        const day = String(parsed.getDate()).padStart(2, '0');
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        const year = String(parsed.getFullYear());
+        return `${day}/${month}/${year}`;
+    }
+
     function detectIntent(userMessage) {
         const text = String(userMessage || '').toLowerCase();
         const blockMatch = text.match(/\b([abc][0-9]{2})\b/i);
@@ -881,10 +907,10 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         }
 
         if (functionName === 'get_arrival_summary_by_date') {
-            const date = String(functionArgs.date || '').trim();
+            const date = normalizeDateToDmy(functionArgs.date) || String(functionArgs.date || '').trim();
             if (!date) return { error: 'Parameter date wajib diisi.' };
-            const total_box = safeInvData.filter(item => String(item?.arrivalDate || '').includes(date)).length;
-            return { date, total_box };
+            const total_box = safeInvData.filter(item => normalizeDateToDmy(item?.arrivalDate) === date).length;
+            return { date, total_box, method: 'exact_date_match' };
         }
 
         if (functionName === 'get_block_congestion_risk') {
@@ -945,12 +971,19 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         if (functionName === 'query_yard_data') {
             const params = functionArgs.parameters || functionArgs || {};
             const metric = String(params.metric || '').toLowerCase();
+            const filterBlock = String(params?.filters?.block || params.block || '').trim().toUpperCase();
+            const filterMove = String(params?.filters?.move || params.move || '').trim().toUpperCase();
+            let rows = [...safeInvData];
+            if (filterBlock) rows = rows.filter(item => String(item?.block || '').trim().toUpperCase() === filterBlock);
+            if (filterMove) rows = rows.filter(item => String(item?.move || '').trim().toUpperCase().includes(filterMove));
+
             if (metric === 'density') {
-                const highest = [...blockDensity].sort((a, b) => b.density - a.density)[0] || null;
-                return highest ? { metric: 'density', highest_density_block: highest.block, value: highest.density } : { metric: 'density', value: 0 };
+                const scopedDensity = filterBlock ? blockDensity.filter(b => b.block === filterBlock) : [...blockDensity];
+                const highest = [...scopedDensity].sort((a, b) => b.density - a.density)[0] || null;
+                return highest ? { metric: 'density', filters: { block: filterBlock || null }, highest_density_block: highest.block, value: highest.density } : { metric: 'density', value: 0 };
             }
             if (metric === 'inventory') {
-                return { metric: 'inventory', total_box: safeInvData.length };
+                return { metric: 'inventory', filters: { block: filterBlock || null, move: filterMove || null }, total_box: rows.length };
             }
             if (metric === 'dwell_time') {
                 return executeTool('get_dwell_time_summary', {});
@@ -958,6 +991,23 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             if (metric === 'arrival') {
                 const date = String(params.date || '').trim();
                 return executeTool('get_arrival_summary_by_date', { date });
+            }
+            if (metric === 'group_count') {
+                const groupBy = String(params.group_by || 'block').toLowerCase();
+                const keyMap = { block: 'block', move: 'move', line: 'line', service: 'service', length: 'length' };
+                const keyName = keyMap[groupBy];
+                if (!keyName) return { error: `group_by ${groupBy} tidak didukung.` };
+                const counts = {};
+                rows.forEach(item => {
+                    const key = String(item?.[keyName] || 'UNKNOWN').toUpperCase().trim() || 'UNKNOWN';
+                    counts[key] = (counts[key] || 0) + 1;
+                });
+                const topN = Number(params.top_n || 10);
+                const data = Object.entries(counts)
+                    .map(([key, count]) => ({ key, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, Math.max(1, Math.min(50, Number.isFinite(topN) ? topN : 10)));
+                return { metric: 'group_count', group_by: groupBy, filters: { block: filterBlock || null, move: filterMove || null }, data };
             }
             return { error: `Metric ${metric} tidak didukung.` };
         }
@@ -979,20 +1029,33 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
     }
 
     async function callAiProxy(payload) {
+        // Prioritas: proxy server lokal agar API key aman.
+        try {
+            const proxyRes = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (proxyRes.ok) return proxyRes.json();
+        } catch (_) {
+            // Ignore and continue with direct fallback.
+        }
+
+        // Fallback: direct Gemini call bila proxy gagal / tidak didukung (termasuk 405 pada static hosting).
         const resolvedApiKey = getGeminiApiKey();
         const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
-        const res = await fetch(endpoint, {
+        const directRes = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`Gemini API Error: ${res.status} - ${errorText}`);
+        if (!directRes.ok) {
+            const errorText = await directRes.text();
+            throw new Error(`Gemini API Error: ${directRes.status} - ${errorText}`);
         }
 
-        return res.json();
+        return directRes.json();
     }
 
     async function sendMessageToGemini(userMessage) {
@@ -1013,7 +1076,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 { name: 'predict_yor_after_discharge', description: 'Predict yard occupancy after vessel discharge.', parameters: { type: 'OBJECT', properties: { vessel_container_count: { type: 'NUMBER' } }, required: ['vessel_container_count'] } },
                 { name: 'suggest_relocation_plan', description: 'Suggest relocation targets for congested block.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'recommend_yard_block', description: 'Recommend block for incoming container type.', parameters: { type: 'OBJECT', properties: { container_type: { type: 'STRING' } }, required: ['container_type'] } },
-                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival/group_count. Supports filters.block, filters.move, group_by, top_n.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
                 { name: 'analyze_yard_state', description: 'Summarize overall yard condition and recommendation.', parameters: { type: 'OBJECT', properties: {} } }
             ]
         }];
