@@ -9,6 +9,7 @@
     let projectionOrderByType = {};
     let projectionDragState = { type: null, vessel: null };
     let chatHistory = [];
+    const MAX_CHAT_MESSAGES = 24;
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -87,6 +88,18 @@
             .sort((a, b) => b.count - a.count)
             .slice(0, 10);
 
+        const moveDistribution = {};
+        const lineDistribution = {};
+        const serviceDistribution = {};
+        invRows.forEach(item => {
+            const move = String(item?.move || 'UNKNOWN').toUpperCase();
+            const line = String(item?.line || 'UNKNOWN').toUpperCase();
+            const service = String(item?.service || 'UNKNOWN').toUpperCase();
+            moveDistribution[move] = (moveDistribution[move] || 0) + 1;
+            lineDistribution[line] = (lineDistribution[line] || 0) + 1;
+            serviceDistribution[service] = (serviceDistribution[service] || 0) + 1;
+        });
+
         const compactContext = {
             generatedAt: new Date().toISOString(),
             status: {
@@ -100,6 +113,11 @@
                 totalTeus: Number(totalTeus.toFixed(2)),
                 totalCapacityTeus,
                 yorPct
+            },
+            distributions: {
+                move: moveDistribution,
+                line: lineDistribution,
+                service: serviceDistribution
             },
             topDensityBlocks: blockSummary,
             topClashBlocks
@@ -806,6 +824,15 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         return Number.isNaN(parsed.getTime()) ? null : parsed;
     }
 
+    function normalizeDateToDmy(rawDate) {
+        const parsed = parseArrivalDate(rawDate);
+        if (!parsed) return '';
+        const day = String(parsed.getDate()).padStart(2, '0');
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        const year = String(parsed.getFullYear());
+        return `${day}/${month}/${year}`;
+    }
+
     function detectIntent(userMessage) {
         const text = String(userMessage || '').toLowerCase();
         const blockMatch = text.match(/\b([abc][0-9]{2})\b/i);
@@ -813,6 +840,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
         if (text.includes('dwell')) return { intent: 'dwell_time', args: {} };
         if ((text.includes('arrival') || text.includes('kedatangan')) && dateMatch) return { intent: 'arrival', args: { date: dateMatch[0] } };
+        if (text.includes('empty') || text.includes('kosong') || text.includes('mt')) return { intent: 'empty_summary', args: {} };
         if ((text.includes('congestion') || text.includes('kepadatan') || text.includes('risk')) && blockMatch) return { intent: 'block_congestion', args: { block_name: blockMatch[1].toUpperCase() } };
         if ((text.includes('relocation') || text.includes('relokasi')) && blockMatch) return { intent: 'relocation', args: { block_name: blockMatch[1].toUpperCase() } };
         if ((text.includes('blok') || text.includes('block')) && blockMatch) return { intent: 'block_detail', args: { blockName: blockMatch[1].toUpperCase() } };
@@ -836,6 +864,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             block_detail: { name: 'get_block_details', args },
             dwell_time: { name: 'get_dwell_time_summary', args: {} },
             arrival: { name: 'get_arrival_summary_by_date', args },
+            empty_summary: { name: 'get_empty_container_summary', args: {} },
             block_congestion: { name: 'get_block_congestion_risk', args },
             yor_prediction: { name: 'predict_yor_after_discharge', args },
             relocation: { name: 'suggest_relocation_plan', args },
@@ -843,6 +872,61 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             yard_state: { name: 'analyze_yard_state', args: {} }
         };
         return map[intent] || null;
+    }
+
+    function compactRowsForEvidence(rows, limit = 20) {
+        return rows.slice(0, limit).map(item => ({
+            block: String(item?.block || '').toUpperCase(),
+            slot: Number(item?.slot || 0),
+            length: String(item?.length || ''),
+            move: String(item?.move || '').toUpperCase(),
+            line: String(item?.line || '').toUpperCase(),
+            service: String(item?.service || '').toUpperCase(),
+            carrier: String(item?.carrier || '').toUpperCase(),
+            arrivalDate: normalizeDateToDmy(item?.arrivalDate) || String(item?.arrivalDate || '')
+        }));
+    }
+
+    function applyStructuredFilters(rows, rawFilters = {}) {
+        let filtered = [...rows];
+        const filter = {
+            block: String(rawFilters?.block || '').trim().toUpperCase(),
+            line: String(rawFilters?.line || '').trim().toUpperCase(),
+            service: String(rawFilters?.service || '').trim().toUpperCase(),
+            move: String(rawFilters?.move || '').trim().toUpperCase(),
+            carrier: String(rawFilters?.carrier || '').trim().toUpperCase(),
+            date: normalizeDateToDmy(rawFilters?.date || '')
+        };
+
+        if (filter.block) filtered = filtered.filter(r => String(r?.block || '').trim().toUpperCase() === filter.block);
+        if (filter.line) filtered = filtered.filter(r => String(r?.line || '').trim().toUpperCase().includes(filter.line));
+        if (filter.service) filtered = filtered.filter(r => String(r?.service || '').trim().toUpperCase().includes(filter.service));
+        if (filter.move) filtered = filtered.filter(r => String(r?.move || '').trim().toUpperCase().includes(filter.move));
+        if (filter.carrier) filtered = filtered.filter(r => String(r?.carrier || '').trim().toUpperCase().includes(filter.carrier));
+        if (filter.date) filtered = filtered.filter(r => normalizeDateToDmy(r?.arrivalDate) === filter.date);
+
+        return { filtered, filter };
+    }
+
+    function buildEvidenceSummary(rows) {
+        const summary = {
+            totalRows: rows.length,
+            byBlock: {},
+            byMove: {},
+            byLine: {},
+            byService: {}
+        };
+        rows.forEach(item => {
+            const block = String(item?.block || 'UNKNOWN').toUpperCase();
+            const move = String(item?.move || 'UNKNOWN').toUpperCase();
+            const line = String(item?.line || 'UNKNOWN').toUpperCase();
+            const service = String(item?.service || 'UNKNOWN').toUpperCase();
+            summary.byBlock[block] = (summary.byBlock[block] || 0) + 1;
+            summary.byMove[move] = (summary.byMove[move] || 0) + 1;
+            summary.byLine[line] = (summary.byLine[line] || 0) + 1;
+            summary.byService[service] = (summary.byService[service] || 0) + 1;
+        });
+        return summary;
     }
 
     function executeTool(functionName, functionArgs = {}) {
@@ -881,10 +965,31 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         }
 
         if (functionName === 'get_arrival_summary_by_date') {
-            const date = String(functionArgs.date || '').trim();
+            const date = normalizeDateToDmy(functionArgs.date) || String(functionArgs.date || '').trim();
             if (!date) return { error: 'Parameter date wajib diisi.' };
-            const total_box = safeInvData.filter(item => String(item?.arrivalDate || '').includes(date)).length;
-            return { date, total_box };
+            const total_box = safeInvData.filter(item => normalizeDateToDmy(item?.arrivalDate) === date).length;
+            return { date, total_box, method: 'exact_date_match' };
+        }
+
+        if (functionName === 'get_empty_container_summary') {
+            const emptyRows = safeInvData.filter(item => {
+                const ls = String(item?.loadStatus || '').toUpperCase();
+                return ls.includes('EMPTY') || ls === 'MT' || ls.includes('MT ');
+            });
+            const byBlock = {};
+            emptyRows.forEach(item => {
+                const block = String(item?.block || 'UNKNOWN').toUpperCase();
+                byBlock[block] = (byBlock[block] || 0) + 1;
+            });
+            const topBlocks = Object.entries(byBlock)
+                .map(([block, count]) => ({ block, count }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
+            return {
+                total_empty_box: emptyRows.length,
+                definition: 'loadStatus contains EMPTY or MT',
+                top_empty_blocks: topBlocks
+            };
         }
 
         if (functionName === 'get_block_congestion_risk') {
@@ -945,12 +1050,19 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         if (functionName === 'query_yard_data') {
             const params = functionArgs.parameters || functionArgs || {};
             const metric = String(params.metric || '').toLowerCase();
+            const filterBlock = String(params?.filters?.block || params.block || '').trim().toUpperCase();
+            const filterMove = String(params?.filters?.move || params.move || '').trim().toUpperCase();
+            let rows = [...safeInvData];
+            if (filterBlock) rows = rows.filter(item => String(item?.block || '').trim().toUpperCase() === filterBlock);
+            if (filterMove) rows = rows.filter(item => String(item?.move || '').trim().toUpperCase().includes(filterMove));
+
             if (metric === 'density') {
-                const highest = [...blockDensity].sort((a, b) => b.density - a.density)[0] || null;
-                return highest ? { metric: 'density', highest_density_block: highest.block, value: highest.density } : { metric: 'density', value: 0 };
+                const scopedDensity = filterBlock ? blockDensity.filter(b => b.block === filterBlock) : [...blockDensity];
+                const highest = [...scopedDensity].sort((a, b) => b.density - a.density)[0] || null;
+                return highest ? { metric: 'density', filters: { block: filterBlock || null }, highest_density_block: highest.block, value: highest.density } : { metric: 'density', value: 0 };
             }
             if (metric === 'inventory') {
-                return { metric: 'inventory', total_box: safeInvData.length };
+                return { metric: 'inventory', filters: { block: filterBlock || null, move: filterMove || null }, total_box: rows.length };
             }
             if (metric === 'dwell_time') {
                 return executeTool('get_dwell_time_summary', {});
@@ -959,7 +1071,40 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 const date = String(params.date || '').trim();
                 return executeTool('get_arrival_summary_by_date', { date });
             }
+            if (metric === 'empty') {
+                return executeTool('get_empty_container_summary', {});
+            }
+            if (metric === 'group_count') {
+                const groupBy = String(params.group_by || 'block').toLowerCase();
+                const keyMap = { block: 'block', move: 'move', line: 'line', service: 'service', length: 'length' };
+                const keyName = keyMap[groupBy];
+                if (!keyName) return { error: `group_by ${groupBy} tidak didukung.` };
+                const counts = {};
+                rows.forEach(item => {
+                    const key = String(item?.[keyName] || 'UNKNOWN').toUpperCase().trim() || 'UNKNOWN';
+                    counts[key] = (counts[key] || 0) + 1;
+                });
+                const topN = Number(params.top_n || 10);
+                const data = Object.entries(counts)
+                    .map(([key, count]) => ({ key, count }))
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, Math.max(1, Math.min(50, Number.isFinite(topN) ? topN : 10)));
+                return { metric: 'group_count', group_by: groupBy, filters: { block: filterBlock || null, move: filterMove || null }, data };
+            }
             return { error: `Metric ${metric} tidak didukung.` };
+        }
+
+        if (functionName === 'retrieve_yard_evidence') {
+            const params = functionArgs.parameters || functionArgs || {};
+            const limit = Math.max(5, Math.min(50, Number(params.limit || 20)));
+            const { filtered, filter } = applyStructuredFilters(safeInvData, params.filters || {});
+            const summary = buildEvidenceSummary(filtered);
+            return {
+                filters: filter,
+                totalMatchedRows: filtered.length,
+                summary,
+                sampleRows: compactRowsForEvidence(filtered, limit)
+            };
         }
 
         if (functionName === 'analyze_yard_state') {
@@ -978,21 +1123,53 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         return { error: `Function tidak dikenali: ${functionName}` };
     }
 
-    async function callAiProxy(payload) {
-        const resolvedApiKey = getGeminiApiKey();
-        const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${resolvedApiKey}`;
-        const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+    function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
-        if (!res.ok) {
-            const errorText = await res.text();
-            throw new Error(`Gemini API Error: ${res.status} - ${errorText}`);
+    async function callGeminiDirectWithRetry(payload) {
+        const resolvedApiKey = getGeminiApiKey();
+        const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+        const retryableStatus = new Set([429, 500, 502, 503, 504]);
+        let lastError = null;
+
+        for (const modelName of modelsToTry) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${resolvedApiKey}`;
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) return res.json();
+
+                const errorText = await res.text();
+                lastError = new Error(`Gemini API Error: ${res.status} - ${errorText}`);
+
+                if (!retryableStatus.has(res.status)) break;
+                if (attempt < 3) await wait(400 * Math.pow(2, attempt - 1));
+            }
         }
 
-        return res.json();
+        throw lastError || new Error('Gemini API Error: unknown failure');
+    }
+
+    async function callAiProxy(payload) {
+        // Prioritas: proxy server lokal agar API key aman.
+        try {
+            const proxyRes = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (proxyRes.ok) return proxyRes.json();
+        } catch (_) {
+            // Ignore and continue with direct fallback.
+        }
+
+        // Fallback: direct Gemini call dengan retry untuk beban tinggi (429/503).
+        return callGeminiDirectWithRetry(payload);
     }
 
     async function sendMessageToGemini(userMessage) {
@@ -1000,7 +1177,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         const systemInstruction = {
             role: 'system',
             parts: [{
-                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Tolak pertanyaan di luar domain logistik pelabuhan.`
+                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Prioritaskan tool retrieve_yard_evidence untuk pertanyaan ad-hoc agar jawaban berbasis bukti data tanpa mengirim semua row ke prompt. Untuk pertanyaan container kosong/empty, gunakan get_empty_container_summary (definisi empty: loadStatus berisi EMPTY atau MT). Tolak pertanyaan di luar domain logistik pelabuhan.`
             }]
         };
 
@@ -1009,17 +1186,22 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 { name: 'get_block_details', description: 'Get inventory composition by block.', parameters: { type: 'OBJECT', properties: { blockName: { type: 'STRING' } }, required: ['blockName'] } },
                 { name: 'get_dwell_time_summary', description: 'Get dwell time distribution.', parameters: { type: 'OBJECT', properties: {} } },
                 { name: 'get_arrival_summary_by_date', description: 'Get total inventory by arrival date string.', parameters: { type: 'OBJECT', properties: { date: { type: 'STRING' } }, required: ['date'] } },
+                { name: 'get_empty_container_summary', description: 'Count empty containers based on loadStatus (EMPTY/MT) and return top blocks.', parameters: { type: 'OBJECT', properties: {} } },
                 { name: 'get_block_congestion_risk', description: 'Analyze congestion risk based on block density.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'predict_yor_after_discharge', description: 'Predict yard occupancy after vessel discharge.', parameters: { type: 'OBJECT', properties: { vessel_container_count: { type: 'NUMBER' } }, required: ['vessel_container_count'] } },
                 { name: 'suggest_relocation_plan', description: 'Suggest relocation targets for congested block.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'recommend_yard_block', description: 'Recommend block for incoming container type.', parameters: { type: 'OBJECT', properties: { container_type: { type: 'STRING' } }, required: ['container_type'] } },
-                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival/empty/group_count. Supports filters.block, filters.move, group_by, top_n.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'retrieve_yard_evidence', description: 'Retrieve grounded evidence rows + grouped summary from uploaded yard data. Supports filters: block, line, service, move, carrier, date and limit.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
                 { name: 'analyze_yard_state', description: 'Summarize overall yard condition and recommendation.', parameters: { type: 'OBJECT', properties: {} } }
             ]
         }];
 
         try {
             chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+            if (chatHistory.length > MAX_CHAT_MESSAGES) {
+                chatHistory = chatHistory.slice(-MAX_CHAT_MESSAGES);
+            }
 
             // Explicit architecture: Intent Detection -> Tool Routing -> Tool Execution
             const intentPayload = detectIntent(userMessage);
