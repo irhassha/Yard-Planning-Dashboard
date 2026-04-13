@@ -840,6 +840,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
 
         if (text.includes('dwell')) return { intent: 'dwell_time', args: {} };
         if ((text.includes('arrival') || text.includes('kedatangan')) && dateMatch) return { intent: 'arrival', args: { date: dateMatch[0] } };
+        if (text.includes('empty') || text.includes('kosong') || text.includes('mt')) return { intent: 'empty_summary', args: {} };
         if ((text.includes('congestion') || text.includes('kepadatan') || text.includes('risk')) && blockMatch) return { intent: 'block_congestion', args: { block_name: blockMatch[1].toUpperCase() } };
         if ((text.includes('relocation') || text.includes('relokasi')) && blockMatch) return { intent: 'relocation', args: { block_name: blockMatch[1].toUpperCase() } };
         if ((text.includes('blok') || text.includes('block')) && blockMatch) return { intent: 'block_detail', args: { blockName: blockMatch[1].toUpperCase() } };
@@ -863,6 +864,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             block_detail: { name: 'get_block_details', args },
             dwell_time: { name: 'get_dwell_time_summary', args: {} },
             arrival: { name: 'get_arrival_summary_by_date', args },
+            empty_summary: { name: 'get_empty_container_summary', args: {} },
             block_congestion: { name: 'get_block_congestion_risk', args },
             yor_prediction: { name: 'predict_yor_after_discharge', args },
             relocation: { name: 'suggest_relocation_plan', args },
@@ -969,6 +971,27 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             return { date, total_box, method: 'exact_date_match' };
         }
 
+        if (functionName === 'get_empty_container_summary') {
+            const emptyRows = safeInvData.filter(item => {
+                const ls = String(item?.loadStatus || '').toUpperCase();
+                return ls.includes('EMPTY') || ls === 'MT' || ls.includes('MT ');
+            });
+            const byBlock = {};
+            emptyRows.forEach(item => {
+                const block = String(item?.block || 'UNKNOWN').toUpperCase();
+                byBlock[block] = (byBlock[block] || 0) + 1;
+            });
+            const topBlocks = Object.entries(byBlock)
+                .map(([block, count]) => ({ block, count }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
+            return {
+                total_empty_box: emptyRows.length,
+                definition: 'loadStatus contains EMPTY or MT',
+                top_empty_blocks: topBlocks
+            };
+        }
+
         if (functionName === 'get_block_congestion_risk') {
             const blockName = String(functionArgs.block_name || functionArgs.blockName || '').trim().toUpperCase();
             if (!blockName) return { error: 'Parameter block_name wajib diisi.' };
@@ -1047,6 +1070,9 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             if (metric === 'arrival') {
                 const date = String(params.date || '').trim();
                 return executeTool('get_arrival_summary_by_date', { date });
+            }
+            if (metric === 'empty') {
+                return executeTool('get_empty_container_summary', {});
             }
             if (metric === 'group_count') {
                 const groupBy = String(params.group_by || 'block').toLowerCase();
@@ -1151,7 +1177,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         const systemInstruction = {
             role: 'system',
             parts: [{
-                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Prioritaskan tool retrieve_yard_evidence untuk pertanyaan ad-hoc agar jawaban berbasis bukti data tanpa mengirim semua row ke prompt. Tolak pertanyaan di luar domain logistik pelabuhan.`
+                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Prioritaskan tool retrieve_yard_evidence untuk pertanyaan ad-hoc agar jawaban berbasis bukti data tanpa mengirim semua row ke prompt. Untuk pertanyaan container kosong/empty, gunakan get_empty_container_summary (definisi empty: loadStatus berisi EMPTY atau MT). Tolak pertanyaan di luar domain logistik pelabuhan.`
             }]
         };
 
@@ -1160,11 +1186,12 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 { name: 'get_block_details', description: 'Get inventory composition by block.', parameters: { type: 'OBJECT', properties: { blockName: { type: 'STRING' } }, required: ['blockName'] } },
                 { name: 'get_dwell_time_summary', description: 'Get dwell time distribution.', parameters: { type: 'OBJECT', properties: {} } },
                 { name: 'get_arrival_summary_by_date', description: 'Get total inventory by arrival date string.', parameters: { type: 'OBJECT', properties: { date: { type: 'STRING' } }, required: ['date'] } },
+                { name: 'get_empty_container_summary', description: 'Count empty containers based on loadStatus (EMPTY/MT) and return top blocks.', parameters: { type: 'OBJECT', properties: {} } },
                 { name: 'get_block_congestion_risk', description: 'Analyze congestion risk based on block density.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'predict_yor_after_discharge', description: 'Predict yard occupancy after vessel discharge.', parameters: { type: 'OBJECT', properties: { vessel_container_count: { type: 'NUMBER' } }, required: ['vessel_container_count'] } },
                 { name: 'suggest_relocation_plan', description: 'Suggest relocation targets for congested block.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'recommend_yard_block', description: 'Recommend block for incoming container type.', parameters: { type: 'OBJECT', properties: { container_type: { type: 'STRING' } }, required: ['container_type'] } },
-                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival/group_count. Supports filters.block, filters.move, group_by, top_n.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival/empty/group_count. Supports filters.block, filters.move, group_by, top_n.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
                 { name: 'retrieve_yard_evidence', description: 'Retrieve grounded evidence rows + grouped summary from uploaded yard data. Supports filters: block, line, service, move, carrier, date and limit.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
                 { name: 'analyze_yard_state', description: 'Summarize overall yard condition and recommendation.', parameters: { type: 'OBJECT', properties: {} } }
             ]
