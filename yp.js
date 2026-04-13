@@ -9,6 +9,7 @@
     let projectionOrderByType = {};
     let projectionDragState = { type: null, vessel: null };
     let chatHistory = [];
+    const MAX_CHAT_MESSAGES = 24;
 
     // Constants
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
@@ -871,6 +872,61 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         return map[intent] || null;
     }
 
+    function compactRowsForEvidence(rows, limit = 20) {
+        return rows.slice(0, limit).map(item => ({
+            block: String(item?.block || '').toUpperCase(),
+            slot: Number(item?.slot || 0),
+            length: String(item?.length || ''),
+            move: String(item?.move || '').toUpperCase(),
+            line: String(item?.line || '').toUpperCase(),
+            service: String(item?.service || '').toUpperCase(),
+            carrier: String(item?.carrier || '').toUpperCase(),
+            arrivalDate: normalizeDateToDmy(item?.arrivalDate) || String(item?.arrivalDate || '')
+        }));
+    }
+
+    function applyStructuredFilters(rows, rawFilters = {}) {
+        let filtered = [...rows];
+        const filter = {
+            block: String(rawFilters?.block || '').trim().toUpperCase(),
+            line: String(rawFilters?.line || '').trim().toUpperCase(),
+            service: String(rawFilters?.service || '').trim().toUpperCase(),
+            move: String(rawFilters?.move || '').trim().toUpperCase(),
+            carrier: String(rawFilters?.carrier || '').trim().toUpperCase(),
+            date: normalizeDateToDmy(rawFilters?.date || '')
+        };
+
+        if (filter.block) filtered = filtered.filter(r => String(r?.block || '').trim().toUpperCase() === filter.block);
+        if (filter.line) filtered = filtered.filter(r => String(r?.line || '').trim().toUpperCase().includes(filter.line));
+        if (filter.service) filtered = filtered.filter(r => String(r?.service || '').trim().toUpperCase().includes(filter.service));
+        if (filter.move) filtered = filtered.filter(r => String(r?.move || '').trim().toUpperCase().includes(filter.move));
+        if (filter.carrier) filtered = filtered.filter(r => String(r?.carrier || '').trim().toUpperCase().includes(filter.carrier));
+        if (filter.date) filtered = filtered.filter(r => normalizeDateToDmy(r?.arrivalDate) === filter.date);
+
+        return { filtered, filter };
+    }
+
+    function buildEvidenceSummary(rows) {
+        const summary = {
+            totalRows: rows.length,
+            byBlock: {},
+            byMove: {},
+            byLine: {},
+            byService: {}
+        };
+        rows.forEach(item => {
+            const block = String(item?.block || 'UNKNOWN').toUpperCase();
+            const move = String(item?.move || 'UNKNOWN').toUpperCase();
+            const line = String(item?.line || 'UNKNOWN').toUpperCase();
+            const service = String(item?.service || 'UNKNOWN').toUpperCase();
+            summary.byBlock[block] = (summary.byBlock[block] || 0) + 1;
+            summary.byMove[move] = (summary.byMove[move] || 0) + 1;
+            summary.byLine[line] = (summary.byLine[line] || 0) + 1;
+            summary.byService[service] = (summary.byService[service] || 0) + 1;
+        });
+        return summary;
+    }
+
     function executeTool(functionName, functionArgs = {}) {
         const { safeInvData, blockDensity, totalCapacityTeus, totalTeus, yorPct } = getOperationalSnapshot();
 
@@ -1012,6 +1068,19 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
             return { error: `Metric ${metric} tidak didukung.` };
         }
 
+        if (functionName === 'retrieve_yard_evidence') {
+            const params = functionArgs.parameters || functionArgs || {};
+            const limit = Math.max(5, Math.min(50, Number(params.limit || 20)));
+            const { filtered, filter } = applyStructuredFilters(safeInvData, params.filters || {});
+            const summary = buildEvidenceSummary(filtered);
+            return {
+                filters: filter,
+                totalMatchedRows: filtered.length,
+                summary,
+                sampleRows: compactRowsForEvidence(filtered, limit)
+            };
+        }
+
         if (functionName === 'analyze_yard_state') {
             const sorted = [...blockDensity].filter(b => b.capTeus > 0).sort((a, b) => b.density - a.density);
             const congestion = sorted.filter(b => b.density >= 80).slice(0, 5).map(b => b.block);
@@ -1082,7 +1151,7 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
         const systemInstruction = {
             role: 'system',
             parts: [{
-                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Tolak pertanyaan di luar domain logistik pelabuhan.`
+                text: `Anda adalah AI Operations Analyst untuk New Priok Container Terminal 1 (NPCT1). Gunakan konteks dashboard berikut untuk analisa: ${dashboardContext}. Gaya jawaban wajib: (1) Jelaskan situasi, (2) Dampak operasional, (3) Rekomendasi aksi. Jika pertanyaan membutuhkan data spesifik, gunakan tools. Prioritaskan tool retrieve_yard_evidence untuk pertanyaan ad-hoc agar jawaban berbasis bukti data tanpa mengirim semua row ke prompt. Tolak pertanyaan di luar domain logistik pelabuhan.`
             }]
         };
 
@@ -1096,12 +1165,16 @@ let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
                 { name: 'suggest_relocation_plan', description: 'Suggest relocation targets for congested block.', parameters: { type: 'OBJECT', properties: { block_name: { type: 'STRING' } }, required: ['block_name'] } },
                 { name: 'recommend_yard_block', description: 'Recommend block for incoming container type.', parameters: { type: 'OBJECT', properties: { container_type: { type: 'STRING' } }, required: ['container_type'] } },
                 { name: 'query_yard_data', description: 'Flexible analytics query for density/inventory/dwell_time/arrival/group_count. Supports filters.block, filters.move, group_by, top_n.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
+                { name: 'retrieve_yard_evidence', description: 'Retrieve grounded evidence rows + grouped summary from uploaded yard data. Supports filters: block, line, service, move, carrier, date and limit.', parameters: { type: 'OBJECT', properties: { parameters: { type: 'OBJECT' } } } },
                 { name: 'analyze_yard_state', description: 'Summarize overall yard condition and recommendation.', parameters: { type: 'OBJECT', properties: {} } }
             ]
         }];
 
         try {
             chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
+            if (chatHistory.length > MAX_CHAT_MESSAGES) {
+                chatHistory = chatHistory.slice(-MAX_CHAT_MESSAGES);
+            }
 
             // Explicit architecture: Intent Detection -> Tool Routing -> Tool Execution
             const intentPayload = detectIntent(userMessage);
