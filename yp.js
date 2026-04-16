@@ -1,5 +1,6 @@
 
     let invData = [];
+    let scheduleData = [];
     let isInvLoaded = false;
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
@@ -39,6 +40,50 @@
         return `${d}/${h}:${m}`;
     }
 
+    function parseVesselScheduleFile(file, onComplete) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            try {
+                const wb = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
+                const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ''});
+                if (!json.length) throw new Error('Empty vessel schedule file.');
+
+                const headers = json[0].map(c => cleanStr(c));
+                const vesselIdx = headers.findIndex(x => (x.includes('carrier') || x.includes('vessel') || x.includes('ship')) && !x.includes('type'));
+                const serviceIdx = headers.findIndex(x => x.includes('service') && x.includes('out')) !== -1 ? headers.findIndex(x => x.includes('service') && x.includes('out')) : headers.findIndex(x => x.includes('service'));
+                const etaIdx = headers.findIndex(x => x.includes('eta') || x.includes('arrival'));
+                const etdIdx = headers.findIndex(x => x.includes('etd') || x.includes('departure'));
+                if (vesselIdx === -1) throw new Error('Schedule file harus memiliki kolom Carrier atau Vessel.');
+                if (etaIdx === -1) throw new Error('Schedule file harus memiliki kolom ETA atau Arrival.');
+
+                const rows = [];
+                for (let i = 1; i < json.length; i++) {
+                    const row = json[i];
+                    if (!row[vesselIdx]) continue;
+                    const carrier = String(row[vesselIdx] || '').toUpperCase().trim();
+                    const service = serviceIdx !== -1 ? String(row[serviceIdx] || '').toUpperCase().trim() : '';
+                    const eta = parseDate(row[etaIdx]);
+                    let etd = etdIdx !== -1 ? parseDate(row[etdIdx]) : null;
+                    if (!eta) continue;
+                    if (!etd) etd = new Date(eta.getTime() + 86400000);
+                    rows.push({ carrier, service, eta, etd, v: carrier });
+                }
+
+                scheduleData = rows;
+                if (typeof onComplete === 'function') onComplete();
+            } catch (err) {
+                alert(err.message);
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    document.getElementById('scheduleInput').addEventListener('change', function(e) {
+        if (!e.target.files[0]) return;
+        parseVesselScheduleFile(e.target.files[0], function() {
+            if (isInvLoaded) renderClusterSpreading();
+        });
+    });
 
     function getDashboardContext() {
         const blockAgg = {};
@@ -429,6 +474,23 @@ document.getElementById('sumTotalCap').innerText =
         document.getElementById('yorExp').innerText = Math.round(yExp) + "%";
         document.getElementById('yorTotal').innerText = Math.round(yTot) + "%";
         
+        const card = document.getElementById('yorOverallCard');
+        const note = document.getElementById('yorWarningNote');
+        if (card) {
+            if (yTot > 65) {
+                card.classList.add('yor-overall-alert');
+            } else {
+                card.classList.remove('yor-overall-alert');
+            }
+        }
+        if (note) {
+            if (yTot > 65) {
+                note.classList.remove('hidden');
+            } else {
+                note.classList.add('hidden');
+            }
+        }
+        
         const setR = (id, v) => {
   const pct = Math.min(v, 100);
   document.getElementById(id).style.strokeDashoffset = 100 - pct;
@@ -441,44 +503,64 @@ document.getElementById('sumTotalCap').innerText =
     function renderClusterSpreading() {
         const body = document.getElementById('clusterBody');
         const showAll = document.getElementById('toggleSmallCarriers').checked;
-        const chartDiv = document.getElementById('carrierChart');
         body.innerHTML = '';
-        
+
+        const IGNORED_CLUSTER_BLOCKS = new Set(['C01','C02','D01','BR9','RC9','OOG','N']);
+        const scheduleMap = {};
+        (scheduleData || []).forEach(s => {
+            const key = `${s.carrier}||${s.service || ''}`;
+            if(!scheduleMap[key]) scheduleMap[key] = [];
+            scheduleMap[key].push(s);
+        });
+
         let stats = {};
         invData.forEach(it => {
             if(!it.move.includes('export')) return;
             let c = it.carrier;
             if(!c || c === '0' || c === 'NIL') return;
-            if(!stats[c]) stats[c] = { blocks: {}, total: 0 };
-            stats[c].blocks[it.block] = (stats[c].blocks[it.block] || 0) + 1;
-            stats[c].total++;
+            if(IGNORED_CLUSTER_BLOCKS.has(it.block)) return;
+            const service = String(it.service || '').toUpperCase();
+            const key = `${c}||${service}`;
+            if(!stats[key]) stats[key] = { carrier: c, service, blocks: {}, total: 0, clusters: new Set(), eta: null };
+            stats[key].blocks[it.block] = (stats[key].blocks[it.block] || 0) + 1;
+            stats[key].total++;
+            if (service) {
+                const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(service) : null;
+                if (expected !== null) stats[key].clusters.add(expected);
+            }
+            const scheduleRows = scheduleMap[key] || [];
+            if (scheduleRows.length) {
+                const earliest = scheduleRows.reduce((min, row) => {
+                    return !min || row.eta.getTime() < min.getTime() ? row.eta : min;
+                }, null);
+                if (earliest) stats[key].eta = earliest;
+            }
         });
 
-        let sorted = Object.entries(stats).sort((a,b) => b[1].total - a[1].total);
-        if(!sorted.length) { body.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; return; }
-
-        // 1. Render Chart (Top 5)
-        chartDiv.innerHTML = '';
-        let maxVal = sorted[0][1].total;
-        sorted.slice(0, 5).forEach(([c, data]) => {
-            let pct = (data.total / maxVal) * 100;
-            chartDiv.innerHTML += `
-                <div class="mb-2">
-                    <div class="flex justify-between text-xs font-bold mb-1"><span>${c}</span><span>${data.total} units</span></div>
-                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                        <div class="bg-primary h-full rounded-full" style="width: ${pct}%"></div>
-                    </div>
-                </div>`;
+        let sorted = Object.entries(stats).sort(([kA, a], [kB, b]) => {
+            if (a.eta && b.eta) return a.eta - b.eta;
+            if (a.eta) return -1;
+            if (b.eta) return 1;
+            return b.total - a.total;
         });
+        if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; return; }
 
-        // 2. Render Table
         let filtered = showAll ? sorted : sorted.filter(e => e[1].total >= 50);
-        filtered.forEach(([c, data]) => {
-            let badges = Object.entries(data.blocks).sort((a,b) => b[1]-a[1]).map(([b, cnt]) => {
+        filtered.forEach(([key, data]) => {
+            let badges = Object.entries(data.blocks).sort((a,b) => b[1]-a[1]).map(([block, cnt]) => {
                 let cls = cnt > 200 ? 'bg-red-600 text-white shadow-sm' : (cnt > 100 ? 'bg-amber-400 text-slate-900' : 'bg-blue-50 text-blue-700 border border-blue-100');
-                return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${b}</span><span>${cnt}</span></span>`;
+                return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${block}</span><span>${cnt}</span></span>`;
             }).join("");
-            body.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="px-2 py-1 font-black text-slate-700">${c}</td><td class="px-2 py-1">${badges}</td><td class="px-2 py-1 text-center font-bold text-slate-800">${data.total}</td></tr>`;
+            const serviceLabel = data.service ? data.service : '-';
+            const etaLabel = data.eta ? `${data.eta.getDate().toString().padStart(2,'0')}/${(data.eta.getMonth()+1).toString().padStart(2,'0')} ${data.eta.getHours().toString().padStart(2,'0')}:${data.eta.getMinutes().toString().padStart(2,'0')}` : '-';
+            const clusterValues = Array.from(data.clusters).sort((a,b) => a - b);
+            const expectedClusterLabel = clusterValues.length ? clusterValues.join(", ") : '-';
+            const expectedClusterNumber = clusterValues.length ? clusterValues[clusterValues.length - 1] : null;
+            const totalClusterCount = Object.keys(data.blocks).length;
+            const exceedsExpected = expectedClusterNumber !== null && totalClusterCount > expectedClusterNumber;
+            const errorCellClass = exceedsExpected ? ' cluster-error-cell' : '';
+            const hkBadge = exceedsExpected ? '<span class="hk-badge">HK</span>' : '';
+            body.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="px-2 py-2 font-black text-slate-700">${data.carrier}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${serviceLabel}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${etaLabel}</td><td class="px-6 py-2">${badges}</td><td class="px-4 py-2 font-bold text-slate-800">${expectedClusterLabel}</td><td class="px-4 py-2 text-center font-bold text-slate-800${errorCellClass}">${totalClusterCount}${hkBadge}</td><td class="px-4 py-2 text-center font-bold text-slate-800">${data.total}</td></tr>`;
         });
     }
 
@@ -508,61 +590,33 @@ document.getElementById('sumTotalCap').innerText =
 
     async function processClashAnalysis() {
         if(!isInvLoaded) { alert("Please upload Unit List in Header first."); return; }
-        const file = document.getElementById('scheduleInput').files[0];
-        if(!file) { alert("Please upload Vessel Schedule."); return; }
+        if(!scheduleData.length) { alert("Please upload Vessel Schedule."); return; }
 
         const loader = document.getElementById('loadingOverlay');
         loader.classList.remove('hidden');
         setProgress(30, "Analyzing Clashes...");
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                // 1. Parse Schedule
-const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:""});
-let h = json[0].map(c => cleanStr(c));
+        try {
+            let grouped = {};
+            invData.forEach(it => {
+                let key = `${it.block}|${it.carrier}`;
+                if(!grouped[key]) grouped[key] = { b: it.block, v: it.carrier, count:0, slots:[] };
+                grouped[key].count++;
+                if(it.slot > 0) grouped[key].slots.push(it.slot);
+            });
+            let aggregatedInventory = Object.values(grouped).map(g => ({
+                b: g.b, v: g.v, count: g.count,
+                sS: g.slots.length ? Math.min(...g.slots) : 0,
+                eS: g.slots.length ? Math.max(...g.slots) : 0
+            }));
 
-let nIdx = h.findIndex(x => (x.includes('carrier') || x.includes('vessel')) && !x.includes('type'));
-// -------------------------------------------
-
-let etaIdx = h.findIndex(x => x.includes('eta') || x.includes('arrival'));
-let etdIdx = h.findIndex(x => x.includes('etd') || x.includes('departure'));
-                
-                let schedule = [];
-                for(let i=1; i<json.length; i++){
-                    let r = json[i];
-                    if(r[nIdx]) {
-                        let dEta = parseDate(r[etaIdx]), dEtd = parseDate(r[etdIdx]);
-                        if(dEta) {
-                            if(!dEtd) dEtd = new Date(dEta.getTime() + 86400000);
-                            schedule.push({ v: String(r[nIdx]).toUpperCase().trim(), eta: dEta, etd: dEtd });
-                        }
-                    }
-                }
-
-                // 2. Aggregating Inventory (Transform invData to fit Clash Logic)
-                let grouped = {};
-                invData.forEach(it => {
-                    let key = `${it.block}|${it.carrier}`;
-                    if(!grouped[key]) grouped[key] = { b: it.block, v: it.carrier, count:0, slots:[] };
-                    grouped[key].count++;
-                    if(it.slot > 0) grouped[key].slots.push(it.slot);
-                });
-                let aggregatedInventory = Object.values(grouped).map(g => ({
-                    b: g.b, v: g.v, count: g.count, 
-                    sS: g.slots.length ? Math.min(...g.slots) : 0, 
-                    eS: g.slots.length ? Math.max(...g.slots) : 0
-                }));
-
-                // 3. Run Logic
-                runClashLogic(schedule, aggregatedInventory);
-                
-                setProgress(100, "Done!");
-                setTimeout(() => loader.classList.add('hidden'), 500);
-            } catch(err) { alert(err.message); loader.classList.add('hidden'); }
-        };
-        reader.readAsArrayBuffer(file);
+            runClashLogic(scheduleData, aggregatedInventory);
+            setProgress(100, "Done!");
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setTimeout(() => loader.classList.add('hidden'), 500);
+        }
     }
 
     function runClashLogic(schedule, inventory) {

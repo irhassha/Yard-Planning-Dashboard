@@ -42,9 +42,16 @@ body {
     padding: 0.65rem 1rem;
 }
 
-.glass-panel {
-    background: #FFFFFF;
-    border: 1px solid #E4EBF6;
+.cta-upload-green {
+    background: #10B981;
+    color: #FFFFFF;
+    padding: 0.7rem 1.15rem;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.28);
+}
+
+#uploadCallList {
+    background: #10B981 !important;
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.28) !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -114,6 +121,54 @@ body {
 
 .accordion-content { transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease; overflow: hidden; }
 .progress-ring__circle { transition: stroke-dashoffset 0.6s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+@keyframes pulse-red-border {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35); border-color: rgba(239, 68, 68, 0.75); }
+  50% { box-shadow: 0 0 20px 10px rgba(239, 68, 68, 0.25); border-color: #ef4444; }
+}
+
+.yor-overall-alert {
+  border: 2px solid #ef4444 !important;
+  animation: pulse-red-border 1.5s ease-in-out infinite;
+}
+
+.cluster-details-table th:nth-child(1),
+.cluster-details-table td:nth-child(1) { width: 7%; }
+.cluster-details-table th:nth-child(2),
+.cluster-details-table td:nth-child(2) { width: 9%; }
+.cluster-details-table th:nth-child(3),
+.cluster-details-table td:nth-child(3) { width: 9%; }
+.cluster-details-table th:nth-child(4),
+.cluster-details-table td:nth-child(4) { width: 55%; }
+.cluster-details-table th:nth-child(5),
+.cluster-details-table td:nth-child(5) { width: 7%; }
+.cluster-details-table th:nth-child(6),
+.cluster-details-table td:nth-child(6) { width: 7%; }
+.cluster-details-table th:nth-child(7),
+.cluster-details-table td:nth-child(7) { width: 6%; }
+.cluster-details-table th,
+.cluster-details-table td {
+  vertical-align: middle;
+  padding: 0.55rem 0.6rem;
+}
+.cluster-error-cell {
+  border: 1px solid #ef4444;
+  background: rgba(254, 226, 226, 0.7);
+}
+.hk-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-left: 0.45rem;
+}
 
 .row-dg td      { background-color: #fee2e2 !important; color: #991b1b !important; }
 .row-export td  { background-color: #dcfce7 !important; color: #166534 !important; }
