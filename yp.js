@@ -575,7 +575,7 @@ document.getElementById('sumTotalCap').innerText =
                 ...secondaryVessels.map(v => {
                     let cls = 'bg-gray-200 text-gray-500 border border-gray-300 opacity-60';
                     if (activeVesselFilter && v.carrier === activeVesselFilter) {
-                        cls = 'bg-blue-600 text-white border border-blue-700 shadow-lg opacity-100';
+                        cls = 'bg-blue-100 text-blue-800 border border-blue-300 shadow-sm';
                     }
                     return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
                 })
