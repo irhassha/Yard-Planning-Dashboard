@@ -16,8 +16,22 @@ let yardCarrierColorMap = {};
 let yardActiveHighlight = new Set(); // Changed to Set for multi-select
 let yardMapZoom = null; // Will auto-fit if null
 let yardTextHidden = true; // Default to true
+let yardRowMode = false; // Default row mode off
 
 // ── UI Controls ──────────────────────────────────────────────────────
+
+function toggleYardRowMode() {
+    yardRowMode = !yardRowMode;
+    const btn = document.getElementById('yardRowModeBtn');
+    if (btn) {
+        if (yardRowMode) {
+            btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">view_comfy</span> Hide Rows';
+        } else {
+            btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">view_column</span> Show Rows';
+        }
+    }
+    renderYardMap();
+}
 
 function zoomYardMap(delta) {
     const yardEl = document.querySelector('.ym-yard');
@@ -142,6 +156,82 @@ function yardContrastText(hex) {
 // Build a left-to-right display list for one block.
 // Slot numbering: 1 (rightmost) … maxSlots (leftmost)
 // Display order: maxSlots → 1  (left → right)
+
+function buildYardRowGrid(containers, maxSlots, blockName) {
+    const occ = {}; // row -> slot -> cell info
+    for (let r = 1; r <= 6; r++) occ[r] = {};
+
+    const allowedBlocks = new Set([
+        'C08','C07','C06','C05','C04','C03','C02','C01',
+        'B08','B07','B06','B05','B04','B03','B02','B01',
+        'A08','A07','A06','A05','A04','A03','A02','A01'
+    ]);
+    const isAllowedBlock = allowedBlocks.has(blockName);
+
+    const sorted = [...containers].sort((a, b) => {
+        const ae = isYardExport(a) && isAllowedBlock ? 1 : 0;
+        const be = isYardExport(b) && isAllowedBlock ? 1 : 0;
+        if (ae !== be) return ae - be;
+        const al = String(a.length || '20').startsWith('4') ? 1 : 0;
+        const bl = String(b.length || '20').startsWith('4') ? 1 : 0;
+        return al - bl;
+    });
+
+    sorted.forEach(c => {
+        const s = c.slot;
+        let r = c.row;
+        if (s < 1 || s > maxSlots) return;
+        if (!r || r < 1 || r > 6) r = 1; // Default to row 1 if invalid
+
+        const len = String(c.length || '20');
+        const is40 = len.startsWith('40') || len.startsWith('45');
+        const exp = isYardExport(c) && isAllowedBlock;
+        const color = exp ? getYardColor(c.carrier) : '#FFFFFF';
+        const info = { color, carrier: c.carrier || '', isExport: exp };
+
+        if (is40) {
+            const ext = s + 1;
+            const canExtend = ext <= maxSlots &&
+                (!occ[r][ext] || occ[r][ext].type === 'cont' || (!occ[r][ext].isExport && exp));
+            if (canExtend) {
+                occ[r][ext] = { ...info, type: 'start40', src: s };
+                occ[r][s]   = { ...info, type: 'cont',    src: s };
+            } else {
+                if (!occ[r][s] || (!occ[r][s].isExport && exp) || occ[r][s].type === 'cont') {
+                    occ[r][s] = { ...info, type: '20ft', src: s };
+                }
+            }
+        } else {
+            if (!occ[r][s] || (!occ[r][s].isExport && exp) || occ[r][s].type === 'cont') {
+                occ[r][s] = { ...info, type: '20ft', src: s };
+            }
+        }
+    });
+
+    const items = [];
+    for (let r = 1; r <= 6; r++) {
+        let p = maxSlots;
+        while (p >= 1) {
+            const cell = occ[r][p];
+            const col = maxSlots - p + 1;
+            
+            if (!cell) {
+                items.push({ t: 'e', r: r, cSpan: 1, col: col, s: p }); 
+                p--;
+            } else if (cell.type === 'start40') {
+                items.push({ t: '4', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 2, col: col });
+                p -= 2;
+            } else if (cell.type === 'cont') {
+                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: p, r: r, cSpan: 1, col: col });
+                p--;
+            } else {
+                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 1, col: col });
+                p--;
+            }
+        }
+    }
+    return items;
+}
 
 function buildYardSlotItems(containers, maxSlots, blockName) {
     const occ = {}; // slotNum → cell info
@@ -287,12 +377,143 @@ function renderYardMap() {
     const rawYorImp = document.getElementById('yorImp')?.innerText || '0%';
     const carrierCount = Object.keys(yardCarrierColorMap).length;
 
+    // Calculate new extra stats
+    let emptyInsideBlock = 0; // TEUS
+    let emptyOutsideBlock = 0; // TEUS
+    let oogCount = 0; // TEUS
+    let longstayCount = 0; // TEUS
+    let serviceMap = {}; // service -> Set of carriers
+
+    const allowedBlocks = new Set([
+        'C08','C07','C06','C05','C04','C03','C02','C01',
+        'B08','B07','B06','B05','B04','B03','B02','B01',
+        'A08','A07','A06','A05','A04','A03','A02','A01'
+    ]);
+
+    function parseDate(dStr) {
+        if (!dStr || dStr === 'UNKNOWN') return null;
+        let parts = dStr.split('/');
+        if (parts.length === 3) {
+            return new Date(parts[2], parseInt(parts[1])-1, parts[0]);
+        }
+        return null;
+    }
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    invData.forEach(c => {
+        const teu = String(c.length || '20').startsWith('4') ? 2 : 1;
+        
+        // 1 & 2: Empty Containers
+        const status = c.loadStatus || '';
+        if (status === 'MTY' || status === 'MT' || status === 'E' || status === 'EMPTY') {
+            if (allowedBlocks.has(c.block)) {
+                emptyInsideBlock += teu;
+            } else if (c.block && c.block.startsWith('E')) {
+                // empty outside block AND block starts with E
+                emptyOutsideBlock += teu;
+            }
+        }
+
+        // 3: OOG
+        if (c.oog === 'Y') oogCount += teu;
+
+        // 4: Longstay > 7 days
+        // (Abaikan jika block berawalan "8")
+        if (!c.block || !c.block.startsWith('8')) {
+            let ad = parseDate(c.arrivalDate);
+            if (ad) {
+                let diffTime = today.getTime() - ad.getTime();
+                let diffDays = Math.floor(diffTime / (1000 * 3600 * 24));
+                if (diffDays > 7) {
+                    longstayCount += teu;
+                }
+            }
+        }
+        
+        // 5: Double call per service
+        // (hanya carrier yang ada di dalam list export, yaitu yardCarrierColorMap)
+        if (isYardExport(c) && c.service && c.service !== 'UNKNOWN' && c.service !== '' && c.carrier && c.carrier !== 'UNKNOWN' && c.carrier !== 'NIL' && c.carrier !== '0') {
+            if (yardCarrierColorMap.hasOwnProperty(c.carrier)) {
+                if (!serviceMap[c.service]) serviceMap[c.service] = new Set();
+                serviceMap[c.service].add(c.carrier);
+            }
+        }
+    });
+
+    let doubleCallHtml = '';
+    let doubleCallCount = 0;
+    Object.keys(serviceMap).forEach(srv => {
+        if (serviceMap[srv].size >= 2) {
+            doubleCallCount++;
+            const carriers = Array.from(serviceMap[srv]).join(', ');
+            doubleCallHtml += `<div class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-[2px] rounded text-[10px]"><span class="font-bold">${srv}</span>: ${carriers}</div>`;
+        }
+    });
+
+    if (doubleCallHtml === '') {
+        doubleCallHtml = `<div class="text-slate-400 italic text-[10px]">No double calls detected</div>`;
+    }
+
     let html = '<div class="ym-yard">';
     html += `<div class="ym-stats-bar">
         <span>🌐 YOR Overall: <strong class="text-blue-400">${rawYorOverall}</strong></span>
         <span>🟢 YOR Export: <strong class="text-emerald-400">${rawYorExp}</strong></span>
         <span>⬜ YOR Import: <strong class="text-amber-400">${rawYorImp}</strong></span>
         <span>🎨 Carriers: <strong>${carrierCount}</strong></span>
+    </div>`;
+
+    // Extra KPI Banner (Layout diperlebar untuk double call)
+    html += `<div class="p-3 mb-3 bg-gradient-to-r from-slate-50 to-white/80 border border-slate-200/60 rounded-xl shadow-sm flex flex-col md:flex-row gap-4 justify-between backdrop-blur-md items-start" style="font-size:11px;">
+        <div class="flex flex-wrap items-center gap-6 shrink-0 pt-1">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><span class="material-symbols-outlined text-[16px]">check_box_outline_blank</span></div>
+                <div class="flex flex-col">
+                    <span class="text-slate-400 font-semibold mb-0.5 uppercase tracking-wider text-[9px]">Empty In Block</span>
+                    <span class="font-black text-slate-700 text-sm">${emptyInsideBlock} <span class="text-[9px] font-bold text-slate-400">TEUS</span></span>
+                </div>
+            </div>
+            
+            <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500"><span class="material-symbols-outlined text-[16px]">tab_unselected</span></div>
+                <div class="flex flex-col">
+                    <span class="text-slate-400 font-semibold mb-0.5 uppercase tracking-wider text-[9px]">Empty Out Block</span>
+                    <span class="font-black text-slate-700 text-sm">${emptyOutsideBlock} <span class="text-[9px] font-bold text-slate-400">TEUS</span></span>
+                </div>
+            </div>
+            
+            <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-500"><span class="material-symbols-outlined text-[16px]">warning</span></div>
+                <div class="flex flex-col">
+                    <span class="text-orange-400 font-semibold mb-0.5 uppercase tracking-wider text-[9px]">Total OOG</span>
+                    <span class="font-black text-orange-600 text-sm">${oogCount} <span class="text-[9px] font-bold text-orange-300">TEUS</span></span>
+                </div>
+            </div>
+            
+            <div class="h-8 w-px bg-slate-200 hidden md:block"></div>
+            
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center text-red-500"><span class="material-symbols-outlined text-[16px]">timer</span></div>
+                <div class="flex flex-col">
+                    <span class="text-red-400 font-semibold mb-0.5 uppercase tracking-wider text-[9px]">Longstay > 7 Days</span>
+                    <span class="font-black text-red-600 text-sm">${longstayCount} <span class="text-[9px] font-bold text-red-300">TEUS</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col ml-auto border-t md:border-t-0 md:border-l border-slate-200/60 pt-3 md:pt-0 pl-0 md:pl-5 md:min-w-[320px]">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="text-slate-500 font-semibold flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[14px]">call_split</span> Double Call per Service
+                </span>
+                <span class="bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">${doubleCallCount} Services</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 custom-scrollbar overflow-y-auto max-h-16 pr-1">${doubleCallHtml}</div>
+        </div>
     </div>`;
 
     html += '<div class="ym-sections-grid">';
@@ -309,27 +530,46 @@ function renderYardMap() {
                 const bn = sec.blocks[p + b];
                 const ms = (CAP[bn] || {}).slots || 37;
                 const ctrs = blockMap[bn] || [];
-                const items = buildYardSlotItems(ctrs, ms, bn);
                 const count = ctrs.length;
 
                 html += `<div class="ym-block">`;
                 html += `<div class="ym-block-label">${bn}</div>`;
-                html += `<div class="ym-slots">`;
-
-                items.forEach(item => {
-                    if (item.t === 'e') {
-                        html += `<div class="ym-slot ym-empty" title="Slot ${item.s}"></div>`;
-                    } else if (item.t === '4') {
-                        const tc = yardContrastText(item.c);
-                        const bc = item.ex ? 'rgba(0,0,0,0.18)' : '#cbd5e1';
-                        html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr} (40ft)" data-carrier="${item.cr}"><span style="color:${tc}">${item.cr}</span></div>`;
-                    } else {
-                        const bc = item.ex ? 'rgba(0,0,0,0.15)' : '#cbd5e1';
-                        html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr}" data-carrier="${item.cr}"></div>`;
-                    }
-                });
-
-                html += `</div>`;  // ym-slots
+                
+                if (yardRowMode) {
+                    html += `<div class="ym-block-grid" style="grid-template-columns: repeat(${ms}, 11px); grid-template-rows: repeat(6, 11px);">`;
+                    const items = buildYardRowGrid(ctrs, ms, bn);
+                    items.forEach(item => {
+                        const styleNode = `grid-column: ${item.col} / span ${item.cSpan}; grid-row: ${item.r};`;
+                        if (item.t === 'e') {
+                            html += `<div class="ym-slot ym-empty" style="${styleNode} height: 11px;" title="Slot ${item.s} Row ${item.r}"></div>`;
+                        } else if (item.t === '4') {
+                            const tc = yardContrastText(item.c);
+                            const bc = item.ex ? 'rgba(0,0,0,0.18)' : '#cbd5e1';
+                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px; font-size:4px;" title="Slot ${item.s} Row ${item.r}: ${item.cr} (40ft)" data-carrier="${item.cr}"><span style="color:${tc}">${item.cr}</span></div>`;
+                        } else {
+                            const bc = item.ex ? 'rgba(0,0,0,0.15)' : '#cbd5e1';
+                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px;" title="Slot ${item.s} Row ${item.r}: ${item.cr}" data-carrier="${item.cr}"></div>`;
+                        }
+                    });
+                    html += `</div>`;
+                } else {
+                    html += `<div class="ym-slots">`;
+                    const items = buildYardSlotItems(ctrs, ms, bn);
+                    items.forEach(item => {
+                        if (item.t === 'e') {
+                            html += `<div class="ym-slot ym-empty" title="Slot ${item.s}"></div>`;
+                        } else if (item.t === '4') {
+                            const tc = yardContrastText(item.c);
+                            const bc = item.ex ? 'rgba(0,0,0,0.18)' : '#cbd5e1';
+                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr} (40ft)" data-carrier="${item.cr}"><span style="color:${tc}">${item.cr}</span></div>`;
+                        } else {
+                            const bc = item.ex ? 'rgba(0,0,0,0.15)' : '#cbd5e1';
+                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr}" data-carrier="${item.cr}"></div>`;
+                        }
+                    });
+                    html += `</div>`;  // ym-slots
+                }
+                
                 html += `<div class="ym-block-count" title="${count} units">${count}</div>`;
                 html += `</div>`;  // ym-block
             }
@@ -351,12 +591,8 @@ function renderYardMap() {
     html += '</div>'; // ym-yard
     content.innerHTML = html;
 
-    // Apply auto-fit for first load, or re-apply previously set zoom
-    if (yardMapZoom === null) {
-        fitYardMapToScreen();
-    } else {
-        applyYardMapZoom();
-    }
+    // Apply auto-fit always on render to ensure it fits the screen
+    fitYardMapToScreen();
 
     if (yardTextHidden) {
         document.querySelector('.ym-yard').classList.add('ym-text-hidden');

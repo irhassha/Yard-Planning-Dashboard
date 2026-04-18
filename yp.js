@@ -210,7 +210,7 @@ function updateCapacity(block, newSlots, newTier) {
             
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1};
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1};
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -224,6 +224,7 @@ function updateCapacity(block, newSlots, newTier) {
                         if(c === "carrier" || c === "vessel") colMap.carrier = idx;
                         if(c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
+                        if(c.includes("row") && c.includes("exe")) colMap.row = idx;
                         // LOGIC BARU: Deteksi kolom Load Status
                         if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                         // Detect Service column (e.g., "service", "serviceout", "service out")
@@ -232,8 +233,10 @@ function updateCapacity(block, newSlots, newTier) {
                         if(c === "line" || c.includes("Line")) colMap.line = idx;
                         // Deteksi date
                         if(c === "arrivalDate" || (c.includes("arrival") && c.includes("date"))) {
-                        colMap.arrivalDate = idx;
+                            colMap.arrivalDate = idx;
                         }
+                        // Deteksi OOG
+                        if(c === "oog" || c === "o/g") colMap.oog = idx;
                     });
                     break;
                 }
@@ -266,13 +269,15 @@ function updateCapacity(block, newSlots, newTier) {
                 let row = json[i];
                 if(!row[colMap.block] && !row[colMap.slot]) continue;
                 
-                // Parsing Slot & Block (Logic Lama)
+                // Parsing Slot, Block, & Row
                 let slotStr = colMap.slot !== -1 ? String(row[colMap.slot] || "") : "";
-                let parsedBlock = "N", parsedSlotNum = 0;
+                let parsedBlock = "N", parsedSlotNum = 0, parsedRow = 0;
+                
                 if(slotStr.includes('-')) {
                     let parts = slotStr.split('-');
                     parsedBlock = parts[0].trim();
                     if (parts.length >= 2) parsedSlotNum = parseInt(parts[1]) || 0;
+                    if (parts.length >= 3) parsedRow = parseInt(parts[2]) || 0;
                 } else if(colMap.block !== -1 && row[colMap.block]) {
                     parsedBlock = String(row[colMap.block]).trim();
                     if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot]) || 0;
@@ -280,9 +285,15 @@ function updateCapacity(block, newSlots, newTier) {
                     parsedSlotNum = parseInt(slotStr) || 0;
                 }
 
+                // Fallback: Parsing Row EX if available and not found in slot string
+                if (parsedRow === 0 && colMap.row !== -1 && row[colMap.row]) {
+                    parsedRow = parseInt(row[colMap.row]) || 0;
+                }
+
                 invData.push({
                     block: parsedBlock.toUpperCase(),
                     slot: parsedSlotNum,
+                    row: parsedRow,
                     length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
                     carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
                     move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
@@ -291,7 +302,8 @@ function updateCapacity(block, newSlots, newTier) {
                     service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
                     line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "UNKNOWN",
                     // KODE BARU (Memakai fungsi formatExcelDate):
-                    arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : "UNKNOWN"
+                    arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : "UNKNOWN",
+                    oog: colMap.oog !== -1 ? String(row[colMap.oog] || "").toUpperCase().trim() : "N"
                 });
             }
 

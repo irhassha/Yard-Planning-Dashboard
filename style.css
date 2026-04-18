@@ -491,6 +491,13 @@ body.ai-chat-sidebar-open {
     flex: 0 0 auto;
 }
 
+/* Row-Level Grid Layout */
+.ym-block-grid {
+    display: grid;
+    gap: 1px;
+    /* Columns and rows will be set dynamically via style="..." */
+}
+
 .ym-slot {
     height: 20px;
     border-radius: 1px;
