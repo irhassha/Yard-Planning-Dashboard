@@ -4,6 +4,7 @@
     let isInvLoaded = false;
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
+    let activeVesselFilter = null;
     let projectionPreplanRows = [];
     const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
     let projectionTypeFilter = 'ALL';
@@ -16,6 +17,11 @@
     const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
     const EXCLUDED_BLOCKS_YARD = ["C01", "C02", "OOG", "RC9", "BR9"];
     const EXCLUDED_BLOCKS_CLASH = ["C01", "C02", "OOG", "RC9", "BR9"];
+    const RECOMMENDED_SPREAD_BLOCKS = [
+      "A01","A02","A03","A04","A05","A06","A07","A08",
+      "B01","B02","B03","B04","B05","B06","B07","B08",
+      "C01","C02","C03","C04","C05","C06","C07","C08"
+    ];
     
     const DEFAULT_CAPACITY = {
         "A01": { slots: 37, tier: 5, cap: 1110 }, "A02": { slots: 37, tier: 5, cap: 1110 }, "A03": { slots: 37, tier: 5, cap: 1110 }, "A04": { slots: 37, tier: 5, cap: 1110 }, "A05": { slots: 37, tier: 5, cap: 1110 }, "A06": { slots: 37, tier: 5, cap: 1110 }, "A07": { slots: 37, tier: 5, cap: 1110 }, "A08": { slots: 37, tier: 5, cap: 1110 },
@@ -500,6 +506,134 @@ document.getElementById('sumTotalCap').innerText =
     }
 
     // --- TAB 2: ANALYTICS (Enhanced) ---
+    function renderRecommendedSpreading() {
+        const body = document.getElementById('recommendedSpreadingBody');
+        body.innerHTML = '';
+
+        const allowedBlocks = new Set(RECOMMENDED_SPREAD_BLOCKS);
+        const vesselBlocks = {};
+
+        invData.forEach(it => {
+            if (!it.move.includes('export')) return;
+            const block = String(it.block || '').toUpperCase();
+            if (!allowedBlocks.has(block)) return;
+            let c = it.carrier;
+            if (!c || c === '0' || c === 'NIL') return;
+            const service = String(it.service || '').toUpperCase();
+            const key = `${c}||${service}`;
+            if (!vesselBlocks[key]) vesselBlocks[key] = { carrier: c, service, blocks: {} };
+            vesselBlocks[key].blocks[block] = (vesselBlocks[key].blocks[block] || 0) + 1;
+        });
+
+        // Calculate total expected cluster and total vessels
+        let totalExpected = 0;
+        const vesselSet = new Set();
+        Object.values(vesselBlocks).forEach(v => {
+            const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(v.service) : null;
+            if (expected !== null) totalExpected += expected;
+            vesselSet.add(v.carrier);
+        });
+        const totalVessels = vesselSet.size;
+        const maxPerBlock = totalVessels > 0 ? Math.ceil(totalExpected / totalVessels) : 5; // default 5 if no data
+
+        const blockSummary = {};
+        Object.values(vesselBlocks).forEach(v => {
+            const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(v.service) : null;
+            const blockEntries = Object.entries(v.blocks).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+            const selected = expected !== null && blockEntries.length > expected ? blockEntries.slice(0, expected) : blockEntries;
+            selected.forEach(([block, count]) => {
+                if (!blockSummary[block]) blockSummary[block] = [];
+                blockSummary[block].push({ carrier: v.carrier, count });
+            });
+        });
+
+        const results = RECOMMENDED_SPREAD_BLOCKS.map(block => {
+            const vessels = (blockSummary[block] || []).sort((a, b) => b.count - a.count || a.carrier.localeCompare(b.carrier));
+            return { block, vessels };
+        }).filter(row => row.vessels.length && !['C01', 'C02'].includes(row.block));
+
+        if (!results.length) {
+            body.innerHTML = '<tr><td colspan="2" class="p-8 text-center text-slate-400">No recommended spreading data available.</td></tr>';
+            renderVesselFilterChips(results);
+            return;
+        }
+
+        results.forEach(row => {
+            const isMatch = activeVesselFilter && row.vessels.some(v => v.carrier === activeVesselFilter);
+            const rowClass = `transition ${isMatch ? 'bg-blue-50/40' : 'hover:bg-slate-50'}`;
+            const blockCellClass = `px-4 py-3 font-bold text-slate-700 ${isMatch ? 'border-l-4 border-blue-500 pl-3' : ''}`;
+            const primaryVessels = row.vessels.slice(0, maxPerBlock);
+            const secondaryVessels = row.vessels.slice(maxPerBlock);
+            const badges = [
+                ...primaryVessels.map(v => {
+                    let cls = v.count > 200 ? 'bg-red-600 text-white shadow-sm' : (v.count > 100 ? 'bg-amber-400 text-slate-900' : 'bg-blue-50 text-blue-700 border border-blue-100');
+                    if (activeVesselFilter && v.carrier === activeVesselFilter) {
+                        cls = 'bg-blue-600 text-white border border-blue-700 shadow-lg';
+                    }
+                    return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
+                }),
+                ...secondaryVessels.map(v => {
+                    let cls = 'bg-gray-200 text-gray-500 border border-gray-300 opacity-60';
+                    if (activeVesselFilter && v.carrier === activeVesselFilter) {
+                        cls = 'bg-blue-600 text-white border border-blue-700 shadow-lg opacity-100';
+                    }
+                    return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
+                })
+            ].join('');
+            body.innerHTML += `<tr class="${rowClass}"><td class="${blockCellClass}">${row.block}</td><td class="px-4 py-3">${badges}</td></tr>`;
+        });
+        renderVesselFilterChips(results);
+    }
+
+    function renderVesselFilterChips(results) {
+        const container = document.getElementById('vesselFilterList');
+        const totalLabel = document.getElementById('totalVesselsOnYard');
+        const activeInfo = document.getElementById('activeVesselFilterInfo');
+        const activeName = document.getElementById('activeVesselFilterName');
+        if (!container || !totalLabel) return;
+
+        const vessels = Array.from(new Set(
+            (results === undefined ? invData
+                .filter(it => String(it.move || '').toLowerCase().includes('export'))
+                .map(it => String(it.carrier || '').trim().toUpperCase())
+                .filter(v => v && v !== '0' && v !== 'NIL') : results.flatMap(row => row.vessels.map(v => v.carrier)))
+        )).sort((a, b) => a.localeCompare(b));
+
+        if (activeVesselFilter && !vessels.includes(activeVesselFilter)) {
+            activeVesselFilter = null;
+        }
+
+        totalLabel.innerText = vessels.length;
+        container.innerHTML = vessels.length ? vessels.map(v => `<button type="button" class="vessel-filter-chip ${activeVesselFilter === v ? 'active' : ''}" data-vessel="${v}">${v}</button>`).join('') : '<span class="text-slate-500 text-xs">No recommended vessels available.</span>';
+
+        if (activeInfo && activeName) {
+            if (activeVesselFilter) {
+                activeInfo.classList.remove('hidden');
+                activeName.innerText = activeVesselFilter;
+            } else {
+                activeInfo.classList.add('hidden');
+                activeName.innerText = '';
+            }
+        }
+    }
+
+    function toggleVesselFilter(vessel) {
+        activeVesselFilter = activeVesselFilter === vessel ? null : vessel;
+        renderRecommendedSpreading();
+    }
+
+    function clearVesselFilter() {
+        activeVesselFilter = null;
+        renderRecommendedSpreading();
+    }
+
+    document.addEventListener('click', function(event) {
+        const el = event.target.closest('.vessel-filter-chip');
+        if (!el) return;
+        const vessel = el.dataset.vessel;
+        if (vessel) toggleVesselFilter(vessel);
+    });
+
     function renderClusterSpreading() {
         const body = document.getElementById('clusterBody');
         const showAll = document.getElementById('toggleSmallCarriers').checked;
@@ -543,7 +677,7 @@ document.getElementById('sumTotalCap').innerText =
             if (b.eta) return 1;
             return b.total - a.total;
         });
-        if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; return; }
+        if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; renderRecommendedSpreading(); renderVesselFilterChips(); return; }
 
         let filtered = showAll ? sorted : sorted.filter(e => e[1].total >= 50);
         filtered.forEach(([key, data]) => {
@@ -562,6 +696,7 @@ document.getElementById('sumTotalCap').innerText =
             const hkBadge = exceedsExpected ? '<span class="hk-badge">HK</span>' : '';
             body.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="px-2 py-2 font-black text-slate-700">${data.carrier}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${serviceLabel}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${etaLabel}</td><td class="px-6 py-2">${badges}</td><td class="px-4 py-2 font-bold text-slate-800">${expectedClusterLabel}</td><td class="px-4 py-2 text-center font-bold text-slate-800${errorCellClass}">${totalClusterCount}${hkBadge}</td><td class="px-4 py-2 text-center font-bold text-slate-800">${data.total}</td></tr>`;
         });
+        renderRecommendedSpreading();
     }
 
     // --- TAB 3: CLASH ANALYSIS (Sandboxed Logic Integrated) ---

@@ -105,6 +105,19 @@ body {
     transform: rotate(180deg);
 }
 
+details.recommended-panel summary {
+  list-style: none;
+}
+details.recommended-panel summary::-webkit-details-marker {
+  display: none;
+}
+details.recommended-panel summary .toggle-icon {
+  transition: transform 0.2s ease;
+}
+details.recommended-panel[open] summary .toggle-icon {
+  transform: rotate(180deg);
+}
+
 /* Clash Visuals */
 .slot-track { height: 20px; background: #e2e8f0; border-radius: 999px; position: relative; width: 100%; overflow: hidden; margin-top: 6px; border: 1px solid rgba(0,0,0,0.05); }
 .slot-bar { height: 100%; position: absolute; top: 0; opacity: 1; border-radius: 999px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
@@ -140,6 +153,10 @@ body {
 .cluster-details-table td:nth-child(3) { width: 9%; }
 .cluster-details-table th:nth-child(4),
 .cluster-details-table td:nth-child(4) { width: 55%; }
+#recommendedSpreadingTable th:nth-child(2),
+#recommendedSpreadingTable td:nth-child(2) { width: 78%; }
+#recommendedSpreadingTable th:nth-child(1),
+#recommendedSpreadingTable td:nth-child(1) { width: 22%; }
 .cluster-details-table th:nth-child(5),
 .cluster-details-table td:nth-child(5) { width: 7%; }
 .cluster-details-table th:nth-child(6),
@@ -182,6 +199,33 @@ body {
 .row-zero {
   background: linear-gradient(90deg, #f1f5f9, #ffffff);
   color: #64748b;
+}
+
+.vessel-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.vessel-filter-chip:hover {
+  background: #e2e8f0;
+}
+
+.vessel-filter-chip.active {
+  background: #0ea5e9;
+  border-color: #0ea5e9;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.22);
 }
 
 #tab-overview #mainTable,
