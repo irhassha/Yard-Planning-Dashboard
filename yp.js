@@ -302,6 +302,7 @@ function updateCapacity(block, newSlots, newTier) {
             renderOverview();
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
+            if (typeof renderYardMap === 'function') renderYardMap();
             const projectionBody = document.getElementById('projectionBody');
             if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
             
@@ -1479,7 +1480,7 @@ document.getElementById('sumTotalCap').innerText =
 
 function switchTab(t) {
     // Tambahkan 'empty' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty', 'projection'].forEach(id => {
+    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
         
@@ -1525,6 +1526,9 @@ fileName = "Empty_Summary";
 } else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
 activeId = "captureAreaProjection";
 fileName = "Discharge_Projection";
+} else if (!document.getElementById("tab-yardmap")?.classList.contains("hidden")) {
+activeId = "captureAreaYardMap";
+fileName = "Yard_Map";
 }
 
 

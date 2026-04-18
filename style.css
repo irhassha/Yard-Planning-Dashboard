@@ -385,3 +385,206 @@ body.ai-chat-sidebar-open {
     }
 }
 
+/* ===== YARD MAP VISUALIZATION ===== */
+
+.ym-yard {
+    background: linear-gradient(145deg, #3d4f5f, #4a5d6e, #3d4f5f);
+    border-radius: 14px;
+    padding: 16px;
+    min-width: fit-content;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.15);
+    /* For Zoom feature */
+    transform-origin: top left;
+    transition: transform 0.2s ease;
+}
+
+/* Hide Text Feature */
+.ym-yard.ym-text-hidden .ym-slot.ym-40 span {
+    display: none;
+}
+
+.ym-stats-bar {
+    display: flex;
+    gap: 18px;
+    padding: 8px 14px;
+    margin-bottom: 14px;
+    background: rgba(0,0,0,0.22);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.75);
+    font-size: 11px;
+    font-weight: 600;
+    flex-wrap: wrap;
+}
+
+.ym-stats-bar strong {
+    color: #fff;
+}
+
+.ym-sections-grid {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.ym-section {
+    flex: 0 0 auto;
+}
+
+.ym-section-header {
+    color: #fff;
+    font-weight: 800;
+    font-size: 11px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    padding: 5px 14px;
+    background: rgba(0,0,0,0.28);
+    border-radius: 6px;
+    font-family: 'Plus Jakarta Sans', monospace;
+}
+
+.ym-block-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.06);
+    padding: 3px 4px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+.ym-block {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.ym-block-label {
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(0,0,0,0.4);
+    padding: 3px 3px;
+    border-radius: 3px;
+    width: 26px;
+    text-align: center;
+    flex-shrink: 0;
+    font-family: 'Plus Jakarta Sans', monospace;
+    letter-spacing: 0.3px;
+}
+
+.ym-block-count {
+    font-size: 7px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.4);
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+    font-family: monospace;
+}
+
+.ym-slots {
+    display: flex;
+    gap: 1px;
+    flex: 0 0 auto;
+}
+
+.ym-slot {
+    height: 20px;
+    border-radius: 1px;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+    cursor: default;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.ym-slot:hover {
+    z-index: 10;
+    filter: brightness(1.2) !important;
+    outline: 2px solid rgba(255,255,255,0.85);
+    outline-offset: -1px;
+}
+
+.ym-slot.ym-20 {
+    width: 11px;
+}
+
+.ym-slot.ym-40 {
+    width: 23px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ym-slot.ym-40 span {
+    font-size: 5.5px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.3px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1;
+}
+
+.ym-slot.ym-empty {
+    width: 11px;
+    background: rgba(255,255,255,0.1);
+}
+
+.ym-slot.ym-imp {
+    border-color: #c8d0dc;
+}
+
+.ym-slot.ym-exp {
+    box-shadow: 0 0 0 0.5px rgba(0,0,0,0.08);
+}
+
+.ym-slot-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 32px 0;
+}
+
+/* Legend Chips */
+.ym-legend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.ym-legend-chip:hover {
+    background: rgba(0,100,210,0.08);
+    border-color: rgba(0,100,210,0.2);
+}
+
+.ym-legend-active {
+    background: rgba(0,100,210,0.14) !important;
+    border-color: #0064D2 !important;
+    box-shadow: 0 0 0 2px rgba(0,100,210,0.12);
+    border-radius: 6px;
+}
+
+/* Responsive: Stack sections vertically on small screens */
+@media (max-width: 1200px) {
+    .ym-sections-grid {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ym-section {
+        width: 100%;
+    }
+    .ym-slots {
+        flex-wrap: nowrap;
+    }
+}
+

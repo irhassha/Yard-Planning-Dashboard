@@ -1,87 +1,115 @@
 <!DOCTYPE html>
 <html class="light" lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>NPCT1 Yard Planning Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="style.css" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 
-<script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: { primary: "#0064D2", accent: "#F9A825" },
-                fontFamily: { sans: ["Plus Jakarta Sans", "sans-serif"] },
-                boxShadow: { 'glass': '0 4px 30px rgba(0, 0, 0, 0.08)' }
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NPCT1 Yard Planning Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: "#0064D2", accent: "#F9A825" },
+                    fontFamily: { sans: ["Plus Jakarta Sans", "sans-serif"] },
+                    boxShadow: { 'glass': '0 4px 30px rgba(0, 0, 0, 0.08)' }
+                },
             },
-        },
-    };
-</script>
+        };
+    </script>
 </head>
+
 <body class="text-slate-800 font-sans min-h-screen bg-[#F5F7FA]">
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden flex-col transition-opacity duration-300">
-    <div class="relative w-32 h-32 mb-4">
-        <svg class="w-full h-full" viewBox="0 0 120 120">
-            <circle class="text-slate-700 stroke-current opacity-20" stroke-width="10" cx="60" cy="60" r="50" fill="transparent"></circle>
-            <circle id="progressCircle" class="text-blue-500 progress-ring__circle stroke-current" stroke-width="10" stroke-linecap="round" cx="60" cy="60" r="50" fill="transparent" stroke-dasharray="314.159" stroke-dashoffset="314.159"></circle>
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center text-white font-black text-2xl" id="progressText">0%</div>
-    </div>
-    <p class="text-blue-300 text-xs animate-pulse font-mono" id="loadingStatus">Tunggu sebentar... Orang sabar disayang Allah</p>
-</div>
-
-<div class="hero-shell">
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-5 md:pt-8 pb-28 md:pb-36 relative z-10">
-        <input type="file" id="fileInv" accept=".csv, .xlsx, .xls" hidden>
-        <input type="file" id="scheduleInput" accept=".xlsx, .csv" hidden>
-        <header class="flex justify-between items-center mb-12">
-            <div class="flex items-center gap-2 text-white font-bold text-lg md:text-xl">
-                <span class="material-symbols-outlined text-3xl">dock</span>
-                NPCT1
-            </div>
-            <div class="flex flex-wrap items-center justify-end gap-2">
-                <button onclick="document.getElementById('fileInv').click()" class="cta-upload-btn">
-                    <span class="material-symbols-outlined text-[20px]">upload_file</span> Upload Unit List
-                </button>
-                <button id="uploadCallList" onclick="document.getElementById('scheduleInput').click()" class="cta-upload-btn">
-                    <span class="material-symbols-outlined text-[20px]">file_upload</span> Upload Call List
-                </button>
-                <button onclick="downloadImage()" class="secondary-pill"><span class="material-symbols-outlined text-[18px]">image</span> Save Image</button>
-                <button onclick="exportToExcel()" class="secondary-pill"><span class="material-symbols-outlined text-[18px]">table_view</span> Excel</button>
-            </div>
-        </header>
-        <div class="text-center text-white max-w-3xl mx-auto">
-            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Yard Planning Dashboard</h1>
-            <p class="mt-3 text-sm md:text-base text-blue-100">Semangat terus menjalani hidup gaes demi keluarga dirumah!</p>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center hidden flex-col transition-opacity duration-300">
+        <div class="relative w-32 h-32 mb-4">
+            <svg class="w-full h-full" viewBox="0 0 120 120">
+                <circle class="text-slate-700 stroke-current opacity-20" stroke-width="10" cx="60" cy="60" r="50"
+                    fill="transparent"></circle>
+                <circle id="progressCircle" class="text-blue-500 progress-ring__circle stroke-current" stroke-width="10"
+                    stroke-linecap="round" cx="60" cy="60" r="50" fill="transparent" stroke-dasharray="314.159"
+                    stroke-dashoffset="314.159"></circle>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center text-white font-black text-2xl"
+                id="progressText">0%</div>
         </div>
+        <p class="text-blue-300 text-xs animate-pulse font-mono" id="loadingStatus">Tunggu sebentar... Orang sabar
+            disayang Allah</p>
     </div>
-</div>
 
-<div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-16 md:-mt-24 relative z-20">
-    <div class="floating-control-card">
-        <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-            <div class="flex items-center gap-2 p-1 bg-[#E9EEF6] rounded-full w-fit overflow-x-auto">
-                <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active"><span class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
-                <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive"><span class="material-symbols-outlined text-lg">bar_chart</span> Cluster Spreading</button>
-                <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive"><span class="material-symbols-outlined text-lg">crisis_alert</span> Clash Analysis</button>
-                <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive"><span class="material-symbols-outlined text-lg">check_box_outline_blank</span> Empty Summary</button>
-                <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive"><span class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge Projection</button>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <button id="aiChatToggle" class="secondary-pill ai-chat-trigger" type="button" onclick="toggleAiChatbox()" aria-expanded="false" aria-controls="aiChatWindow"><span class="material-symbols-outlined text-[18px]">smart_toy</span> YP Ai Assistant</button>
+    <div class="hero-shell">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-5 md:pt-8 pb-28 md:pb-36 relative z-10">
+            <input type="file" id="fileInv" accept=".csv, .xlsx, .xls" hidden>
+            <input type="file" id="scheduleInput" accept=".xlsx, .csv" hidden>
+            <header class="flex justify-between items-center mb-12">
+                <div class="flex items-center gap-2 text-white font-bold text-lg md:text-xl">
+                    <span class="material-symbols-outlined text-3xl">dock</span>
+                    NPCT1
+                </div>
+                <div class="flex flex-wrap items-center justify-end gap-2">
+                    <button onclick="document.getElementById('fileInv').click()" class="cta-upload-btn">
+                        <span class="material-symbols-outlined text-[20px]">upload_file</span> Upload Unit List
+                    </button>
+                    <button id="uploadCallList" onclick="document.getElementById('scheduleInput').click()"
+                        class="cta-upload-btn">
+                        <span class="material-symbols-outlined text-[20px]">file_upload</span> Upload Call List
+                    </button>
+                    <button onclick="downloadImage()" class="secondary-pill"><span
+                            class="material-symbols-outlined text-[18px]">image</span> Save Image</button>
+                    <button onclick="exportToExcel()" class="secondary-pill"><span
+                            class="material-symbols-outlined text-[18px]">table_view</span> Excel</button>
+                </div>
+            </header>
+            <div class="text-center text-white max-w-3xl mx-auto">
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">Yard Planning Dashboard</h1>
+                <p class="mt-3 text-sm md:text-base text-blue-100">Semangat terus menjalani hidup gaes demi keluarga
+                    dirumah!</p>
             </div>
         </div>
     </div>
 
-    <section id="aiChatWindow" class="ai-chat-window ai-chat-sidebar hidden" aria-label="AI Chatbox" aria-live="polite">
+    <div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-16 md:-mt-24 relative z-20">
+        <div class="floating-control-card">
+            <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+                <div class="flex items-center gap-2 p-1 bg-[#E9EEF6] rounded-full w-fit overflow-x-auto">
+                    <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active"><span
+                            class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
+                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">bar_chart</span> Cluster Spreading</button>
+                    <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">crisis_alert</span> Clash Analysis</button>
+                    <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">check_box_outline_blank</span> Empty
+                        Summary</button>
+                    <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge
+                        Projection</button>
+                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">map</span> Yard Map</button>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="aiChatToggle" class="secondary-pill ai-chat-trigger" type="button"
+                        onclick="toggleAiChatbox()" aria-expanded="false" aria-controls="aiChatWindow"><span
+                            class="material-symbols-outlined text-[18px]">smart_toy</span> YP Ai Assistant</button>
+                </div>
+            </div>
+        </div>
+
+        <section id="aiChatWindow" class="ai-chat-window ai-chat-sidebar hidden" aria-label="AI Chatbox"
+            aria-live="polite">
             <header class="ai-chat-header">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined">auto_awesome</span>
@@ -105,488 +133,721 @@
                     <span class="material-symbols-outlined">send</span>
                 </button>
             </form>
-    </section>
-
-    <!-- TAB 1: OVERVIEW -->
-<div id="tab-overview" class="block mt-4">
-    <div id="yorWarningNote" class="hidden mb-4 p-4 rounded-2xl bg-red-600 border border-red-700 text-white text-sm font-bold">
-        Please switch to CRITICAL PLAN, Ratio QC 1 vs Cluster 1, can use Mix WC and or Mix SPOD + WC to keep the cluster ratio 1:1
-    </div>
-    <div id="captureArea" class="space-y-8">
-
-        <section class="glass-panel rounded-2xl shadow-glass overflow-hidden">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-5 border-b border-slate-200/50 bg-white/20">
-        <div class="flex items-center gap-3">
-        <div class="p-2 bg-blue-500/10 rounded-lg text-primary">
-        <span class="material-symbols-outlined text-2xl">analytics</span>
-        </div>
-        <div>
-        <h2 class="text-xl font-semibold text-slate-800">Yard Block Density</h2>
-        
-        </div>
-        </div>
-        <div class="text-[13px] tracking-wide text-slate-600 font-mono
-            px-3 py-1 rounded-full
-            bg-amber-100 border border-amber-200"
-            id="lastUpdated">
-                        Generated: -
-                    </div>
-        </div>
-        
-        <!-- SUMMARY GRID -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-0 divide-x divide-y md:divide-y-0 divide-slate-200/50">
-            <div class="p-5 hover:bg-white/30 transition-colors">
-                <h3 class="text-xs font-bold tracking-wider text-amber-600 uppercase mb-2 flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Total Import
-                </h3>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800" id="sumImpStack">0</span>
-                    <span class="text-xs text-slate-500 font-medium">TEUs</span>
-                </div>
-                <div class="mt-1 text-xs text-slate-500">Cap: <span class="font-bold text-slate-700" id="sumImpCap">0</span></div>
-            </div>
-
-            <div class="p-5 hover:bg-white/30 transition-colors">
-                <h3 class="text-xs font-bold tracking-wider text-emerald-600 uppercase mb-2 flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Total Export
-                </h3>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800" id="sumExpStack">0</span>
-                    <span class="text-xs text-slate-500 font-medium">TEUs</span>
-                </div>
-                <div class="mt-1 text-xs text-slate-500">Cap: <span class="font-bold text-slate-700" id="sumExpCap">0</span></div>
-            </div>
-
-            <div class="p-5 hover:bg-white/30 transition-colors bg-blue-50/20">
-                <h3 class="text-xs font-bold tracking-wider text-blue-600 uppercase mb-2 flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Total Stack
-                </h3>
-                <div class="flex items-baseline gap-1">
-                    <span class="text-2xl font-bold text-slate-800" id="sumTotalStack">0</span>
-                    <span class="text-xs text-slate-500 font-medium">TEUs</span>
-                </div>
-                <div class="mt-1 text-xs text-slate-600 font-semibold">Cap: <span class="font-extrabold text-slate-900" id="sumTotalCap">0</span></div>
-            </div>
-
-            <!-- YOR Import Circular -->
-            <div class="p-5 hover:bg-white/30 transition-colors flex justify-between items-center relative overflow-hidden">
-                <div class="z-10 relative">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-2">YOR Import</h3>
-                    <div class="flex items-center gap-2">
-                        <div class="text-4xl font-black text-amber-500" id="yorImp">0%</div>
-                    </div>
-                </div>
-                <div class="relative w-12 h-12 flex-shrink-0">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" />
-                        <path id="ringImp" class="text-amber-500 transition-all duration-1000 ease-out" stroke-dasharray="100" stroke-dashoffset="100" pathLength="100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- YOR Export Circular -->
-            <div class="p-5 hover:bg-white/30 transition-colors flex justify-between items-center relative overflow-hidden">
-                <div class="z-10 relative">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-2">YOR Export</h3>
-                    <div class="flex items-center gap-2">
-                        <div class="text-4xl font-black text-emerald-500" id="yorExp">0%</div>
-                    </div>
-                </div>
-                <div class="relative w-12 h-12 flex-shrink-0">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" />
-                        <path id="ringExp" class="text-emerald-500 transition-all duration-1000 ease-out" stroke-dasharray="100" stroke-dashoffset="100" pathLength="100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- YOR Total Circular -->
-            <div id="yorOverallCard" class="p-5 hover:bg-white/30 transition-colors bg-gradient-to-b from-transparent to-emerald-50/30 flex justify-between items-center relative overflow-hidden">
-                <div class="z-10 relative">
-                    <h3 class="text-xs font-bold tracking-wider text-slate-800 uppercase mb-2">YOR Overall</h3>
-                    <div class="text-4xl font-black text-slate-800" id="yorTotal">0%</div>
-                </div>
-                <div class="relative w-14 h-14 flex-shrink-0">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="text-white/50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" />
-                        <path id="ringTotal" class="text-blue-600 transition-all duration-1000 ease-out" stroke-dasharray="100" stroke-dashoffset="100" pathLength="100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
-                    </svg>
-                </div>
-            </details>
-        </div>
         </section>
 
-            <!-- MAIN TABLE -->
-            <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/60">
-                <div class="p-4 border-b border-slate-200/60 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-4">
-                               <!-- Legend (Optional to keep in image, useful) -->
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="glass-panel py-2 px-4 rounded-full border border-slate-200/50 shadow-sm flex items-center gap-4 overflow-x-auto max-w-full">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Legend</span>
-                <div class="h-4 w-px bg-slate-300"></div>
-                <div class="flex items-center gap-3">
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></span><span class="text-xs font-bold text-slate-600">DG</span></div>
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span><span class="text-xs font-bold text-slate-600">Export</span></div>
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm"></span><span class="text-xs font-bold text-slate-600">Import</span></div>
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm"></span><span class="text-xs font-bold text-slate-600">Mixed</span></div>
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm"></span><span class="text-xs font-bold text-slate-600">OOG</span></div>
-                <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-sm"></span><span class="text-xs font-bold text-slate-600">Reefer</span></div>
-                </div>
-                </div>
+        <!-- TAB 1: OVERVIEW -->
+        <div id="tab-overview" class="block mt-4">
+            <div id="yorWarningNote"
+                class="hidden mb-4 p-4 rounded-2xl bg-red-600 border border-red-700 text-white text-sm font-bold">
+                Please switch to CRITICAL PLAN, Ratio QC 1 vs Cluster 1, can use Mix WC and or Mix SPOD + WC to keep the
+                cluster ratio 1:1
             </div>
+            <div id="captureArea" class="space-y-8">
 
-                    <label class="relative inline-flex items-center cursor-pointer group">
-                        <input class="sr-only peer" id="toggleDetail" onchange="toggleDetails()" type="checkbox">
-                        <div class="w-10 h-6 bg-slate-200 rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner"></div>
-                        <span class="ml-2 text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Show Breakdown</span>
-                    </label>
-                </div>
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse" id="mainTable">
-                        <thead class="text-xs uppercase bg-slate-50/90 text-slate-600 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-                            <tr>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 w-16 text-center bg-slate-50" rowspan="2">Block</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-slate-50" rowspan="2">Occupancy</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-left bg-slate-50" rowspan="2">Remark</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50" colspan="3">Breakdown</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-blue-50/50" colspan="2">Stacked</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50" rowspan="2">Slots</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50" rowspan="2">Tier</th>
-                                <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-slate-50" rowspan="2">Capacity</th>
-                                <th class="px-3 py-1 border-b border-slate-200 text-left col-detail bg-slate-50" rowspan="2">Activity</th>
-                            </tr>
-                            <tr>
-                                <th class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">20'</th>
-                                <th class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">40'</th>
-                                <th class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">45'</th>
-                                <th class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-bold text-[10px] bg-blue-50/50">Box</th>
-                                <th class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-bold text-[10px] bg-blue-50/50">TEUs</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-800 text-[11px] font-medium"></tbody>
-                    </table>
-                </div>
-            </div>
+                <section class="glass-panel rounded-2xl shadow-glass overflow-hidden">
+                    <div
+                        class="flex flex-col md:flex-row justify-between items-start md:items-center p-5 border-b border-slate-200/50 bg-white/20">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-blue-500/10 rounded-lg text-primary">
+                                <span class="material-symbols-outlined text-2xl">analytics</span>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-800">Yard Block Density</h2>
 
-            <!-- NEW: Legend & Reference Guide -->
-            <details class="glass-panel rounded-2xl p-1 md:p-2 shadow-sm border border-white/60 reference-guide-details">
-                <summary class="reference-guide-summary text-sm font-bold text-slate-700 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-lg">info</span> Reference Guide
-                    <span class="material-symbols-outlined ml-auto text-slate-500">expand_more</span>
-                </summary>
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-slate-600">
-                    <div>
-                        <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Occupancy Levels</h4>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-emerald-500"></div> <span><b>Normal</b> (< 50%)</span></div>
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-yellow-400"></div> <span><b>Moderate</b> (50% - 65%)</span></div>
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-red-500"></div> <span><b>High</b> (> 65%)</span></div>
-                            <div class="flex items-center gap-2"><div class="w-3 h-3 rounded bg-blue-500"></div> <span><b>Over Capacity</b> (> 100%)</span></div>
+                            </div>
+                        </div>
+                        <div class="text-[13px] tracking-wide text-slate-600 font-mono
+            px-3 py-1 rounded-full
+            bg-amber-100 border border-amber-200" id="lastUpdated">
+                            Generated: -
                         </div>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Unit Conversion</h4>
-                        <ul class="space-y-1 list-disc pl-4">
-                            <li><b>20'</b> = 1.00 TEUs</li>
-                            <li><b>40'</b> = 2.00 TEUs</li>
-                            <li><b>45'</b> = 2.25 TEUs</li>
-                            <li><b>Capacity</b> = Total TEUs allowed</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Definitions</h4>
-                        <ul class="space-y-1 list-disc pl-4">
-                            <li><b>YOR:</b> Yard Occupancy Ratio</li>
-                            <li><b>DG:</b> Dangerous Goods</li>
-                            <li><b>OOG:</b> Out of Gauge (Special Cargo)</li>
-                            <li><b>Reefer:</b> Refrigerated Container</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Notes</h4>
-                        <p class="leading-relaxed opacity-80">
-                            Occupancy is calculated based on current stacked units vs block TEU capacity. Tier configuration affects total capacity.
-                        </p>
-                    </div>
-                </div>
-            </details>
-        </div>
-    </div>
 
-    <!-- TAB 2: ANALYTICS (Carrier Spreading) -->
-    <div id="tab-analytics" class="hidden animate-fade-in mt-4">
-        <div id="captureAreaAnalytics" class="space-y-4">
-            
-            <!-- Recommended Spreading -->
-            <details class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 recommended-panel">
-                <summary class="p-4 border-b border-slate-200/50 bg-white/20 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-800">Recommended Spreading (Based on Highest Cluster)</h2>
-                    </div>
-                    <span class="material-symbols-outlined toggle-icon text-slate-500">expand_more</span>
-                </summary>
-                <div class="p-4 space-y-4">
-                    <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                        <div class="flex flex-wrap gap-2" id="vesselFilterList"></div>
-                        <div class="text-sm text-slate-600 font-semibold">
-                            Total Vessels On Yard: <span id="totalVesselsOnYard" class="text-slate-900">0</span>
+                    <!-- SUMMARY GRID -->
+                    <div
+                        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-0 divide-x divide-y md:divide-y-0 divide-slate-200/50">
+                        <div class="p-5 hover:bg-white/30 transition-colors">
+                            <h3
+                                class="text-xs font-bold tracking-wider text-amber-600 uppercase mb-2 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Total Import
+                            </h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-2xl font-bold text-slate-800" id="sumImpStack">0</span>
+                                <span class="text-xs text-slate-500 font-medium">TEUs</span>
+                            </div>
+                            <div class="mt-1 text-xs text-slate-500">Cap: <span class="font-bold text-slate-700"
+                                    id="sumImpCap">0</span></div>
                         </div>
-                    </div>
-                    <div id="activeVesselFilterInfo" class="hidden mt-2 text-xs text-slate-500">
-                        Filter aktif: <span id="activeVesselFilterName" class="font-semibold text-slate-800"></span>
-                        <button type="button" onclick="clearVesselFilter()" class="ml-3 text-blue-600 hover:text-blue-800 font-bold">Clear</button>
-                    </div>
-                    <div class="text-xs text-slate-500 bg-blue-50 p-3 rounded-lg border border-blue-200">
-                        <p><strong>How it works:</strong> The maximum vessels per block is calculated as <code>ceil(total expected clusters / total unique vessels)</code>. Vessels beyond this limit are displayed with reduced opacity, suggesting they are candidates for House Keeping (HK) to optimize yard space.</p>
+
+                        <div class="p-5 hover:bg-white/30 transition-colors">
+                            <h3
+                                class="text-xs font-bold tracking-wider text-emerald-600 uppercase mb-2 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Total Export
+                            </h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-2xl font-bold text-slate-800" id="sumExpStack">0</span>
+                                <span class="text-xs text-slate-500 font-medium">TEUs</span>
+                            </div>
+                            <div class="mt-1 text-xs text-slate-500">Cap: <span class="font-bold text-slate-700"
+                                    id="sumExpCap">0</span></div>
+                        </div>
+
+                        <div class="p-5 hover:bg-white/30 transition-colors bg-blue-50/20">
+                            <h3
+                                class="text-xs font-bold tracking-wider text-blue-600 uppercase mb-2 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Total Stack
+                            </h3>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-2xl font-bold text-slate-800" id="sumTotalStack">0</span>
+                                <span class="text-xs text-slate-500 font-medium">TEUs</span>
+                            </div>
+                            <div class="mt-1 text-xs text-slate-600 font-semibold">Cap: <span
+                                    class="font-extrabold text-slate-900" id="sumTotalCap">0</span></div>
+                        </div>
+
+                        <!-- YOR Import Circular -->
+                        <div
+                            class="p-5 hover:bg-white/30 transition-colors flex justify-between items-center relative overflow-hidden">
+                            <div class="z-10 relative">
+                                <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-2">YOR Import
+                                </h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-4xl font-black text-amber-500" id="yorImp">0%</div>
+                                </div>
+                            </div>
+                            <div class="relative w-12 h-12 flex-shrink-0">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-slate-100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" />
+                                    <path id="ringImp" class="text-amber-500 transition-all duration-1000 ease-out"
+                                        stroke-dasharray="100" stroke-dashoffset="100" pathLength="100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- YOR Export Circular -->
+                        <div
+                            class="p-5 hover:bg-white/30 transition-colors flex justify-between items-center relative overflow-hidden">
+                            <div class="z-10 relative">
+                                <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-2">YOR Export
+                                </h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="text-4xl font-black text-emerald-500" id="yorExp">0%</div>
+                                </div>
+                            </div>
+                            <div class="relative w-12 h-12 flex-shrink-0">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-slate-100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" />
+                                    <path id="ringExp" class="text-emerald-500 transition-all duration-1000 ease-out"
+                                        stroke-dasharray="100" stroke-dashoffset="100" pathLength="100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- YOR Total Circular -->
+                        <div id="yorOverallCard"
+                            class="p-5 hover:bg-white/30 transition-colors bg-gradient-to-b from-transparent to-emerald-50/30 flex justify-between items-center relative overflow-hidden">
+                            <div class="z-10 relative">
+                                <h3 class="text-xs font-bold tracking-wider text-slate-800 uppercase mb-2">YOR Overall
+                                </h3>
+                                <div class="text-4xl font-black text-slate-800" id="yorTotal">0%</div>
+                            </div>
+                            <div class="relative w-14 h-14 flex-shrink-0">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                    <path class="text-white/50"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" />
+                                    <path id="ringTotal" class="text-blue-600 transition-all duration-1000 ease-out"
+                                        stroke-dasharray="100" stroke-dashoffset="100" pathLength="100"
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                            </details>
+                        </div>
+                </section>
+
+                <!-- MAIN TABLE -->
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/60">
+                    <div
+                        class="p-4 border-b border-slate-200/60 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <!-- Legend (Optional to keep in image, useful) -->
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div
+                                class="glass-panel py-2 px-4 rounded-full border border-slate-200/50 shadow-sm flex items-center gap-4 overflow-x-auto max-w-full">
+                                <span
+                                    class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Legend</span>
+                                <div class="h-4 w-px bg-slate-300"></div>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">DG</span></div>
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">Export</span></div>
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">Import</span></div>
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">Mixed</span></div>
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">OOG</span></div>
+                                    <div class="flex items-center gap-1.5"><span
+                                            class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-sm"></span><span
+                                            class="text-xs font-bold text-slate-600">Reefer</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="relative inline-flex items-center cursor-pointer group">
+                            <input class="sr-only peer" id="toggleDetail" onchange="toggleDetails()" type="checkbox">
+                            <div
+                                class="w-10 h-6 bg-slate-200 rounded-full peer peer-checked:bg-primary transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full shadow-inner">
+                            </div>
+                            <span
+                                class="ml-2 text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Show
+                                Breakdown</span>
+                        </label>
                     </div>
                     <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left cluster-details-table" id="recommendedSpreadingTable"><thead class="text-xs bg-slate-50/80 uppercase text-slate-500"><tr><th class="px-4 py-2">Block</th><th class="px-4 py-2">Recommended Vessels</th></tr></thead><tbody id="recommendedSpreadingBody" class="divide-y divide-slate-100 bg-white/50"></tbody></table>
+                        <table class="w-full text-left border-collapse" id="mainTable">
+                            <thead
+                                class="text-xs uppercase bg-slate-50/90 text-slate-600 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 w-16 text-center bg-slate-50"
+                                        rowspan="2">Block</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-slate-50"
+                                        rowspan="2">Occupancy</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-left bg-slate-50"
+                                        rowspan="2">Remark</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50"
+                                        colspan="3">Breakdown</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-blue-50/50"
+                                        colspan="2">Stacked</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50"
+                                        rowspan="2">Slots</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center col-detail bg-slate-50"
+                                        rowspan="2">Tier</th>
+                                    <th class="px-3 py-1 border-b border-r border-slate-200 text-center bg-slate-50"
+                                        rowspan="2">Capacity</th>
+                                    <th class="px-3 py-1 border-b border-slate-200 text-left col-detail bg-slate-50"
+                                        rowspan="2">Activity</th>
+                                </tr>
+                                <tr>
+                                    <th
+                                        class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">
+                                        20'</th>
+                                    <th
+                                        class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">
+                                        40'</th>
+                                    <th
+                                        class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-semibold text-[10px] col-detail">
+                                        45'</th>
+                                    <th
+                                        class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-bold text-[10px] bg-blue-50/50">
+                                        Box</th>
+                                    <th
+                                        class="px-2 py-1 leading-tight text-center border-b border-r border-slate-200 font-bold text-[10px] bg-blue-50/50">
+                                        TEUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"
+                                class="divide-y divide-slate-100 text-slate-800 text-[11px] font-medium"></tbody>
+                        </table>
                     </div>
                 </div>
-            </details>
 
-            <!-- Detailed Table -->
-            <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-                <div class="p-4 border-b border-slate-200/50 bg-white/20 flex justify-between items-center">
-                    <h2 class="text-lg font-bold text-slate-800">Detailed Spreading</h2>
-                    <label class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><input class="sr-only peer" id="toggleSmallCarriers" onchange="renderClusterSpreading()" type="checkbox"><div class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"></div><span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Show All</span></label>
-                </div>
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left cluster-details-table" id="clusterTable"><thead class="text-xs bg-slate-50/80 uppercase text-slate-500"><tr><th class="px-4 py-2">Carrier</th><th class="px-4 py-2">Service</th><th class="px-4 py-2">ETA</th><th class="px-6 py-4">Block Distribution</th><th class="px-4 py-2">Expected Cluster</th><th class="px-4 py-2">Total Cluster</th><th class="px-4 py-2 text-center">Total Units</th></tr></thead><tbody id="clusterBody" class="divide-y divide-slate-100 bg-white/50"></tbody></table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB 3: CLASH ANALYSIS -->
-    <div id="tab-clash" class="hidden animate-fade-in mt-4">
-        <div id="captureAreaClash" class="space-y-6">
-            <!-- Parameters -->
-            <div class="glass-panel p-6 rounded-2xl shadow-glass grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                <div class="md:col-span-1">
-                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Logic Parameters</label>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div><span class="text-[10px] text-slate-400 font-bold block mb-1">Window (Hrs)</span><input type="number" id="clashWindow" value="0" class="w-full text-sm border-slate-300 rounded-lg focus:ring-blue-500 bg-white/80 p-2 shadow-sm"></div>
-                        <div><span class="text-[10px] text-slate-400 font-bold block mb-1">Min. Units</span><input type="number" id="minUnitsClash" value="1" class="w-full text-sm border-slate-300 rounded-lg focus:ring-blue-500 bg-white/80 p-2 shadow-sm"></div>
-                        <div><span class="text-[10px] text-blue-600 font-bold block mb-1">Slot Gap</span><input type="number" id="slotGap" value="5" class="w-full text-sm border-blue-300 rounded-lg focus:ring-blue-500 bg-blue-50 p-2 shadow-sm"></div>
-                    </div>
-                </div>
-                <div class="md:col-span-2 flex items-end justify-end">
-                    <button onclick="processClashAnalysis()" class="flex-1 max-w-[220px] flex justify-center items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg transition-all active:scale-95 shadow-blue-200 tracking-wide uppercase">
-                        <span class="material-symbols-outlined text-[20px] mr-2">analytics</span> Analyze
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dashboard Stats & Feed -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Left: Stats -->
-                <div class="lg:col-span-4 space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-36 relative overflow-hidden">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Clashes</h3>
-                            <div class="text-5xl font-black text-slate-800 tracking-tighter" id="totalClashes">0</div>
-                            <div class="flex items-center gap-1 mt-2">
-                                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                <span class="text-[11px] text-red-600 font-bold" id="criticalClashesText">0 Critical</span>
+                <!-- NEW: Legend & Reference Guide -->
+                <details
+                    class="glass-panel rounded-2xl p-1 md:p-2 shadow-sm border border-white/60 reference-guide-details">
+                    <summary class="reference-guide-summary text-sm font-bold text-slate-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">info</span> Reference Guide
+                        <span class="material-symbols-outlined ml-auto text-slate-500">expand_more</span>
+                    </summary>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-xs text-slate-600">
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Occupancy Levels</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded bg-emerald-500"></div> <span><b>Normal</b> (<
+                                            50%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded bg-yellow-400"></div> <span><b>Moderate</b> (50% -
+                                        65%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded bg-red-500"></div> <span><b>High</b> (> 65%)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded bg-blue-500"></div> <span><b>Over Capacity</b> (>
+                                        100%)</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-36 relative overflow-hidden">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pairs Involved</h3>
-                            <div class="text-5xl font-black text-slate-800 tracking-tighter" id="vesselsInvolved">0</div>
-                            <div class="text-[11px] text-blue-500 font-bold uppercase tracking-tight bg-blue-50 rounded-lg py-1 px-2 w-fit">Overlaps</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Unit Conversion</h4>
+                            <ul class="space-y-1 list-disc pl-4">
+                                <li><b>20'</b> = 1.00 TEUs</li>
+                                <li><b>40'</b> = 2.00 TEUs</li>
+                                <li><b>45'</b> = 2.25 TEUs</li>
+                                <li><b>Capacity</b> = Total TEUs allowed</li>
+                            </ul>
                         </div>
-                    </div>
-
-                    <!-- Interactive Congestion Block -->
-                    <div class="glass-panel p-5 rounded-2xl shadow-sm border border-slate-200 transition-all">
-                        <div class="flex justify-between items-center cursor-pointer select-none group" onclick="toggleCongestion()">
-                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2 group-hover:text-blue-600 transition-colors">
-                                <span class="material-symbols-outlined text-base">bar_chart</span>
-                                Vessels by Block
-                            </h3>
-                            <button class="text-slate-400 hover:text-blue-600 transition-colors">
-                                <span id="congIcon" class="material-symbols-outlined transition-transform duration-300 transform rotate-0">expand_less</span>
-                            </button>
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Definitions</h4>
+                            <ul class="space-y-1 list-disc pl-4">
+                                <li><b>YOR:</b> Yard Occupancy Ratio</li>
+                                <li><b>DG:</b> Dangerous Goods</li>
+                                <li><b>OOG:</b> Out of Gauge (Special Cargo)</li>
+                                <li><b>Reefer:</b> Refrigerated Container</li>
+                            </ul>
                         </div>
-                        
-                        <div id="congContent" class="accordion-content mt-3" style="max-height: 2000px; opacity: 1;">
-                            <p class="text-[10px] text-slate-400 italic mb-2 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[12px]">touch_app</span> Click a row to filter
+                        <div>
+                            <h4 class="font-bold text-slate-800 mb-2 uppercase text-[10px]">Notes</h4>
+                            <p class="leading-relaxed opacity-80">
+                                Occupancy is calculated based on current stacked units vs block TEU capacity. Tier
+                                configuration affects total capacity.
                             </p>
-                            <div class="overflow-hidden rounded-lg border border-slate-100 bg-white/50">
-                                <table class="w-full text-[11px] text-left">
-                                    <thead class="bg-slate-50 uppercase text-slate-500 font-semibold border-b border-slate-200"><tr><th class="p-3">Block</th><th class="p-3">Vessels</th><th class="p-3 text-center">Clash</th><th class="p-3 text-right">Vol</th></tr></thead>
-                                    <tbody id="blockStatsBody" class="divide-y divide-slate-100 bg-white"></tbody>
-                                </table>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- TAB 2: ANALYTICS (Carrier Spreading) -->
+        <div id="tab-analytics" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaAnalytics" class="space-y-4">
+
+                <!-- Recommended Spreading -->
+                <details
+                    class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 recommended-panel">
+                    <summary
+                        class="p-4 border-b border-slate-200/50 bg-white/20 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Recommended Spreading (Based on Highest
+                                Cluster)</h2>
+                        </div>
+                        <span class="material-symbols-outlined toggle-icon text-slate-500">expand_more</span>
+                    </summary>
+                    <div class="p-4 space-y-4">
+                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                            <div class="flex flex-wrap gap-2" id="vesselFilterList"></div>
+                            <div class="text-sm text-slate-600 font-semibold">
+                                Total Export Vessels On Yard: <span id="totalVesselsOnYard"
+                                    class="text-slate-900">0</span>
                             </div>
-                            <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 text-[10px] text-yellow-800 mt-3 font-bold">
-                                Excludes: C01, C02, OOG, RC9, BR9
+                        </div>
+                        <div id="activeVesselFilterInfo" class="hidden mt-2 text-xs text-slate-500">
+                            Filter aktif: <span id="activeVesselFilterName" class="font-semibold text-slate-800"></span>
+                            <button type="button" onclick="clearVesselFilter()"
+                                class="ml-3 text-blue-600 hover:text-blue-800 font-bold">Clear</button>
+                        </div>
+                        <div class="text-xs text-slate-500 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <p><strong>How it works:</strong> The maximum vessels per block is calculated as
+                                <code>ceil(total expected clusters / total unique vessels)</code>. Vessels beyond this
+                                limit are displayed with reduced opacity, suggesting they are candidates for House
+                                Keeping (HK) to optimize yard space.</p>
+                        </div>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left cluster-details-table" id="recommendedSpreadingTable">
+                                <thead class="text-xs bg-slate-50/80 uppercase text-slate-500">
+                                    <tr>
+                                        <th class="px-4 py-2">Block</th>
+                                        <th class="px-4 py-2">Recommended Vessels</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recommendedSpreadingBody" class="divide-y divide-slate-100 bg-white/50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Detailed Table -->
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
+                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-slate-800">Detailed Spreading</h2>
+                        <label
+                            class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><input
+                                class="sr-only peer" id="toggleSmallCarriers" onchange="renderClusterSpreading()"
+                                type="checkbox">
+                            <div
+                                class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full">
+                            </div><span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Show All</span>
+                        </label>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left cluster-details-table" id="clusterTable">
+                            <thead class="text-xs bg-slate-50/80 uppercase text-slate-500">
+                                <tr>
+                                    <th class="px-4 py-2">Carrier</th>
+                                    <th class="px-4 py-2">Service</th>
+                                    <th class="px-4 py-2">ETA</th>
+                                    <th class="px-6 py-4">Block Distribution</th>
+                                    <th class="px-4 py-2">Expected Cluster</th>
+                                    <th class="px-4 py-2">Total Cluster</th>
+                                    <th class="px-4 py-2 text-center">Total Units</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clusterBody" class="divide-y divide-slate-100 bg-white/50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CLASH ANALYSIS -->
+        <div id="tab-clash" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaClash" class="space-y-6">
+                <!-- Parameters -->
+                <div class="glass-panel p-6 rounded-2xl shadow-glass grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                    <div class="md:col-span-1">
+                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Logic
+                            Parameters</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div><span class="text-[10px] text-slate-400 font-bold block mb-1">Window (Hrs)</span><input
+                                    type="number" id="clashWindow" value="0"
+                                    class="w-full text-sm border-slate-300 rounded-lg focus:ring-blue-500 bg-white/80 p-2 shadow-sm">
+                            </div>
+                            <div><span class="text-[10px] text-slate-400 font-bold block mb-1">Min. Units</span><input
+                                    type="number" id="minUnitsClash" value="1"
+                                    class="w-full text-sm border-slate-300 rounded-lg focus:ring-blue-500 bg-white/80 p-2 shadow-sm">
+                            </div>
+                            <div><span class="text-[10px] text-blue-600 font-bold block mb-1">Slot Gap</span><input
+                                    type="number" id="slotGap" value="5"
+                                    class="w-full text-sm border-blue-300 rounded-lg focus:ring-blue-500 bg-blue-50 p-2 shadow-sm">
                             </div>
                         </div>
                     </div>
+                    <div class="md:col-span-2 flex items-end justify-end">
+                        <button onclick="processClashAnalysis()"
+                            class="flex-1 max-w-[220px] flex justify-center items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl hover:shadow-lg transition-all active:scale-95 shadow-blue-200 tracking-wide uppercase">
+                            <span class="material-symbols-outlined text-[20px] mr-2">analytics</span> Analyze
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Right: Detailed Feed -->
-                <div class="lg:col-span-8">
-                    <div class="flex flex-col gap-4 mb-4">
-                        <div class="flex justify-between items-end">
-                            <div>
-                                <h3 class="font-bold text-slate-700 text-lg flex items-center gap-2">
-                                    Detailed Conflict Report
-                                    <span id="activeFilterBadge" class="hidden px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded-full border border-blue-200 uppercase">Filtered: <span id="filterName"></span> <button onclick="clearFilter()" class="ml-1 hover:text-red-500 font-bold">✕</button></span>
+                <!-- Dashboard Stats & Feed -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Left: Stats -->
+                    <div class="lg:col-span-4 space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div
+                                class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-36 relative overflow-hidden">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Clashes</h3>
+                                <div class="text-5xl font-black text-slate-800 tracking-tighter" id="totalClashes">0
+                                </div>
+                                <div class="flex items-center gap-1 mt-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                                    <span class="text-[11px] text-red-600 font-bold" id="criticalClashesText">0
+                                        Critical</span>
+                                </div>
+                            </div>
+                            <div
+                                class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-36 relative overflow-hidden">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Pairs Involved
                                 </h3>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Visualizing actual slots</p>
-                            </div>
-                            
-                            <div class="flex items-center gap-3">
-                                <div class="relative">
-                                    <input type="text" id="searchInput" onkeyup="renderCurrentClashes()" placeholder="Search Vessel/Block..." class="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-blue-500 w-40 bg-white/50">
-                                    <span class="material-symbols-outlined absolute left-2 top-1.5 text-slate-400 text-[16px]">search</span>
+                                <div class="text-5xl font-black text-slate-800 tracking-tighter" id="vesselsInvolved">0
                                 </div>
-                                <div class="flex items-center gap-2 bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
-                                    <span class="text-[10px] font-bold text-slate-500 ml-2 uppercase">SORT:</span>
-                                    <select id="clashSort" onchange="renderCurrentClashes()" class="text-xs border-0 py-1 pl-1 pr-8 font-bold text-slate-700 focus:ring-0 bg-transparent cursor-pointer">
-                                        <option value="severity">Severity (Vol)</option>
-                                        <option value="eta">Earliest ETA</option>
-                                        <option value="block">Block (A-Z)</option>
-                                    </select>
+                                <div
+                                    class="text-[11px] text-blue-500 font-bold uppercase tracking-tight bg-blue-50 rounded-lg py-1 px-2 w-fit">
+                                    Overlaps</div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Congestion Block -->
+                        <div class="glass-panel p-5 rounded-2xl shadow-sm border border-slate-200 transition-all">
+                            <div class="flex justify-between items-center cursor-pointer select-none group"
+                                onclick="toggleCongestion()">
+                                <h3
+                                    class="text-sm font-bold text-slate-700 flex items-center gap-2 group-hover:text-blue-600 transition-colors">
+                                    <span class="material-symbols-outlined text-base">bar_chart</span>
+                                    Vessels by Block
+                                </h3>
+                                <button class="text-slate-400 hover:text-blue-600 transition-colors">
+                                    <span id="congIcon"
+                                        class="material-symbols-outlined transition-transform duration-300 transform rotate-0">expand_less</span>
+                                </button>
+                            </div>
+
+                            <div id="congContent" class="accordion-content mt-3"
+                                style="max-height: 2000px; opacity: 1;">
+                                <p class="text-[10px] text-slate-400 italic mb-2 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[12px]">touch_app</span> Click a row to
+                                    filter
+                                </p>
+                                <div class="overflow-hidden rounded-lg border border-slate-100 bg-white/50">
+                                    <table class="w-full text-[11px] text-left">
+                                        <thead
+                                            class="bg-slate-50 uppercase text-slate-500 font-semibold border-b border-slate-200">
+                                            <tr>
+                                                <th class="p-3">Block</th>
+                                                <th class="p-3">Vessels</th>
+                                                <th class="p-3 text-center">Clash</th>
+                                                <th class="p-3 text-right">Vol</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="blockStatsBody" class="divide-y divide-slate-100 bg-white"></tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 text-[10px] text-yellow-800 mt-3 font-bold">
+                                    Excludes: C01, C02, OOG, RC9, BR9
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div id="clashFeed" class="space-y-3 h-[1200px] overflow-y-auto pr-2 custom-scrollbar p-1">
-                        <div class="p-12 text-center text-slate-400 border-dashed border-2 border-slate-200 rounded-2xl bg-white/30">
-                            <span class="material-symbols-outlined text-5xl block mb-2 opacity-50">sync</span>
-                            Upload Unit List (Header) & Schedule (Here) to Analyze.
+
+                    <!-- Right: Detailed Feed -->
+                    <div class="lg:col-span-8">
+                        <div class="flex flex-col gap-4 mb-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <h3 class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                                        Detailed Conflict Report
+                                        <span id="activeFilterBadge"
+                                            class="hidden px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded-full border border-blue-200 uppercase">Filtered:
+                                            <span id="filterName"></span> <button onclick="clearFilter()"
+                                                class="ml-1 hover:text-red-500 font-bold">✕</button></span>
+                                    </h3>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Visualizing
+                                        actual slots</p>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" onkeyup="renderCurrentClashes()"
+                                            placeholder="Search Vessel/Block..."
+                                            class="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-blue-500 w-40 bg-white/50">
+                                        <span
+                                            class="material-symbols-outlined absolute left-2 top-1.5 text-slate-400 text-[16px]">search</span>
+                                    </div>
+                                    <div
+                                        class="flex items-center gap-2 bg-white rounded-lg p-1 border border-slate-200 shadow-sm">
+                                        <span class="text-[10px] font-bold text-slate-500 ml-2 uppercase">SORT:</span>
+                                        <select id="clashSort" onchange="renderCurrentClashes()"
+                                            class="text-xs border-0 py-1 pl-1 pr-8 font-bold text-slate-700 focus:ring-0 bg-transparent cursor-pointer">
+                                            <option value="severity">Severity (Vol)</option>
+                                            <option value="eta">Earliest ETA</option>
+                                            <option value="block">Block (A-Z)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="clashFeed" class="space-y-3 h-[1200px] overflow-y-auto pr-2 custom-scrollbar p-1">
+                            <div
+                                class="p-12 text-center text-slate-400 border-dashed border-2 border-slate-200 rounded-2xl bg-white/30">
+                                <span class="material-symbols-outlined text-5xl block mb-2 opacity-50">sync</span>
+                                Upload Unit List (Header) & Schedule (Here) to Analyze.
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-                                <div id="tab-empty" class="hidden animate-fade-in mt-4">
-    <div id="captureAreaEmpty" class="space-y-6">
-        
-        <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
-            <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                <span class="material-symbols-outlined text-amber-500">input</span> 
-                Import Empty Summary
-            </h3>
-            <div id="emptyImportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                </div>
-        </div>
+        <div id="tab-empty" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaEmpty" class="space-y-6">
 
-        <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-            <div class="p-4 border-b border-slate-200/50 bg-white/20">
-                <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-emerald-500">output</span>
-                    Export Empty Summary
-                </h3>
-            </div>
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
-                        <tr>
-                            <th class="px-6 py-3 border-b">Carrier</th>
-                            <th class="px-6 py-3 border-b text-center">Service</th>
-                            <th class="px-6 py-3 border-b text-center">20'</th>
-                            <th class="px-6 py-3 border-b text-center">40'</th>
-                            <th class="px-6 py-3 border-b text-center">45'</th>
-                            <th class="px-6 py-3 border-b text-center bg-slate-100">Total</th>
-                            <th class="px-6 py-3 border-b text-center bg-slate-50">Total TEUs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="emptyExportBody" class="divide-y divide-slate-100 bg-white/50">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-</div>
-<div id="tab-projection" class="hidden animate-fade-in mt-4">
-    <div id="captureAreaProjection" class="space-y-6">
-        <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
-            <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
-                <span class="material-symbols-outlined text-blue-600">upload_file</span>
-                Preplan Input
-            </h3>
-            <div class="flex flex-col lg:flex-row lg:items-center gap-3">
-                <input type="file" id="preplanInput" accept=".xlsx" onchange="parsePreplanProjection(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-300 rounded-lg bg-white/60"/>
-                <div class="w-full lg:w-[320px] space-y-1">
-                    <div class="flex items-center justify-between gap-2">
-                        <label for="slotBoxCapacity" class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Box/Slot Capacity</label>
-                        <span id="slotBoxCapacityVal" class="text-xs font-mono font-bold text-blue-700">27</span>
+                <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-500">input</span>
+                        Import Empty Summary
+                    </h3>
+                    <div id="emptyImportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     </div>
-                    <input id="slotBoxCapacity" type="range" min="10" max="36" value="27" class="w-full accent-blue-600" oninput="updateSlotCapacityLabel(this.value); refreshProjectionTable()">
+                </div>
+
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
+                    <div class="p-4 border-b border-slate-200/50 bg-white/20">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-emerald-500">output</span>
+                            Export Empty Summary
+                        </h3>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
+                                <tr>
+                                    <th class="px-6 py-3 border-b">Carrier</th>
+                                    <th class="px-6 py-3 border-b text-center">Service</th>
+                                    <th class="px-6 py-3 border-b text-center">20'</th>
+                                    <th class="px-6 py-3 border-b text-center">40'</th>
+                                    <th class="px-6 py-3 border-b text-center">45'</th>
+                                    <th class="px-6 py-3 border-b text-center bg-slate-100">Total</th>
+                                    <th class="px-6 py-3 border-b text-center bg-slate-50">Total TEUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emptyExportBody" class="divide-y divide-slate-100 bg-white/50">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="tab-projection" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaProjection" class="space-y-6">
+                <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-blue-600">upload_file</span>
+                        Preplan Input
+                    </h3>
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-3">
+                        <input type="file" id="preplanInput" accept=".xlsx" onchange="parsePreplanProjection(event)"
+                            class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-300 rounded-lg bg-white/60" />
+                        <div class="w-full lg:w-[320px] space-y-1">
+                            <div class="flex items-center justify-between gap-2">
+                                <label for="slotBoxCapacity"
+                                    class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Box/Slot
+                                    Capacity</label>
+                                <span id="slotBoxCapacityVal"
+                                    class="text-xs font-mono font-bold text-blue-700">27</span>
+                            </div>
+                            <input id="slotBoxCapacity" type="range" min="10" max="36" value="27"
+                                class="w-full accent-blue-600"
+                                oninput="updateSlotCapacityLabel(this.value); refreshProjectionTable()">
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Upload only the Preplan file. Unit List will be taken from
+                        existing loaded data.</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
+                    <div
+                        class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-emerald-500">table_chart</span>
+                            Balance Space Projection
+                        </h3>
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                            <button onclick="setProjectionTypeFilter('ALL')" id="filter-ALL"
+                                class="secondary-pill text-xs projection-filter-btn active">ALL</button>
+                            <button onclick="setProjectionTypeFilter('Fixed Import')" id="filter-Fixed Import"
+                                class="secondary-pill text-xs projection-filter-btn">Fixed Import</button>
+                            <button onclick="setProjectionTypeFilter('IMDG')" id="filter-IMDG"
+                                class="secondary-pill text-xs projection-filter-btn">IMDG</button>
+                            <button onclick="setProjectionTypeFilter('Reefer')" id="filter-Reefer"
+                                class="secondary-pill text-xs projection-filter-btn">Reefer</button>
+                            <button onclick="setProjectionTypeFilter('OOG')" id="filter-OOG"
+                                class="secondary-pill text-xs projection-filter-btn">OOG</button>
+                            <span
+                                class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">Drag
+                                rows to reorder vessels</span>
+                            <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown"
+                                class="secondary-pill text-xs">Show Breakdown</button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-sm text-center">
+                            <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
+                                <tr>
+                                    <th class="px-4 py-3 border-b">Vessel</th>
+                                    <th class="px-4 py-3 border-b">Type</th>
+                                    <th class="px-4 py-3 border-b text-center projection-breakdown hidden">Used Slot 20'
+                                    </th>
+                                    <th class="px-4 py-3 border-b text-center projection-breakdown hidden">Used Slot 40'
+                                    </th>
+                                    <th class="px-4 py-3 border-b text-center">Incoming 20'</th>
+                                    <th class="px-4 py-3 border-b text-center">Incoming 40'</th>
+                                    <th class="px-4 py-3 border-b text-center">Balance 20'</th>
+                                    <th class="px-4 py-3 border-b text-center">Balance 40'</th>
+                                    <th class="px-4 py-3 border-b text-center">Free Slot (EXE)</th>
+                                    <th class="px-4 py-3 border-b">Capacity Visualization</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectionBody" class="divide-y divide-slate-100 bg-white/50">
+                                <tr>
+                                    <td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan
+                                        to generate projection.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="px-4 py-3 text-[11px] text-slate-500 bg-slate-50 border-t border-slate-200">
+                        Notes: Only calculate pure import block only (A06, A07, A08, B06, B07, B08, C05, C06, C07, C08).
+                    </p>
                 </div>
             </div>
-            <p class="text-xs text-slate-500 mt-2">Upload only the Preplan file. Unit List will be taken from existing loaded data.</p>
         </div>
 
-        <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-            <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-                <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-emerald-500">table_chart</span>
-                    Balance Space Projection
-                </h3>
-                <div class="flex flex-wrap items-center justify-end gap-2">
-                    <button onclick="setProjectionTypeFilter('ALL')" id="filter-ALL" class="secondary-pill text-xs projection-filter-btn active">ALL</button>
-                    <button onclick="setProjectionTypeFilter('Fixed Import')" id="filter-Fixed Import" class="secondary-pill text-xs projection-filter-btn">Fixed Import</button>
-                    <button onclick="setProjectionTypeFilter('IMDG')" id="filter-IMDG" class="secondary-pill text-xs projection-filter-btn">IMDG</button>
-                    <button onclick="setProjectionTypeFilter('Reefer')" id="filter-Reefer" class="secondary-pill text-xs projection-filter-btn">Reefer</button>
-                    <button onclick="setProjectionTypeFilter('OOG')" id="filter-OOG" class="secondary-pill text-xs projection-filter-btn">OOG</button>
-                    <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg border border-slate-200">Drag rows to reorder vessels</span>
-                    <button onclick="toggleProjectionBreakdown()" id="btnProjectionBreakdown" class="secondary-pill text-xs">Show Breakdown</button>
+        <!-- TAB 6: YARD MAP -->
+        <div id="tab-yardmap" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaYardMap" class="space-y-4">
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
+                    <div
+                        class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-600">
+                                <span class="material-symbols-outlined text-2xl">map</span>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-semibold text-slate-800">Yard Visualization</h2>
+                                <p class="text-xs text-slate-500">Container placement by block and slot · Export colored
+                                    by carrier · Import shown in white</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap justify-end">
+                            <button onclick="zoomYardMap(-0.1)" class="secondary-pill text-xs px-2"
+                                title="Zoom Out"><span
+                                    class="material-symbols-outlined text-[16px]">zoom_out</span></button>
+                            <button onclick="zoomYardMap(0)" class="secondary-pill text-xs px-2"
+                                title="Reset Zoom"><span
+                                    class="material-symbols-outlined text-[16px]">search</span></button>
+                            <button onclick="zoomYardMap(0.1)" class="secondary-pill text-xs px-2" title="Zoom In"><span
+                                    class="material-symbols-outlined text-[16px]">zoom_in</span></button>
+                            <button onclick="toggleYardText()" id="yardTextToggleBtn"
+                                class="secondary-pill text-xs"><span
+                                    class="material-symbols-outlined text-[16px]">visibility</span> Show Text</button>
+                            <button onclick="highlightYardCarrier(null)" class="secondary-pill text-xs"><span
+                                    class="material-symbols-outlined text-[16px]">restart_alt</span> Clear
+                                Highlight</button>
+                        </div>
+                    </div>
+                    <div id="yardMapLegend"
+                        class="p-3 border-b border-slate-200/50 bg-slate-50/50 overflow-x-auto custom-scrollbar"></div>
+                    <div id="yardMapContent" class="p-4 overflow-x-auto custom-scrollbar">
+                        <div
+                            class="p-12 text-center text-slate-400 border-dashed border-2 border-slate-200 rounded-2xl bg-white/30">
+                            <span class="material-symbols-outlined text-5xl block mb-2 opacity-50">grid_view</span>
+                            Upload Unit List to visualize yard.
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-sm text-center">
-                    <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
-                        <tr>
-                            <th class="px-4 py-3 border-b">Vessel</th>
-                            <th class="px-4 py-3 border-b">Type</th>
-                            <th class="px-4 py-3 border-b text-center projection-breakdown hidden">Used Slot 20'</th>
-                            <th class="px-4 py-3 border-b text-center projection-breakdown hidden">Used Slot 40'</th>
-                            <th class="px-4 py-3 border-b text-center">Incoming 20'</th>
-                            <th class="px-4 py-3 border-b text-center">Incoming 40'</th>
-                            <th class="px-4 py-3 border-b text-center">Balance 20'</th>
-                            <th class="px-4 py-3 border-b text-center">Balance 40'</th>
-                            <th class="px-4 py-3 border-b text-center">Free Slot (EXE)</th>
-                            <th class="px-4 py-3 border-b">Capacity Visualization</th>
-                        </tr>
-                    </thead>
-                    <tbody id="projectionBody" class="divide-y divide-slate-100 bg-white/50">
-                        <tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>
-                    </tbody>
-                </table>
+        </div>
+
+    </div>
+
+    <div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-3 border-b">
+                <h4 id="freeSlotModalTitle" class="font-bold text-slate-700">Free Slot List</h4>
+                <button onclick="closeFreeSlotModal()" class="text-slate-500 hover:text-red-600 font-bold">✕</button>
             </div>
-            <p class="px-4 py-3 text-[11px] text-slate-500 bg-slate-50 border-t border-slate-200">
-                Notes: Only calculate pure import block only (A06, A07, A08, B06, B07, B08, C05, C06, C07, C08).
-            </p>
+            <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
         </div>
     </div>
-</div>
-</div>
 
-<div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-3 border-b">
-            <h4 id="freeSlotModalTitle" class="font-bold text-slate-700">Free Slot List</h4>
-            <button onclick="closeFreeSlotModal()" class="text-slate-500 hover:text-red-600 font-bold">✕</button>
-        </div>
-        <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
-    </div>
-</div>
+    <footer
+        class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
+        © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
+    </footer>
 
-<footer class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
-  © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
-</footer>
-
-<script src="expectedCluster.js"></script>
-<script src="yp.js"></script>
+    <script src="expectedCluster.js"></script>
+    <script src="yp.js"></script>
+    <script src="yardmap.js"></script>
 </body>
 
 </html>
