@@ -347,6 +347,7 @@ function updateCapacity(block, newSlots, newTier) {
         });
 
         let s = { impC:0, expC:0, impS:0, expS:0 };
+        const _overviewRows = [];
         Object.keys(yardMap).sort().forEach(b => {
             let d = yardMap[b], cap = activeCapacity[b];
             let stacked = (d.c20 * 1) + (d.c40 * 2) + (d.c45 * 2.25);
@@ -406,7 +407,7 @@ if (b === "") {
   }
 }
 
-            tbody.innerHTML += `
+            _overviewRows.push(`
                 <tr class="${rCls} hover:bg-slate-50 transition-colors">
                     <td class="p-2 border-r border-slate-200/50 font-bold text-center relative">
   <div class="absolute inset-y-0 left-0 w-1 ${barColor} rounded-r"></div>
@@ -445,8 +446,9 @@ if (b === "") {
 </td>
 
                     <td class="col-detail p-1 font-mono text-[9px] uppercase">${rCls.replace('row-','')}</td>
-                </tr>`;
+                </tr>`);
         });
+        tbody.innerHTML = _overviewRows.join('');
 
         updateSummary(s);
 
@@ -571,6 +573,7 @@ document.getElementById('sumTotalCap').innerText =
             return;
         }
 
+        const _recRows = [];
         results.forEach(row => {
             const isMatch = activeVesselFilter && row.vessels.some(v => v.carrier === activeVesselFilter);
             const rowClass = `transition ${isMatch ? 'bg-blue-50/40' : 'hover:bg-slate-50'}`;
@@ -593,8 +596,9 @@ document.getElementById('sumTotalCap').innerText =
                     return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
                 })
             ].join('');
-            body.innerHTML += `<tr class="${rowClass}"><td class="${blockCellClass}">${row.block}</td><td class="px-4 py-3">${badges}</td></tr>`;
+            _recRows.push(`<tr class="${rowClass}"><td class="${blockCellClass}">${row.block}</td><td class="px-4 py-3">${badges}</td></tr>`);
         });
+        body.innerHTML = _recRows.join('');
         renderVesselFilterChips(results);
     }
 
@@ -650,6 +654,12 @@ document.getElementById('sumTotalCap').innerText =
     function renderClusterSpreading() {
         const body = document.getElementById('clusterBody');
         const showAll = document.getElementById('toggleSmallCarriers').checked;
+        const showXYZ = document.getElementById('toggleDetailedCluster')?.checked || false;
+
+        // Toggle legend visibility
+        const legend = document.getElementById('clusterLegend');
+        if (legend) legend.classList.toggle('hidden', !showXYZ);
+
         body.innerHTML = '';
 
         const IGNORED_CLUSTER_BLOCKS = new Set(['C01','C02','D01','BR9','RC9','OOG','N']);
@@ -669,7 +679,21 @@ document.getElementById('sumTotalCap').innerText =
             const service = String(it.service || '').toUpperCase();
             const key = `${c}||${service}`;
             if(!stats[key]) stats[key] = { carrier: c, service, blocks: {}, total: 0, clusters: new Set(), eta: null };
-            stats[key].blocks[it.block] = (stats[key].blocks[it.block] || 0) + 1;
+            
+            // Logic for sub-block categorization (X/Y/Z)
+            const slot = parseInt(it.slot) || 0;
+            const blockChar = it.block.charAt(0).toUpperCase();
+            let part = 'X';
+            if (blockChar === 'A' || blockChar === 'B') {
+                if (slot >= 26) part = 'Z';
+                else if (slot >= 13) part = 'Y';
+            } else if (blockChar === 'C') {
+                if (slot >= 31) part = 'Z';
+                else if (slot >= 16) part = 'Y';
+            }
+            
+            if(!stats[key].blocks[it.block]) stats[key].blocks[it.block] = { X: 0, Y: 0, Z: 0 };
+            stats[key].blocks[it.block][part]++;
             stats[key].total++;
             if (service) {
                 const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(service) : null;
@@ -693,22 +717,209 @@ document.getElementById('sumTotalCap').innerText =
         if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; renderRecommendedSpreading(); renderVesselFilterChips(); return; }
 
         let filtered = showAll ? sorted : sorted.filter(e => e[1].total >= 50);
+
+        let uniqueBlocks = new Set();
         filtered.forEach(([key, data]) => {
-            let badges = Object.entries(data.blocks).sort((a,b) => b[1]-a[1]).map(([block, cnt]) => {
-                let cls = cnt > 200 ? 'bg-red-600 text-white shadow-sm' : (cnt > 100 ? 'bg-amber-400 text-slate-900' : 'bg-blue-50 text-blue-700 border border-blue-100');
-                return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${block}</span><span>${cnt}</span></span>`;
-            }).join("");
+            Object.keys(data.blocks).forEach(b => uniqueBlocks.add(b));
+        });
+        let sortedBlocks = Array.from(uniqueBlocks).sort();
+
+        // Calculate block occupancy for header display
+        const blockOccupancy = {};
+        const blockTeus = {};
+        invData.forEach(it => {
+            if (!it.block) return;
+            const b = it.block.toUpperCase();
+            if (!blockTeus[b]) blockTeus[b] = 0;
+            const teus = String(it.length || '').startsWith('20') ? 1 : (String(it.length || '').startsWith('45') ? 2.25 : 2);
+            blockTeus[b] += teus;
+        });
+        sortedBlocks.forEach(b => {
+            const cap = activeCapacity[b]?.cap || 0;
+            const teus = blockTeus[b] || 0;
+            blockOccupancy[b] = cap > 0 ? Math.round((teus / cap) * 100) : 0;
+        });
+
+        const head = document.getElementById('clusterHead');
+        if (head) {
+            // Helper: block header class based on E-prefix
+            const blockBg = (b) => b.charAt(0).toUpperCase() === 'E' ? 'bg-slate-200/80 text-slate-400' : 'bg-slate-50';
+            const occColor = (pct) => pct > 80 ? 'text-red-500' : (pct > 60 ? 'text-amber-500' : 'text-emerald-600');
+
+            if (showXYZ) {
+                let colspan = (sortedBlocks.length || 1) * 3;
+                let blockHeaders = sortedBlocks.map(b => {
+                    const bg = b.charAt(0).toUpperCase() === 'E' ? 'bg-slate-200/80 text-slate-400' : 'bg-slate-100/50';
+                    return `<th colspan="3" class="px-1 py-1 text-center font-bold text-[10px] border-l border-slate-300 ${bg}">${b}</th>`;
+                }).join('');
+                let occRow = sortedBlocks.map(b => {
+                    const pct = blockOccupancy[b] || 0;
+                    return `<th colspan="3" class="px-0 py-0 text-center text-[7px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white">${pct}%</th>`;
+                }).join('');
+                let subHeaders = sortedBlocks.map((b, idx) => {
+                    return `
+                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-200 text-blue-600">X</th>
+                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-100 text-amber-600">Y</th>
+                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-100 text-emerald-600 block-group-end">Z</th>`;
+                }).join('');
+
+                head.innerHTML = `
+                    <tr class="bg-slate-50 text-[10px]">
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-eta">ETB</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-shift">S</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier">Carrier</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service">Svc</th>
+                        <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
+                        <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider">CLUSTER</th>
+                        <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black">TOTAL<br>UNITS</th>
+                    </tr>
+                    <tr class="text-[10px]">
+                        ${blockHeaders}
+                        <th rowspan="3" class="px-2 py-1 border-l border-slate-300 text-center align-middle col-cluster text-[9px]">Exp.</th>
+                        <th rowspan="3" class="px-2 py-1 border-l border-slate-200 text-center align-middle col-cluster text-[9px]">Act.</th>
+                    </tr>
+                    <tr>${occRow}</tr>
+                    <tr class="border-t border-slate-200">${subHeaders}</tr>
+                `;
+            } else {
+                let occRow = sortedBlocks.map(b => {
+                    const pct = blockOccupancy[b] || 0;
+                    return `<th class="px-1 py-0 text-center text-[8px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white col-block">${pct}%</th>`;
+                }).join('');
+                let blockHeaders = sortedBlocks.map(b => {
+                    const bg = blockBg(b);
+                    return `<th class="px-2 py-2 text-center font-bold text-[10px] border-l border-slate-200 ${bg} col-block">${b}</th>`;
+                }).join('');
+                head.innerHTML = `
+                    <tr class="text-[11px]">
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">ETB</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">SHIFT</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Carrier</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Service</th>
+                        <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
+                        <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider">CLUSTER</th>
+                        <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black">TOTAL<br>UNITS</th>
+                    </tr>
+                    <tr class="border-t border-slate-200">
+                        ${blockHeaders}
+                        <th rowspan="2" class="px-3 py-1 border-l border-slate-200 text-center align-middle bg-slate-50 text-[10px]">Expected</th>
+                        <th rowspan="2" class="px-3 py-1 border-l border-slate-200 text-center align-middle bg-slate-50 text-[10px]">Actual</th>
+                    </tr>
+                    <tr>${occRow}</tr>
+                `;
+            }
+        }
+
+        let renderedData = filtered.map(([key, data]) => {
             const serviceLabel = data.service ? data.service : '-';
-            const etaLabel = data.eta ? `${data.eta.getDate().toString().padStart(2,'0')}/${(data.eta.getMonth()+1).toString().padStart(2,'0')} ${data.eta.getHours().toString().padStart(2,'0')}:${data.eta.getMinutes().toString().padStart(2,'0')}` : '-';
+            const etaObj = data.eta;
+            let etaLabel = '-';
+            let shiftLabel = '-';
+            
+            if (etaObj) {
+                etaLabel = `${etaObj.getDate().toString().padStart(2,'0')}/${(etaObj.getMonth()+1).toString().padStart(2,'0')}`;
+                let h = etaObj.getHours();
+                let m = etaObj.getMinutes();
+                let timeMin = h * 60 + m;
+                if (timeMin >= 420 && timeMin < 930) {
+                    shiftLabel = '1';
+                } else if (timeMin >= 930 && timeMin < 1380) {
+                    shiftLabel = '2';
+                } else {
+                    shiftLabel = '3';
+                }
+            }
+            return { key, data, serviceLabel, etaLabel, shiftLabel };
+        });
+
+        for (let i = 0; i < renderedData.length; i++) {
+            if (renderedData[i].etaRowspan === undefined) {
+                let span = 1;
+                for (let j = i + 1; j < renderedData.length; j++) {
+                    if (renderedData[j].etaLabel === renderedData[i].etaLabel) span++;
+                    else break;
+                }
+                renderedData[i].etaRowspan = span;
+                for (let j = i + 1; j < i + span; j++) {
+                    renderedData[j].etaRowspan = 0;
+                }
+            }
+            if (renderedData[i].shiftRowspan === undefined) {
+                let span = 1;
+                for (let j = i + 1; j < renderedData.length; j++) {
+                    if (renderedData[j].etaLabel === renderedData[i].etaLabel && renderedData[j].shiftLabel === renderedData[i].shiftLabel) span++;
+                    else break;
+                }
+                renderedData[i].shiftRowspan = span;
+                for (let j = i + 1; j < i + span; j++) {
+                    renderedData[j].shiftRowspan = 0;
+                }
+            }
+        }
+
+        const _clusterRows = [];
+        renderedData.forEach((row, index) => {
+            const { key, data, serviceLabel, etaLabel, shiftLabel, etaRowspan, shiftRowspan } = row;
+            
+            let blockCells = sortedBlocks.map(b => {
+                let res = data.blocks[b] || { X: 0, Y: 0, Z: 0 };
+                const total = res.X + res.Y + res.Z;
+
+                if (!showXYZ) {
+                    const isEmptyBlock = b.charAt(0).toUpperCase() === 'E';
+                    const emptyBg = isEmptyBlock ? ' bg-slate-100/60' : '';
+                    if (total === 0) return `<td class="px-1 py-2 text-center text-slate-300 border-l border-slate-200 col-block${emptyBg}">-</td>`;
+                    let cls = total > 200 ? 'bg-red-600 text-white' : (total > 100 ? 'bg-amber-400 text-slate-900' : (isEmptyBlock ? 'bg-slate-200 text-slate-500' : 'bg-blue-50 text-blue-700 border border-blue-100'));
+                    return `<td class="px-1 py-1 text-center border-l border-slate-200 col-block${emptyBg}"><span class="inline-block px-1.5 py-1 rounded text-[10px] font-bold ${cls} w-full text-center">${total}</span></td>`;
+                }
+                
+                const renderCell = (val, colorClass, isEnd) => {
+                    if (val === 0) return `<td class="px-0 py-1 text-center text-slate-300 border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''}">-</td>`;
+                    let cls = val > 100 ? 'bg-red-600 text-white' : (val > 50 ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700');
+                    return `<td class="px-0 py-0.5 text-center border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''}"><span class="inline-block w-full py-0.5 text-[8.5px] font-bold ${cls}">${val}</span></td>`;
+                };
+
+                return renderCell(res.X, 'text-blue-600', false) + 
+                       renderCell(res.Y, 'text-amber-600', false) + 
+                       renderCell(res.Z, 'text-emerald-600', true);
+            }).join("");
+
             const clusterValues = Array.from(data.clusters).sort((a,b) => a - b);
             const expectedClusterLabel = clusterValues.length ? clusterValues.join(", ") : '-';
             const expectedClusterNumber = clusterValues.length ? clusterValues[clusterValues.length - 1] : null;
             const totalClusterCount = Object.keys(data.blocks).length;
             const exceedsExpected = expectedClusterNumber !== null && totalClusterCount > expectedClusterNumber;
-            const errorCellClass = exceedsExpected ? ' cluster-error-cell' : '';
-            const hkBadge = exceedsExpected ? '<span class="hk-badge">HK</span>' : '';
-            body.innerHTML += `<tr class="hover:bg-slate-50 transition"><td class="px-2 py-2 font-black text-slate-700">${data.carrier}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${serviceLabel}</td><td class="px-2 py-2 text-xs text-slate-600 uppercase font-semibold">${etaLabel}</td><td class="px-6 py-2">${badges}</td><td class="px-4 py-2 font-bold text-slate-800">${expectedClusterLabel}</td><td class="px-4 py-2 text-center font-bold text-slate-800${errorCellClass}">${totalClusterCount}${hkBadge}</td><td class="px-4 py-2 text-center font-bold text-slate-800">${data.total}</td></tr>`;
+            const actualColorClass = exceedsExpected ? ' text-red-600 bg-red-50 border border-red-200' : ' text-slate-800';
+            
+            let trClass = "hover:bg-slate-50 transition border-b border-slate-100";
+            let trStyle = "";
+            if (index > 0 && renderedData[index-1].etaLabel !== etaLabel) {
+                 trClass += " border-t-[3px] border-t-slate-300"; // THIN SEPARATOR
+                 trStyle = "border-top: 2px solid #cbd5e1;";
+            }
+
+            let etaHtml = "";
+            if (etaRowspan > 0) {
+                etaHtml = `<td rowspan="${etaRowspan}" class="px-1 py-2 text-[10px] font-semibold text-slate-700 text-center border-r border-slate-200 align-middle col-eta">${etaLabel}</td>`;
+            }
+
+            let shiftHtml = "";
+            if (shiftRowspan > 0) {
+                shiftHtml = `<td rowspan="${shiftRowspan}" class="px-1 py-2 text-[10px] font-extrabold text-slate-800 text-center border-r border-slate-200 align-middle bg-slate-50/50 col-shift">${shiftLabel}</td>`;
+            }
+
+            _clusterRows.push(`<tr class="${trClass}" style="${trStyle}">
+                ${etaHtml}
+                ${shiftHtml}
+                <td class="px-2 py-2 text-[10px] font-black text-slate-700 border-r border-slate-200 align-middle text-center col-carrier">${data.carrier}</td>
+                <td class="px-1 py-2 text-[9px] text-slate-500 uppercase font-semibold text-center border-r border-slate-200 align-middle col-service">${serviceLabel}</td>
+                ${blockCells}
+                <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-cluster">${expectedClusterLabel}</td>
+                <td class="px-1 py-1 text-center align-middle font-bold ${actualColorClass} border-l border-slate-200 col-cluster">${totalClusterCount}</td>
+                <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-units">${data.total}</td>
+            </tr>`);
         });
+        body.innerHTML = _clusterRows.join('');
         renderRecommendedSpreading();
     }
 
@@ -838,6 +1049,7 @@ document.getElementById('sumTotalCap').innerText =
         else if(currentSort === 'block') filtered.sort((a,b) => a.block.localeCompare(b.block));
         else if(currentSort === 'eta') filtered.sort((a,b) => Math.min(a.s1.eta, a.s2.eta) - Math.min(b.s1.eta, b.s2.eta));
 
+        const _clashCards = [];
         filtered.forEach(c => {
             const max = getMaxSlotForBlock(c.block);
             const w1 = Math.max(((c.v1.eS-c.v1.sS)/max)*100, 4), l1 = ((max-c.v1.eS)/max)*100;
@@ -862,7 +1074,7 @@ document.getElementById('sumTotalCap').innerText =
             const t1 = `${formatDayHour(c.s1.eta)}-${formatDayHour(c.s1.etd)}`;
             const t2 = `${formatDayHour(c.s2.eta)}-${formatDayHour(c.s2.etd)}`;
 
-            feed.innerHTML += `
+            _clashCards.push(`
                 <div class="glass-panel p-4 rounded-xl clash-card ${c.total > 200 ? 'clash-high' : 'clash-medium'}">
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-3">
@@ -889,25 +1101,28 @@ document.getElementById('sumTotalCap').innerText =
                             <span>Slot 01</span>
                         </div>
                     </div>
-                </div>`;
+                </div>`);
         });
+        feed.innerHTML = _clashCards.join('');
     }
 
     function renderBlockStats(stats) {
         const body = document.getElementById('blockStatsBody');
         body.innerHTML = "";
         const sorted = Object.entries(stats).sort((a,b) => b[1].v - a[1].v);
-        if(sorted.length === 0) { body.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No data</td></tr>`; }
+        if(sorted.length === 0) { body.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">No data</td></tr>`; return; }
+        const _statsRows = [];
         sorted.forEach(([b, d]) => {
             const vesselStr = Array.from(d.vessels).join(' - ');
-            body.innerHTML += `
+            _statsRows.push(`
                 <tr class="stats-row border-b border-slate-50 last:border-0" onclick="filterByBlock('${b}')" data-block="${b}">
                     <td class="p-3 font-bold text-slate-700 whitespace-nowrap">${b}</td>
                     <td class="p-3 text-[10px] text-slate-500 leading-tight">${vesselStr}</td>
                     <td class="p-3 text-center"><span class="bg-red-50 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold border border-red-100">${d.c}</span></td>
                     <td class="p-3 text-right font-mono font-medium text-slate-600">${d.v}</td>
-                </tr>`;
+                </tr>`);
         });
+        body.innerHTML = _statsRows.join('');
     }
 
     function filterByBlock(block) {
@@ -1522,146 +1737,112 @@ function clearCache() {
 }
 
 function downloadImage() {
-let activeId = "captureArea";
-let fileName = "Overview";
+    let activeId = "captureArea";
+    let fileName = "Overview";
 
+    if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
+        activeId = "captureAreaAnalytics";
+        fileName = "Analytics";
+    } else if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
+        activeId = "captureAreaClash";
+        fileName = "Clash";
+    } else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
+        activeId = "captureAreaEmpty";
+        fileName = "Empty_Summary";
+    } else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
+        activeId = "captureAreaProjection";
+        fileName = "Discharge_Projection";
+    } else if (!document.getElementById("tab-yardmap")?.classList.contains("hidden")) {
+        activeId = "captureAreaYardMap";
+        fileName = "Yard_Map";
+    }
 
-if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
-activeId = "captureAreaAnalytics";
-fileName = "Analytics";
-} else if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
-activeId = "captureAreaClash";
-fileName = "Clash";
-} else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
-activeId = "captureAreaEmpty";
-fileName = "Empty_Summary";
-} else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
-activeId = "captureAreaProjection";
-fileName = "Discharge_Projection";
-} else if (!document.getElementById("tab-yardmap")?.classList.contains("hidden")) {
-activeId = "captureAreaYardMap";
-fileName = "Yard_Map";
-}
+    const el = document.getElementById(activeId);
+    if (!el) return alert("Capture area not found");
 
+    // TEMPORARY MODE SWITCH FOR CLUSTER SPREADING
+    const detailedToggle = document.getElementById('toggleDetailedCluster');
+    let wasDetailed = false;
+    if (activeId === "captureArea" && detailedToggle && detailedToggle.checked) {
+        wasDetailed = true;
+        detailedToggle.checked = false;
+        renderClusterSpreading(); 
+    }
 
-const el = document.getElementById(activeId);
-if (!el) return alert("Capture area not found");
-
-
-html2canvas(el, { scale: 2, backgroundColor: "#ffffff" }).then((canvas) => {
-const a = document.createElement("a");
-a.download = `NPCT1_Yard_${fileName}_${Date.now()}.jpg`;
-a.href = canvas.toDataURL("image/jpeg", 0.9);
-a.click();
-});
     // Prepare capture that adjusts cloned DOM to preserve table layout
     const capture = () => {
+            const scrollW = el.scrollWidth;
             return html2canvas(el, {
-                scale: 3,
+                scale: 1.2, 
+                windowWidth: scrollW + 100,
                 backgroundColor: "#ffffff",
                 onclone: (clonedDoc) => {
-                    // Expand scrollable areas
-                    const scrollables = clonedDoc.querySelectorAll('.overflow-x-auto, .overflow-y-auto');
-                    scrollables.forEach(div => {
-                        div.style.overflow = 'visible';
-                        div.style.height = 'auto';
-                        div.style.width = 'auto';
-                        div.style.display = 'block';
-                    });
-
-                    // Disable sticky headers in clone (sticky may break capture)
-                    clonedDoc.querySelectorAll('.sticky, thead').forEach(node => {
-                        node.style.position = 'static';
-                        node.style.top = 'auto';
-                    });
-
-                    // Reduce vertical spacing and padding for capture
                     const clonedRoot = clonedDoc.getElementById(activeId);
                     if (clonedRoot) {
-                        clonedRoot.style.padding = '6px';
-                        clonedRoot.style.margin = '0 auto';
-                        clonedRoot.style.maxWidth = 'min(1400px, 95vw)';
-
-                        // Tighten vertical gaps created by Tailwind space-y-* utilities
-                        clonedRoot.querySelectorAll('[class*="space-y-"]').forEach(el => { el.style.rowGap = '6px'; el.style.columnGap = '6px'; });
-
-                        // Reduce padding/margins on panels and make tables more compact
-                        clonedRoot.querySelectorAll('.glass-panel').forEach(g => { g.style.padding = '6px'; g.style.marginTop = '4px'; g.style.marginBottom = '4px'; });
-                        clonedRoot.querySelectorAll('table').forEach(t => { t.style.marginTop = '0'; t.style.marginBottom = '0'; t.style.borderSpacing = '0'; });
-                    }
-
-                    // Fix table widths by setting computed widths to cells
-                    const tables = clonedDoc.querySelectorAll('table');
-                    tables.forEach(tbl => {
-                        const rect = tbl.getBoundingClientRect();
-                        tbl.style.width = rect.width + 'px';
-                        tbl.style.tableLayout = 'fixed';
-
-                        // Set header cell widths
-                        const headerCells = tbl.querySelectorAll('thead th');
-                        headerCells.forEach((cell) => {
-                            const w = cell.getBoundingClientRect().width;
-                            cell.style.width = w + 'px';
+                        clonedRoot.style.width = scrollW + 'px';
+                        clonedRoot.style.maxWidth = 'none';
+                        clonedRoot.style.padding = '10px';
+                        clonedRoot.style.margin = '0';
+                        clonedRoot.style.fontSize = '10px';
+                        
+                        clonedRoot.querySelectorAll('table').forEach(tbl => {
+                            tbl.style.width = '100%';
+                            tbl.style.tableLayout = 'auto';
                         });
 
-                        // Set body first-row cell widths and prevent wrapping where possible
-                        const bodyRow = tbl.querySelector('tbody tr');
-                        if (bodyRow) {
-                            const bodyCells = bodyRow.querySelectorAll('td');
-                            bodyCells.forEach((cell) => {
-                                const w = cell.getBoundingClientRect().width;
-                                cell.style.width = w + 'px';
-                                cell.style.whiteSpace = 'nowrap';
-                            });
-                        }
-                    });
-// FINAL STABLE EXPORT FIX (NO FLEX, NO BREAK)
-clonedDoc.querySelectorAll("th, td").forEach(cell => {
-  cell.style.paddingTop = "6px";
-  cell.style.paddingBottom = "6px";
-  cell.style.lineHeight = "1.4";
-  cell.style.verticalAlign = "middle";
-});
+                        clonedRoot.querySelectorAll('.overflow-x-auto, .overflow-y-auto').forEach(div => {
+                            div.style.overflow = 'visible';
+                            div.style.width = 'auto';
+                            div.style.maxWidth = 'none';
+                        });
 
-// OCCUPANCY FIX (tanpa class)
-clonedDoc.querySelectorAll("table tbody tr").forEach(tr => {
-  tr.style.height = "42px";
-});
+                        clonedRoot.querySelectorAll('.sticky, thead').forEach(node => {
+                            node.style.position = 'static';
+                        });
+
+                        // Hide the vessel spreading panel during capture for Analytics tab
+                        if (activeId === "captureAreaAnalytics") {
+                            const recPanel = clonedRoot.querySelector('.recommended-panel');
+                            if (recPanel) recPanel.style.display = 'none';
+                        }
+                        
+                        clonedRoot.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.padding = '2px 4px';
+                        });
+                    }
                 }
             });
         };
 
-        const doCapture = () => {
-  const fontReady = (document.fonts && document.fonts.ready)
-    ? document.fonts.ready
-    : Promise.resolve();
+    const doCapture = () => {
+        const fontReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
 
-  return fontReady.then(() => capture()).then(c => {
-    const now = new Date();
-    const ts =
-      now.getFullYear() +
-      ("0"+(now.getMonth()+1)).slice(-2) +
-      ("0"+now.getDate()).slice(-2) + "_" +
-      ("0"+now.getHours()).slice(-2) +
-      ("0"+now.getMinutes()).slice(-2);
+        return fontReady.then(() => capture()).then(c => {
+            const now = new Date();
+            const ts = now.getFullYear() + ("0"+(now.getMonth()+1)).slice(-2) + ("0"+now.getDate()).slice(-2) + "_" + ("0"+now.getHours()).slice(-2) + ("0"+now.getMinutes()).slice(-2);
 
-    const nameMap = {
-      captureArea: "Overview",
-      captureAreaAnalytics: "Analytics",
-      captureAreaClash: "Clash",
-      captureAreaProjection: "Discharge_Projection"
+            let l = document.createElement('a');
+            l.download = `NPCT1_Yard_${fileName}_${ts}.jpg`;
+            l.href = c.toDataURL("image/jpeg", 0.9);
+            l.click();
+
+            // RESTORE MODE
+            if (wasDetailed) {
+                detailedToggle.checked = true;
+                renderClusterSpreading();
+            }
+        }).catch(err => {
+            console.error("Capture failed:", err);
+            if (wasDetailed) {
+                detailedToggle.checked = true;
+                renderClusterSpreading();
+            }
+            alert("Gagal menyimpan gambar. Silakan coba kembali.");
+        });
     };
 
-    let l = document.createElement('a');
-    l.download = `NPCT1_Yard_${nameMap[activeId]}_${ts}.jpg`;
-    l.href = c.toDataURL("image/jpeg", 0.92);
-    l.click();
-  });
-};
-
-
-        return doCapture();
-    }
+    return doCapture();
+}
 
     function exportToExcel() {
         if(!isInvLoaded) { alert("No data loaded."); return; }
@@ -1760,11 +1941,12 @@ function renderEmptySummary() {
     if(sortedExp.length === 0) {
         expBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
     } else {
+        const _expRows = [];
         sortedExp.forEach(s => {
             const carrier = s.carrier || '-';
             const service = s.service || '-';
             const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
-            expBody.innerHTML += `
+            _expRows.push(`
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
                     <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
@@ -1774,10 +1956,9 @@ function renderEmptySummary() {
                     <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
                     <td class="px-6 py-3 text-center font-bold text-emerald-600">${Number(totalTeus.toFixed(2))}</td>
                 </tr>
-            `;
+            `);
         });
         // Add Grand Total Row
-        // Recompute grand totals including TEUs
         let grand = sortedExp.reduce((acc, curr) => ({
             c20: acc.c20 + curr.c20,
             c40: acc.c40 + curr.c40,
@@ -1786,7 +1967,7 @@ function renderEmptySummary() {
             teus: acc.teus + ((curr.c20 * 1) + (curr.c40 * 2) + (curr.c45 * 2.25))
         }), {c20:0, c40:0, c45:0, total:0, teus:0});
         
-        expBody.innerHTML += `
+        _expRows.push(`
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
                 <td class="px-6 py-3 text-center text-slate-700">-</td>
@@ -1796,7 +1977,8 @@ function renderEmptySummary() {
                 <td class="px-6 py-3 text-center text-emerald-600 text-lg">${grand.total}</td>
                 <td class="px-6 py-3 text-center text-emerald-700 text-lg">${Number(grand.teus.toFixed(2))}</td>
             </tr>
-        `;
+        `);
+        expBody.innerHTML = _expRows.join('');
     }
 }
 
@@ -2008,6 +2190,7 @@ function renderProjectionTable(rows, spaceByType) {
     const renderTypes = projectionTypeFilter === 'ALL' ? PROJECTION_TYPES : [projectionTypeFilter];
 
     let renderedAny = false;
+    const _projRows = [];
     renderTypes.forEach((type, typeIdx) => {
         const typeRows = rows.filter(r => r.type === type);
         if (!typeRows.length) return;
@@ -2057,7 +2240,7 @@ function renderProjectionTable(rows, spaceByType) {
             const bottomBorder = idx === typeRows.length - 1 ? ' border-b-4 border-slate-400' : '';
             const firstTypePad = typeIdx > 0 && idx === 0 ? ' border-t-8 border-slate-300' : '';
 
-            body.innerHTML += `
+            _projRows.push(`
                 <tr class="hover:bg-slate-50 transition-colors${topBorder}${bottomBorder}${firstTypePad}" draggable="true" ondragstart='startProjectionDrag(event, ${JSON.stringify(type)}, ${JSON.stringify(row.vessel)})' ondragover="allowProjectionDrop(event)" ondrop='dropProjectionRow(event, ${JSON.stringify(type)}, ${JSON.stringify(row.vessel)})'>
                     <td class="px-4 py-3 text-center font-bold text-slate-700">${row.vessel}</td>
                     <td class="px-4 py-3 text-center text-slate-600">${row.type}</td>
@@ -2078,9 +2261,11 @@ function renderProjectionTable(rows, spaceByType) {
                         <div class="text-[10px] text-slate-500 font-mono mt-1 text-center">Occ ${Math.round(space.currentOccupancyTEU)} | In ${Math.round(incomingTEU)} | Cap ${Math.round(maxCapacity)}</div>
                     </td>
                 </tr>
-            `;
+            `);
         });
     });
+    body.innerHTML = _projRows.join('');
+
 
     if (!renderedAny) {
         body.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">No rows for selected type filter.</td></tr>';

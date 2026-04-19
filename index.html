@@ -89,6 +89,8 @@
                             class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
                     <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive"><span
                             class="material-symbols-outlined text-lg">bar_chart</span> Cluster Spreading</button>
+                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive"><span
+                            class="material-symbols-outlined text-lg">map</span> Yard Map</button>
                     <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive"><span
                             class="material-symbols-outlined text-lg">crisis_alert</span> Clash Analysis</button>
                     <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive"><span
@@ -97,8 +99,6 @@
                     <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive"><span
                             class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge
                         Projection</button>
-                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive"><span
-                            class="material-symbols-outlined text-lg">map</span> Yard Map</button>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button id="aiChatToggle" class="secondary-pill ai-chat-trigger" type="button"
@@ -434,8 +434,7 @@
                     <summary
                         class="p-4 border-b border-slate-200/50 bg-white/20 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-lg font-bold text-slate-800">Recommended Spreading (Based on Highest
-                                Cluster)</h2>
+                            <h2 class="text-lg font-bold text-slate-800">Cluster Spreading by Vessel</h2>
                         </div>
                         <span class="material-symbols-outlined toggle-icon text-slate-500">expand_more</span>
                     </summary>
@@ -476,31 +475,50 @@
                 <!-- Detailed Table -->
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
                     <div class="p-4 border-b border-slate-200/50 bg-white/20 flex justify-between items-center">
-                        <h2 class="text-lg font-bold text-slate-800">Detailed Spreading</h2>
-                        <label
-                            class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><input
-                                class="sr-only peer" id="toggleSmallCarriers" onchange="renderClusterSpreading()"
-                                type="checkbox">
-                            <div
-                                class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full">
-                            </div><span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Show All</span>
-                        </label>
+                        <h2 class="text-lg font-bold text-slate-800">Cluster Spreading by Block</h2>
+                        <div class="flex items-center gap-3">
+                            <label class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                                <input class="sr-only peer" id="toggleDetailedCluster" onchange="renderClusterSpreading()" type="checkbox">
+                                <div class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"></div>
+                                <span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Detailed (X/Y/Z)</span>
+                            </label>
+
+                            <label
+                                class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"><input
+                                    class="sr-only peer" id="toggleSmallCarriers" onchange="renderClusterSpreading()"
+                                    type="checkbox">
+                                <div
+                                    class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full">
+                                </div><span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Show All</span>
+                            </label>
+                        </div>
                     </div>
                     <div class="overflow-x-auto custom-scrollbar">
                         <table class="w-full text-left cluster-details-table" id="clusterTable">
-                            <thead class="text-xs bg-slate-50/80 uppercase text-slate-500">
+                            <thead id="clusterHead" class="text-xs bg-slate-50/80 uppercase text-slate-500">
                                 <tr>
-                                    <th class="px-4 py-2">Carrier</th>
-                                    <th class="px-4 py-2">Service</th>
-                                    <th class="px-4 py-2">ETA</th>
-                                    <th class="px-6 py-4">Block Distribution</th>
-                                    <th class="px-4 py-2">Expected Cluster</th>
-                                    <th class="px-4 py-2">Total Cluster</th>
-                                    <th class="px-4 py-2 text-center">Total Units</th>
+                                    <th class="px-4 py-2 border border-slate-200">ETA (dd/mm)</th>
+                                    <th class="px-4 py-2 border border-slate-200">SHIFT</th>
+                                    <th class="px-4 py-2 border border-slate-200">Carrier</th>
+                                    <th class="px-4 py-2 border border-slate-200">Service</th>
+                                    <th class="px-6 py-4 border border-slate-200">BLOCK</th>
+                                    <th class="px-4 py-2 border border-slate-200">Expected Cluster</th>
+                                    <th class="px-4 py-2 border border-slate-200">Total Cluster</th>
+                                    <th class="px-4 py-2 text-center border border-slate-200">Total Units</th>
                                 </tr>
                             </thead>
                             <tbody id="clusterBody" class="divide-y divide-slate-100 bg-white/50"></tbody>
                         </table>
+                    </div>
+                    <div id="clusterLegend" class="px-4 py-3 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap gap-6 items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sub-Block Legend:</span>
+                        </div>
+                        <div class="flex items-center gap-4 text-[10px] text-slate-600">
+                            <div class="flex items-center gap-1.5"><strong class="text-blue-700">X:</strong> <span>A/B (1-12), C (1-15)</span></div>
+                            <div class="flex items-center gap-1.5"><strong class="text-amber-600">Y:</strong> <span>A/B (13-25), C (16-30)</span></div>
+                            <div class="flex items-center gap-1.5"><strong class="text-emerald-600">Z:</strong> <span>A/B (26-37), C (31-45)</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
