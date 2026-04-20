@@ -223,16 +223,18 @@ function updateCapacity(block, newSlots, newTier) {
                     json[i].forEach((cell, idx) => {
                         let cRaw = String(cell || "").toLowerCase().trim();
                         let c = cleanStr(cell).replace(/[\s_]+/g, "");
+                        let cReplanKey = String(cell || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+
                         if(c.includes("area") || c.includes("block")) colMap.block = idx;
-                        if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                        if(c === "carrier" || c === "vessel" || c === "carrierout") colMap.carrier = idx;
+                        if(cReplanKey === "unitlength" || c.includes("size")) colMap.length = idx;
+                        if(cReplanKey === "carrierout" || c === "carrier" || c === "vessel") colMap.carrier = idx;
                         if(c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         if(c.includes("row") && c.includes("exe")) colMap.row = idx;
                         // LOGIC BARU: Deteksi kolom Load Status
                         if(c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                         // Detect Service column (e.g., "service", "serviceout", "service out")
-                        if(c.includes("service")) colMap.service = idx;
+                        if(cReplanKey === "serviceout" || c.includes("service")) colMap.service = idx;
                         // Deteksi kolom Line
                         if(c === "line" || c.includes("Line")) colMap.line = idx;
                         // Deteksi date
@@ -240,14 +242,14 @@ function updateCapacity(block, newSlots, newTier) {
                             colMap.arrivalDate = idx;
                         }
                         // Deteksi OOG
-                        if(c === "oog" || c === "o/g") colMap.oog = idx;
+                        if(cReplanKey === "oog" || c === "o/g") colMap.oog = idx;
 
                         // Replan fields
-                        if(c === "spod") colMap.spod = idx;
-                        if(c === "wt.cl." || c === "wtcl") colMap.wtcl = idx;
-                        if(c === "conttype" || cRaw === "cont. type") colMap.conttype = idx;
-                        if(c === "unitheight" || c === "height") colMap.unitheight = idx;
-                        if(c === "unit") colMap.unit = idx;
+                        if(cReplanKey === "spod") colMap.spod = idx;
+                        if(cReplanKey === "wtcl") colMap.wtcl = idx;
+                        if(cReplanKey === "conttype") colMap.conttype = idx;
+                        if(cReplanKey === "unitheight" || c === "height") colMap.unitheight = idx;
+                        if(cReplanKey === "unit") colMap.unit = idx;
                     });
                     break;
                 }
