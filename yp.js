@@ -213,7 +213,7 @@ function updateCapacity(block, newSlots, newTier) {
             
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1};
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1 };
             
             for(let i=0; i<Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -221,10 +221,11 @@ function updateCapacity(block, newSlots, newTier) {
                    (rStr.includes("vessel") || rStr.includes("carrier") || rStr.includes("line"))) {
                     hIdx = i;
                     json[i].forEach((cell, idx) => {
+                        let cRaw = String(cell || "").toLowerCase().trim();
                         let c = cleanStr(cell).replace(/[\s_]+/g, "");
                         if(c.includes("area") || c.includes("block")) colMap.block = idx;
                         if(c.includes("unitlength") || c.includes("size")) colMap.length = idx;
-                        if(c === "carrier" || c === "vessel") colMap.carrier = idx;
+                        if(c === "carrier" || c === "vessel" || c === "carrierout") colMap.carrier = idx;
                         if(c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if(c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         if(c.includes("row") && c.includes("exe")) colMap.row = idx;
@@ -240,6 +241,13 @@ function updateCapacity(block, newSlots, newTier) {
                         }
                         // Deteksi OOG
                         if(c === "oog" || c === "o/g") colMap.oog = idx;
+
+                        // Replan fields
+                        if(c === "spod") colMap.spod = idx;
+                        if(c === "wt.cl." || c === "wtcl") colMap.wtcl = idx;
+                        if(c === "conttype" || cRaw === "cont. type") colMap.conttype = idx;
+                        if(c === "unitheight" || c === "height") colMap.unitheight = idx;
+                        if(c === "unit") colMap.unit = idx;
                     });
                     break;
                 }
@@ -306,11 +314,20 @@ function updateCapacity(block, newSlots, newTier) {
                     line: colMap.line !== -1 ? String(row[colMap.line] || "").toUpperCase().trim() : "UNKNOWN",
                     // KODE BARU (Memakai fungsi formatExcelDate):
                     arrivalDate: colMap.arrivalDate !== -1 ? formatExcelDate(row[colMap.arrivalDate]) : "UNKNOWN",
-                    oog: colMap.oog !== -1 ? String(row[colMap.oog] || "").toUpperCase().trim() : "N"
+                    oog: colMap.oog !== -1 ? String(row[colMap.oog] || "").toUpperCase().trim() : "N",
+
+                    // Replan Analyzer added fields
+                    _raw_slot: slotStr,
+                    unit: colMap.unit !== -1 ? String(row[colMap.unit] || "").toUpperCase().trim() : "",
+                    spod: colMap.spod !== -1 ? String(row[colMap.spod] || "").toUpperCase().trim() : "",
+                    wtcl: colMap.wtcl !== -1 ? String(row[colMap.wtcl] || "").toUpperCase().trim() : "",
+                    conttype: colMap.conttype !== -1 ? String(row[colMap.conttype] || "").toUpperCase().trim() : "",
+                    unitheight: colMap.unitheight !== -1 ? String(row[colMap.unitheight] || "").toUpperCase().trim() : ""
                 });
             }
 
             isInvLoaded = true;
+            window.invData = invData; // Expose globally for Replan Analyzer
             // AI chat button is always visible in control card.
             
             // Render All Tabs
@@ -1754,8 +1771,8 @@ document.getElementById('sumTotalCap').innerText =
     // --- UPDATE NAVIGATION FUNCTIONS ---
 
 function switchTab(t) {
-    // Tambahkan 'empty' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap'].forEach(id => {
+    // Tambahkan 'empty' dan 'replan' ke dalam array daftar tab
+    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap', 'replan'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
         

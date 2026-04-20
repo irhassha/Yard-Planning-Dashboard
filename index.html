@@ -86,24 +86,26 @@
     <div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-16 md:-mt-24 relative z-20">
         <div class="floating-control-card">
             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                <div class="flex items-center gap-2 p-1 bg-[#E9EEF6] rounded-full w-fit overflow-x-auto">
-                    <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active"><span
+                <div class="flex items-center gap-1 p-1.5 bg-[#E9EEF6] rounded-full w-full xl:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active shrink-0"><span
                             class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
-                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive"><span
+                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">bar_chart</span> Cluster Spreading</button>
-                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive"><span
+                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">map</span> Yard Map</button>
-                    <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive"><span
+                    <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">crisis_alert</span> Clash Analysis</button>
-                    <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive"><span
+                    <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">check_box_outline_blank</span> Empty
                         Summary</button>
-                    <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive"><span
+                    <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge
                         Projection</button>
+                    <button onclick="switchTab('replan')" id="btn-replan" class="tab-btn inactive replan-trigger shrink-0"><span
+                            class="material-symbols-outlined text-lg">view_column</span> Smart Replan</button>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <button id="aiChatToggle" class="secondary-pill ai-chat-trigger" type="button"
+                    <button id="aiChatToggle" class="secondary-pill ai-chat-trigger shadow-lg" type="button"
                         onclick="toggleAiChatbox()" aria-expanded="false" aria-controls="aiChatWindow"><span
                             class="material-symbols-outlined text-[18px]">smart_toy</span> YP Ai Assistant</button>
                 </div>
@@ -802,6 +804,72 @@
             </div>
         </div>
 
+        <!-- TAB 7: REPLAN ANALYZER -->
+        <div id="tab-replan" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaReplan" class="space-y-6">
+                <!-- HERO INPUT -->
+                <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40 mb-6 text-center">
+                    <div class="mb-4 space-y-3">
+                        <span class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 shadow-sm">
+                            Smart Slot Finder
+                        </span>
+                        <h1 class="text-2xl font-bold text-slate-800">
+                            Paste dispatcher data below.
+                        </h1>
+                        <p class="text-slate-500 text-sm">
+                            App will analyze the Excel file and show all the available tiers based on Unit List.
+                        </p>
+                    </div>
+
+                    <div class="relative max-w-3xl mx-auto">
+                        <div class="relative flex items-start rounded-2xl p-3 bg-white/70 shadow-inner border border-slate-200 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                            <span class="material-symbols-outlined text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
+                            <textarea id="rawInput"
+                                class="w-full min-h-[48px] bg-transparent border-none focus:ring-0 p-0 text-sm text-slate-700 placeholder-slate-400 resize-none font-mono leading-5 outline-none"
+                                placeholder="Paste Header & Data here (Ctrl+V)..."
+                                oninput="analyzeReplan()"
+                                rows="2"
+                                spellcheck="false"></textarea>
+                            <div class="ml-2 pl-3 border-l border-slate-200 h-full flex items-start pt-1">
+                                <button onclick="clearReplanInput()" class="p-2 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all" title="Clear Data">
+                                    <span class="material-symbols-outlined text-xl transition-colors">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HISTORY CARD -->
+                <div class="glass-panel rounded-2xl p-6 shadow-glass border border-white/40">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">history</span> Selection History
+                        </h2>
+                        <button onclick="clearReplanHistory()" class="text-[10px] font-bold text-red-500 hover:text-red-700 transition-colors bg-white/50 px-3 py-1.5 rounded-lg border border-red-200">Reset</button>
+                    </div>
+
+                    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white/40">
+                        <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 z-10 border-b border-slate-200">
+                                    <tr>
+                                        <th class="px-4 py-3">Time</th>
+                                        <th class="px-4 py-3">Slot</th>
+                                        <th class="px-4 py-3">Info</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="replanHistoryBody" class="divide-y divide-slate-100 bg-white/50">
+                                    <tr>
+                                        <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- TAB 6: YARD MAP -->
         <div id="tab-yardmap" class="hidden animate-fade-in mt-4">
             <div id="captureAreaYardMap" class="space-y-4">
@@ -861,6 +929,82 @@
             <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
         </div>
     </div>
+
+    <!-- Replan Analysis Modal -->
+    <div id="analysisModal" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-3xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col border border-white/60">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Comparison & Recommended Slot</h2>
+                    <p class="text-xs text-slate-500">Auto-generated after paste data.</p>
+                </div>
+                <button onclick="closeAnalysisModal()" class="h-9 w-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors flex items-center justify-center">
+                    <span class="material-symbols-outlined text-slate-600 font-bold">close</span>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
+                <!-- Comparison Data -->
+                <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
+                        </h2>
+                    </div>
+                    <div id="replanPreviewContainer" class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="replanPBody">
+                                <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recommended Slots -->
+                <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm min-h-[300px]">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 pb-4 gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
+                            <p class="text-sm text-slate-500">Filtered only available slots from Unit List.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
+                            TIER &le; 5
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-3 mb-4">
+                        <div id="replanPriorityContainer" class="flex flex-wrap gap-2">
+                            <button id="priority-NORMAL" onclick="setReplanPriority('NORMAL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-300">Normal</button>
+                            <button id="priority-MIX_WC" onclick="setReplanPriority('MIX_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX WC</button>
+                            <button id="priority-MIX_SPOD_WC" onclick="setReplanPriority('MIX_SPOD_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX SPOD & WC</button>
+                        </div>
+                        <div id="replanPriorityStatus" class="text-xs text-slate-500">Mode aktif: <span class="font-semibold text-emerald-600">Normal</span></div>
+                    </div>
+                    
+                    <div id="replanFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                    <div id="replanSlotDisplay" class="space-y-8">
+                        <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+                            <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">dns</span>
+                            <p class="text-sm">Waiting for data input...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="replanToast" class="fixed transition-all duration-300 z-[100] flex items-center justify-center gap-2 transform -translate-x-1/2 left-1/2 bottom-[-100px] opacity-0 bg-slate-800/95 text-white px-4 py-3 rounded-lg shadow-xl border border-slate-600 text-sm font-medium">
+        <span class="material-symbols-outlined text-emerald-400 text-[18px]">content_copy</span>
+        <span id="replanToastMsg">Slot copied to clipboard!</span>
+    </div>
+
     <!-- PDF REPORT REVIEW DRAWER -->
     <div id="pdfReviewDrawer" class="pdf-drawer-overlay hidden">
         <div class="pdf-drawer">
@@ -994,6 +1138,7 @@
 
     <script src="expectedCluster.js"></script>
     <script src="yp.js"></script>
+    <script src="replan.js"></script>
     <script src="yardmap.js"></script>
 </body>
 

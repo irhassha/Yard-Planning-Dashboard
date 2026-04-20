@@ -60,12 +60,12 @@ body {
 
 .tab-btn {
     border-radius: 999px;
-    padding: 0.6rem 1rem;
-    font-size: 0.88rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.3rem;
     transition: all 0.2s ease;
     white-space: nowrap;
     border: 1px solid transparent;
@@ -251,6 +251,27 @@ details.recommended-panel[open] summary .toggle-icon {
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 10px 24px rgba(0, 100, 210, 0.28);
+}
+
+.tab-btn.replan-trigger {
+    background: linear-gradient(135deg, #059669, #10b981) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25) !important;
+}
+
+.tab-btn.replan-trigger.active {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35), 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+    background: linear-gradient(135deg, #047857, #059669) !important;
+}
+
+.tab-btn.replan-trigger.inactive {
+    opacity: 0.85;
+}
+
+.tab-btn.replan-trigger:hover {
+    transform: translateY(-1px);
+    opacity: 1;
 }
 
 .ai-chat-window {
