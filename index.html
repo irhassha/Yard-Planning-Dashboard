@@ -14,6 +14,8 @@
         rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 
@@ -69,8 +71,8 @@
                     </button>
                     <button onclick="downloadImage()" class="secondary-pill"><span
                             class="material-symbols-outlined text-[18px]">image</span> Save Image</button>
-                    <button onclick="exportToExcel()" class="secondary-pill"><span
-                            class="material-symbols-outlined text-[18px]">table_view</span> Excel</button>
+                    <button onclick="openPdfReviewDrawer()" class="secondary-pill"><span
+                            class="material-symbols-outlined text-[18px]">picture_as_pdf</span> PDF Report</button>
                 </div>
             </header>
             <div class="text-center text-white max-w-3xl mx-auto">
@@ -655,8 +657,8 @@
                                         <span class="text-[10px] font-bold text-slate-500 ml-2 uppercase">SORT:</span>
                                         <select id="clashSort" onchange="renderCurrentClashes()"
                                             class="text-xs border-0 py-1 pl-1 pr-8 font-bold text-slate-700 focus:ring-0 bg-transparent cursor-pointer">
+                                            <option value="eta" selected>Earliest ETA</option>
                                             <option value="severity">Severity (Vol)</option>
-                                            <option value="eta">Earliest ETA</option>
                                             <option value="block">Block (A-Z)</option>
                                         </select>
                                     </div>
@@ -857,6 +859,131 @@
                 <button onclick="closeFreeSlotModal()" class="text-slate-500 hover:text-red-600 font-bold">✕</button>
             </div>
             <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
+        </div>
+    </div>
+    <!-- PDF REPORT REVIEW DRAWER -->
+    <div id="pdfReviewDrawer" class="pdf-drawer-overlay hidden">
+        <div class="pdf-drawer">
+            <div class="pdf-drawer-header">
+                <div class="pdf-drawer-title-wrap">
+                    <span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+                    <div>
+                        <h3 class="pdf-drawer-title">Report Preview & Notes</h3>
+                        <p class="pdf-drawer-sub">Review sections and add comments before generating.</p>
+                    </div>
+                </div>
+                <button onclick="closePdfReviewDrawer()" class="pdf-drawer-close">&times;</button>
+            </div>
+
+            <div class="pdf-drawer-body" id="pdfDrawerBody">
+                <!-- Section 1: YOR -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #0064d2;">1</div>
+                    <div class="pdf-section-info">
+                        <h4>Yard Occupancy Ratio (YOR)</h4>
+                        <p>Import, Export, and Overall YOR metrics with TEU breakdown.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-blue-500">donut_large</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote1"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for YOR</label>
+                    <textarea id="pdfNote1" placeholder="Add comments about YOR (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 2: Key Metrics -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #4f46e5;">2</div>
+                    <div class="pdf-section-info">
+                        <h4>Key Metrics Summary</h4>
+                        <p>Export vessels, empty containers, longstay &gt;7 days, OOG totals.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-indigo-500">analytics</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote2"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Key Metrics</label>
+                    <textarea id="pdfNote2" placeholder="Add comments about key metrics (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 3: Double Call -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #7c3aed;">3</div>
+                    <div class="pdf-section-info">
+                        <h4>Double Call per Service</h4>
+                        <p>Services with multiple carriers sharing the same route.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-purple-500">call_split</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote3"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Double Call</label>
+                    <textarea id="pdfNote3" placeholder="Add comments about double calls (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 4: Cluster Spreading -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #059669;">4</div>
+                    <div class="pdf-section-info">
+                        <h4>Cluster Spreading by Block</h4>
+                        <p>Export vessel distribution across blocks with block YOR row.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-emerald-500">grid_view</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote4"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Cluster Spreading</label>
+                    <textarea id="pdfNote4" placeholder="Add comments about cluster spreading (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 5: Yard Map -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #0d9488;">5</div>
+                    <div class="pdf-section-info">
+                        <h4>Yard Map Visualization</h4>
+                        <p>Full yard slot-level screenshot showing carrier distributions.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-teal-500">map</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote5"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Yard Map</label>
+                    <textarea id="pdfNote5" placeholder="Add comments about yard map (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 6: Empty -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #059669;">6</div>
+                    <div class="pdf-section-info">
+                        <h4>Empty Container Summary</h4>
+                        <p>Import/export empty breakdown by carrier with TEU totals.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-emerald-500">check_box_outline_blank</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote6"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Empty Summary</label>
+                    <textarea id="pdfNote6" placeholder="Add comments about empty containers (optional)..." rows="2"></textarea>
+                </div>
+
+                <!-- Section 7: Longstay -->
+                <div class="pdf-section-card">
+                    <div class="pdf-section-badge" style="--accent: #ea580c;">7</div>
+                    <div class="pdf-section-info">
+                        <h4>Longstay &gt; 7 Days Detail</h4>
+                        <p>Block-level breakdown of longstay containers with totals.</p>
+                    </div>
+                    <span class="material-symbols-outlined pdf-section-icon text-orange-500">timer</span>
+                </div>
+                <div class="pdf-note-wrap">
+                    <label for="pdfNote7"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Longstay</label>
+                    <textarea id="pdfNote7" placeholder="Add comments about longstay units (optional)..." rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="pdf-drawer-footer">
+                <button onclick="closePdfReviewDrawer()" class="pdf-btn-cancel">Cancel</button>
+                <button onclick="clearAllPdfNotes()" class="pdf-btn-clear">
+                    <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear Notes
+                </button>
+                <button onclick="confirmGeneratePdf()" class="pdf-btn-generate">
+                    <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Generate PDF
+                </button>
+            </div>
         </div>
     </div>
 
