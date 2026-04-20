@@ -2164,23 +2164,19 @@ function downloadImage() {
             setProgress(35, 'Analyzing double calls...');
             drawSectionHeader('Double Call per Service', 3, C.purple);
 
-            const vesselServiceMap = {};
-            invData.forEach(it => {
-                if (!it.move.includes('export')) return;
-                const carrier = String(it.carrier || '').toUpperCase().trim();
-                const service = String(it.service || '').toUpperCase().trim();
-                if (!carrier || carrier === '0' || carrier === 'NIL' || !service) return;
-                if (!vesselServiceMap[carrier]) vesselServiceMap[carrier] = {};
-                if (!vesselServiceMap[carrier][service]) vesselServiceMap[carrier][service] = 0;
-                vesselServiceMap[carrier][service]++;
-            });
             // Group by SERVICE with multiple carriers
             const serviceCarrierMap = {};
             invData.forEach(it => {
                 if (!it.move.includes('export')) return;
+                
+                // IGNORE IF NO ETA/ARRIVAL DATE
+                const arrivalDateStr = String(it.arrivalDate || '').toUpperCase().trim();
+                if (!arrivalDateStr || arrivalDateStr === 'UNKNOWN' || arrivalDateStr === 'NIL' || arrivalDateStr === '0' || arrivalDateStr === '') return;
+
                 const carrier = String(it.carrier || '').toUpperCase().trim();
                 const service = String(it.service || '').toUpperCase().trim();
                 if (!carrier || carrier === '0' || carrier === 'NIL' || !service) return;
+                
                 if (!serviceCarrierMap[service]) serviceCarrierMap[service] = {};
                 if (!serviceCarrierMap[service][carrier]) serviceCarrierMap[service][carrier] = 0;
                 serviceCarrierMap[service][carrier]++;

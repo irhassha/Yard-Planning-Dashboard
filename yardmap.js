@@ -433,7 +433,11 @@ function renderYardMap() {
         
         // 5: Double call per service
         // (hanya carrier yang ada di dalam list export, yaitu yardCarrierColorMap)
-        if (isYardExport(c) && c.service && c.service !== 'UNKNOWN' && c.service !== '' && c.carrier && c.carrier !== 'UNKNOWN' && c.carrier !== 'NIL' && c.carrier !== '0') {
+        // (ABAikan JIKA TIDAK ADA ETA/ARRIVAL DATE)
+        const arrivalDateStr = String(c.arrivalDate || '').toUpperCase().trim();
+        const hasEta = arrivalDateStr && arrivalDateStr !== 'UNKNOWN' && arrivalDateStr !== 'NIL' && arrivalDateStr !== '0' && arrivalDateStr !== '';
+        
+        if (hasEta && isYardExport(c) && c.service && c.service !== 'UNKNOWN' && c.service !== '' && c.carrier && c.carrier !== 'UNKNOWN' && c.carrier !== 'NIL' && c.carrier !== '0') {
             if (yardCarrierColorMap.hasOwnProperty(c.carrier)) {
                 if (!serviceMap[c.service]) serviceMap[c.service] = new Set();
                 serviceMap[c.service].add(c.carrier);
