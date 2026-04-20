@@ -977,13 +977,23 @@
                         </span>
                     </div>
 
-                    <div class="flex flex-col gap-3 mb-4">
-                        <div id="replanPriorityContainer" class="flex flex-wrap gap-2">
-                            <button id="priority-NORMAL" onclick="setReplanPriority('NORMAL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-300">Normal</button>
-                            <button id="priority-MIX_WC" onclick="setReplanPriority('MIX_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX WC</button>
-                            <button id="priority-MIX_SPOD_WC" onclick="setReplanPriority('MIX_SPOD_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX SPOD & WC</button>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div class="flex flex-col gap-3">
+                            <div id="replanPriorityContainer" class="flex flex-wrap gap-2">
+                                <button id="priority-NORMAL" onclick="setReplanPriority('NORMAL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-300">Normal</button>
+                                <button id="priority-MIX_WC" onclick="setReplanPriority('MIX_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX WC</button>
+                                <button id="priority-MIX_SPOD_WC" onclick="setReplanPriority('MIX_SPOD_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX SPOD & WC</button>
+                            </div>
+                            <div id="replanPriorityStatus" class="text-xs text-slate-500">Mode aktif: <span class="font-semibold text-emerald-600">Normal</span></div>
                         </div>
-                        <div id="replanPriorityStatus" class="text-xs text-slate-500">Mode aktif: <span class="font-semibold text-emerald-600">Normal</span></div>
+
+                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggleGreyOutBlocks" class="sr-only peer" onchange="calculateAvailableSlotsReplan()" checked>
+                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                                <span class="ml-2 text-xs font-bold text-slate-600">Hide Full/Greyed Blocks</span>
+                            </label>
+                        </div>
                     </div>
                     
                     <div id="replanFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>

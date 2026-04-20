@@ -903,6 +903,9 @@ document.getElementById('sumTotalCap').innerText =
             }
         }
 
+        // Reset and populate global map for Replan Analyzer
+        if(!window.activeGreyOutBlocksMap) window.activeGreyOutBlocksMap = {};
+
         const _clusterRows = [];
         renderedData.forEach((row, index) => {
             const { key, data, serviceLabel, etaLabel, shiftLabel, hourLabel, etaRowspan, shiftRowspan, hourRowspan } = row;
@@ -926,6 +929,7 @@ document.getElementById('sumTotalCap').innerText =
                 candidateBlocks.sort((a, b) => a.total - b.total);
                 candidateBlocks.slice(0, excessCount).forEach(x => greyOutSet.add(x.block));
             }
+            window.activeGreyOutBlocksMap[key] = Array.from(greyOutSet);
 
             let blockCells = sortedBlocks.map(b => {
                 let res = data.blocks[b] || { X: 0, Y: 0, Z: 0 };

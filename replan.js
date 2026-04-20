@@ -193,7 +193,18 @@ function calculateAvailableSlotsReplan() {
     let stacks = [];
     const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
+    const hideGreyOut = document.getElementById('toggleGreyOutBlocks')?.checked !== false; // Default true (hidden) if element not found
+    const matchInfo = currentReplanMatches[0];
+    const mapKey = matchInfo ? `${matchInfo.carrier}||${(matchInfo.service || "").toUpperCase()}` : "";
+    const greyOutBlocks = (window.activeGreyOutBlocksMap && window.activeGreyOutBlocksMap[mapKey]) || [];
+
     Object.keys(stackInfo).forEach(base => {
+        let parts = base.split('-');
+        let blockId = parts.length > 0 ? parts[0] : "Other";
+
+        // Filter out greyed blocks from Cluster Spreading if the toggle is ON
+        if (hideGreyOut && greyOutBlocks.includes(blockId)) return;
+
         let matchingMaxOccupied = stackInfo[base];
         let occupiedTiers = allStackInfo[base] ? Array.from(allStackInfo[base]) : [];
         let maxOccupied = occupiedTiers.length > 0 ? Math.max(...occupiedTiers) : matchingMaxOccupied;
@@ -207,8 +218,6 @@ function calculateAvailableSlotsReplan() {
         }
 
         if (availableTiers.length > 0) {
-            let parts = base.split('-');
-            let blockId = parts.length > 0 ? parts[0] : "Other";
             stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: maxOccupied });
         }
     });
