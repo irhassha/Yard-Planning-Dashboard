@@ -208,6 +208,24 @@ function calculateAvailableSlotsReplan() {
         let matchingMaxOccupied = stackInfo[base];
         let occupiedTiers = allStackInfo[base] ? Array.from(allStackInfo[base]) : [];
         let maxOccupied = occupiedTiers.length > 0 ? Math.max(...occupiedTiers) : matchingMaxOccupied;
+
+        // 1. RULE: Do not recommend slot if there is an unmatching container on top!
+        if (maxOccupied > matchingMaxOccupied) return;
+
+        // 2. RULE: Do not stack on top of an IMDG container!
+        const topMostItem = currentReplanMatches.find(m => (m._raw_slot || "").trim() === `${base}-${matchingMaxOccupied}`);
+        if (topMostItem) {
+            const moveTxt = (topMostItem.move || "").toLowerCase();
+            const contType = (topMostItem.conttype || "").toLowerCase();
+            const blockName = (topMostItem.block || "").toUpperCase();
+            
+            if (moveTxt.includes("imdg") || moveTxt.includes("dg") || 
+                contType.includes("imdg") || contType.includes("dg") || 
+                ['C01', 'C02', 'D01'].includes(blockName)) {
+                return; // SKIP: Cannot stack on top of IMDG
+            }
+        }
+
         let availableTiers = [];
 
         for (let t = maxOccupied + 1; t <= 5; t++) {
