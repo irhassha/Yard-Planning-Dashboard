@@ -940,6 +940,25 @@
 
     </div>
 
+    <!-- Reservation Checker Modal -->
+    <div id="reservationModal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+                <h4 class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-amber-500">assignment_turned_in</span>
+                    Reservation Checker
+                </h4>
+                <button onclick="document.getElementById('reservationModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="reservationModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar space-y-4">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+    <input type="file" id="reservationFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleReservationFile(event)" />
+
     <div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
             <div class="flex items-center justify-between px-5 py-3 border-b">

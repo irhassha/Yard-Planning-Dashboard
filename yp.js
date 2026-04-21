@@ -802,7 +802,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier">Carrier</th>
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service">Svc</th>
                         <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
-                        <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider">CLUSTER</th>
+                        <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="document.getElementById('reservationFileInput').click()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="text-[10px]">
@@ -832,7 +832,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Carrier</th>
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Service</th>
                         <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
-                        <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider">CLUSTER</th>
+                        <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="document.getElementById('reservationFileInput').click()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="border-t border-slate-200">
@@ -905,8 +905,8 @@ document.getElementById('sumTotalCap').innerText =
             }
         }
 
-        // Reset and populate global map for Replan Analyzer
-        if(!window.activeGreyOutBlocksMap) window.activeGreyOutBlocksMap = {};
+        // Reset and populate global map for Replan Analyzer and Reservation Checker
+        window.activeGreyOutBlocksMap = {};
 
         const _clusterRows = [];
         renderedData.forEach((row, index) => {
@@ -3498,3 +3498,107 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { capture: true });
     });
 });
+
+// Reservation Checker Logic
+function handleReservationFile(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        const data = evt.target.result;
+        const workbook = typeof XLSX !== 'undefined' ? XLSX.read(data, {type: 'binary'}) : null;
+        if (!workbook) {
+            alert('XLSX library not found.');
+            return;
+        }
+        const firstSheet = workbook.SheetNames[0];
+        const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+        
+        const groupedRef = {};
+        jsonData.forEach(row => {
+            let vessel = row['Vessel (comb.char.)'] || '';
+            vessel = vessel.replace(/^\//, '').trim().toUpperCase(); // Remove leading slash
+            const block = String(row['Area'] || '').toUpperCase();
+            const slot = String(row['Row/bay'] || '');
+            
+            if (vessel && block) {
+                if (!groupedRef[vessel]) groupedRef[vessel] = {};
+                if (!groupedRef[vessel][block]) groupedRef[vessel][block] = new Set();
+                if (slot) groupedRef[vessel][block].add(slot);
+            }
+        });
+
+        const results = [];
+        
+        for (const vessel in groupedRef) {
+            // Check if this vessel has any greyed out blocks globally
+            let vesselGreyOuts = new Set();
+            for (const key in (window.activeGreyOutBlocksMap || {})) {
+                const c = key.split('||')[0].toUpperCase();
+                if (c === vessel) {
+                    (window.activeGreyOutBlocksMap[key] || []).forEach(b => vesselGreyOuts.add(b));
+                }
+            }
+            
+            for (const block in groupedRef[vessel]) {
+                if (vesselGreyOuts.has(block)) {
+                    results.push({
+                        vessel,
+                        block,
+                        slots: Array.from(groupedRef[vessel][block]).sort()
+                    });
+                }
+            }
+        }
+        
+        showReservationResults(results);
+        e.target.value = ''; // reset
+    };
+    reader.readAsBinaryString(file);
+}
+
+function showReservationResults(results) {
+    const modal = document.getElementById('reservationModal');
+    const body = document.getElementById('reservationModalBody');
+    if (!modal || !body) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    if (results.length === 0) {
+        body.innerHTML = `
+            <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
+                <span class="material-symbols-outlined text-4xl mb-2 opacity-50">check_circle</span>
+                <p>No reservations found on greyed out blocks.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div class="space-y-4">';
+    results.forEach(res => {
+        html += `
+            <div class="glass-panel p-5 rounded-2xl border border-red-200 bg-red-50/40 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-red-500/10 rounded-bl-full"></div>
+                <div class="flex justify-between items-start mb-4 border-b border-red-100 pb-3">
+                    <div class="font-black text-slate-800 flex items-center gap-3">
+                       <span class="px-3 py-1.5 bg-slate-800 tracking-wider text-white rounded-lg text-sm shadow-sm">${res.vessel}</span>
+                       <span class="text-xl text-red-600 tracking-tighter">${res.block}</span>
+                    </div>
+                    <span class="px-3 py-1.5 bg-red-100/80 text-red-700 text-[10px] font-bold rounded-lg uppercase tracking-wider border border-red-200 shadow-sm flex items-center gap-1 backdrop-blur-sm">
+                        <span class="material-symbols-outlined text-[14px]">warning</span> Greyed Out Block
+                    </span>
+                </div>
+                <div>
+                    <h5 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-slate-400">dns</span> Reserved Slots:
+                    </h5>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${res.slots.map(s => `<span class="px-2.5 py-1 bg-white border border-slate-200 shadow-sm rounded-md text-[11px] font-mono font-bold text-slate-700 transition hover:border-red-300 hover:text-red-600 cursor-default">${s}</span>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    body.innerHTML = html;
+}

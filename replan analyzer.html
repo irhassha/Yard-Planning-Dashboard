@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NPCT1 Yard Planning - Replan Analyzer</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#10b981", // Emerald 500
+                        "primary-dark": "#059669",
+                        surface: "rgba(255, 255, 255, 0.85)",
+                        "surface-dark": "rgba(15, 23, 42, 0.85)",
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', "sans-serif"],
+                        mono: ['"JetBrains Mono"', "monospace"],
+                    },
+                    animation: {
+                        'bounce-slight': 'bounce-slight 2s infinite',
+                    },
+                    keyframes: {
+                        'bounce-slight': {
+                            '0%, 100%': { transform: 'translateY(-5%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        }
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* --- BACKGROUND IMAGE --- */
+        .bg-fixed-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('https://lh3.googleusercontent.com/pw/AP1GczMaFW8miaBawxPdwNg5OwwHWfzLCn8C0ec8coUjyWKt1qrQzm7bF6zoIg4Dv1-WLKLvgh3gNjdmEv79xDUfDd0pW-2XMT5UvcpfPeV8m3qOqThf-v-DcQIgx5xDshG2x4zhoNIDi0F1XbC7crOrC3l_=w1254-h948-s-no');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Overlay */
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(248, 250, 252, 0.26), rgba(248, 250, 252, 0.36));
+            backdrop-filter: blur(2.5px);
+            transition: background 0.3s ease;
+        }
+
+        .dark .bg-overlay {
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.34), rgba(15, 23, 42, 0.45));
+        }
+
+        /* --- STABLE CSS ANIMATIONS (REPLACES GSAP FOR HERO) --- */
+        @keyframes enter-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-enter {
+            animation: enter-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0; /* Start hidden, animation makes visible */
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+
+        /* --- GLASSMORPHISM --- */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* --- SCROLL ANIMATION --- */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- OTHER UTILITIES --- */
+        .slot-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(203, 213, 225, 0.5); border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.5); }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.8); }
+
+        /* Filter Button Styles */
+        .filter-btn-active {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+        }
+        .filter-btn-inactive {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: #64748b;
+            border-color: rgba(226, 232, 240, 0.8);
+        }
+        .dark .filter-btn-inactive {
+            background-color: rgba(30, 41, 59, 0.5);
+            color: #94a3b8;
+            border-color: rgba(51, 65, 85, 0.8);
+        }
+
+        /* Multi-select active style */
+        .multi-filter-active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Search Bar */
+        .hero-input-container {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 16px 48px 0 rgba(15, 23, 42, 0.14);
+            backdrop-filter: blur(14px);
+            background: rgba(255, 255, 255, 0.76);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+        .dark .hero-input-container {
+            background: rgba(15, 23, 42, 0.76);
+            box-shadow: 0 16px 48px 0 rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .hero-input-container:focus-within {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 24px 58px -5px rgba(15, 23, 42, 0.24);
+            border-color: #10b981;
+            background: rgba(255, 255, 255, 0.93);
+        }
+        .dark .hero-input-container:focus-within {
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .futuristic-grid {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px), linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+            background-size: 36px 36px;
+        }
+        .dark .futuristic-grid {
+            background-image: linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px), linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        }
+
+        .modal-panel {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: 0 24px 80px rgba(15, 23, 42, 0.25);
+        }
+        .dark .modal-panel {
+            background: rgba(15, 23, 42, 0.58);
+            border-color: rgba(148, 163, 184, 0.3);
+            box-shadow: 0 24px 80px rgba(2, 6, 23, 0.6);
+        }
+
+        @keyframes modal-fade-up {
+            0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: modal-fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Trash Animation */
+        .trash-btn {
+            transform-origin: center bottom;
+        }
+        .trash-btn:hover {
+            animation: trash-shake 0.5s ease-in-out infinite;
+            color: #ef4444;
+        }
+        @keyframes trash-shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        /* Toast */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 12px 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
+        .toast-icon { display: inline-flex; vertical-align: middle; margin-right: 8px; color: #10b981; }
+    </style>
+</head>
+
+<body class="text-slate-800 dark:text-slate-200 antialiased min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Background Image Container -->
+    <div class="bg-fixed-image">
+        <div class="bg-overlay"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-white/20 dark:border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary/20 backdrop-blur-sm p-1.5 rounded-lg border border-primary/20">
+                        <span class="material-symbols-rounded text-primary text-2xl">view_column</span>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight leading-tight text-slate-800 dark:text-slate-100">NPCT1 Yard Planning - Replan Analyzer</h1>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- File Upload Button -->
+                    <div class="relative group">
+                        <input type="file" id="excelFile" accept=".xlsx" class="hidden" onchange="handleFile(event)">
+                        <button id="uploadBtn" onclick="document.getElementById('excelFile').click()"
+                            class="flex items-center gap-2 px-4 py-2 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 backdrop-blur-md rounded-lg text-sm font-medium transition-all border border-white/40 dark:border-white/10 shadow-sm">
+                            <span id="uploadIcon" class="material-symbols-rounded text-base">upload_file</span>
+                            <span id="uploadLabel">Upload UnitListAll.xlsx</span>
+                        </button>
+                        <div id="fileStatus" class="absolute right-0 top-full mt-2 text-xs text-right whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity text-slate-600 dark:text-slate-400 font-medium">
+                            No file loaded
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <button onclick="document.documentElement.classList.toggle('dark')" class="p-2 rounded-full hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors backdrop-blur-sm">
+                        <span class="material-symbols-rounded dark:hidden text-slate-700">dark_mode</span>
+                        <span class="material-symbols-rounded hidden dark:block text-yellow-400">light_mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow w-full space-y-8 futuristic-grid">
+
+        <!-- SECTION 1: HERO & INPUT -->
+        <section class="relative overflow-hidden pt-10 pb-8 sm:pt-14 sm:pb-12">
+
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 text-center w-full">
+                <!-- Hero Text -->
+                <div class="mb-6 sm:mb-8 space-y-3 animate-enter">
+                    <span class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 dark:bg-emerald-900/40 backdrop-blur-sm text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 dark:border-emerald-700/50 shadow-sm">
+                        Smart Slot Finder
+                    </span>
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight drop-shadow-sm">
+                        Find the available <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-400">stack</span> instantly.
+                    </h1>
+                    <p class="text-slate-600 dark:text-slate-300 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+                        Paste the dispatcher data below. App will analyze the Excel file and show all the available tiers.
+                    </p>
+                </div>
+
+                <!-- GLASS SEARCH BAR STYLE INPUT -->
+                <div class="relative max-w-3xl mx-auto animate-enter delay-100">
+                    <div class="hero-input-container relative flex items-start rounded-3xl p-3.5 sm:p-4">
+
+                        <!-- Search/Paste Icon -->
+                        <span class="material-symbols-rounded text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
+
+                        <!-- The Input (Actually Textarea disguised) -->
+                        <textarea id="rawInput"
+                            class="w-full min-h-[24px] sm:min-h-[24px] bg-transparent inalign-middle border-none focus:ring-0 p-0 text-sm sm:text-base text-slate-700 dark:text-slate-200 placeholder-slate-400 resize-none font-mono leading-4"
+                            placeholder="Paste Header & Data here (Ctrl+V)..."
+                            oninput="analyze()"
+                            rows="2"
+                            spellcheck="false"></textarea>
+
+                        <!-- Trash Button with Animation -->
+                        <div class="ml-2 pl-3 border-l border-slate-200/50 dark:border-slate-700/50 h-full flex items-start pt-1">
+                            <button onclick="clearInput()" class="trash-btn p-2 rounded-full text-slate-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-all group" title="Clear Data">
+                                <span class="material-symbols-rounded text-xl group-hover:text-red-500 transition-colors">delete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Helper Text -->
+                    <div class="mt-3 flex justify-center gap-4 text-xs text-slate-500 dark:text-slate-400 font-medium animate-enter delay-200">
+                        <span class="flex items-center gap-1 backdrop-blur-sm bg-white/30 dark:bg-black/20 px-2 py-0.5 rounded-md"><span class="material-symbols-rounded text-[14px]">content_paste</span> Paste Row</span>
+                        <span class="flex items-center gap-1 backdrop-blur-sm bg-white/30 dark:bg-black/20 px-2 py-0.5 rounded-md"><span class="material-symbols-rounded text-[14px]">bolt</span> Auto-Analyze</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 pb-20">
+
+            <!-- 4. HISTORY CARD -->
+            <div class="glass-card rounded-2xl p-6 reveal-on-scroll">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-lg">history</span> Selection History
+                    </h2>
+                    <button onclick="clearHistory()" class="text-xs font-medium text-red-400 hover:text-red-500 transition-colors bg-white/50 dark:bg-black/20 px-2 py-1 rounded hover:bg-white/80 dark:hover:bg-black/40">Reset</button>
+                </div>
+
+                <div class="overflow-hidden rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+                    <div class="max-h-[300px] overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50/70 dark:bg-slate-800/70 sticky top-0 z-10 backdrop-blur-sm">
+                                <tr>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Time</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Slot</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 dark:text-slate-300">Info</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody" class="divide-y divide-slate-100/50 dark:divide-slate-800/50">
+                                <tr>
+                                    <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: CARRIER DISTRIBUTION ANALYSIS -->
+            <section id="carrier-analysis-section" class="border-t border-slate-200/50 dark:border-slate-800/50 pt-12 reveal-on-scroll">
+                <div class="flex flex-col md:flex-row md:items-start justify-between mb-8 gap-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3 drop-shadow-sm">
+                            <span class="material-symbols-rounded text-3xl text-primary">pie_chart</span>
+                            Carrier Export Analysis
+                        </h2>
+                        <p class="text-sm text-slate-500 max-w-lg font-medium">
+                            Visualize container density for <strong class="text-slate-700 dark:text-slate-300">Export & Transhipment</strong> moves.
+                            Calculated capacity: 30 units per Slot.
+                        </p>
+                    </div>
+
+                    <!-- Carrier Selector (Buttons) -->
+                    <div class="w-full md:w-auto">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Select Carrier Out</label>
+                        <div id="carrierButtonContainer" class="flex flex-wrap gap-2">
+                            <span class="text-xs text-slate-400 italic bg-white/50 dark:bg-slate-800/50 px-3 py-1.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 backdrop-blur-sm">Load file to view carriers...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Bar -->
+                <div id="carrierStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 hidden">
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase font-bold">Total Export Units</div>
+                        <div class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="statTotal">0</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl">
+                        <div class="text-xs text-slate-400 uppercase font-bold">Active Slots</div>
+                        <div class="text-2xl font-bold text-slate-800 dark:text-white mt-1" id="statBays">0</div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl col-span-2 flex flex-col justify-center">
+                        <div class="text-xs text-slate-400 uppercase font-bold mb-1">Capacity Benchmark</div>
+                        <div class="flex items-center gap-4 text-xs font-medium">
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 box-shadow-sm"></span> < 50% Safe</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-yellow-500 box-shadow-sm"></span> 50-80% Moderate</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 box-shadow-sm"></span> > 80% Heavy</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Carrier Block Filters (Multi-select) -->
+                <div id="carrierBlockFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                <!-- Carrier Grid (Grouped by Block) -->
+                <div id="carrierGridContainer" class="space-y-6">
+                    <div class="py-12 text-center text-slate-400 glass-card rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+                        Select a carrier above to view detailed distribution
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Analysis Modal -->
+    <div id="analysisModal" class="fixed inset-0 z-[70] hidden">
+        <div id="analysisBackdrop" class="absolute inset-0 bg-slate-900/45 backdrop-blur-sm"></div>
+        <div id="analysisModalShell" class="relative min-h-full flex items-center justify-center p-4 sm:p-8">
+            <div id="analysisPanel" class="modal-panel w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden">
+                <div class="px-6 py-4 border-b border-white/20 dark:border-white/10 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">Comparison & Recommended Slot</h2>
+                        <p class="text-xs text-slate-600 dark:text-slate-300">Auto-generated after paste data.</p>
+                    </div>
+                    <button onclick="closeAnalysisModal()" class="h-9 w-9 rounded-full bg-white/60 dark:bg-slate-800/70 hover:bg-white dark:hover:bg-slate-700 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-rounded text-slate-600 dark:text-slate-200">close</span>
+                    </button>
+                </div>
+                <div class="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-72px)] space-y-6">
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                                <span class="material-symbols-rounded text-lg">compare_arrows</span> Comparison Data
+                            </h2>
+                            <span class="text-xs text-slate-400 bg-white/50 dark:bg-black/20 px-2 py-1 rounded backdrop-blur-sm">Live Parsed Data</span>
+                        </div>
+                        <div id="previewContainer" class="table-wrapper overflow-x-auto rounded-lg border border-slate-200/50 dark:border-slate-700/50">
+                            <table id="previewTable" class="w-full text-left text-xs">
+                                <thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm">
+                                    <tr id="pHead">
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pBody">
+                                    <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-2xl p-6 min-h-[300px]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-200/50 dark:border-slate-700/50 pb-4 gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1 drop-shadow-sm">Recommended Slots</h2>
+                                <p class="text-sm text-slate-500">Grouped by Block • Filtered only the available slot</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">
+                                    TIER &le; 5
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-3 mb-4">
+                            <div id="priorityContainer" class="flex flex-wrap gap-2">
+                                <button id="priority-NORMAL" onclick="setPriorityMode('NORMAL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-active">Normal</button>
+                                <button id="priority-MIX_WC" onclick="setPriorityMode('MIX_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive text-red-600 border-red-300 hover:border-red-500">MIX WC</button>
+                                <button id="priority-MIX_SPOD_WC" onclick="setPriorityMode('MIX_SPOD_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive text-red-700 border-red-400 hover:border-red-600">MIX SPOD & WC</button>
+                            </div>
+                            <div id="priorityStatus" class="text-xs text-slate-500 dark:text-slate-400">Mode aktif: <span class="font-semibold">Normal</span></div>
+                        </div>
+                        <div id="filterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                        <div id="slotDisplay" class="space-y-8">
+                            <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+                                <span class="material-symbols-rounded text-6xl mb-4 text-slate-300 dark:text-slate-600 opacity-50">dns</span>
+                                <p class="text-sm">Waiting for data input...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/20 dark:border-white/5 mt-auto glass-panel py-6">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            &copy; 2026 Replan-Slot Analyzer. Internal use only. NPCT1 Yard Planning Team
+        </div>
+    </footer>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast">
+        <span class="material-symbols-rounded toast-icon">content_copy</span>
+        <span id="toastMsg">Slot copied to clipboard!</span>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // Init GSAP
+        gsap.registerPlugin();
+
+        // --- SCROLL ANIMATION OBSERVER ---
+        const initScrollAnimations = () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Animate only once
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-on-scroll').forEach((el) => {
+                observer.observe(el);
+            });
+        };
+
+        // --- INITIAL ANIMATION ---
+        const animateItems = () => {
+            // Replaced GSAP with CSS Animation (.animate-enter) for stability on the Hero Input
+
+            // Init Scroll Observer
+            initScrollAnimations();
+            updatePriorityButtons();
+        };
+
+        // FIX: Use DOMContentLoaded instead of load for faster perceived performance (don't wait for background image)
+        document.addEventListener('DOMContentLoaded', animateItems);
+
+        // --- CORE LOGIC ---
+        let db = [];
+        let selectedFullSlotsHistory = [];
+        let currentMatches = [];
+        let currentUnit = "";
+        let activeBlockFilter = 'ALL';
+        let activeCarrier = null;
+        let activeCarrierBlockFilters = new Set();
+        let priorityMode = 'NORMAL';
+        let isModalOpen = false;
+
+
+        function openAnalysisModal() {
+            const modal = document.getElementById('analysisModal');
+            const panel = document.getElementById('analysisPanel');
+            if (!modal || isModalOpen) return;
+            modal.classList.remove('hidden');
+            panel.classList.remove('animate-modal');
+            void panel.offsetWidth;
+            panel.classList.add('animate-modal');
+            document.body.classList.add('overflow-hidden');
+            isModalOpen = true;
+        }
+
+        function closeAnalysisModal() {
+            const modal = document.getElementById('analysisModal');
+            if (!modal || !isModalOpen) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            isModalOpen = false;
+        }
+
+        function normalize(str) {
+            if (str === undefined || str === null) return "";
+            return str.toString()
+                .replace(/_x000D_/g, '')
+                .replace(/[\r\n\t]/g, ' ')
+                .replace(/,/g, '.')
+                .replace(/\s*-\s*/g, '-')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+        }
+
+        function cleanKey(str) {
+            return normalize(str).replace(/[^a-z0-9]/g, '');
+        }
+
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const btn = document.getElementById('uploadBtn');
+            const btnLabel = document.getElementById('uploadLabel');
+            const btnIcon = document.getElementById('uploadIcon');
+            const statusEl = document.getElementById('fileStatus');
+
+            // Loading State Style
+            btnLabel.innerText = "Reading File...";
+            btn.className = "flex items-center gap-2 px-4 py-2 bg-yellow-100/80 text-yellow-700 rounded-lg text-sm font-bold border border-yellow-300 shadow-sm animate-pulse cursor-wait backdrop-blur-sm";
+            btnIcon.innerText = "hourglass_empty";
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+
+                    db = json.map(row => {
+                        let cleanRow = {};
+                        for (let key in row) {
+                            let cKey = cleanKey(key);
+                            cleanRow[cKey] = normalize(row[key]);
+                            if (cKey === 'slotexe') cleanRow['_raw_slot'] = row[key].toString().trim();
+                            if (cKey === 'carrierout') cleanRow['_raw_carrier'] = row[key].toString().trim();
+                        }
+                        return cleanRow;
+                    });
+
+                    // Success State Style
+                    btnLabel.innerText = "File Loaded";
+                    btn.className = "flex items-center gap-2 px-4 py-2 bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-lg text-sm font-bold border border-emerald-300 dark:border-emerald-700 shadow-sm transition-all backdrop-blur-sm";
+                    btnIcon.innerText = "check_circle";
+
+                    statusEl.innerText = `Ready: ${db.length} rows`;
+                    statusEl.classList.remove('text-slate-600', 'dark:text-slate-400');
+                    statusEl.classList.add('text-primary');
+
+                    gsap.fromTo(btn, {scale: 0.95}, {scale: 1, duration: 0.3, ease: "back.out(2)"});
+
+                    initCarrierAnalysis();
+                    analyze();
+                } catch (err) {
+                    btnLabel.innerText = "Error!";
+                    btn.className = "flex items-center gap-2 px-4 py-2 bg-red-100/80 text-red-700 rounded-lg text-sm font-bold border border-red-300 backdrop-blur-sm";
+                    btnIcon.innerText = "error";
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- CARRIER ANALYSIS LOGIC ---
+        function initCarrierAnalysis() {
+            const container = document.getElementById('carrierButtonContainer');
+            const carrierValidation = {};
+
+            const validMoves = ['export', 'transhipment', 'tsh'];
+
+            db.forEach(row => {
+                let move = row.move || "";
+                let carrier = row.carrierout || "";
+                let slot = row._raw_slot || "";
+
+                if (carrier && carrier !== '-' && validMoves.some(m => move.includes(m))) {
+                    let cName = row._raw_carrier || carrier.toUpperCase();
+
+                    if (!carrierValidation[cName]) {
+                        carrierValidation[cName] = { hasNon8: false };
+                    }
+                    if (!slot.startsWith('8')) {
+                        carrierValidation[cName].hasNon8 = true;
+                    }
+                }
+            });
+
+            const sortedCarriers = Object.keys(carrierValidation)
+                .filter(c => carrierValidation[c].hasNon8 === true)
+                .sort();
+
+            if (sortedCarriers.length === 0) {
+                container.innerHTML = '<span class="text-xs text-red-400 italic">No valid Export/Transhipment carriers found (excluding Block 8).</span>';
+                return;
+            }
+
+            let html = "";
+            sortedCarriers.forEach(c => {
+                html += `
+                    <button onclick="selectCarrier('${c}')"
+                        id="btn-carrier-${normalize(c)}"
+                        class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500">
+                        ${c}
+                    </button>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function selectCarrier(selectedCarrier) {
+            const allBtns = document.querySelectorAll('#carrierButtonContainer button');
+            allBtns.forEach(btn => {
+                btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-inactive hover:border-slate-400 dark:hover:border-slate-500";
+            });
+
+            if (activeCarrier === selectedCarrier) {
+                activeCarrier = null;
+                document.getElementById('carrierGridContainer').innerHTML = '<div class="py-12 text-center text-slate-400 glass-card rounded-xl border border-dashed border-slate-300 dark:border-slate-700">Select a carrier to view distribution</div>';
+                document.getElementById('carrierStats').classList.add('hidden');
+                document.getElementById('carrierBlockFilterContainer').classList.add('hidden');
+                return;
+            }
+
+            activeCarrier = selectedCarrier;
+            document.getElementById(`btn-carrier-${normalize(selectedCarrier)}`).className = "px-3 py-1.5 text-xs font-bold rounded-lg border transition-all filter-btn-active transform scale-105";
+
+            activeCarrierBlockFilters.clear();
+            renderCarrierAnalysis();
+        }
+
+        function renderCarrierAnalysis() {
+            if (!activeCarrier) return;
+
+            const gridContainer = document.getElementById('carrierGridContainer');
+            const stats = document.getElementById('carrierStats');
+            const blockFilterContainer = document.getElementById('carrierBlockFilterContainer');
+
+            const validMoves = ['export', 'transhipment', 'tsh'];
+            const carrierData = db.filter(row => {
+                let rCarrier = row._raw_carrier || row.carrierout;
+                let rMove = row.move || "";
+                return rCarrier === activeCarrier && validMoves.some(m => rMove.includes(m));
+            });
+
+            let blocks = {};
+            let totalUnits = carrierData.length;
+
+            carrierData.forEach(row => {
+                let slot = row._raw_slot || "";
+                if (slot.includes('-')) {
+                    let parts = slot.split('-');
+                    if (parts.length >= 2) {
+                        let blockName = parts[0];
+                        let bayKey = parts[1];
+
+                        if (!blocks[blockName]) blocks[blockName] = {};
+                        if (!blocks[blockName][bayKey]) blocks[blockName][bayKey] = 0;
+                        blocks[blockName][bayKey]++;
+                    }
+                }
+            });
+
+            const availableBlocks = Object.keys(blocks).sort();
+
+            if (availableBlocks.length > 0) {
+                let filterHtml = `
+                    <button onclick="toggleCarrierBlockFilter('ALL')"
+                        class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${activeCarrierBlockFilters.size === 0 ? 'filter-btn-active' : 'filter-btn-inactive'}">
+                        ALL
+                    </button>
+                `;
+
+                availableBlocks.forEach(b => {
+                    const isActive = activeCarrierBlockFilters.has(b);
+                    filterHtml += `
+                        <button onclick="toggleCarrierBlockFilter('${b}')"
+                            class="px-3 py-1 text-[10px] font-bold rounded-md border transition-all ${isActive ? 'multi-filter-active' : 'filter-btn-inactive'}">
+                            ${b}
+                        </button>
+                    `;
+                });
+
+                blockFilterContainer.innerHTML = filterHtml;
+                blockFilterContainer.classList.remove('hidden');
+            } else {
+                blockFilterContainer.classList.add('hidden');
+            }
+
+            let totalBays = 0;
+            Object.values(blocks).forEach(b => totalBays += Object.keys(b).length);
+
+            document.getElementById('statTotal').innerText = totalUnits;
+            document.getElementById('statBays').innerText = totalBays;
+            stats.classList.remove('hidden');
+
+            let displayBlocks = availableBlocks;
+            if (activeCarrierBlockFilters.size > 0) {
+                displayBlocks = availableBlocks.filter(b => activeCarrierBlockFilters.has(b));
+            }
+
+            if (displayBlocks.length === 0) {
+                 gridContainer.innerHTML = '<div class="py-12 text-center text-slate-400">No blocks selected.</div>';
+                 return;
+            }
+
+            let html = "";
+            displayBlocks.forEach(blockName => {
+                let bayData = blocks[blockName];
+                let sortedBays = Object.keys(bayData).sort((a,b) => b.localeCompare(a, undefined, {numeric: true}));
+
+                html += `
+                    <div class="animate-carrier-group glass-card rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
+                            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest">
+                                Block ${blockName}
+                            </h3>
+                            <span class="text-[10px] bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-1.5 rounded border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
+                                ${sortedBays.length} Slots
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-14 gap-1">
+                            ${sortedBays.map(bay => {
+                                let count = bayData[bay];
+                                let percentage = Math.min((count / 30) * 100, 100);
+                                let colorClass = percentage < 50 ? 'bg-emerald-500' : (percentage < 80 ? 'bg-yellow-500' : 'bg-red-500');
+
+                                return `
+                                    <div class="bg-slate-50/50 dark:bg-slate-800/30 rounded border border-slate-100/50 dark:border-slate-700/50 p-0.5 flex flex-col gap-0 items-center justify-center hover:shadow-sm transition-all h-full backdrop-blur-sm" title="${count} Units in Slot ${bay}">
+                                        <span class="text-[10px] font-bold text-slate-700 dark:text-slate-200 leading-tight">${bay}</span>
+                                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden my-0.5">
+                                            <div class="${colorClass} h-full rounded-full" style="width: ${percentage}%"></div>
+                                        </div>
+                                        <span class="text-[9px] font-bold text-slate-500 leading-none">${count}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            gridContainer.innerHTML = html;
+
+            gsap.from(".animate-carrier-group", {
+                y: 10,
+                opacity: 0,
+                duration: 0.3,
+                stagger: 0.05,
+                ease: "power2.out",
+                clearProps: "all"
+            });
+        }
+
+        function toggleCarrierBlockFilter(blockName) {
+            if (blockName === 'ALL') {
+                activeCarrierBlockFilters.clear();
+            } else {
+                if (activeCarrierBlockFilters.has(blockName)) {
+                    activeCarrierBlockFilters.delete(blockName);
+                } else {
+                    activeCarrierBlockFilters.add(blockName);
+                }
+            }
+            renderCarrierAnalysis();
+        }
+
+        function updatePriorityButtons() {
+            const styles = {
+                NORMAL: {
+                    active: 'filter-btn-active',
+                    inactive: 'filter-btn-inactive'
+                },
+                MIX_WC: {
+                    active: 'bg-red-100/80 text-red-700 border-red-300',
+                    inactive: 'filter-btn-inactive text-red-600 border-red-300 hover:border-red-500'
+                },
+                MIX_SPOD_WC: {
+                    active: 'bg-red-200/90 text-red-800 border-red-400',
+                    inactive: 'filter-btn-inactive text-red-700 border-red-400 hover:border-red-600'
+                }
+            };
+
+            const modes = ['NORMAL', 'MIX_WC', 'MIX_SPOD_WC'];
+            modes.forEach(mode => {
+                const btn = document.getElementById(`priority-${mode}`);
+                if (!btn) return;
+                const style = styles[mode] || styles.NORMAL;
+                btn.className = `px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${priorityMode === mode ? style.active : style.inactive}`;
+            });
+            const statusText = {
+                'NORMAL': 'Normal',
+                'MIX_WC': 'MIX WC',
+                'MIX_SPOD_WC': 'MIX SPOD & WC'
+            };
+            const statusEl = document.getElementById('priorityStatus');
+            if (statusEl) {
+                statusEl.innerHTML = `Mode aktif: <span class="font-semibold">${statusText[priorityMode] || 'Normal'}</span>`;
+            }
+        }
+
+        function setPriorityMode(mode) {
+            if (priorityMode === mode) return;
+
+            priorityMode = mode;
+            updatePriorityButtons();
+            if (document.getElementById('rawInput').value.trim() && db.length) {
+                analyze();
+            }
+        }
+
+        // --- EXISTING REPLAN LOGIC ---
+
+        function analyze() {
+            const text = document.getElementById('rawInput').value.trim();
+            if (!text || db.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            openAnalysisModal();
+
+            const lines = text.split(/\r?\n/);
+            const headers = lines[0].split('\t').map(h => h.trim());
+            const values = lines[1] ? lines[1].split('\t').map(v => v.trim()) : [];
+
+            const targetKeys = ['Unit', 'Service Out', 'Carrier Out', 'SPOD', 'Unit length', 'Wt. cl.', 'Cont. type', 'Unit height'];
+            let gridContent = "";
+            targetKeys.forEach(key => {
+                const idx = headers.indexOf(key);
+                const val = idx !== -1 ? values[idx] : "-";
+                gridContent += `
+                    <div class="flex flex-col p-3 bg-slate-50/50 dark:bg-slate-800/50 rounded-lg border border-slate-100/50 dark:border-slate-700/50 backdrop-blur-sm">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 mb-1">${key}</span>
+                        <span class="text-sm font-mono font-medium text-slate-700 dark:text-slate-200 truncate" title="${val}">${val}</span>
+                    </div>`;
+            });
+            document.getElementById('previewContainer').innerHTML = `<div class="grid grid-cols-1 md:grid-cols-8 gap-3">${gridContent}</div>`;
+
+            const findVal = (name) => {
+                const cleanName = cleanKey(name);
+                const idx = headers.findIndex(h => cleanKey(h) === cleanName);
+                return idx !== -1 ? normalize(values[idx]) : "";
+            };
+
+            currentUnit = findVal("Unit").toUpperCase();
+
+            const target = {
+                svc: findVal("Service Out"),
+                carr: findVal("Carrier Out"),
+                spod: findVal("SPOD"),
+                len: findVal("Unit length"),
+                wt: findVal("Wt. cl."),
+                type: findVal("Cont. type"),
+                height: findVal("Unit height")
+            };
+
+            currentMatches = db.filter(item => {
+                const matchSvc = item.serviceout === target.svc;
+                const matchCarr = item.carrierout === target.carr;
+                const matchLen = item.unitlength === target.len;
+                const matchType = item.conttype === target.type;
+                const matchHeight = item.unitheight === target.height;
+
+                const p1 = parseInt(item.wtcl);
+                const p2 = parseInt(target.wt);
+                const matchWt = (item.wtcl === target.wt) || (!isNaN(p1) && !isNaN(p2) && p1 === p2);
+                const matchSpod = item.spod === target.spod;
+
+                if (priorityMode === 'MIX_SPOD_WC') {
+                    return matchSvc && matchCarr && matchLen && matchType && matchHeight;
+                }
+                if (priorityMode === 'MIX_WC') {
+                    return matchSvc && matchCarr && matchSpod && matchLen && matchType && matchHeight;
+                }
+                return matchSvc && matchCarr && matchSpod && matchLen && matchType && matchHeight && matchWt;
+            });
+
+            calculateAvailableSlots();
+        }
+
+        function calculateAvailableSlots() {
+            const out = document.getElementById('slotDisplay');
+            const filterContainer = document.getElementById('filterContainer');
+
+            if (currentMatches.length === 0) {
+                out.innerHTML = `
+                    <div class="p-6 bg-red-50/50 dark:bg-red-900/20 border border-red-100 dark:border-red-900 rounded-xl text-center backdrop-blur-sm">
+                        <span class="material-symbols-rounded text-red-500 text-3xl mb-2">error</span>
+                        <p class="text-red-700 dark:text-red-300 font-medium">No matching stacks found in Unit List.</p>
+                        <p class="text-xs text-red-500 mt-1">Check Service, Carrier, SPOD, and Dimensions.</p>
+                    </div>`;
+                filterContainer.classList.add('hidden');
+                return;
+            }
+
+            let stackInfo = {};
+            currentMatches.forEach(m => {
+                let fullSlotRaw = (m._raw_slot || "").trim();
+                if (fullSlotRaw.includes('-')) {
+                    let p = fullSlotRaw.split('-');
+                    let tier = parseInt(p.pop());
+                    let base = p.join('-');
+                    if (!isNaN(tier)) {
+                        if (!stackInfo[base]) stackInfo[base] = 0;
+                        if (tier > stackInfo[base]) stackInfo[base] = tier;
+                    }
+                }
+            });
+
+            let allStackInfo = {};
+            db.forEach(m => {
+                let fullSlotRaw = (m._raw_slot || "").trim();
+                if (fullSlotRaw.includes('-')) {
+                    let p = fullSlotRaw.split('-');
+                    let tier = parseInt(p.pop());
+                    let base = p.join('-');
+                    if (!isNaN(tier)) {
+                        if (!allStackInfo[base]) allStackInfo[base] = new Set();
+                        allStackInfo[base].add(tier);
+                    }
+                }
+            });
+
+            let stacks = [];
+            const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
+
+            Object.keys(stackInfo).forEach(base => {
+                let matchingMaxOccupied = stackInfo[base];
+                let occupiedTiers = allStackInfo[base] ? Array.from(allStackInfo[base]) : [];
+                let maxOccupied = occupiedTiers.length > 0 ? Math.max(...occupiedTiers) : matchingMaxOccupied;
+                let availableTiers = [];
+
+                for (let t = maxOccupied + 1; t <= 5; t++) {
+                    let potentialSlot = `${base}-${t}`;
+                    if (!usedFullSlots.has(potentialSlot)) {
+                        availableTiers.push({ tier: t, raw: potentialSlot });
+                    }
+                }
+
+                if (availableTiers.length > 0) {
+                    let parts = base.split('-');
+                    let blockId = parts.length > 0 ? parts[0] : "Other";
+                    stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: maxOccupied });
+                }
+            });
+
+            if (stacks.length === 0) {
+                out.innerHTML = `
+                    <div class="p-6 bg-yellow-50/50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900 rounded-xl text-center backdrop-blur-sm">
+                        <span class="material-symbols-rounded text-yellow-500 text-3xl mb-2">layers_clear</span>
+                        <p class="text-yellow-700 dark:text-yellow-300 font-medium">All stackable tiers (up to 5) are full or selected.</p>
+                    </div>`;
+                filterContainer.classList.add('hidden');
+                return;
+            }
+
+            const blocks = [...new Set(stacks.map(s => s.block))].sort();
+
+            if (blocks.length > 0) {
+                let filterHtml = `<button onclick="setFilter('ALL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === 'ALL' ? 'filter-btn-active' : 'filter-btn-inactive'}">ALL</button>`;
+                blocks.forEach(b => {
+                    filterHtml += `<button onclick="setFilter('${b}')" class="px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${activeBlockFilter === b ? 'filter-btn-active' : 'filter-btn-inactive'}">${b}</button>`;
+                });
+                filterContainer.innerHTML = filterHtml;
+                filterContainer.classList.remove('hidden');
+            }
+
+            const displayBlocks = activeBlockFilter === 'ALL' ? blocks : blocks.filter(b => b === activeBlockFilter);
+            let html = "";
+
+            displayBlocks.forEach(blockName => {
+                const blockStacks = stacks.filter(s => s.block === blockName).sort((a,b) => a.base.localeCompare(b.base));
+                if (blockStacks.length === 0) return;
+
+                html += `
+                    <div class="animate-block-group">
+                        <div class="flex items-center gap-2 mb-3 mt-2">
+                            <span class="h-2 w-2 rounded-full bg-primary"></span>
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-widest">Block ${blockName}</h3>
+                            <span class="text-xs bg-slate-100/50 dark:bg-slate-800/50 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700 backdrop-blur-sm">${blockStacks.length} Stacks</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                            ${blockStacks.map(stack => `
+                                <div class="slot-card bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg p-3 flex flex-col gap-2 relative overflow-hidden group backdrop-blur-sm">
+                                    <div class="absolute top-0 right-0 p-1 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-rounded text-4xl">inventory_2</span></div>
+                                    <div class="flex justify-between items-start z-10">
+                                        <span class="text-xs font-bold text-slate-700 dark:text-slate-200 tracking-tight font-mono">${stack.base}</span>
+                                        <span class="text-[10px] text-slate-400 font-mono bg-slate-100/50 dark:bg-slate-700/50 px-1 rounded backdrop-blur-sm">Top:${stack.occupied}</span>
+                                    </div>
+                                    <div class="flex flex-wrap gap-1 z-10 mt-auto">
+                                        ${stack.tiers.map(t => `<button onclick="selectSlot('${t.raw}')" class="flex-1 min-w-[30px] h-7 flex items-center justify-center bg-primary hover:bg-primary-dark text-white text-[10px] font-bold rounded transition-all hover:scale-105 active:scale-95 shadow-sm">T${t.tier}</button>`).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="h-px bg-slate-100/50 dark:bg-slate-800/50 my-6 w-full last:hidden"></div>
+                    </div>`;
+            });
+
+            out.innerHTML = html;
+            gsap.fromTo(".animate-block-group", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" });
+        }
+
+        function setFilter(filter) {
+            activeBlockFilter = filter;
+            calculateAvailableSlots();
+        }
+
+        function selectSlot(fullSlot) {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
+            const matchInfo = currentMatches[0];
+            const info = matchInfo ? `${matchInfo.serviceout.toUpperCase()}<br/><span class="text-[10px] text-slate-400">${matchInfo.carrierout.toUpperCase()}</span>` : "-";
+            selectedFullSlotsHistory.unshift({ time: timeStr, unit: currentUnit || "N/A", fullSlot: fullSlot.trim(), info: info });
+
+            const tempInput = document.createElement("input");
+            tempInput.value = fullSlot.trim();
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            showToast(`Copied: ${fullSlot.trim()}`);
+
+            calculateAvailableSlots();
+            updateHistoryTable();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toastMsg");
+            toastMsg.innerText = msg;
+            toast.className = "toast show";
+
+            setTimeout(function(){
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
+
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyBody');
+            if (selectedFullSlotsHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = selectedFullSlotsHistory.map((h, i) => `
+                <tr class="group hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors ${i === 0 ? 'animate-new-row' : ''}">
+                    <td class="px-4 py-3 font-mono text-xs text-slate-500">${h.time}</td>
+                    <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100/50 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 backdrop-blur-sm">${h.unit}</span><div class="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 mt-1">${h.fullSlot}</div></td>
+                    <td class="px-4 py-3 text-xs text-slate-600 dark:text-slate-400 leading-tight">${h.info}</td>
+                </tr>`).join('');
+            if(selectedFullSlotsHistory.length > 0) gsap.from(".animate-new-row", { x: -20, opacity: 0, duration: 0.3, background: "rgba(240, 253, 244, 0.5)" });
+        }
+
+        function renderEmptyState() {
+            document.getElementById('slotDisplay').innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-400"><span class="material-symbols-rounded text-6xl mb-4 text-slate-300 dark:text-slate-600 opacity-50">dns</span><p class="text-sm">Waiting for data input...</p></div>`;
+            document.getElementById('previewContainer').innerHTML = `<table id="previewTable" class="w-full text-left text-xs"><thead class="bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm"><tr id="pHead"><th class="px-4 py-3 font-semibold text-slate-500">Key</th><th class="px-4 py-3 font-semibold text-slate-500">Value</th></tr></thead><tbody id="pBody"><tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr></tbody></table>`;
+            closeAnalysisModal();
+            document.getElementById('filterContainer').classList.add('hidden');
+        }
+
+        function clearInput() {
+            // Animasi Trash Can saat diklik
+            const btn = document.querySelector('.trash-btn');
+            gsap.to(btn, { rotation: 360, duration: 0.5, ease: "back.out(1.7)" });
+
+            document.getElementById('rawInput').value = "";
+            renderEmptyState();
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeAnalysisModal();
+        });
+
+        document.getElementById('analysisBackdrop').addEventListener('click', closeAnalysisModal);
+        document.getElementById('analysisModalShell').addEventListener('click', (event) => {
+            const panel = document.getElementById('analysisPanel');
+            if (!panel.contains(event.target)) closeAnalysisModal();
+        });
+
+        function clearHistory() {
+            if(confirm("Clear all history?")) {
+                selectedFullSlotsHistory = [];
+                updateHistoryTable();
+                if (currentMatches.length > 0) calculateAvailableSlots();
+            }
+        }
+    </script>
+</body>
+</html>
