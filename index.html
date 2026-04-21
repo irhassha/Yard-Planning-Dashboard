@@ -746,6 +746,26 @@
                         existing loaded data.</p>
                 </div>
 
+                <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-green-600">checklist</span>
+                        Block Selection for Calculation
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <button onclick="selectAllBlocks()" class="secondary-pill text-xs">Select All</button>
+                            <button onclick="deselectAllBlocks()" class="secondary-pill text-xs">Deselect All</button>
+                            <button onclick="selectPureImportBlocks()" class="secondary-pill text-xs">Pure Import Only</button>
+                            <button onclick="selectBlocksBasedOnDensity()" class="secondary-pill text-xs">Based on Yard Density</button>
+                            <span class="text-xs text-slate-500 ml-2">Pure Import: A06,A07,A08,B06,B07,B08,C05,C06,C07,C08</span>
+                        </div>
+                        <div id="blockSelectionGrid" class="grid grid-cols-4 md:grid-cols-8 gap-2">
+                            <!-- Blocks will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">Select blocks to include in discharge projection calculation.</p>
+                </div>
+
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
                     <div
                         class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">

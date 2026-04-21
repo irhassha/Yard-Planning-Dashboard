@@ -22,6 +22,8 @@
       "B01","B02","B03","B04","B05","B06","B07","B08",
       "C01","C02","C03","C04","C05","C06","C07","C08"
     ];
+    const PURE_IMPORT_BLOCKS = ["A06", "A07", "A08", "B06", "B07", "B08", "C05", "C06", "C07", "C08"];
+    let selectedBlocks = [...PURE_IMPORT_BLOCKS]; // Default to pure import blocks
     
     const DEFAULT_CAPACITY = {
         "A01": { slots: 37, tier: 5, cap: 1110 }, "A02": { slots: 37, tier: 5, cap: 1110 }, "A03": { slots: 37, tier: 5, cap: 1110 }, "A04": { slots: 37, tier: 5, cap: 1110 }, "A05": { slots: 37, tier: 5, cap: 1110 }, "A06": { slots: 37, tier: 5, cap: 1110 }, "A07": { slots: 37, tier: 5, cap: 1110 }, "A08": { slots: 37, tier: 5, cap: 1110 },
@@ -1796,6 +1798,11 @@ function switchTab(t) {
         targetTab.classList.remove('hidden');
         targetBtn.classList.replace('inactive', 'active');
         targetTab.classList.add('animate-fade-in');
+        
+        // Initialize block selection for projection tab
+        if (t === 'projection') {
+            setTimeout(initializeBlockSelection, 100);
+        }
     }
 }
 
@@ -2848,7 +2855,7 @@ function calculateCurrentSpace() {
         if (isExcludedUsedSlotBlock(block)) return;
 
         const type = normalizeProjectionType('', block);
-        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+        if (type === 'Fixed Import' && !selectedBlocks.includes(block)) return;
 
         const slot = parseInt(item.slot, 10);
         if (!Number.isFinite(slot) || slot <= 0) return;
@@ -2886,7 +2893,7 @@ function calculateCurrentSpace() {
         const block = String(blockName || '').toUpperCase();
         if (isExcludedUsedSlotBlock(block)) return;
         const type = normalizeProjectionType('', block);
-        if (type === 'Fixed Import' && EXPORT_DEFAULTS.includes(block)) return;
+        if (type === 'Fixed Import' && !selectedBlocks.includes(block)) return;
 
         const maxSlots = Number(activeCapacity[blockName]?.slots || 0);
         byType[type].maxCapacityTEU += (maxSlots * slotCap);
@@ -3107,3 +3114,167 @@ window.parsePreplanProjection = parsePreplanProjection;
 window.processPreplan = parsePreplanProjection;
 
 updateSlotCapacityLabel(getSlotBoxCapacity());
+
+// Block selection functions
+function initializeBlockSelection() {
+    const grid = document.getElementById('blockSelectionGrid');
+    if (!grid) return;
+
+    const allBlocks = Object.keys(DEFAULT_CAPACITY).filter(block => 
+        !isExcludedUsedSlotBlock(block) && !['BR9', 'RC9', 'OOG'].includes(block)
+    ).sort();
+
+    grid.innerHTML = allBlocks.map(block => `
+        <label class="flex items-center gap-1 p-2 rounded-lg border border-slate-200 bg-white/50 hover:bg-white/70 cursor-pointer transition-colors">
+            <input type="checkbox" 
+                   value="${block}" 
+                   ${selectedBlocks.includes(block) ? 'checked' : ''} 
+                   onchange="toggleBlockSelection('${block}')" 
+                   class="accent-blue-600">
+            <span class="text-xs font-mono font-bold text-slate-700">${block}</span>
+        </label>
+    `).join('');
+}
+
+function toggleBlockSelection(block) {
+    const checkbox = event.target;
+    if (checkbox.checked) {
+        if (!selectedBlocks.includes(block)) {
+            selectedBlocks.push(block);
+        }
+    } else {
+        selectedBlocks = selectedBlocks.filter(b => b !== block);
+    }
+    refreshProjectionTable();
+}
+
+function selectAllBlocks() {
+    const allBlocks = Object.keys(DEFAULT_CAPACITY).filter(block => 
+        !isExcludedUsedSlotBlock(block) && !['BR9', 'RC9', 'OOG'].includes(block)
+    );
+    selectedBlocks = [...allBlocks];
+    initializeBlockSelection();
+    refreshProjectionTable();
+}
+
+function deselectAllBlocks() {
+    selectedBlocks = [];
+    initializeBlockSelection();
+    refreshProjectionTable();
+}
+
+function selectPureImportBlocks() {
+    selectedBlocks = [...PURE_IMPORT_BLOCKS];
+    initializeBlockSelection();
+    refreshProjectionTable();
+}
+
+function analyzeBlockImportExportMix() {
+    // Analyze which blocks have import, export, or mixed cargo
+    const blockMix = {};
+    const safeInvData = Array.isArray(invData) ? invData : [];
+    
+    safeInvData.forEach(item => {
+        const block = String(item?.block || '').toUpperCase();
+        const move = cleanStr(item.move);
+        const isImport = move.includes('import');
+        
+        if (!blockMix[block]) {
+            blockMix[block] = { importCount: 0, exportCount: 0, totalCount: 0 };
+        }
+        
+        blockMix[block].totalCount += 1;
+        if (isImport) {
+            blockMix[block].importCount += 1;
+        } else {
+            blockMix[block].exportCount += 1;
+        }
+    });
+    
+    // Calculate import percentage and categorize blocks
+    const blockStats = Object.entries(blockMix).map(([block, stats]) => {
+        const importPercentage = stats.totalCount > 0 ? (stats.importCount / stats.totalCount) * 100 : 0;
+        let blockType = 'export-only';
+        if (importPercentage === 100) blockType = 'import-only';
+        else if (importPercentage > 0) blockType = 'mixed';
+        
+        return {
+            block,
+            importCount: stats.importCount,
+            exportCount: stats.exportCount,
+            totalCount: stats.totalCount,
+            importPercentage: Number(importPercentage.toFixed(2)),
+            blockType
+        };
+    });
+    
+    return blockStats;
+}
+
+function selectBlocksBasedOnDensity() {
+    const { blockDensity } = getOperationalSnapshot();
+    const blockImportMix = analyzeBlockImportExportMix();
+    
+    // Create a map for quick lookup of import mix
+    const blockMixMap = {};
+    blockImportMix.forEach(stat => {
+        blockMixMap[stat.block] = stat;
+    });
+    
+    // Filter to only blocks that have import cargo (not export-only)
+    const blocksWithImport = blockDensity
+        .filter(b => {
+            const mixStat = blockMixMap[b.block];
+            // Only include blocks with import data (import-only or mixed)
+            return mixStat && mixStat.importPercentage > 0;
+        });
+    
+    if (blocksWithImport.length === 0) {
+        // If no blocks have import data, fallback to pure import blocks
+        selectedBlocks = [...PURE_IMPORT_BLOCKS];
+        initializeBlockSelection();
+        refreshProjectionTable();
+        return;
+    }
+    
+    // Calculate effective density considering import percentage for mixed blocks
+    const blocksWithEffectiveDensity = blocksWithImport.map(b => {
+        const mixStat = blockMixMap[b.block];
+        // For mixed blocks, adjust capacity to account for import percentage
+        const adjustedCapacity = b.capTeus * (mixStat.importPercentage / 100);
+        const effectiveDensity = adjustedCapacity > 0 ? Number(((b.teus / adjustedCapacity) * 100).toFixed(2)) : 0;
+        return {
+            ...b,
+            importPercentage: mixStat.importPercentage,
+            blockType: mixStat.blockType,
+            adjustedCapacity,
+            effectiveDensity
+        };
+    });
+    
+    // Select blocks with effective density < 80% (have capacity for discharge)
+    const availableBlocks = blocksWithEffectiveDensity
+        .filter(b => b.effectiveDensity < 80 && !isExcludedUsedSlotBlock(b.block) && !['BR9', 'RC9', 'OOG'].includes(b.block))
+        .map(b => b.block);
+    
+    // If no blocks have effective density < 80%, select the lowest density blocks (top 50%)
+    if (availableBlocks.length === 0) {
+        const sortedBlocks = blocksWithEffectiveDensity
+            .filter(b => !isExcludedUsedSlotBlock(b.block) && !['BR9', 'RC9', 'OOG'].includes(b.block))
+            .sort((a, b) => a.effectiveDensity - b.effectiveDensity);
+        const topHalf = Math.ceil(sortedBlocks.length / 2);
+        selectedBlocks = sortedBlocks.slice(0, topHalf).map(b => b.block);
+    } else {
+        selectedBlocks = availableBlocks;
+    }
+    
+    initializeBlockSelection();
+    refreshProjectionTable();
+}
+
+// Make functions globally available
+window.selectAllBlocks = selectAllBlocks;
+window.deselectAllBlocks = deselectAllBlocks;
+window.selectPureImportBlocks = selectPureImportBlocks;
+window.selectBlocksBasedOnDensity = selectBlocksBasedOnDensity;
+window.analyzeBlockImportExportMix = analyzeBlockImportExportMix;
