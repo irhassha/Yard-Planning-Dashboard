@@ -2,6 +2,8 @@
     let invData = [];
     let scheduleData = [];
     let isInvLoaded = false;
+    let reservationData = []; // Cache for reservation file data
+    let isReservationLoaded = false; // Flag for reservation file status
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
     let activeVesselFilter = null;
@@ -802,7 +804,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier">Carrier</th>
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service">Svc</th>
                         <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
-                        <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="document.getElementById('reservationFileInput').click()" title="Reservation Checker">CLUSTER</th>
+                        <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="text-[10px]">
@@ -832,7 +834,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Carrier</th>
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Service</th>
                         <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
-                        <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="document.getElementById('reservationFileInput').click()" title="Reservation Checker">CLUSTER</th>
+                        <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="border-t border-slate-200">
@@ -3503,6 +3505,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function handleReservationFile(e) {
     const file = e.target.files[0];
     if(!file) return;
+    
     const reader = new FileReader();
     reader.onload = function(evt) {
         const data = evt.target.result;
@@ -3551,13 +3554,43 @@ function handleReservationFile(e) {
             }
         }
         
-        showReservationResults(results);
+        // Cache the results
+        reservationData = results;
+        isReservationLoaded = true;
+        
+        showReservationResults(results, true);
         e.target.value = ''; // reset
     };
     reader.readAsBinaryString(file);
 }
 
-function showReservationResults(results) {
+function openReservationCheckerModal() {
+    // If reservation data is already cached, show it immediately
+    if (isReservationLoaded && reservationData.length > 0) {
+        showReservationResults(reservationData, false);
+    } else if (isReservationLoaded && reservationData.length === 0) {
+        // Show empty state if already loaded but no results
+        const modal = document.getElementById('reservationModal');
+        const body = document.getElementById('reservationModalBody');
+        if (!modal || !body) return;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        body.innerHTML = `
+            <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
+                <span class="material-symbols-outlined text-4xl mb-2 opacity-50">check_circle</span>
+                <p>No reservations found on greyed out blocks.</p>
+                <button onclick="document.getElementById('reservationFileInput').click()" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors inline-flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload New File
+                </button>
+            </div>
+        `;
+    } else {
+        // First time - show upload prompt
+        document.getElementById('reservationFileInput').click();
+    }
+}
+
+function showReservationResults(results, isNewUpload = false) {
     const modal = document.getElementById('reservationModal');
     const body = document.getElementById('reservationModalBody');
     if (!modal || !body) return;
@@ -3569,12 +3602,29 @@ function showReservationResults(results) {
             <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
                 <span class="material-symbols-outlined text-4xl mb-2 opacity-50">check_circle</span>
                 <p>No reservations found on greyed out blocks.</p>
+                <div class="flex items-center justify-center gap-3 mt-4 flex-wrap">
+                    <button onclick="document.getElementById('reservationFileInput').click()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload New File
+                    </button>
+                    ${isReservationLoaded ? `<button onclick="clearReservationCache()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300 transition-colors inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">refresh</span> Clear Cache
+                    </button>` : ''}
+                </div>
             </div>
         `;
         return;
     }
     
-    let html = '<div class="space-y-4">';
+    let html = `${isReservationLoaded && !isNewUpload ? `
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-2 mb-2">
+            <span class="material-symbols-outlined text-blue-600 text-sm flex-shrink-0 mt-0.5">check_circle</span>
+            <div class="text-xs text-blue-700">
+                <p class="font-semibold">Data Tersimpan dalam Cache</p>
+                <p class="text-blue-600">Refresh page untuk menghapus cache. Atau klik tombol di bawah.</p>
+            </div>
+        </div>
+    ` : ''}<div class="space-y-4">`;
+    
     results.forEach(res => {
         html += `
             <div class="glass-panel p-5 rounded-2xl border border-red-200 bg-red-50/40 shadow-sm relative overflow-hidden">
@@ -3599,6 +3649,37 @@ function showReservationResults(results) {
             </div>
         `;
     });
-    html += '</div>';
+    
+    html += `</div>
+    <div class="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-slate-200 flex-wrap">
+        <button onclick="document.getElementById('reservationFileInput').click()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors inline-flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload New File
+        </button>
+        <button onclick="clearReservationCache()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300 transition-colors inline-flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">delete_outline</span> Clear Cache
+        </button>
+    </div>`;
+    
     body.innerHTML = html;
+}
+
+function clearReservationCache() {
+    reservationData = [];
+    isReservationLoaded = false;
+    document.getElementById('reservationFileInput').value = '';
+    
+    const modal = document.getElementById('reservationModal');
+    const body = document.getElementById('reservationModalBody');
+    if (!modal || !body) return;
+    
+    body.innerHTML = `
+        <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="material-symbols-outlined text-4xl mb-2 opacity-50">delete_outline</span>
+            <p class="font-semibold text-slate-600 mb-2">Cache Dihapus</p>
+            <p class="text-sm mb-4">Data reservation telah dihapus dari memory. Upload file baru untuk melanjutkan.</p>
+            <button onclick="document.getElementById('reservationFileInput').click()" class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors inline-flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">upload_file</span> Upload File
+            </button>
+        </div>
+    `;
 }
