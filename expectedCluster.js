@@ -9,7 +9,7 @@ window.SERVICE_CLUSTER_MAP = {
   "CIM": 6,
   "IA15": 6,
   "I15": 6,
-  "IA4": 8,
+  "IA4": 4,
   "PERTIWI": 6,
   "JKF": 8,
   "JTH": 6,
