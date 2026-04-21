@@ -1161,6 +1161,27 @@
         </div>
     </div>
 
+    <!-- Cluster Detail Drawer -->
+    <div id="clusterDetailDrawer" class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">inventory_2</span>
+                Slot Summary Tracker
+            </h3>
+            <button onclick="closeClusterDetailDrawer()" class="text-slate-400 hover:text-red-500 transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="p-4 flex-1 overflow-y-auto bg-slate-50">
+            <div id="clusterDetailContent" class="space-y-4">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Drawer Overlay -->
+    <div id="clusterDetailOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden" onclick="closeClusterDetailDrawer()"></div>
+
     <footer
         class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
         © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team

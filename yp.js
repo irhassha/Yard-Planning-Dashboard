@@ -939,23 +939,26 @@ document.getElementById('sumTotalCap').innerText =
                 const isMinAndExceeds = greyOutSet.has(b);
                 const grayOutClass = isMinAndExceeds ? ' opacity-40 grayscale-[0.8]' : '';
 
+                const safeCarrier = data.carrier.replace(/'/g, "\\'");
+                const safeService = (data.service || '').replace(/'/g, "\\'");
+                
                 if (!showXYZ) {
                     const isEmptyBlock = b.charAt(0).toUpperCase() === 'E';
                     const emptyBg = isEmptyBlock ? ' bg-slate-100/60' : '';
                     if (total === 0) return `<td class="px-1 py-2 text-center text-slate-300 border-l border-slate-200 col-block${emptyBg}">-</td>`;
                     let cls = total > 200 ? 'bg-red-600 text-white' : (total > 100 ? 'bg-amber-400 text-slate-900' : (isEmptyBlock ? 'bg-slate-200 text-slate-500' : 'bg-blue-50 text-blue-700 border border-blue-100'));
-                    return `<td class="px-1 py-1 text-center border-l border-slate-200 col-block${emptyBg}"><span class="inline-block px-1.5 py-1 rounded text-[10px] font-bold ${cls} w-full text-center${grayOutClass}">${total}</span></td>`;
+                    return `<td tabindex="0" class="px-1 py-1 text-center border-l border-slate-200 col-block${emptyBg} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', 'null')"><span class="inline-block px-1.5 py-1 rounded text-[10px] font-bold ${cls} w-full text-center${grayOutClass} hover:opacity-80">${total}</span></td>`;
                 }
                 
-                const renderCell = (val, colorClass, isEnd) => {
+                const renderCell = (val, colorClass, isEnd, part) => {
                     if (val === 0) return `<td class="px-0 py-1 text-center text-slate-300 border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''}">-</td>`;
                     let cls = val > 100 ? 'bg-red-600 text-white' : (val > 50 ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700');
-                    return `<td class="px-0 py-0.5 text-center border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''}"><span class="inline-block w-full py-0.5 text-[8.5px] font-bold ${cls}${grayOutClass}">${val}</span></td>`;
+                    return `<td tabindex="0" class="px-0 py-0.5 text-center border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', '${part}')"><span class="inline-block w-full py-0.5 text-[8.5px] font-bold ${cls}${grayOutClass} hover:opacity-80">${val}</span></td>`;
                 };
 
-                return renderCell(res.X, 'text-blue-600', false) + 
-                       renderCell(res.Y, 'text-amber-600', false) + 
-                       renderCell(res.Z, 'text-emerald-600', true);
+                return renderCell(res.X, 'text-blue-600', false, 'X') + 
+                       renderCell(res.Y, 'text-amber-600', false, 'Y') + 
+                       renderCell(res.Z, 'text-emerald-600', true, 'Z');
             }).join("");
             
             let trClass = "hover:bg-slate-50 transition border-b border-slate-100";
@@ -3278,3 +3281,170 @@ window.deselectAllBlocks = deselectAllBlocks;
 window.selectPureImportBlocks = selectPureImportBlocks;
 window.selectBlocksBasedOnDensity = selectBlocksBasedOnDensity;
 window.analyzeBlockImportExportMix = analyzeBlockImportExportMix;
+
+// --- CLUSTER DETAIL DRAWER LOGIC ---
+window.closeClusterDetailDrawer = function() {
+    const drawer = document.getElementById('clusterDetailDrawer');
+    const overlay = document.getElementById('clusterDetailOverlay');
+    if(drawer) drawer.classList.add('translate-x-full');
+    if(overlay) overlay.classList.add('hidden');
+};
+
+window.showClusterDetail = function(carrier, service, block, part) {
+    if (!invData || !carrier || !block) return;
+    
+    // Filter data
+    const filteredRows = invData.filter(it => {
+        if (!String(it.move || '').toLowerCase().includes('export')) return false;
+        if (it.carrier !== carrier) return false;
+        if (service && it.service !== service && it.service !== '') return false;
+        if (it.block !== block) return false;
+        
+        if (part && part !== 'null') {
+            const slot = parseInt(it.slot) || 0;
+            const blockChar = it.block.charAt(0).toUpperCase();
+            let rowPart = 'X';
+            if (blockChar === 'A' || blockChar === 'B') {
+                if (slot >= 26) rowPart = 'Z';
+                else if (slot >= 13) rowPart = 'Y';
+            } else if (blockChar === 'C') {
+                if (slot >= 31) rowPart = 'Z';
+                else if (slot >= 16) rowPart = 'Y';
+            }
+            if (rowPart !== part) return false;
+        }
+        
+        return true;
+    });
+
+    // Pivot data by Size -> SPOD -> WC
+    const pivotData = {
+        '20': { spods: new Set(), wcs: new Set(), matrix: {} },
+        '40': { spods: new Set(), wcs: new Set(), matrix: {} },
+        '45': { spods: new Set(), wcs: new Set(), matrix: {} }
+    };
+    
+    filteredRows.forEach(it => {
+        let sizeGroup = '40';
+        const len = String(it.length || '40');
+        if (len.startsWith('20')) sizeGroup = '20';
+        else if (len.startsWith('45')) sizeGroup = '45';
+        
+        const spod = String(it.spod || 'UNKNOWN').toUpperCase();
+        const wc = String(it.wtcl || 'UNKNOWN').toUpperCase();
+        
+        const g = pivotData[sizeGroup];
+        g.spods.add(spod);
+        g.wcs.add(wc);
+        
+        if (!g.matrix[spod]) g.matrix[spod] = {};
+        g.matrix[spod][wc] = (g.matrix[spod][wc] || 0) + 1;
+    });
+
+    const contentDiv = document.getElementById('clusterDetailContent');
+    if(!contentDiv) return;
+    
+    let matrixTablesHtml = '';
+    ['20', '40', '45'].forEach(size => {
+        const g = pivotData[size];
+        if (g.spods.size === 0) return; // No data for this size
+        
+        const sortedWCs = Array.from(g.wcs).sort();
+        const sortedSPODs = Array.from(g.spods).sort();
+        
+        let thWc = sortedWCs.map(wc => `<th class="py-2 px-2 text-center border-r border-slate-200/50">${wc}</th>`).join('');
+        let headerRow = `<thead class="bg-slate-100 uppercase text-[10px] text-slate-500 font-bold border-b border-slate-200">
+            <tr>
+                <th class="py-2 px-3 text-left border-r border-slate-200 bg-white">SPOD / WC</th>
+                ${thWc}
+                <th class="py-2 px-3 text-center border-l bg-slate-200/50 border-slate-200">Total</th>
+            </tr>
+        </thead>`;
+        
+        let trSpods = sortedSPODs.map(spod => {
+            let rowTotal = 0;
+            let tdWc = sortedWCs.map(wc => {
+                let count = g.matrix[spod][wc] || 0;
+                rowTotal += count;
+                return `<td class="py-1.5 px-2 text-center text-xs font-semibold border-r border-slate-100">${count > 0 ? count : '<span class="text-slate-300">-</span>'}</td>`;
+            }).join('');
+            
+            return `<tr class="border-b border-slate-100 last:border-0 hover:bg-blue-50/30 transition-colors">
+                <td class="py-1.5 px-3 text-[11px] font-bold text-slate-700 border-r border-slate-200 bg-slate-50/50">${spod}</td>
+                ${tdWc}
+                <td class="py-1.5 px-3 text-xs font-black text-slate-800 text-center border-l border-slate-200 bg-slate-50/50">${rowTotal}</td>
+            </tr>`;
+        }).join('');
+        
+        // Grand totals row
+        let grandTotal = 0;
+        let tfWc = sortedWCs.map(wc => {
+            let colTotal = 0;
+            sortedSPODs.forEach(spod => colTotal += (g.matrix[spod][wc] || 0));
+            grandTotal += colTotal;
+            return `<td class="py-2 px-2 text-center text-xs font-black text-slate-800 border-r border-slate-200/50">${colTotal > 0 ? colTotal : '-'}</td>`;
+        }).join('');
+        
+        let footerRow = `<tfoot class="bg-blue-50/60 border-t border-slate-200">
+            <tr>
+                <td class="py-2 px-3 text-[11px] font-bold text-slate-600 border-r border-slate-200 text-right uppercase tracking-wider bg-white">Total</td>
+                ${tfWc}
+                <td class="py-2 px-3 text-sm font-black text-blue-700 text-center border-l border-slate-200 bg-blue-100/50 block-group-end" style="border-right-width: 0px !important;">${grandTotal}</td>
+            </tr>
+        </tfoot>`;
+        
+        let headerColor = size === '20' ? 'bg-amber-500' : (size === '40' ? 'bg-blue-600' : 'bg-emerald-600');
+        
+        matrixTablesHtml += `
+            <div class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+                <div class="${headerColor} px-4 py-2 flex justify-between items-center shadow-inner text-white">
+                    <h4 class="font-extrabold text-xs tracking-widest flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] opacity-80">grid_on</span>
+                        SIZE ${size}'
+                    </h4>
+                    <span class="text-[10px] font-bold bg-black/20 px-2 py-0.5 rounded-md backdrop-blur-sm">${grandTotal} UNITS</span>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left">
+                        ${headerRow}
+                        <tbody class="divide-y divide-slate-100">
+                            ${trSpods}
+                        </tbody>
+                        ${footerRow}
+                    </table>
+                </div>
+            </div>
+        `;
+    });
+
+    let html = `
+        <div class="mb-5 text-sm bg-blue-50 p-4 rounded-2xl border border-blue-200 shadow-sm flex flex-col gap-2 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+            <div class="flex justify-between items-center z-10 relative">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Carrier & Service</span>
+                <span class="font-black text-slate-800 tracking-tight text-right">${carrier} <br> <span class="text-xs text-blue-600">${service || '-'}</span></span>
+            </div>
+            <div class="w-full border-t border-blue-200/50 z-10 relative"></div>
+            <div class="flex justify-between items-center z-10 relative">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Block Detail</span>
+                <span class="font-bold text-white bg-slate-800 px-3 py-1 rounded-md text-xs shadow-sm">${block} ${part !== 'null' && part ? ' - ' + part : ''}</span>
+            </div>
+            <div class="w-full border-t border-blue-200/50 z-10 relative"></div>
+            <div class="flex justify-between items-center z-10 relative">
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Units Scanned</span>
+                <span class="font-black text-blue-600 text-xl">${filteredRows.length}</span>
+            </div>
+        </div>
+        
+        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 pl-1"><span class="material-symbols-outlined text-[14px]">table_chart</span> Matrix Breakdown by Size</div>
+        ${matrixTablesHtml}
+    `;
+
+    contentDiv.innerHTML = html;
+    
+    // Show drawer
+    const drawer = document.getElementById('clusterDetailDrawer');
+    const overlay = document.getElementById('clusterDetailOverlay');
+    if(overlay) overlay.classList.remove('hidden');
+    if(drawer) drawer.classList.remove('translate-x-full');
+};
