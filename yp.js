@@ -3448,3 +3448,53 @@ window.showClusterDetail = function(carrier, service, block, part) {
     if(overlay) overlay.classList.remove('hidden');
     if(drawer) drawer.classList.remove('translate-x-full');
 };
+
+// --- DRAG TO SCROLL FOR WIDE TABLES ---
+document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('.custom-scrollbar');
+    
+    sliders.forEach(slider => {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let dragged = false;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            dragged = false;
+            slider.classList.add('active-drag');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active-drag');
+        });
+        
+        slider.addEventListener('mouseup', (e) => {
+            isDown = false;
+            slider.classList.remove('active-drag');
+        });
+        
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            dragged = true;
+            // Prevent text selection while dragging
+            if (e.cancelable) e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 1.5; // Scroll speed multiplier
+            slider.scrollLeft = scrollLeft - walk;
+        });
+        
+        // Prevent click events (like opening the drawer) if the user was just dragging to scroll
+        slider.addEventListener('click', (e) => {
+            if (dragged) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Reset dragged state after handling
+                setTimeout(() => { dragged = false; }, 50);
+            }
+        }, { capture: true });
+    });
+});
