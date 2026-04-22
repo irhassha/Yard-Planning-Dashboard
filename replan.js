@@ -121,6 +121,7 @@ function analyzeReplan() {
         type: findVal("Cont. type"),
         height: findVal("Unit height")
     };
+    window.currentReplanTarget = target;
 
     currentReplanMatches = db.filter(item => {
         const matchSvc = normalizeReplan(item.service) === target.svc;
@@ -151,8 +152,52 @@ function calculateAvailableSlotsReplan() {
     const filterContainer = document.getElementById('replanFilterContainer');
     const db = window.invData || [];
 
+    const hideGreyOutForCluster = document.getElementById('toggleGreyOutBlocks')?.checked !== false;
+    const tgt = window.currentReplanTarget || {};
+    const cMapKey = tgt ? `${tgt.carr}||${tgt.svc.toUpperCase()}` : "";
+    const tgtGreyOutBlocks = (window.activeGreyOutBlocksMap && window.activeGreyOutBlocksMap[cMapKey]) || [];
+
+    let activeClusterBlocks = [];
+    if (tgt && tgt.carr && window.invData) {
+        let allVesselBlocks = new Set();
+        (window.invData || []).forEach(it => {
+            if (!it.move.includes('export')) return;
+            if (normalizeReplan(it.carrier) === tgt.carr &&
+                normalizeReplan(it.service) === tgt.svc) {
+                allVesselBlocks.add((it.block || '').toUpperCase());
+            }
+        });
+        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && !tgtGreyOutBlocks.includes(b)).sort();
+    }
+
+    let clusterHtml = "";
+    if (activeClusterBlocks.length > 0) {
+        clusterHtml = `
+            <div class="mb-4 p-3 bg-blue-50/50 border border-blue-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-blue-500 text-[18px]">group_work</span>
+                    <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Active Cluster <span class="text-blue-600">(${(tgt.carr || 'N/A').toUpperCase()} - ${(tgt.svc || 'N/A').toUpperCase()})</span>:</span>
+                </div>
+                <div class="flex flex-wrap gap-1">
+                    ${activeClusterBlocks.map(b => `<span class="px-2 py-0.5 bg-white border border-blue-200 text-blue-700 text-[10px] font-black rounded shadow-sm">${b}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    } else if (tgt && tgt.carr) {
+        clusterHtml = `
+            <div class="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-slate-400 text-[18px]">group_work</span>
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Active Cluster:</span>
+                </div>
+                <div class="text-[10px] font-bold text-slate-400">No active cluster found</div>
+            </div>
+        `;
+    }
+
     if (currentReplanMatches.length === 0) {
         out.innerHTML = `
+            ${clusterHtml}
             <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
                 <span class="material-symbols-outlined text-red-500 text-3xl mb-2">error</span>
                 <p class="text-red-700 font-bold">No matching stacks found in Unit List.</p>
@@ -194,8 +239,7 @@ function calculateAvailableSlotsReplan() {
     const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
     const hideGreyOut = document.getElementById('toggleGreyOutBlocks')?.checked !== false; // Default true (hidden) if element not found
-    const matchInfo = currentReplanMatches[0];
-    const mapKey = matchInfo ? `${matchInfo.carrier}||${(matchInfo.service || "").toUpperCase()}` : "";
+    const mapKey = currentReplanMatches.length > 0 ? `${currentReplanMatches[0].carrier}||${(currentReplanMatches[0].service || "").toUpperCase()}` : "";
     const greyOutBlocks = (window.activeGreyOutBlocksMap && window.activeGreyOutBlocksMap[mapKey]) || [];
 
     Object.keys(stackInfo).forEach(base => {
@@ -242,6 +286,7 @@ function calculateAvailableSlotsReplan() {
 
     if (stacks.length === 0) {
         out.innerHTML = `
+            ${clusterHtml}
             <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
                 <span class="material-symbols-outlined text-yellow-500 text-3xl mb-2">layers_clear</span>
                 <p class="text-yellow-700 font-bold">All stackable tiers (up to 5) are full or selected based on current match criteria.</p>
@@ -292,7 +337,7 @@ function calculateAvailableSlotsReplan() {
             </div>`;
     });
 
-    out.innerHTML = html;
+    out.innerHTML = clusterHtml + html;
 }
 
 function setFilterReplan(filter) {

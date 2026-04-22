@@ -682,6 +682,81 @@ document.getElementById('sumTotalCap').innerText =
         if (vessel) toggleVesselFilter(vessel);
     });
 
+    window.toggleFullScreenCluster = function() {
+        const el = document.getElementById('clusterSpreadingContainer');
+        if (!el) return;
+        
+        if (!el.classList.contains('is-modal-fullscreen')) {
+            // Create placeholder to maintain flow
+            const placeholder = document.createElement('div');
+            placeholder.id = 'clusterSpreadingPlaceholder';
+            placeholder.style.height = el.offsetHeight + 'px';
+            el.parentNode.insertBefore(placeholder, el);
+            
+            // Move block to body
+            document.body.appendChild(el);
+            
+            // Apply modal popup styles
+            el.classList.add('is-modal-fullscreen', 'fixed', 'inset-0', 'z-[120]', 'm-auto', 'w-[98vw]', 'h-[95vh]', 'overflow-y-auto', 'rounded-3xl', 'shadow-2xl', 'border', 'border-slate-200', 'bg-white');
+            el.classList.remove('rounded-2xl', 'shadow-glass', 'border-white/40', 'bg-slate-50');
+            
+            // Add backdrop overlay
+            const backdrop = document.createElement('div');
+            backdrop.id = 'clusterSpreadingBackdrop';
+            backdrop.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] transition-opacity animate-fade-in';
+            document.body.insertBefore(backdrop, el);
+            
+            document.body.classList.add('overflow-hidden');
+            
+            // Update icon
+            const btnIcon = el.querySelector('button[title="Toggle Full Screen"] span');
+            if (btnIcon) btnIcon.textContent = 'fullscreen_exit';
+            
+            // Auto-fit Logic
+            setTimeout(() => {
+                const tableContainer = el.querySelector('.overflow-x-auto');
+                const table = document.getElementById('clusterTable');
+                if (tableContainer && table) {
+                    tableContainer.style.overflowX = 'hidden';
+                    table.style.zoom = '1';
+                    const availW = tableContainer.clientWidth;
+                    const reqW = table.offsetWidth;
+                    if (reqW > availW && availW > 0) {
+                        table.style.zoom = (availW / reqW).toString();
+                    }
+                }
+            }, 50);
+        } else {
+            // Restore to placeholder
+            const placeholder = document.getElementById('clusterSpreadingPlaceholder');
+            if (placeholder) {
+                placeholder.parentNode.insertBefore(el, placeholder);
+                placeholder.remove();
+            }
+            
+            // Remove backdrop
+            const backdrop = document.getElementById('clusterSpreadingBackdrop');
+            if (backdrop) backdrop.remove();
+            
+            // Revert styles
+            el.classList.remove('is-modal-fullscreen', 'fixed', 'inset-0', 'z-[120]', 'm-auto', 'w-[98vw]', 'h-[95vh]', 'overflow-y-auto', 'rounded-3xl', 'shadow-2xl', 'border', 'border-slate-200', 'bg-white');
+            el.classList.add('rounded-2xl', 'shadow-glass', 'border-white/40', 'bg-slate-50');
+            document.body.classList.remove('overflow-hidden');
+            
+            // Update icon
+            const btnIcon = el.querySelector('button[title="Toggle Full Screen"] span');
+            if (btnIcon) btnIcon.textContent = 'fullscreen';
+            
+            // Revert Auto-fit Logic
+            const tableContainer = el.querySelector('.overflow-x-auto');
+            const table = document.getElementById('clusterTable');
+            if (tableContainer && table) {
+                tableContainer.style.overflowX = 'auto';
+                table.style.zoom = '';
+            }
+        }
+    };
+
     function renderClusterSpreading() {
         const body = document.getElementById('clusterBody');
         const showAll = document.getElementById('toggleSmallCarriers').checked;
@@ -751,7 +826,9 @@ document.getElementById('sumTotalCap').innerText =
 
         let uniqueBlocks = new Set();
         filtered.forEach(([key, data]) => {
-            Object.keys(data.blocks).forEach(b => uniqueBlocks.add(b));
+            Object.keys(data.blocks).forEach(b => {
+                if (b.toUpperCase() !== 'CG1') uniqueBlocks.add(b);
+            });
         });
         let sortedBlocks = Array.from(uniqueBlocks).sort();
 
@@ -781,28 +858,28 @@ document.getElementById('sumTotalCap').innerText =
                 let colspan = (sortedBlocks.length || 1) * 3;
                 let blockHeaders = sortedBlocks.map(b => {
                     const bg = b.charAt(0).toUpperCase() === 'E' ? 'bg-slate-200/80 text-slate-400' : 'bg-slate-100/50';
-                    return `<th colspan="3" class="px-1 py-1 text-center font-bold text-[10px] border-l border-slate-300 ${bg}">${b}</th>`;
+                    return `<th colspan="3" class="px-1 py-1 text-center font-bold text-[12px] border-l border-slate-300 ${bg}">${b}</th>`;
                 }).join('');
                 let occRow = sortedBlocks.map(b => {
                     const isEBlock = b.charAt(0).toUpperCase() === 'E';
-                    if (isEBlock) return `<th colspan="3" class="px-0 py-0 text-center text-[7px] font-bold border-l border-slate-200 bg-white"></th>`;
+                    if (isEBlock) return `<th colspan="3" class="px-0 py-0 text-center text-[9px] font-bold border-l border-slate-200 bg-white"></th>`;
                     const pct = blockOccupancy[b] || 0;
-                    return `<th colspan="3" class="px-0 py-0 text-center text-[7px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white">${pct}%</th>`;
+                    return `<th colspan="3" class="px-0 py-0 text-center text-[9px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white">${pct}%</th>`;
                 }).join('');
                 let subHeaders = sortedBlocks.map((b, idx) => {
                     return `
-                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-200 text-blue-600">X</th>
-                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-100 text-amber-600">Y</th>
-                    <th class="px-0 py-1 text-center font-bold text-[8px] bg-white border-l border-slate-100 text-emerald-600 block-group-end">Z</th>`;
+                    <th class="px-0 py-1 text-center font-bold text-[10px] bg-white border-l border-slate-200 text-blue-600">X</th>
+                    <th class="px-0 py-1 text-center font-bold text-[10px] bg-white border-l border-slate-100 text-amber-600">Y</th>
+                    <th class="px-0 py-1 text-center font-bold text-[10px] bg-white border-l border-slate-100 text-emerald-600 block-group-end">Z</th>`;
                 }).join('');
 
                 head.innerHTML = `
                     <tr class="bg-slate-50 text-[10px]">
-                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-eta">ETB</th>
-                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-shift">S</th>
-                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-hour">HOUR</th>
-                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier">Carrier</th>
-                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service">Svc</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-eta w-[1%] whitespace-nowrap">ETB</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-shift w-[1%] whitespace-nowrap">S</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-hour w-[1%] whitespace-nowrap">HOUR</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier w-[1%] whitespace-nowrap">Carrier</th>
+                        <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service w-[1%] whitespace-nowrap">Svc</th>
                         <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
                         <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black">TOTAL<br>UNITS</th>
@@ -818,21 +895,21 @@ document.getElementById('sumTotalCap').innerText =
             } else {
                 let occRow = sortedBlocks.map(b => {
                     const isEBlock = b.charAt(0).toUpperCase() === 'E';
-                    if (isEBlock) return `<th class="px-1 py-0 text-center text-[8px] font-bold border-l border-slate-200 bg-white col-block"></th>`;
+                    if (isEBlock) return `<th class="px-1 py-0 text-center text-[10px] font-bold border-l border-slate-200 bg-white col-block"></th>`;
                     const pct = blockOccupancy[b] || 0;
-                    return `<th class="px-1 py-0 text-center text-[8px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white col-block">${pct}%</th>`;
+                    return `<th class="px-1 py-0 text-center text-[10px] font-bold ${occColor(pct)} border-l border-slate-200 bg-white col-block">${pct}%</th>`;
                 }).join('');
                 let blockHeaders = sortedBlocks.map(b => {
                     const bg = blockBg(b);
-                    return `<th class="px-2 py-2 text-center font-bold text-[10px] border-l border-slate-200 ${bg} col-block">${b}</th>`;
+                    return `<th class="px-2 py-2 text-center font-bold text-[12px] border-l border-slate-200 ${bg} col-block">${b}</th>`;
                 }).join('');
                 head.innerHTML = `
-                    <tr class="text-[11px]">
-                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">ETB</th>
-                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">SHIFT</th>
-                        <th rowspan="3" class="px-2 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">HOUR</th>
-                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Carrier</th>
-                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50">Service</th>
+                    <tr class="text-[12px]">
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">ETB</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">SHIFT</th>
+                        <th rowspan="3" class="px-2 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">HOUR</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">Carrier</th>
+                        <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">Service</th>
                         <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
                         <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black">TOTAL<br>UNITS</th>
@@ -949,13 +1026,13 @@ document.getElementById('sumTotalCap').innerText =
                     const emptyBg = isEmptyBlock ? ' bg-slate-100/60' : '';
                     if (total === 0) return `<td class="px-1 py-2 text-center text-slate-300 border-l border-slate-200 col-block${emptyBg}">-</td>`;
                     let cls = total > 200 ? 'bg-red-600 text-white' : (total > 100 ? 'bg-amber-400 text-slate-900' : (isEmptyBlock ? 'bg-slate-200 text-slate-500' : 'bg-blue-50 text-blue-700 border border-blue-100'));
-                    return `<td tabindex="0" class="px-1 py-1 text-center border-l border-slate-200 col-block${emptyBg} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', 'null')"><span class="inline-block px-1.5 py-1 rounded text-[10px] font-bold ${cls} w-full text-center${grayOutClass} hover:opacity-80">${total}</span></td>`;
+                    return `<td tabindex="0" class="px-1 py-1 text-center border-l border-slate-200 col-block${emptyBg} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', 'null')"><span class="inline-block px-1.5 py-1 rounded text-[11px] font-bold ${cls} w-full text-center${grayOutClass} hover:opacity-80">${total}</span></td>`;
                 }
                 
                 const renderCell = (val, colorClass, isEnd, part) => {
                     if (val === 0) return `<td class="px-0 py-1 text-center text-slate-300 border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''}">-</td>`;
                     let cls = val > 100 ? 'bg-red-600 text-white' : (val > 50 ? 'bg-amber-400 text-slate-900' : 'bg-slate-100 text-slate-700');
-                    return `<td tabindex="0" class="px-0 py-0.5 text-center border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', '${part}')"><span class="inline-block w-full py-0.5 text-[8.5px] font-bold ${cls}${grayOutClass} hover:opacity-80">${val}</span></td>`;
+                    return `<td tabindex="0" class="px-0 py-0.5 text-center border-l border-slate-100 col-sub-block ${isEnd ? 'block-group-end' : ''} cursor-pointer transition-colors" onclick="showClusterDetail('${safeCarrier}', '${safeService}', '${b}', '${part}')"><span class="inline-block w-full py-0.5 text-[9.5px] font-bold ${cls}${grayOutClass} hover:opacity-80">${val}</span></td>`;
                 };
 
                 return renderCell(res.X, 'text-blue-600', false, 'X') + 
@@ -972,25 +1049,25 @@ document.getElementById('sumTotalCap').innerText =
 
             let etaHtml = "";
             if (etaRowspan > 0) {
-                etaHtml = `<td rowspan="${etaRowspan}" class="px-1 py-2 text-[10px] font-semibold text-slate-700 text-center border-r border-slate-200 align-middle col-eta">${etaLabel}</td>`;
+                etaHtml = `<td rowspan="${etaRowspan}" class="px-1 py-2 text-[10px] font-semibold text-slate-700 text-center border-r border-slate-200 align-middle col-eta w-[1%] whitespace-nowrap">${etaLabel}</td>`;
             }
 
             let shiftHtml = "";
             if (shiftRowspan > 0) {
-                shiftHtml = `<td rowspan="${shiftRowspan}" class="px-1 py-2 text-[10px] font-extrabold text-slate-800 text-center border-r border-slate-200 align-middle bg-slate-50/50 col-shift">${shiftLabel}</td>`;
+                shiftHtml = `<td rowspan="${shiftRowspan}" class="px-1 py-2 text-[10px] font-extrabold text-slate-800 text-center border-r border-slate-200 align-middle bg-slate-50/50 col-shift w-[1%] whitespace-nowrap">${shiftLabel}</td>`;
             }
 
             let hourHtml = "";
             if (hourRowspan > 0) {
-                hourHtml = `<td rowspan="${hourRowspan}" class="px-1 py-2 text-[10px] font-bold text-slate-600 text-center border-r border-slate-200 align-middle col-hour">${hourLabel}</td>`;
+                hourHtml = `<td rowspan="${hourRowspan}" class="px-1 py-2 text-[10px] font-bold text-slate-600 text-center border-r border-slate-200 align-middle col-hour w-[1%] whitespace-nowrap">${hourLabel}</td>`;
             }
 
             _clusterRows.push(`<tr class="${trClass}" style="${trStyle}">
                 ${etaHtml}
                 ${shiftHtml}
                 ${hourHtml}
-                <td class="px-2 py-2 text-[10px] font-black text-slate-700 border-r border-slate-200 align-middle text-center col-carrier">${data.carrier}</td>
-                <td class="px-1 py-2 text-[9px] text-slate-500 uppercase font-semibold text-center border-r border-slate-200 align-middle col-service">${serviceLabel}</td>
+                <td class="px-2 py-2 text-[10px] font-black text-slate-700 border-r border-slate-200 align-middle text-center col-carrier w-[1%] whitespace-nowrap">${data.carrier}</td>
+                <td class="px-1 py-2 text-[10px] text-slate-500 uppercase font-semibold text-center border-r border-slate-200 align-middle col-service w-[1%] whitespace-nowrap">${serviceLabel}</td>
                 ${blockCells}
                 <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-cluster">${expectedClusterLabel}</td>
                 <td class="px-1 py-1 text-center align-middle font-bold ${actualColorClass} border-l border-slate-200 col-cluster">${totalClusterCount}</td>
