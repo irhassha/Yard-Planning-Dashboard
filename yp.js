@@ -3496,7 +3496,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
         `;
     });
 
-    let html = `
+    let infoCardHtml = `
         <div class="mb-5 text-sm bg-blue-50 p-4 rounded-2xl border border-blue-200 shadow-sm flex flex-col gap-2 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
             <div class="flex justify-between items-center z-10 relative">
@@ -3514,9 +3514,154 @@ window.showClusterDetail = function(carrier, service, block, part) {
                 <span class="font-black text-blue-600 text-xl">${filteredRows.length}</span>
             </div>
         </div>
-        
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 pl-1"><span class="material-symbols-outlined text-[14px]">table_chart</span> Matrix Breakdown by Size</div>
-        ${matrixTablesHtml}
+    `;
+
+    // --- BUILD VISUAL BAY GRID ---
+    // SPOD color palette generator
+    const SPOD_COLORS = {};
+    const SPOD_BASE_PALETTE = [
+        { bg: '#ef4444', text: '#fff' },   // Red
+        { bg: '#3b82f6', text: '#fff' },   // Blue
+        { bg: '#10b981', text: '#fff' },   // Emerald
+        { bg: '#f59e0b', text: '#000' },   // Amber
+        { bg: '#8b5cf6', text: '#fff' },   // Violet
+        { bg: '#ec4899', text: '#fff' },   // Pink
+        { bg: '#06b6d4', text: '#000' },   // Cyan
+        { bg: '#84cc16', text: '#000' },   // Lime
+        { bg: '#f97316', text: '#fff' },   // Orange
+        { bg: '#6366f1', text: '#fff' },   // Indigo
+        { bg: '#14b8a6', text: '#fff' },   // Teal
+        { bg: '#e11d48', text: '#fff' },   // Rose
+        { bg: '#a855f7', text: '#fff' },   // Purple
+        { bg: '#0ea5e9', text: '#fff' },   // Sky
+        { bg: '#d946ef', text: '#fff' },   // Fuchsia
+        { bg: '#78716c', text: '#fff' },   // Stone
+    ];
+    let spodIdx = 0;
+    const allSpods = new Set();
+    filteredRows.forEach(it => allSpods.add(String(it.spod || 'UNKNOWN').toUpperCase()));
+    Array.from(allSpods).sort().forEach(spod => {
+        SPOD_COLORS[spod] = SPOD_BASE_PALETTE[spodIdx % SPOD_BASE_PALETTE.length];
+        spodIdx++;
+    });
+
+    // Parse tier from _raw_slot
+    const parseTier = (rawSlot) => {
+        if (!rawSlot || !rawSlot.includes('-')) return 1;
+        const parts = rawSlot.split('-');
+        if (parts.length >= 3) return parseInt(parts[parts.length - 1]) || 1;
+        return 1;
+    };
+
+    // Group data by slot (bay)
+    const bayMap = {};
+    filteredRows.forEach(it => {
+        const slotNum = it.slot || 0;
+        if (!bayMap[slotNum]) bayMap[slotNum] = [];
+        bayMap[slotNum].push({
+            row: it.row || 1,
+            tier: parseTier(it._raw_slot),
+            size: String(it.length || '40'),
+            spod: String(it.spod || 'UNKNOWN').toUpperCase(),
+            wc: String(it.wtcl || '-').toUpperCase(),
+            unit: it.unit || ''
+        });
+    });
+
+    // Get max tier for the block from activeCapacity
+    const blockTierMax = (activeCapacity[block] && activeCapacity[block].tier) || 5;
+
+    // Build SPOD legend
+    let spodLegendHtml = '';
+    Object.entries(SPOD_COLORS).forEach(([spod, c]) => {
+        spodLegendHtml += `<span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:${c.bg};color:${c.text}">${spod}</span>`;
+    });
+
+    // Build Bay Grids
+    const sortedBays = Object.keys(bayMap).map(Number).sort((a, b) => a - b);
+    let bayGridsHtml = '';
+
+    if (sortedBays.length === 0) {
+        bayGridsHtml = '<div class="text-center text-slate-400 py-8 text-sm">No bay data available.</div>';
+    } else {
+        sortedBays.forEach(bayNum => {
+            const containers = bayMap[bayNum];
+            // Determine grid dimensions
+            const maxRow = Math.max(6, ...containers.map(c => c.row));
+            const maxTier = Math.max(blockTierMax, ...containers.map(c => c.tier));
+
+            // Build lookup: rowMap[row][tier] = container
+            const rowMap = {};
+            containers.forEach(c => {
+                if (!rowMap[c.row]) rowMap[c.row] = {};
+                rowMap[c.row][c.tier] = c;
+            });
+
+            // Header row (row labels)
+            let headerCells = '';
+            for (let r = 1; r <= maxRow; r++) {
+                headerCells += `<th class="text-center text-[9px] font-bold text-slate-500 py-1 px-0.5 border border-slate-200 bg-slate-100" style="min-width:62px">${String(r).padStart(2, '0')}</th>`;
+            }
+
+            // Build rows from top tier to bottom
+            let gridRows = '';
+            for (let t = maxTier; t >= 1; t--) {
+                let cells = '';
+                for (let r = 1; r <= maxRow; r++) {
+                    const cont = rowMap[r] && rowMap[r][t];
+                    if (cont) {
+                        const sizeLabel = cont.size.startsWith('20') ? '20' : (cont.size.startsWith('45') ? '45' : '40');
+                        const color = SPOD_COLORS[cont.spod] || { bg: '#94a3b8', text: '#fff' };
+                        cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px">
+                            <div class="px-1 py-0.5 text-center" style="background:${color.bg};color:${color.text};min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
+                                <span class="text-[9px] font-extrabold leading-none">${sizeLabel}'</span>
+                                <span class="text-[8px] font-bold leading-tight">${cont.spod}</span>
+                                <span class="text-[7px] font-semibold opacity-80 leading-none">${cont.wc}</span>
+                            </div>
+                        </td>`;
+                    } else {
+                        cells += `<td class="border border-slate-200 p-0" style="min-width:62px;min-height:38px"><div style="min-height:38px" class="bg-slate-50/50"></div></td>`;
+                    }
+                }
+                gridRows += `<tr>${cells}</tr>`;
+            }
+
+            bayGridsHtml += `
+                <div class="mb-3">
+                    <div class="text-[10px] font-bold text-slate-600 mb-1 flex items-center gap-1">
+                        <span class="bg-slate-700 text-white px-1.5 py-0.5 rounded text-[9px] font-extrabold">BAY ${String(bayNum).padStart(2, '0')}</span>
+                        <span class="text-slate-400">${containers.length} unit${containers.length > 1 ? 's' : ''}</span>
+                    </div>
+                    <table class="border-collapse" style="border-spacing:0">
+                        <thead><tr>${headerCells}</tr></thead>
+                        <tbody>${gridRows}</tbody>
+                    </table>
+                </div>
+            `;
+        });
+    }
+
+    // Combine into two-column layout
+    let html = `
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
+            <!-- LEFT: Visual Bay Grid -->
+            <div class="min-w-0">
+                <div class="mb-3 flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">view_module</span> Bay View</span>
+                    <span class="text-slate-300 mx-1">|</span>
+                    ${spodLegendHtml}
+                </div>
+                <div class="overflow-x-auto overflow-y-auto custom-scrollbar pr-2" style="max-height:calc(100vh - 160px)">
+                    ${bayGridsHtml}
+                </div>
+            </div>
+            <!-- RIGHT: Summary Tables -->
+            <div class="min-w-0 border-l border-slate-200 pl-4">
+                ${infoCardHtml}
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 pl-1"><span class="material-symbols-outlined text-[14px]">table_chart</span> Matrix Breakdown by Size</div>
+                ${matrixTablesHtml}
+            </div>
+        </div>
     `;
 
     contentDiv.innerHTML = html;
