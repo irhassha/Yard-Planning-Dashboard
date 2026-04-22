@@ -3569,12 +3569,17 @@ window.showClusterDetail = function(carrier, service, block, part) {
         });
     });
 
-    // Group ALL OTHER vessels' containers in the SAME block for hatched display
+    // Group ALL OTHER vessels' export containers in the SAME block for hatched display
+    // AND all import containers in the same block for import display
     const otherMap = {};
     invData.forEach(it => {
-        if (!String(it.move || '').toLowerCase().includes('export')) return;
         if (it.block !== block) return;
-        if (it.carrier === carrier && (!service || it.service === service)) return;
+        const moveType = String(it.move || '').toLowerCase();
+        const isImport = moveType.includes('import');
+        const isExport = moveType.includes('export');
+        if (!isImport && !isExport) return;
+        // Skip if this is the same carrier/service (only for export)
+        if (isExport && it.carrier === carrier && (!service || it.service === service)) return;
         const slotNum = it.slot || 0;
         if (!slotMap[slotNum]) return;
         if (!otherMap[slotNum]) otherMap[slotNum] = [];
@@ -3586,7 +3591,8 @@ window.showClusterDetail = function(carrier, service, block, part) {
             wc: String(it.wtcl || '-').toUpperCase(),
             unit: it.unit || '',
             carrier: it.carrier || '',
-            isOther: true
+            isOther: isExport,
+            isImport: isImport
         });
     });
 
@@ -3636,7 +3642,14 @@ window.showClusterDetail = function(carrier, service, block, part) {
                     const cont = rowTierMap[r] && rowTierMap[r][t];
                     if (cont) {
                         const sizeLabel = cont.size.startsWith('20') ? '20' : (cont.size.startsWith('45') ? '45' : '40');
-                        if (cont.isOther) {
+                        if (cont.isImport) {
+                            cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px" title="Import Container">
+                                <div class="px-1 py-0.5 text-center slot-cell-import" style="min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
+                                    <span class="text-[9px] font-extrabold leading-none text-amber-700">${sizeLabel}'</span>
+                                    <span class="text-[8px] font-black leading-tight text-amber-800">IMPORT</span>
+                                </div>
+                            </td>`;
+                        } else if (cont.isOther) {
                             cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px" title="${cont.carrier}">
                                 <div class="px-1 py-0.5 text-center slot-cell-other" style="min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
                                     <span class="text-[9px] font-extrabold leading-none text-slate-500">${sizeLabel}'</span>
@@ -3688,6 +3701,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
                     ${spodLegendHtml}
                     <span class="text-slate-300 mx-1">|</span>
                     <span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded slot-cell-other text-slate-500" style="min-width:48px;text-align:center">Other</span>
+                    <span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded slot-cell-import text-amber-800" style="min-width:48px;text-align:center">Import</span>
                 </div>
                 <div class="overflow-x-auto overflow-y-auto custom-scrollbar pr-2" style="max-height:calc(100vh - 160px)">
                     ${slotGridsHtml}

@@ -855,3 +855,13 @@ body.ai-chat-sidebar-open {
         #f1f5f9 6px
     ) !important;
 }
+
+.slot-cell-import {
+    background: repeating-linear-gradient(
+        0deg,
+        #fef3c7,
+        #fef3c7 3px,
+        #fde68a 3px,
+        #fde68a 6px
+    ) !important;
+}
