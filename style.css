@@ -844,3 +844,14 @@ body.ai-chat-sidebar-open {
 .pdf-drawer-body::-webkit-scrollbar { width: 5px; }
 .pdf-drawer-body::-webkit-scrollbar-track { background: transparent; }
 .pdf-drawer-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* ===== SLOT VIEW: OTHER VESSEL HATCHED PATTERN ===== */
+.slot-cell-other {
+    background: repeating-linear-gradient(
+        -45deg,
+        #e2e8f0,
+        #e2e8f0 3px,
+        #f1f5f9 3px,
+        #f1f5f9 6px
+    ) !important;
+}
