@@ -167,7 +167,7 @@ function calculateAvailableSlotsReplan() {
                 allVesselBlocks.add((it.block || '').toUpperCase());
             }
         });
-        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && !tgtGreyOutBlocks.includes(b)).sort();
+        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && !tgtGreyOutBlocks.includes(b)).sort();
     }
 
     let clusterHtml = "";
