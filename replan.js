@@ -154,8 +154,16 @@ function calculateAvailableSlotsReplan() {
 
     const hideGreyOutForCluster = document.getElementById('toggleGreyOutBlocks')?.checked !== false;
     const tgt = window.currentReplanTarget || {};
-    const cMapKey = tgt ? `${tgt.carr}||${tgt.svc.toUpperCase()}` : "";
-    const tgtGreyOutBlocks = (window.activeGreyOutBlocksMap && window.activeGreyOutBlocksMap[cMapKey]) || [];
+    let tgtGreyOutBlocks = [];
+    if (window.activeGreyOutBlocksMap && tgt && tgt.carr) {
+        const targetSearch = `${tgt.carr}||${tgt.svc}`.toLowerCase();
+        for (const [key, blocks] of Object.entries(window.activeGreyOutBlocksMap)) {
+            if (key.toLowerCase() === targetSearch) {
+                tgtGreyOutBlocks = blocks;
+                break;
+            }
+        }
+    }
 
     let activeClusterBlocks = [];
     if (tgt && tgt.carr && window.invData) {
@@ -167,7 +175,7 @@ function calculateAvailableSlotsReplan() {
                 allVesselBlocks.add((it.block || '').toUpperCase());
             }
         });
-        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && !tgtGreyOutBlocks.includes(b)).sort();
+        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && (!hideGreyOutForCluster || !tgtGreyOutBlocks.includes(b))).sort();
     }
 
     let clusterHtml = "";
