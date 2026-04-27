@@ -93,6 +93,7 @@
         parseVesselScheduleFile(e.target.files[0], function() {
             if (isInvLoaded) {
                 renderClusterSpreading();
+                renderEmptySummary();
                 if (typeof processClashAnalysis === 'function') processClashAnalysis();
             }
         });
