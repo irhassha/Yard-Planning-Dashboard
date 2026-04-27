@@ -1,0 +1,17 @@
+{
+  "name": "NPCT1 Yard Planning Dashboard",
+  "short_name": "Yard Dashboard",
+  "description": "Premium Yard Planning & Analytics Dashboard for NPCT1",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#0064D2",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

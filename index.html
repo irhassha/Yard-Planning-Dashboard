@@ -18,6 +18,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="apple-touch-icon" href="logo.png" />
+    <link rel="manifest" href="manifest.json" />
 
     <script>
         tailwind.config = {
@@ -57,8 +60,8 @@
             <input type="file" id="fileInv" accept=".csv, .xlsx, .xls" hidden>
             <input type="file" id="scheduleInput" accept=".xlsx, .csv" hidden>
             <header class="flex justify-between items-center mb-12">
-                <div class="flex items-center gap-2 text-white font-bold text-lg md:text-xl">
-                    <span class="material-symbols-outlined text-3xl">dock</span>
+                <div class="flex items-center gap-3 text-white font-bold text-lg md:text-xl">
+                    <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-xl shadow-lg border border-white/20" />
                     NPCT1
                 </div>
                 <div class="flex flex-wrap items-center justify-end gap-2">
