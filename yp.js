@@ -781,10 +781,14 @@ document.getElementById('sumTotalCap').innerText =
             if(!it.move.includes('export')) return;
             let c = it.carrier;
             if(!c || c === '0' || c === 'NIL') return;
-            if(IGNORED_CLUSTER_BLOCKS.has(it.block)) return;
             const service = String(it.service || '').toUpperCase();
             const key = `${c}||${service}`;
-            if(!stats[key]) stats[key] = { carrier: c, service, blocks: {}, total: 0, clusters: new Set(), eta: null };
+            if(!stats[key]) stats[key] = { carrier: c, service, blocks: {}, total: 0, totalAll: 0, allUnits: [], clusters: new Set(), eta: null };
+            
+            stats[key].totalAll++;
+            stats[key].allUnits.push(it);
+
+            if(IGNORED_CLUSTER_BLOCKS.has(it.block)) return;
             
             // Logic for sub-block categorization (X/Y/Z)
             const slot = parseInt(it.slot) || 0;
@@ -806,7 +810,7 @@ document.getElementById('sumTotalCap').innerText =
                 if (expected !== null) stats[key].clusters.add(expected);
             }
             const scheduleRows = scheduleMap[key] || [];
-            if (scheduleRows.length) {
+            if (scheduleRows.length && !stats[key].eta) {
                 const earliest = scheduleRows.reduce((min, row) => {
                     return !min || row.eta.getTime() < min.getTime() ? row.eta : min;
                 }, null);
@@ -818,11 +822,11 @@ document.getElementById('sumTotalCap').innerText =
             if (a.eta && b.eta) return a.eta - b.eta;
             if (a.eta) return -1;
             if (b.eta) return 1;
-            return b.total - a.total;
+            return b.totalAll - a.totalAll;
         });
         if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; renderRecommendedSpreading(); renderVesselFilterChips(); return; }
 
-        let filtered = showAll ? sorted : sorted.filter(e => e[1].total >= 50);
+        let filtered = showAll ? sorted : sorted.filter(e => e[1].totalAll >= 50);
 
         let uniqueBlocks = new Set();
         filtered.forEach(([key, data]) => {
@@ -1071,12 +1075,110 @@ document.getElementById('sumTotalCap').innerText =
                 ${blockCells}
                 <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-cluster">${expectedClusterLabel}</td>
                 <td class="px-1 py-1 text-center align-middle font-bold ${actualColorClass} border-l border-slate-200 col-cluster">${totalClusterCount}</td>
-                <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-units">${data.total}</td>
+                <td class="px-1 py-1 text-center align-middle font-bold text-slate-800 border-l border-slate-200 col-units cursor-pointer hover:bg-slate-100 transition-colors" onclick="showVesselSummary('${key}')"><span class="text-blue-600 underline">${data.totalAll}</span></td>
             </tr>`);
         });
+        window.clusterStatsData = stats;
         body.innerHTML = _clusterRows.join('');
         renderRecommendedSpreading();
     }
+
+    window.showVesselSummary = function(key) {
+        if (!window.clusterStatsData || !window.clusterStatsData[key]) return;
+        const vesselData = window.clusterStatsData[key];
+        
+        const modal = document.getElementById('vesselSummaryModal');
+        const title = document.getElementById('vesselSummaryModalTitle');
+        const subtitle = document.getElementById('vesselSummaryModalSubtitle');
+        const body = document.getElementById('vesselSummaryModalBody');
+        
+        title.innerHTML = `<span class="material-symbols-outlined text-blue-600">directions_boat</span> Vessel Summary: ${vesselData.carrier}`;
+        subtitle.textContent = `Service: ${vesselData.service || '-'} | Total Units: ${vesselData.totalAll}`;
+        
+        const spodStats = { 'FULL': {}, 'EMPTY': {} };
+        
+        vesselData.allUnits.forEach(it => {
+            const isMT = (it.loadStatus.includes('EMPTY') || it.loadStatus === 'MT');
+            const type = isMT ? 'EMPTY' : 'FULL';
+            const spod = String(it.spod || 'UNKNOWN').trim().toUpperCase();
+            
+            if (!spodStats[type][spod]) {
+                spodStats[type][spod] = { c20: 0, c40: 0, c45: 0, total: 0 };
+            }
+            
+            if (it.length.startsWith('20')) spodStats[type][spod].c20++;
+            else if (it.length.startsWith('45')) spodStats[type][spod].c45++;
+            else spodStats[type][spod].c40++;
+            
+            spodStats[type][spod].total++;
+        });
+
+        let html = '';
+        
+        ['FULL', 'EMPTY'].forEach(type => {
+            const spods = Object.keys(spodStats[type]).sort();
+            if (spods.length === 0) return;
+            
+            let typeColor = type === 'FULL' ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+            
+            html += `
+                <div class="px-5 py-4 border-b border-slate-200 ${type === 'FULL' ? 'bg-white' : 'bg-slate-50/50'}">
+                    <h5 class="font-bold text-xs mb-3 inline-block px-3 py-1 rounded-lg border shadow-sm ${typeColor}">${type} CONTAINERS</h5>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+                        <table class="w-full text-left bg-white">
+                            <thead class="bg-slate-100 text-[11px] uppercase text-slate-500 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="px-4 py-2 border-r border-slate-200">SPOD</th>
+                                    <th class="px-4 py-2 border-r border-slate-200 text-center">20'</th>
+                                    <th class="px-4 py-2 border-r border-slate-200 text-center">40'</th>
+                                    <th class="px-4 py-2 border-r border-slate-200 text-center">45'</th>
+                                    <th class="px-4 py-2 text-center bg-slate-200/50">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+            `;
+            
+            let g20 = 0, g40 = 0, g45 = 0, gTotal = 0;
+            spods.forEach(spod => {
+                const s = spodStats[type][spod];
+                g20 += s.c20; g40 += s.c40; g45 += s.c45; gTotal += s.total;
+                
+                html += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-2 font-semibold text-slate-700 border-r border-slate-100">${spod}</td>
+                        <td class="px-4 py-2 text-center border-r border-slate-100">${s.c20 || '-'}</td>
+                        <td class="px-4 py-2 text-center border-r border-slate-100">${s.c40 || '-'}</td>
+                        <td class="px-4 py-2 text-center border-r border-slate-100">${s.c45 || '-'}</td>
+                        <td class="px-4 py-2 text-center font-bold text-slate-800 bg-slate-50/50">${s.total}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                            <tfoot class="bg-slate-50 border-t border-slate-200 font-bold text-xs">
+                                <tr>
+                                    <td class="px-4 py-2 text-slate-800 border-r border-slate-200 uppercase tracking-wide">Subtotal ${type}</td>
+                                    <td class="px-4 py-2 text-center text-blue-600 border-r border-slate-200">${g20}</td>
+                                    <td class="px-4 py-2 text-center text-blue-600 border-r border-slate-200">${g40}</td>
+                                    <td class="px-4 py-2 text-center text-blue-600 border-r border-slate-200">${g45}</td>
+                                    <td class="px-4 py-2 text-center text-emerald-600 bg-slate-100/80">${gTotal}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            `;
+        });
+        
+        if (!html) {
+            html = '<div class="p-8 text-center text-slate-400 italic">No units found for this vessel.</div>';
+        }
+        
+        body.innerHTML = html;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
 
     // --- TAB 3: CLASH ANALYSIS (Sandboxed Logic Integrated) ---
     function toggleCongestion() {
@@ -2772,31 +2874,60 @@ function renderEmptySummary() {
     `;
 
     // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
+    const scheduleMap = {};
+    (scheduleData || []).forEach(s => {
+        const key = `${s.carrier}||${s.service || ''}`;
+        if(!scheduleMap[key]) scheduleMap[key] = [];
+        scheduleMap[key].push(s);
+    });
+
     let expStats = {};
     emptyData.filter(d => d.move.includes('export')).forEach(d => {
         let key = `${d.carrier}||${d.service || ''}`;
-        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0 };
+        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, eta: null };
         
         if(d.length.startsWith('20')) expStats[key].c20++;
         else if(d.length.startsWith('45')) expStats[key].c45++;
         else expStats[key].c40++;
         expStats[key].total++;
+        
+        const scheduleRows = scheduleMap[key] || [];
+        if (scheduleRows.length && !expStats[key].eta) {
+            const earliest = scheduleRows.reduce((min, row) => {
+                return !min || row.eta.getTime() < min.getTime() ? row.eta : min;
+            }, null);
+            if (earliest) expStats[key].eta = earliest;
+        }
     });
 
-    // Sort by Total Descending
-    let sortedExp = Object.values(expStats).sort((a,b) => b.total - a.total);
+    // Sort by ETA then Total Descending
+    let sortedExp = Object.values(expStats).sort((a,b) => {
+        if (a.eta && b.eta) return a.eta - b.eta;
+        if (a.eta) return -1;
+        if (b.eta) return 1;
+        return b.total - a.total;
+    });
     
     expBody.innerHTML = '';
     if(sortedExp.length === 0) {
-        expBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
+        expBody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
     } else {
         const _expRows = [];
         sortedExp.forEach(s => {
+            let etbText = '-', hourText = '-';
+            if(s.eta) {
+                const et = s.eta;
+                etbText = `${et.getDate().toString().padStart(2,'0')}/${(et.getMonth()+1).toString().padStart(2,'0')}`;
+                hourText = `${et.getHours().toString().padStart(2,'0')}:${et.getMinutes().toString().padStart(2,'0')}`;
+            }
+
             const carrier = s.carrier || '-';
             const service = s.service || '-';
             const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
             _expRows.push(`
                 <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3 text-center font-semibold text-slate-700 border-r border-slate-100">${etbText}</td>
+                    <td class="px-6 py-3 text-center font-bold text-slate-600 border-r border-slate-100">${hourText}</td>
                     <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
                     <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
                     <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
@@ -2818,6 +2949,7 @@ function renderEmptySummary() {
         
         _expRows.push(`
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
+                <td colspan="2" class="px-6 py-3 text-center text-slate-700 border-r border-slate-200">-</td>
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
                 <td class="px-6 py-3 text-center text-slate-700">-</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
