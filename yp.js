@@ -2876,14 +2876,14 @@ function renderEmptySummary() {
     // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
     const scheduleMap = {};
     (scheduleData || []).forEach(s => {
-        const key = `${s.carrier}||${s.service || ''}`;
+        const key = `${s.carrier}||${String(s.service || '').toUpperCase()}`;
         if(!scheduleMap[key]) scheduleMap[key] = [];
         scheduleMap[key].push(s);
     });
 
     let expStats = {};
     emptyData.filter(d => d.move.includes('export')).forEach(d => {
-        let key = `${d.carrier}||${d.service || ''}`;
+        let key = `${d.carrier}||${String(d.service || '').toUpperCase()}`;
         if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, eta: null };
         
         if(d.length.startsWith('20')) expStats[key].c20++;
@@ -2926,9 +2926,9 @@ function renderEmptySummary() {
             const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
             _expRows.push(`
                 <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
                     <td class="px-6 py-3 text-center font-semibold text-slate-700 border-r border-slate-100">${etbText}</td>
                     <td class="px-6 py-3 text-center font-bold text-slate-600 border-r border-slate-100">${hourText}</td>
-                    <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
                     <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
                     <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
                     <td class="px-6 py-3 text-center">${s.c40 || '-'}</td>
@@ -2949,8 +2949,8 @@ function renderEmptySummary() {
         
         _expRows.push(`
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
-                <td colspan="2" class="px-6 py-3 text-center text-slate-700 border-r border-slate-200">-</td>
                 <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
+                <td colspan="2" class="px-6 py-3 text-center text-slate-700 border-r border-slate-200">-</td>
                 <td class="px-6 py-3 text-center text-slate-700">-</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
                 <td class="px-6 py-3 text-center text-blue-600">${grand.c40}</td>
