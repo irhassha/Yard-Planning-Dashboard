@@ -938,7 +938,7 @@ document.getElementById('sumTotalCap').innerText =
         const totalHours = totalMs / 3600000;
 
         // Layout
-        const LABEL_W  = 72;
+        const LABEL_W  = 52;
         const HEADER_H = 66;
         const CONTENT_W = Math.max(860, (container.parentElement?.clientWidth || 940) - LABEL_W - 12);
 
@@ -1118,8 +1118,7 @@ document.getElementById('sumTotalCap').innerText =
             const x = bX(b.pos), maj = b.num%4===1||b.num===1||b.num===29;
             hdr += `<line x1="${x}" y1="${QY+(maj?2:7)}" x2="${x}" y2="${QY+QH-1}" stroke="${maj?'#94a3b8':'#334155'}" stroke-width="${maj?1:0.5}"/>`;
         });
-        hdr += `<text x="${LABEL_W+8}" y="${QY+12}" font-size="9" fill="#64748b" font-weight="bold" font-family="monospace">QUAY WALL</text>`;
-        hdr += `<text x="${svgW-6}" y="${QY+12}" text-anchor="end" font-size="9" fill="#94a3b8" font-family="monospace">BL1 ► Block A</text>`;
+
         // Bollard number row
         BOLLARD_TABLE.forEach(b => {
             const x = bX(b.pos), labeled = b.num%2===1;

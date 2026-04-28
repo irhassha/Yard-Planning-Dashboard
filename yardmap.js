@@ -586,11 +586,7 @@ function renderYardMap() {
 
     html += '</div>'; // ym-sections-grid
 
-    // ── Slot number ticks ─────────────────────────────────────────────
-    html += `<div class="ym-slot-ticks">
-        <span class="text-[9px] text-white/50 font-mono">← Higher slots</span>
-        <span class="text-[9px] text-white/50 font-mono">Slot 01 →</span>
-    </div>`;
+
 
     html += '</div>'; // ym-yard
     content.innerHTML = html;
