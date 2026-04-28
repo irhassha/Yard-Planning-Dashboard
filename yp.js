@@ -50,6 +50,56 @@
         return `${d}/${h}:${m}`;
     }
 
+    // ─── BOLLARD TABLE ─────────────────────────────────────────────────────────
+    // Maps bollard number (1-29) to its physical position (meters along quay)
+    const BOLLARD_TABLE = [
+        { num: 1,  pos: 7   }, { num: 2,  pos: 28  }, { num: 3,  pos: 55  },
+        { num: 4,  pos: 86  }, { num: 5,  pos: 118 }, { num: 6,  pos: 150 },
+        { num: 7,  pos: 181 }, { num: 8,  pos: 212 }, { num: 9,  pos: 244 },
+        { num: 10, pos: 270 }, { num: 11, pos: 302 }, { num: 12, pos: 334 },
+        { num: 13, pos: 365 }, { num: 14, pos: 397 }, { num: 15, pos: 428 },
+        { num: 16, pos: 455 }, { num: 17, pos: 486 }, { num: 18, pos: 518 },
+        { num: 19, pos: 550 }, { num: 20, pos: 581 }, { num: 21, pos: 612 },
+        { num: 22, pos: 644 }, { num: 23, pos: 671 }, { num: 24, pos: 702 },
+        { num: 25, pos: 734 }, { num: 26, pos: 765 }, { num: 27, pos: 797 },
+        { num: 28, pos: 828 }, { num: 29, pos: 849 }
+    ];
+    const BOLLARD_MIN_POS = 7;
+    const BOLLARD_MAX_POS = 849;
+
+    // Parse a bollard field value (e.g. "BL13", "(560)", "(3)") to a meter position
+    function parseBollardToPos(raw) {
+        if (!raw || raw === '') return null;
+        const s = String(raw).trim();
+        // Format "BLxx" => bollard number
+        const blMatch = s.match(/^BL(\d+)$/i);
+        if (blMatch) {
+            const num = parseInt(blMatch[1]);
+            const entry = BOLLARD_TABLE.find(b => b.num === num);
+            return entry ? entry.pos : null;
+        }
+        // Format "(xxx)" => position in meters
+        const posMatch = s.match(/^\((\d+)\)$/);
+        if (posMatch) {
+            return parseInt(posMatch[1]);
+        }
+        // Plain number
+        const plain = parseInt(s);
+        if (!isNaN(plain)) return plain;
+        return null;
+    }
+
+    // Convert position (meters) to closest bollard number
+    function posToNearestBollard(pos) {
+        if (pos === null) return null;
+        let best = null, bestDist = Infinity;
+        BOLLARD_TABLE.forEach(b => {
+            const d = Math.abs(b.pos - pos);
+            if (d < bestDist) { bestDist = d; best = b; }
+        });
+        return best;
+    }
+
     function parseVesselScheduleFile(file, onComplete) {
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -58,25 +108,52 @@
                 const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ''});
                 if (!json.length) throw new Error('Empty vessel schedule file.');
 
-                const headers = json[0].map(c => cleanStr(c));
-                const vesselIdx = headers.findIndex(x => (x.includes('carrier') || x.includes('vessel') || x.includes('ship')) && !x.includes('type'));
-                const serviceIdx = headers.findIndex(x => x.includes('service') && x.includes('out')) !== -1 ? headers.findIndex(x => x.includes('service') && x.includes('out')) : headers.findIndex(x => x.includes('service'));
-                const etaIdx = headers.findIndex(x => x.includes('eta') || x.includes('arrival'));
-                const etdIdx = headers.findIndex(x => x.includes('etd') || x.includes('departure'));
+                const rawHeaders = json[0];
+                const headers = rawHeaders.map(c => cleanStr(c));
+                const vesselIdx  = headers.findIndex(x => (x.includes('carrier') || x.includes('vessel') || x.includes('ship')) && !x.includes('type'));
+                const serviceIdx = headers.findIndex(x => x.includes('service') && x.includes('out')) !== -1
+                    ? headers.findIndex(x => x.includes('service') && x.includes('out'))
+                    : headers.findIndex(x => x.includes('service'));
+                const etaIdx     = headers.findIndex(x => x.includes('eta') || x.includes('arrival'));
+                const etdIdx     = headers.findIndex(x => x.includes('etd') || x.includes('departure'));
+                const ataIdx     = headers.findIndex(x => x === 'ata');
+                const atdIdx     = headers.findIndex(x => x === 'atd');
+                // Bollard columns
+                const startBolIdx = headers.findIndex(x => x.includes('start') && x.includes('bol'));
+                const endBolIdx   = headers.findIndex(x => (x.includes('end') || x.includes('finish')) && x.includes('bol'));
+                const moorageIdx  = headers.findIndex(x => x === 'moorage' || x === 'berth');
+
                 if (vesselIdx === -1) throw new Error('Schedule file harus memiliki kolom Carrier atau Vessel.');
-                if (etaIdx === -1) throw new Error('Schedule file harus memiliki kolom ETA atau Arrival.');
+                if (etaIdx   === -1) throw new Error('Schedule file harus memiliki kolom ETA atau Arrival.');
 
                 const rows = [];
                 for (let i = 1; i < json.length; i++) {
                     const row = json[i];
                     if (!row[vesselIdx]) continue;
-                    const carrier = String(row[vesselIdx] || '').toUpperCase().trim();
-                    const service = serviceIdx !== -1 ? String(row[serviceIdx] || '').toUpperCase().trim() : '';
-                    const eta = parseDate(row[etaIdx]);
-                    let etd = etdIdx !== -1 ? parseDate(row[etdIdx]) : null;
+                    const carrier  = String(row[vesselIdx] || '').toUpperCase().trim();
+                    const service  = serviceIdx !== -1 ? String(row[serviceIdx] || '').toUpperCase().trim() : '';
+                    const moorage  = moorageIdx !== -1 ? String(row[moorageIdx] || '').trim() : '';
+                    const eta      = parseDate(row[etaIdx]);
+                    let   etd      = etdIdx !== -1 ? parseDate(row[etdIdx]) : null;
+                    const ata      = ataIdx  !== -1 ? parseDate(row[ataIdx])  : null;
+                    const atd      = atdIdx  !== -1 ? parseDate(row[atdIdx])  : null;
                     if (!eta) continue;
                     if (!etd) etd = new Date(eta.getTime() + 86400000);
-                    rows.push({ carrier, service, eta, etd, v: carrier });
+
+                    // Bollard data
+                    const startBolRaw = startBolIdx !== -1 ? String(row[startBolIdx] || '').trim() : '';
+                    const endBolRaw   = endBolIdx   !== -1 ? String(row[endBolIdx]   || '').trim() : '';
+                    const startPos    = parseBollardToPos(startBolRaw);
+                    const endPos      = parseBollardToPos(endBolRaw);
+                    const hasBerth    = startPos !== null && endPos !== null;
+
+                    rows.push({
+                        carrier, service, moorage,
+                        eta, etd, ata, atd,
+                        startBolRaw, endBolRaw,
+                        startPos, endPos, hasBerth,
+                        v: carrier
+                    });
                 }
 
                 scheduleData = rows;
@@ -91,6 +168,7 @@
     document.getElementById('scheduleInput').addEventListener('change', function(e) {
         if (!e.target.files[0]) return;
         parseVesselScheduleFile(e.target.files[0], function() {
+            renderBerthGantt();
             if (isInvLoaded) {
                 renderClusterSpreading();
                 renderEmptySummary();
@@ -683,6 +761,44 @@ document.getElementById('sumTotalCap').innerText =
         if (vessel) toggleVesselFilter(vessel);
     });
 
+    // ── Scroll Gantt chart to a specific carrier
+    function scrollGanttToVessel(carrier) {
+        const wrapper = document.getElementById('berthGanttWrapper');
+        if (!wrapper) return;
+
+        // Phase 1: Scroll the PAGE so Gantt panel is visible
+        const panel = wrapper.closest('[class*="glass-panel"]') || wrapper;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Phase 2: After page scroll settles, do internal wrapper scroll
+        setTimeout(() => {
+            if (!window._ganttCarrierY) return;
+            const yData = window._ganttCarrierY[carrier];
+            if (!yData) return;
+
+            // Scroll wrapper so vessel's ETA appears ~30% from top
+            const wH = wrapper.clientHeight || 420;
+            const scrollTarget = Math.max(0, yData.scrollY - wH * 0.3);
+            wrapper.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+
+            // Flash-highlight the vessel rects after scroll settles
+            setTimeout(() => {
+                const rects = wrapper.querySelectorAll(`[data-gantt-carrier="${CSS.escape(carrier)}"]`);
+                rects.forEach(rect => {
+                    rect.style.transition = 'filter 0.15s';
+                    let n = 0;
+                    const iv = setInterval(() => {
+                        rect.style.filter = n % 2 === 0
+                            ? 'brightness(1.8) drop-shadow(0 0 8px rgba(255,255,255,0.9))'
+                            : 'brightness(1)';
+                        if (++n > 6) { clearInterval(iv); rect.style.filter = ''; rect.style.transition = ''; }
+                    }, 160);
+                });
+            }, 350);
+        }, 500);
+    }
+    window.scrollGanttToVessel = scrollGanttToVessel;
+
     window.toggleFullScreenCluster = function() {
         const el = document.getElementById('clusterSpreadingContainer');
         if (!el) return;
@@ -758,6 +874,308 @@ document.getElementById('sumTotalCap').innerText =
         }
     };
 
+    // ─── BERTH GANTT CHART ─────────────────────────────────────────────────────
+    let _ganttPph = null; // null = fit to screen
+
+    function zoomGantt(factor) {
+        const el = document.getElementById('berthGanttContent');
+        const cur = parseFloat(el?.dataset?.pph || '30');
+        _ganttPph = (factor === 0) ? null : Math.max(10, Math.min(300, cur * factor));
+        renderBerthGantt();
+        const lbl = document.getElementById('ganttZoomLabel');
+        if (lbl) lbl.textContent = _ganttPph ? Math.round(_ganttPph) + 'px/h' : 'FIT';
+    }
+    window.zoomGantt = zoomGantt;
+
+    function renderBerthGantt() {
+        const container = document.getElementById('berthGanttContent');
+        if (!container) return;
+        const now = new Date();
+        const BOLLARD_RANGE = BOLLARD_MAX_POS - BOLLARD_MIN_POS;
+
+        const vessels = (scheduleData || []).filter(v => v.hasBerth && v.etd >= now);
+        const totalAll = (scheduleData || []).length;
+        const totalWithBerth = (scheduleData || []).filter(v => v.hasBerth).length;
+        const totalPast = (scheduleData || []).filter(v => v.hasBerth && v.etd < now).length;
+
+        const statsEl = document.getElementById('berthGanttStats');
+        if (statsEl) statsEl.innerHTML = vessels.length
+            ? `<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span>
+               Showing: <strong class="text-slate-800 ml-1">${vessels.length}</strong>&nbsp;vessels</span>
+               <span class="text-slate-300">|</span><span class="text-slate-400">Skipped (past): <strong>${totalPast}</strong></span>
+               <span class="text-slate-300">|</span><span class="text-slate-400">No berth data: <strong>${totalAll - totalWithBerth}</strong></span>`
+            : `<span class="text-slate-400 italic">Upload Call List to view berth schedule.</span>`;
+
+        if (!vessels.length) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center py-16 text-slate-400">
+                <span class="material-symbols-outlined text-5xl mb-3 opacity-30">anchor</span>
+                <p class="text-sm font-semibold text-slate-500">No upcoming vessels with berth data.</p>
+                <p class="text-xs text-slate-400 mt-1">Upload Call List dengan kolom <code class="bg-slate-100 px-1 rounded">Start bol.</code> dan <code class="bg-slate-100 px-1 rounded">End bol.</code></p>
+            </div>`;
+            const le = document.getElementById('berthGanttLegend'); if (le) le.innerHTML = '';
+            return;
+        }
+
+        const PALETTE = ['#4f46e5','#0891b2','#059669','#d97706','#db2777','#7c3aed','#0284c7','#16a34a','#ca8a04','#e11d48','#6366f1','#0e7490','#15803d','#b45309','#be185d'];
+        const colorMap = {}; let ci = 0;
+        vessels.forEach(v => { if (!colorMap[v.carrier]) colorMap[v.carrier] = PALETTE[ci++ % PALETTE.length]; });
+
+        // Time range
+        const rawMin = Math.min(...vessels.map(v => v.eta.getTime()), now.getTime());
+        const rawMax = Math.max(...vessels.map(v => v.etd.getTime()));
+        const minTime = new Date(rawMin - 4 * 3600000);
+        const maxTime = new Date(rawMax + 4 * 3600000);
+        const totalMs = maxTime - minTime;
+        const totalHours = totalMs / 3600000;
+
+        // Layout
+        const LABEL_W  = 72;
+        const HEADER_H = 80;
+        const CONTENT_W = Math.max(860, (container.parentElement?.clientWidth || 940) - LABEL_W - 12);
+
+        // PX_PER_HOUR: fit to screen or user-set
+        const FIT_AVAIL_H = 420;
+        const PX_PER_HOUR = _ganttPph !== null
+            ? _ganttPph
+            : Math.max(12, Math.min(100, (FIT_AVAIL_H - HEADER_H) / totalHours));
+        container.dataset.pph = PX_PER_HOUR;
+
+        const CHART_H = Math.ceil(totalHours * PX_PER_HOUR);
+        const svgW = LABEL_W + CONTENT_W;
+        const svgH = HEADER_H + CHART_H + 28;
+
+        // Coordinate helpers — X: BL29→left, BL1→right (Block A on right)
+        function bX(pos) {
+            return LABEL_W + (BOLLARD_MAX_POS - Math.max(BOLLARD_MIN_POS, Math.min(BOLLARD_MAX_POS, pos))) / BOLLARD_RANGE * CONTENT_W;
+        }
+        function tY(t) { return HEADER_H + (t - minTime) / totalMs * CHART_H; }
+        function fmt(d) {
+            if (!d) return '';
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+
+        // Time ticks
+        const rangeDays = totalMs / 86400000;
+        const tickH = rangeDays > 7 ? 24 : rangeDays > 3 ? 12 : 6;
+        const ticks = [];
+        { let t = new Date(Math.ceil(minTime.getTime() / (tickH*3600000)) * (tickH*3600000));
+          while (t <= maxTime) { ticks.push(new Date(t)); t = new Date(t.getTime() + tickH*3600000); } }
+
+        const nowY = tY(now);
+        let chart = '', overlay = '', leftLbls = '';
+
+        // 1. Day bands
+        { let d = new Date(minTime); d.setHours(0,0,0,0);
+          while (d <= maxTime) {
+            const y1 = Math.max(tY(d), HEADER_H);
+            const y2 = Math.min(tY(new Date(d.getTime()+86400000)), HEADER_H+CHART_H);
+            if (y2 > y1) {
+                const we = d.getDay()===0||d.getDay()===6;
+                chart += `<rect x="${LABEL_W}" y="${y1}" width="${CONTENT_W}" height="${y2-y1}" fill="${we?'#ede9fe':d.getDate()%2===0?'#f8fafc':'#fff'}" opacity="0.75"/>`;
+            }
+            d.setDate(d.getDate()+1);
+          }
+        }
+
+        // 2. Bollard vertical grid
+        BOLLARD_TABLE.forEach(b => {
+            const x = bX(b.pos), maj = b.num%4===1||b.num===29;
+            chart += `<line x1="${x}" y1="${HEADER_H}" x2="${x}" y2="${HEADER_H+CHART_H}" stroke="${maj?'#dde1ea':'#f1f5f9'}" stroke-width="${maj?1:0.5}"/>`;
+        });
+
+        // 3. Horizontal time grid
+        ticks.forEach(t => {
+            const y = tY(t); if (y<HEADER_H||y>HEADER_H+CHART_H) return;
+            const mid = t.getHours()===0;
+            chart += `<line x1="${LABEL_W}" y1="${y}" x2="${LABEL_W+CONTENT_W}" y2="${y}" stroke="${mid?'#c7d2fe':'#e2e8f0'}" stroke-width="${mid?1.5:0.75}" stroke-dasharray="${mid?'':'5,4'}"/>`;
+        });
+
+        // Build per-carrier export container count (same as cluster spreading 'totalAll')
+        const carrierTeuMap = {};
+        if (Array.isArray(invData) && invData.length) {
+            invData.forEach(it => {
+                const c = String(it.carrier || '').toUpperCase().trim();
+                if (!c || c === '0' || c === 'NIL') return;
+                if (!String(it.move || '').toLowerCase().includes('export')) return;
+                carrierTeuMap[c] = (carrierTeuMap[c] || 0) + 1;
+            });
+        }
+
+        // 4. Vessel rectangles
+        vessels.forEach(v => {
+            const color = colorMap[v.carrier];
+            const xL = bX(Math.max(v.startPos,v.endPos)), xR = bX(Math.min(v.startPos,v.endPos));
+            const bW = Math.max(xR-xL, 14);
+            const y1 = tY(v.eta), y2 = tY(v.etd);
+            const bH = Math.max(y2-y1, 14);
+            const active = v.eta<=now&&v.etd>=now;
+
+            chart += `<rect x="${xL+2}" y="${y1+2}" width="${bW}" height="${bH}" rx="5" fill="#0f172a" opacity="0.1"/>`;
+            chart += `<rect data-gantt-carrier="${v.carrier}" x="${xL}" y="${y1}" width="${bW}" height="${bH}" rx="5" fill="${color}" opacity="${active?'0.95':'0.82'}" style="cursor:pointer"/>`;
+            if (active) chart += `<rect x="${xL-2}" y="${y1-2}" width="${bW+4}" height="${bH+4}" rx="6" fill="none" stroke="${color}" stroke-width="2.5" opacity="0.4"/>`;
+            chart += `<rect x="${xL}" y="${y1}" width="${bW}" height="${Math.min(bH*0.35,14)}" rx="5" fill="white" opacity="0.18"/>`;
+
+            if (v.ata&&v.ata>=minTime&&v.ata<=maxTime) {
+                const ay = tY(v.ata);
+                chart += `<line x1="${xL}" y1="${ay}" x2="${xL+bW}" y2="${ay}" stroke="white" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.9"/>`;
+            }
+
+            // Labels — bigger fonts
+            const lx = xL+bW/2, ly = y1+bH/2;
+            const teuData = carrierTeuMap[v.carrier] || null;
+            const teuLabel = teuData ? `${teuData} UNITS` : null;
+            // How many label rows to show (drives vertical offsets)
+            const hasService = bH>34 && v.service && bW>60;
+            const hasTeu    = bH>28 && teuLabel && bW>50;
+            const hasEtaEtd = bH>52 && bW>80;
+            const rowCount  = 1 + (hasService?1:0) + (hasTeu?1:0) + (hasEtaEtd?1:0);
+            const startY    = ly - ((rowCount - 1) * 6); // center the block
+            let rowY = startY;
+            if (bW>20 && bH>16) {
+                const fs = Math.min(14, bW/4, bH/2.5);
+                chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-weight="800" fill="white" font-family="'Plus Jakarta Sans',sans-serif">${v.carrier}</text>`;
+                rowY += 13;
+                if (hasService) {
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="9.5" fill="white" opacity="0.85" font-family="monospace">${v.service}</text>`;
+                    rowY += 11;
+                }
+                if (hasTeu) {
+                    // Pill background behind TEU count
+                    const tw = Math.min(bW - 12, teuLabel.length * 5.8 + 10);
+                    chart += `<rect x="${lx - tw/2}" y="${rowY - 7}" width="${tw}" height="13" rx="6" fill="rgba(0,0,0,0.25)"/>`;
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="white" font-weight="700" font-family="monospace" opacity="0.95">${teuLabel}</text>`;
+                    rowY += 11;
+                }
+                if (hasEtaEtd) {
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="white" opacity="0.75" font-family="monospace">${fmt(v.eta)} → ${fmt(v.etd)}</text>`;
+                }
+            }
+            if (bW>50&&bH>22) {
+                const bS=posToNearestBollard(v.startPos), bE=posToNearestBollard(v.endPos);
+                chart += `<text x="${xR-4}" y="${y1+bH-4}" text-anchor="end" font-size="8.5" fill="white" opacity="0.75" font-family="monospace">BL${Math.min(bS?.num||0,bE?.num||0)}-${Math.max(bS?.num||0,bE?.num||0)}</text>`;
+            }
+
+            if (active) {
+                chart += `<circle cx="${xL+7}" cy="${y1+7}" r="4.5" fill="#22c55e" opacity="0.95"/>`;
+                chart += `<circle cx="${xL+7}" cy="${y1+7}" r="8" fill="none" stroke="#22c55e" stroke-width="1.2" opacity="0.4"/>`;
+            }
+        });
+
+        // Build carrier→scrollY map for scrollGanttToVessel()
+        window._ganttCarrierY = {};
+        vessels.forEach(v => {
+            const y = tY(v.eta);
+            // scrollY = y offset inside the SVG (which is inside the wrapper)
+            if (!window._ganttCarrierY[v.carrier] || y < window._ganttCarrierY[v.carrier].scrollY) {
+                window._ganttCarrierY[v.carrier] = { scrollY: y };
+            }
+        });
+
+        overlay += `<line x1="${LABEL_W}" y1="${HEADER_H}" x2="${LABEL_W}" y2="${HEADER_H+CHART_H}" stroke="#94a3b8" stroke-width="1.5"/>`;
+        overlay += `<line x1="${LABEL_W+CONTENT_W}" y1="${HEADER_H}" x2="${LABEL_W+CONTENT_W}" y2="${HEADER_H+CHART_H}" stroke="#e2e8f0" stroke-width="1"/>`;
+        overlay += `<line x1="${LABEL_W}" y1="${HEADER_H+CHART_H}" x2="${LABEL_W+CONTENT_W}" y2="${HEADER_H+CHART_H}" stroke="#e2e8f0" stroke-width="1"/>`;
+
+        // 6. NOW line
+        if (nowY>=HEADER_H&&nowY<=HEADER_H+CHART_H) {
+            overlay += `<line x1="${LABEL_W}" y1="${nowY}" x2="${LABEL_W+CONTENT_W}" y2="${nowY}" stroke="#ef4444" stroke-width="2.5" opacity="0.92"/>`;
+            overlay += `<polygon points="${LABEL_W},${nowY} ${LABEL_W-10},${nowY-5} ${LABEL_W-10},${nowY+5}" fill="#ef4444" opacity="0.9"/>`;
+        }
+
+        // 7. Left time labels
+        ticks.forEach(t => {
+            const y = tY(t); if (y<HEADER_H||y>HEADER_H+CHART_H) return;
+            const mid = t.getHours()===0;
+            const dd = String(t.getDate()).padStart(2,'0'), mo = String(t.getMonth()+1).padStart(2,'0'), hh = String(t.getHours()).padStart(2,'0');
+            if (mid) {
+                const we = t.getDay()===0||t.getDay()===6;
+                leftLbls += `<rect x="0" y="${y-12}" width="${LABEL_W-3}" height="16" rx="3" fill="${we?'#ede9fe':'#e2e8f0'}"/>`;
+                leftLbls += `<text x="${LABEL_W-7}" y="${y+3}" text-anchor="end" font-size="11" fill="${we?'#7c3aed':'#1e293b'}" font-weight="800" font-family="monospace">${dd}/${mo}</text>`;
+            } else {
+                leftLbls += `<text x="${LABEL_W-7}" y="${y+4}" text-anchor="end" font-size="9.5" fill="#64748b" font-family="monospace">${hh}:00</text>`;
+            }
+        });
+        // NOW left label
+        if (nowY>=HEADER_H&&nowY<=HEADER_H+CHART_H) {
+            leftLbls += `<rect x="0" y="${nowY-10}" width="${LABEL_W-3}" height="20" rx="4" fill="#ef4444" opacity="0.92"/>`;
+            leftLbls += `<text x="${LABEL_W/2-2}" y="${nowY+1}" text-anchor="middle" dominant-baseline="middle" font-size="9.5" fill="white" font-weight="bold" font-family="monospace">NOW</text>`;
+        }
+
+        // 8. HEADER: quay strip + bollard labels
+        const QH = 18, QY = 4;
+        let hdr = '';
+        hdr += `<rect x="0" y="0" width="${svgW}" height="${HEADER_H}" fill="rgba(248,250,252,0.98)"/>`;
+        hdr += `<rect x="${LABEL_W}" y="${QY}" width="${CONTENT_W}" height="${QH}" fill="#1e293b" rx="3"/>`;
+        BOLLARD_TABLE.forEach(b => {
+            const x = bX(b.pos), maj = b.num%4===1||b.num===1||b.num===29;
+            hdr += `<line x1="${x}" y1="${QY+(maj?2:7)}" x2="${x}" y2="${QY+QH-1}" stroke="${maj?'#94a3b8':'#334155'}" stroke-width="${maj?1:0.5}"/>`;
+        });
+        hdr += `<text x="${LABEL_W+8}" y="${QY+12}" font-size="9" fill="#64748b" font-weight="bold" font-family="monospace">QUAY WALL</text>`;
+        hdr += `<text x="${svgW-6}" y="${QY+12}" text-anchor="end" font-size="9" fill="#94a3b8" font-family="monospace">BL1 ► Block A</text>`;
+        // Bollard number row
+        BOLLARD_TABLE.forEach(b => {
+            const x = bX(b.pos), labeled = b.num%2===1;
+            if (!labeled) return;
+            const end = b.num===1||b.num===29;
+            hdr += `<line x1="${x}" y1="${QY+QH}" x2="${x}" y2="${HEADER_H}" stroke="${end?'#94a3b8':'#d1d5db'}" stroke-width="${end?1.2:0.75}"/>`;
+            hdr += `<text x="${x}" y="${QY+QH+16}" text-anchor="middle" font-size="${end?10:9}" fill="${b.num===1?'#4f46e5':b.num===29?'#7c3aed':'#475569'}" font-weight="${end?'800':'500'}" font-family="monospace">BL${b.num}</text>`;
+        });
+        // Direction labels
+        hdr += `<text x="${LABEL_W+8}" y="${HEADER_H-6}" font-size="9" fill="#7c3aed" font-weight="bold" font-family="monospace">BL29 ←</text>`;
+        hdr += `<text x="${svgW-6}" y="${HEADER_H-6}" text-anchor="end" font-size="9" fill="#4f46e5" font-weight="bold" font-family="monospace">→ BL1</text>`;
+        hdr += `<line x1="${LABEL_W}" y1="${HEADER_H-1}" x2="${svgW}" y2="${HEADER_H-1}" stroke="#e2e8f0" stroke-width="1"/>`;
+        // Corner
+        hdr += `<rect x="0" y="0" width="${LABEL_W}" height="${HEADER_H}" fill="rgba(248,250,252,0.98)"/>`;
+        hdr += `<text x="${LABEL_W/2}" y="${HEADER_H-22}" text-anchor="middle" font-size="9" fill="#94a3b8" font-weight="bold" font-family="monospace">DATE</text>`;
+        hdr += `<text x="${LABEL_W/2}" y="${HEADER_H-9}" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-family="monospace">↕ scroll</text>`;
+
+        container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgW}" height="${svgH}"
+             viewBox="0 0 ${svgW} ${svgH}" style="display:block;min-width:${svgW}px;font-smoothing:antialiased;">
+            <defs><clipPath id="ganttClip"><rect x="${LABEL_W}" y="${HEADER_H}" width="${CONTENT_W}" height="${CHART_H}"/></clipPath></defs>
+            <rect x="0" y="0" width="${svgW}" height="${svgH}" fill="#f8fafc"/>
+            <g clip-path="url(#ganttClip)">${chart}</g>
+            ${nowY>=HEADER_H&&nowY<=HEADER_H+CHART_H
+                ? `<line x1="${LABEL_W}" y1="${nowY}" x2="${LABEL_W+CONTENT_W}" y2="${nowY}" stroke="#ef4444" stroke-width="2.5" opacity="0.92"/>
+                   <polygon points="${LABEL_W},${nowY} ${LABEL_W-10},${nowY-5} ${LABEL_W-10},${nowY+5}" fill="#ef4444" opacity="0.9"/>`
+                : ''}
+            ${overlay}
+            <g>${leftLbls}</g>
+            ${hdr}
+        </svg>`;
+
+        // Legend
+        const le = document.getElementById('berthGanttLegend');
+        if (le) {
+            const uniq = [...new Set(vessels.map(v => v.carrier))];
+            le.innerHTML = uniq.map(c => {
+                const act = vessels.find(v => v.carrier===c&&v.eta<=now&&v.etd>=now);
+                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold" style="background:${colorMap[c]};color:white">
+                    ${act?'<span class="w-2 h-2 rounded-full bg-white animate-pulse inline-block"></span>':''} ${c}
+                </span>`;
+            }).join('');
+        }
+
+        // Update zoom label
+        const lbl = document.getElementById('ganttZoomLabel');
+        if (lbl) lbl.textContent = _ganttPph ? Math.round(_ganttPph)+'px/h' : 'FIT';
+
+        // ── Click handler: clicking a vessel rect filters the Yard Map (registered once)
+        const wrapper = document.getElementById('berthGanttWrapper');
+        if (wrapper && !wrapper.dataset.ganttClickBound) {
+            wrapper.dataset.ganttClickBound = '1';
+            wrapper.addEventListener('click', function(e) {
+                const el = e.target.closest('[data-gantt-carrier]');
+                if (!el) return;
+                const carrier = el.getAttribute('data-gantt-carrier');
+                if (!carrier) return;
+                // Toggle yard map filter (same as clicking the vessel chip)
+                toggleVesselFilter(carrier);
+                // Scroll page to vessel filter chips so user sees the filter applied
+                const filterEl = document.getElementById('vesselFilterList');
+                if (filterEl) filterEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        }
+    }
+    window.renderBerthGantt = renderBerthGantt;
     function renderClusterSpreading() {
         const body = document.getElementById('clusterBody');
         const showAll = document.getElementById('toggleSmallCarriers').checked;
