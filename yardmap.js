@@ -662,225 +662,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showYardSlotDetail(block, slotNum) {
     if (!invData || !invData.length) return;
-
-    // Get ALL containers in this block (not just this slot — show full block context)
     const blockRows = invData.filter(it => it.block === block);
     if (blockRows.length === 0) return;
-
-    // Get containers specifically at this slot (and adjacent for 40ft)
     const slotRows = blockRows.filter(it => {
         const s = parseInt(it.slot) || 0;
         const len = String(it.length || '20');
         const is40 = len.startsWith('40') || len.startsWith('45');
         return s === slotNum || (is40 && (s === slotNum || s + 1 === slotNum));
     });
-
-    // Build SPOD color palette for this slot
     const SPOD_PALETTE = [
-        { bg: '#3b82f6', text: '#fff' }, { bg: '#ef4444', text: '#fff' },
-        { bg: '#22c55e', text: '#fff' }, { bg: '#f59e0b', text: '#000' },
-        { bg: '#8b5cf6', text: '#fff' }, { bg: '#06b6d4', text: '#000' },
-        { bg: '#ec4899', text: '#fff' }, { bg: '#14b8a6', text: '#fff' },
-        { bg: '#f97316', text: '#fff' }, { bg: '#6366f1', text: '#fff' },
+        {bg:'#3b82f6',text:'#fff'},{bg:'#ef4444',text:'#fff'},{bg:'#22c55e',text:'#fff'},
+        {bg:'#f59e0b',text:'#000'},{bg:'#8b5cf6',text:'#fff'},{bg:'#06b6d4',text:'#000'},
+        {bg:'#ec4899',text:'#fff'},{bg:'#14b8a6',text:'#fff'},{bg:'#f97316',text:'#fff'},
+        {bg:'#6366f1',text:'#fff'}
     ];
-    const spodColors = {};
-    let spIdx = 0;
+    const spodColors = {}; let spIdx = 0;
     const allSpods = new Set();
-    slotRows.forEach(it => allSpods.add(String(it.spod || 'UNKNOWN').toUpperCase()));
-    Array.from(allSpods).sort().forEach(sp => {
-        spodColors[sp] = SPOD_PALETTE[spIdx++ % SPOD_PALETTE.length];
-    });
-
-    // Parse tier from _raw_slot (format: BBSSRT → tier = T, row = R)
-    const parseTier = (rawSlot) => {
-        const raw = String(rawSlot || '');
-        if (raw.length >= 6) return parseInt(raw.charAt(5)) || 1;
-        return 1;
-    };
-    const parseRow = (rawSlot) => {
-        const raw = String(rawSlot || '');
-        if (raw.length >= 5) return parseInt(raw.charAt(4)) || 1;
-        return 1;
-    };
-
-    // Build tier × row grid for this slot
-    const rowTierMap = {}; // row -> tier -> container
-    let maxTier = 1;
+    slotRows.forEach(it => allSpods.add(String(it.spod||'UNKNOWN').toUpperCase()));
+    Array.from(allSpods).sort().forEach(sp => { spodColors[sp] = SPOD_PALETTE[spIdx++ % SPOD_PALETTE.length]; });
+    const parseTier = raw => { const s = String(raw||''); return s.length >= 6 ? (parseInt(s.charAt(5))||1) : 1; };
+    const parseRow = raw => { const s = String(raw||''); return s.length >= 5 ? (parseInt(s.charAt(4))||1) : 1; };
+    const rowTierMap = {}; let maxTier = 1;
     slotRows.forEach(it => {
         const r = it.row || parseRow(it._raw_slot);
         const t = parseTier(it._raw_slot);
         if (t > maxTier) maxTier = t;
         if (!rowTierMap[r]) rowTierMap[r] = {};
-        const sizeLabel = String(it.length || '20').startsWith('20') ? '20' : (String(it.length || '').startsWith('45') ? '45' : '40');
-        const move = String(it.move || '').toLowerCase();
-        const isExport = !move.includes('import') && !move.includes('disc') && !move.includes('vessel') && !move.includes('transhipment');
-        const ls = String(it.loadStatus || 'FULL').toUpperCase();
+        const sz = String(it.length||'20').startsWith('20') ? '20' : (String(it.length||'').startsWith('45') ? '45' : '40');
+        const mv = String(it.move||'').toLowerCase();
+        const isExp = !mv.includes('import') && !mv.includes('disc') && !mv.includes('vessel') && !mv.includes('transhipment');
+        const ls = String(it.loadStatus||'FULL').toUpperCase();
         const fe = (ls.includes('EMPTY') || ls === 'MT') ? 'E' : 'F';
-        rowTierMap[r][t] = {
-            size: sizeLabel,
-            spod: String(it.spod || 'UNKNOWN').toUpperCase(),
-            wc: String(it.wtcl || '-').toUpperCase(),
-            carrier: it.carrier || '',
-            unit: it.unit || '',
-            fe: fe,
-            isExport: isExport
-        };
+        rowTierMap[r][t] = {size:sz, spod:String(it.spod||'UNKNOWN').toUpperCase(), wc:String(it.wtcl||'-').toUpperCase(), carrier:it.carrier||'', fe, isExport:isExp};
     });
-
-    const rows = Object.keys(rowTierMap).map(Number).sort((a, b) => a - b);
-    if (rows.length === 0 && slotRows.length === 0) {
-        // Empty slot
-        const contentDiv = document.getElementById('clusterDetailContent');
-        if (contentDiv) {
-            contentDiv.innerHTML = `<div class="p-12 text-center text-slate-400">
-                <span class="material-symbols-outlined text-5xl block mb-3 opacity-30">inbox</span>
-                <p class="font-bold text-slate-500">Block ${block} Slot ${slotNum}</p>
-                <p class="text-sm mt-1">No containers at this position.</p>
-            </div>`;
-        }
-        const drawer = document.getElementById('clusterDetailDrawer');
-        const overlay = document.getElementById('clusterDetailOverlay');
-        if (overlay) overlay.classList.remove('hidden');
-        if (drawer) drawer.classList.remove('translate-x-full');
-        return;
-    }
-
-    // Bay cross-section grid
-    let gridHtml = `<div class="mb-4">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">view_module</span> Bay Cross Section — Slot ${slotNum}
-        </div>
-        <div class="overflow-x-auto custom-scrollbar">
-            <table class="border-collapse text-[10px]">
-                <thead><tr>
-                    <th class="py-1.5 px-2 border border-slate-200 bg-slate-100 font-bold text-slate-600">Row\\Tier</th>`;
-    for (let t = 1; t <= maxTier; t++) {
-        gridHtml += `<th class="py-1.5 px-2 border border-slate-200 bg-slate-100 text-center font-bold text-slate-600">T${t}</th>`;
-    }
-    gridHtml += `</tr></thead><tbody>`;
-    rows.forEach(r => {
-        gridHtml += `<tr><td class="py-1 px-2 border border-slate-200 bg-slate-50 font-bold text-slate-600 text-center">R${r}</td>`;
-        for (let t = 1; t <= maxTier; t++) {
-            const cont = rowTierMap[r] && rowTierMap[r][t];
-            if (cont) {
-                const color = spodColors[cont.spod] || { bg: '#94a3b8', text: '#fff' };
-                const feCode = cont.fe;
-                const feBg = feCode === 'E' ? 'rgba(251,146,60,0.3)' : 'rgba(74,222,128,0.3)';
-                const feColor = feCode === 'E' ? '#c2410c' : '#166534';
-                if (!cont.isExport) {
-                    gridHtml += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px">
-                        <div class="px-1 py-0.5 text-center" style="background:repeating-linear-gradient(45deg,#fef3c7,#fef3c7 3px,#fde68a 3px,#fde68a 6px);min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-                            <span class="text-[9px] font-extrabold leading-none text-amber-700">${cont.size}' <span style="background:${feBg};color:${feColor};padding:0 2px;border-radius:2px;font-size:7px">${feCode}</span></span>
-                            <span class="text-[8px] font-bold leading-tight text-amber-800">${cont.carrier || 'IMP'}</span>
-                        </div>
-                    </td>`;
+    const rows = Object.keys(rowTierMap).map(Number).sort((a,b) => a-b);
+    let maxRow = Math.max(1, ...rows);
+    const allRows = []; for (let r = 1; r <= maxRow; r++) allRows.push(r);
+    const expCnt = slotRows.filter(it => { const m = String(it.move||'').toLowerCase(); return !m.includes('import') && !m.includes('disc') && !m.includes('vessel'); }).length;
+    const othCnt = slotRows.length - expCnt;
+    let h = `<div class="mb-3 flex flex-wrap items-center gap-1.5">
+        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">view_module</span> Slot View</span>
+        <span class="text-slate-300 mx-1">|</span>
+        ${Object.entries(spodColors).map(([sp,c]) => `<span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:${c.bg};color:${c.text}">${sp}</span>`).join('')}
+        <span class="text-slate-300 mx-1">|</span>
+        <span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded slot-cell-other text-slate-500" style="min-width:48px;text-align:center">Other</span>
+        <span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded slot-cell-import text-amber-800" style="min-width:48px;text-align:center">Import</span>
+    </div>`;
+    h += `<div class="mb-2 flex items-center gap-2">
+        <span class="text-xs font-black text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200">SLOT ${String(slotNum).padStart(2,'0')}</span>
+        <span class="text-xs text-slate-500 font-semibold">${slotRows.length} units</span>
+        ${othCnt > 0 ? `<span class="text-xs text-slate-400">(+${othCnt} other)</span>` : ''}
+    </div>`;
+    h += `<div class="overflow-x-auto custom-scrollbar"><table class="border-collapse text-[10px]"><thead><tr>`;
+    allRows.forEach(r => { h += `<th class="py-2 px-3 border border-slate-200 bg-slate-50 text-center font-bold text-slate-600 min-w-[72px]">${String(r).padStart(2,'0')}</th>`; });
+    h += `</tr></thead><tbody>`;
+    for (let t = maxTier; t >= 1; t--) {
+        h += `<tr>`;
+        allRows.forEach(r => {
+            const c = rowTierMap[r] && rowTierMap[r][t];
+            if (c) {
+                const col = spodColors[c.spod] || {bg:'#94a3b8',text:'#fff'};
+                const feB = c.fe==='E' ? 'rgba(251,146,60,0.3)' : 'rgba(74,222,128,0.3)';
+                const feC = c.fe==='E' ? '#c2410c' : '#166534';
+                const feBadge = `<span style="background:${c.isExport?'rgba(255,255,255,0.3)':feB};color:${c.isExport?col.text:feC};padding:0 2px;border-radius:2px;font-size:7px">${c.fe}</span>`;
+                if (!c.isExport) {
+                    h += `<td class="border border-slate-300 p-0" style="min-width:72px"><div class="px-1 py-0.5 text-center" style="background:repeating-linear-gradient(45deg,#fef3c7,#fef3c7 3px,#fde68a 3px,#fde68a 6px);min-height:44px;display:flex;flex-direction:column;justify-content:center;align-items:center"><span class="text-[9px] font-extrabold leading-none text-amber-700">${c.size}' ${feBadge}</span><span class="text-[8px] font-bold leading-tight text-amber-800">${c.spod}</span><span class="text-[7px] font-semibold leading-none text-amber-600">${c.wc}</span></div></td>`;
                 } else {
-                    gridHtml += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px">
-                        <div class="px-1 py-0.5 text-center" style="background:${color.bg};color:${color.text};min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-                            <span class="text-[9px] font-extrabold leading-none">${cont.size}' <span style="background:rgba(255,255,255,0.3);padding:0 2px;border-radius:2px;font-size:7px">${feCode}</span></span>
-                            <span class="text-[8px] font-bold leading-tight">${cont.spod}</span>
-                            <span class="text-[7px] font-semibold opacity-80 leading-none">${cont.wc}</span>
-                        </div>
-                    </td>`;
+                    h += `<td class="border border-slate-300 p-0" style="min-width:72px"><div class="px-1 py-0.5 text-center" style="background:${col.bg};color:${col.text};min-height:44px;display:flex;flex-direction:column;justify-content:center;align-items:center"><span class="text-[9px] font-extrabold leading-none">${c.size}' ${feBadge}</span><span class="text-[8px] font-bold leading-tight">${c.spod}</span><span class="text-[7px] font-semibold opacity-80 leading-none">${c.wc}</span></div></td>`;
                 }
             } else {
-                gridHtml += `<td class="border border-slate-200 p-0" style="min-width:62px">
-                    <div style="min-height:38px;background:#f8fafc"></div>
-                </td>`;
+                h += `<td class="border border-slate-200 p-0" style="min-width:72px"><div style="min-height:44px;background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 4px,#f1f5f9 4px,#f1f5f9 8px)"></div></td>`;
             }
-        }
-        gridHtml += `</tr>`;
-    });
-    gridHtml += `</tbody></table></div></div>`;
-
-    // Summary info card
-    const exportCount = slotRows.filter(it => {
-        const m = String(it.move || '').toLowerCase();
-        return !m.includes('import') && !m.includes('disc') && !m.includes('vessel');
-    }).length;
-    const importCount = slotRows.length - exportCount;
-    const carriers = [...new Set(slotRows.map(it => it.carrier).filter(Boolean))];
-
-    let infoHtml = `<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-            <div class="text-[10px] font-bold text-slate-400 uppercase">Total Units</div>
-            <div class="text-xl font-black text-slate-800">${slotRows.length}</div>
-        </div>
-        <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
-            <div class="text-[10px] font-bold text-emerald-500 uppercase">Export</div>
-            <div class="text-xl font-black text-emerald-700">${exportCount}</div>
-        </div>
-        <div class="bg-amber-50 rounded-xl p-3 border border-amber-200">
-            <div class="text-[10px] font-bold text-amber-500 uppercase">Import</div>
-            <div class="text-xl font-black text-amber-700">${importCount}</div>
-        </div>
-        <div class="bg-indigo-50 rounded-xl p-3 border border-indigo-200">
-            <div class="text-[10px] font-bold text-indigo-500 uppercase">Carriers</div>
-            <div class="text-xl font-black text-indigo-700">${carriers.length}</div>
-        </div>
-    </div>`;
-
-    // SPOD legend
-    let spodLegendHtml = Object.entries(spodColors).map(([sp, c]) => {
-        const cnt = slotRows.filter(it => String(it.spod || 'UNKNOWN').toUpperCase() === sp).length;
-        return `<span class="inline-flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:${c.bg};color:${c.text}">${sp} (${cnt})</span>`;
-    }).join('');
-
-    // Container detail table
-    let tableHtml = `<div class="mt-4">
-        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[14px]">list_alt</span> Container List
-        </div>
-        <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-[11px]">
-                <thead class="bg-slate-100 text-[10px] text-slate-500 font-bold uppercase">
-                    <tr>
-                        <th class="px-3 py-2 text-left border-b border-slate-200">Unit</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">Size</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">F/E</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">Carrier</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">SPOD</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">WC</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">Row</th>
-                        <th class="px-3 py-2 text-center border-b border-slate-200">Move</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">`;
-    slotRows.forEach(it => {
-        const ls = String(it.loadStatus || 'FULL').toUpperCase();
-        const fe = (ls.includes('EMPTY') || ls === 'MT') ? 'E' : 'F';
-        const feBg = fe === 'E' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700';
-        tableHtml += `<tr class="hover:bg-slate-50 transition-colors">
-            <td class="px-3 py-1.5 font-mono font-bold text-slate-700">${it.unit || '-'}</td>
-            <td class="px-3 py-1.5 text-center">${String(it.length || '20').substring(0, 2)}'</td>
-            <td class="px-3 py-1.5 text-center"><span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${feBg}">${fe}</span></td>
-            <td class="px-3 py-1.5 text-center font-semibold">${it.carrier || '-'}</td>
-            <td class="px-3 py-1.5 text-center">${String(it.spod || '-').toUpperCase()}</td>
-            <td class="px-3 py-1.5 text-center">${String(it.wtcl || '-').toUpperCase()}</td>
-            <td class="px-3 py-1.5 text-center">${it.row || '-'}</td>
-            <td class="px-3 py-1.5 text-center text-[10px]">${String(it.move || '-').toUpperCase()}</td>
-        </tr>`;
-    });
-    tableHtml += `</tbody></table></div></div>`;
-
-    // Assemble content
-    const contentDiv = document.getElementById('clusterDetailContent');
-    if (!contentDiv) return;
-    contentDiv.innerHTML = `
-        <div class="mb-3">
-            <div class="flex items-center gap-2 mb-1">
-                <span class="text-lg font-black text-slate-800">Block ${block}</span>
-                <span class="text-slate-300">·</span>
-                <span class="text-lg font-bold text-indigo-600">Slot ${slotNum}</span>
-            </div>
-            <div class="flex flex-wrap gap-1">${spodLegendHtml}</div>
-        </div>
-        ${infoHtml}
-        ${gridHtml}
-        ${tableHtml}
-    `;
-
-    // Show drawer
+        });
+        h += `</tr>`;
+    }
+    h += `</tbody></table></div>`;
+    const cd = document.getElementById('clusterDetailContent');
+    if (!cd) return;
+    cd.innerHTML = `<div class="mb-3"><div class="flex items-center gap-2 mb-1"><span class="text-lg font-black text-slate-800">Block ${block}</span><span class="text-slate-300">&middot;</span><span class="text-lg font-bold text-indigo-600">Slot ${slotNum}</span></div></div>${h}`;
     const drawer = document.getElementById('clusterDetailDrawer');
     const overlay = document.getElementById('clusterDetailOverlay');
     if (overlay) overlay.classList.remove('hidden');
