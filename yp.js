@@ -1020,7 +1020,7 @@ document.getElementById('sumTotalCap').innerText =
             const active = v.eta<=now&&v.etd>=now;
 
             chart += `<rect x="${xL+2}" y="${y1+2}" width="${bW}" height="${bH}" rx="5" fill="#0f172a" opacity="0.1"/>`;
-            chart += `<rect data-gantt-carrier="${v.carrier}" x="${xL}" y="${y1}" width="${bW}" height="${bH}" rx="5" fill="${color}" opacity="${active?'0.95':'0.82'}" style="cursor:pointer"/>`;
+            chart += `<rect data-gantt-carrier="${v.carrier}" data-gantt-service="${v.service || ''}" x="${xL}" y="${y1}" width="${bW}" height="${bH}" rx="5" fill="${color}" opacity="${active?'0.95':'0.82'}" style="cursor:pointer"/>`;
             if (active) chart += `<rect x="${xL-2}" y="${y1-2}" width="${bW+4}" height="${bH+4}" rx="6" fill="none" stroke="${color}" stroke-width="2.5" opacity="0.4"/>`;
             chart += `<rect x="${xL}" y="${y1}" width="${bW}" height="${Math.min(bH*0.35,14)}" rx="5" fill="white" opacity="0.18"/>`;
 
@@ -1171,6 +1171,16 @@ document.getElementById('sumTotalCap').innerText =
                 // Also filter cluster spreading table (yp.js)
                 toggleVesselFilter(carrier);
 
+            });
+            wrapper.addEventListener('dblclick', function(e) {
+                const el = e.target.closest('[data-gantt-carrier]');
+                if (!el) return;
+                const carrier = el.getAttribute('data-gantt-carrier');
+                const service = el.getAttribute('data-gantt-service') || '';
+                if (!carrier) return;
+                if (typeof showVesselSummary === 'function') {
+                    showVesselSummary(`${carrier}||${service}`);
+                }
             });
         }
     }
