@@ -1426,7 +1426,7 @@ document.getElementById('sumTotalCap').innerText =
             const clusterValues = Array.from(data.clusters).sort((a,b) => a - b);
             const expectedClusterLabel = clusterValues.length ? clusterValues.join(", ") : '-';
             const expectedClusterNumber = clusterValues.length ? clusterValues[clusterValues.length - 1] : null;
-            const totalClusterCount = Object.keys(data.blocks).length;
+            const totalClusterCount = Object.keys(data.blocks).filter(b => b.charAt(0).toUpperCase() !== 'E').length;
             const exceedsExpected = expectedClusterNumber !== null && totalClusterCount > expectedClusterNumber;
             const actualColorClass = exceedsExpected ? ' text-red-600 bg-red-50 border border-red-200' : ' text-slate-800';
 
@@ -2950,7 +2950,7 @@ function downloadImage() {
                     }
                     const cv = Array.from(data.clusters).sort((a, b) => a - b);
                     const expLabel = cv.length ? cv.join(',') : '-';
-                    const actCluster = Object.keys(data.blocks).length;
+                    const actCluster = Object.keys(data.blocks).filter(b => b.charAt(0).toUpperCase() !== 'E').length;
                     const blockCells = sortedBlocks.map(b => data.blocks[b] ? String(data.blocks[b]) : '-');
                     return [etaLabel, shiftLabel, data.carrier, data.service || '-', ...blockCells, expLabel, String(actCluster), String(data.total)];
                 });
