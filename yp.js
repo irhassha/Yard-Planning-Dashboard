@@ -939,7 +939,7 @@ document.getElementById('sumTotalCap').innerText =
 
         // Layout
         const LABEL_W  = 72;
-        const HEADER_H = 80;
+        const HEADER_H = 66;
         const CONTENT_W = Math.max(860, (container.parentElement?.clientWidth || 940) - LABEL_W - 12);
 
         // PX_PER_HOUR: fit to screen or user-set
@@ -1128,9 +1128,6 @@ document.getElementById('sumTotalCap').innerText =
             hdr += `<line x1="${x}" y1="${QY+QH}" x2="${x}" y2="${HEADER_H}" stroke="${end?'#94a3b8':'#d1d5db'}" stroke-width="${end?1.2:0.75}"/>`;
             hdr += `<text x="${x}" y="${QY+QH+16}" text-anchor="middle" font-size="${end?10:9}" fill="${b.num===1?'#4f46e5':b.num===29?'#7c3aed':'#475569'}" font-weight="${end?'800':'500'}" font-family="monospace">BL${b.num}</text>`;
         });
-        // Direction labels
-        hdr += `<text x="${LABEL_W+8}" y="${HEADER_H-6}" font-size="9" fill="#7c3aed" font-weight="bold" font-family="monospace">BL29 ←</text>`;
-        hdr += `<text x="${svgW-6}" y="${HEADER_H-6}" text-anchor="end" font-size="9" fill="#4f46e5" font-weight="bold" font-family="monospace">→ BL1</text>`;
         hdr += `<line x1="${LABEL_W}" y1="${HEADER_H-1}" x2="${svgW}" y2="${HEADER_H-1}" stroke="#e2e8f0" stroke-width="1"/>`;
         // Corner
         hdr += `<rect x="0" y="0" width="${LABEL_W}" height="${HEADER_H}" fill="rgba(248,250,252,0.98)"/>`;
@@ -1174,11 +1171,7 @@ document.getElementById('sumTotalCap').innerText =
                 }
                 // Also filter cluster spreading table (yp.js)
                 toggleVesselFilter(carrier);
-                // Scroll to yard map so user sees the highlight
-                const scrollTarget = document.getElementById('yardMapLegend')
-                    || document.getElementById('yardMapContent')
-                    || document.getElementById('vesselFilterList');
-                if (scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
             });
         }
     }
