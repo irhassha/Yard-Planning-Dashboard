@@ -875,7 +875,7 @@ document.getElementById('sumTotalCap').innerText =
     };
 
     // ─── BERTH GANTT CHART ─────────────────────────────────────────────────────
-    let _ganttPph = null; // null = fit to screen
+    let _ganttPph = 5; // default 5px/h; null = fit to screen
 
     function zoomGantt(factor) {
         const el = document.getElementById('berthGanttContent');
@@ -916,9 +916,18 @@ document.getElementById('sumTotalCap').innerText =
             return;
         }
 
+        // Use yardmap colors where available (same as yard map legend), fallback to own palette
         const PALETTE = ['#4f46e5','#0891b2','#059669','#d97706','#db2777','#7c3aed','#0284c7','#16a34a','#ca8a04','#e11d48','#6366f1','#0e7490','#15803d','#b45309','#be185d'];
         const colorMap = {}; let ci = 0;
-        vessels.forEach(v => { if (!colorMap[v.carrier]) colorMap[v.carrier] = PALETTE[ci++ % PALETTE.length]; });
+        vessels.forEach(v => {
+            if (!colorMap[v.carrier]) {
+                // Prefer yard map color (from yardmap.js) for visual consistency
+                const yardColor = (typeof yardCarrierColorMap !== 'undefined' && yardCarrierColorMap[v.carrier])
+                    ? yardCarrierColorMap[v.carrier]
+                    : PALETTE[ci++ % PALETTE.length];
+                colorMap[v.carrier] = yardColor;
+            }
+        });
 
         // Time range
         const rawMin = Math.min(...vessels.map(v => v.eta.getTime()), now.getTime());
@@ -1142,17 +1151,9 @@ document.getElementById('sumTotalCap').innerText =
             ${hdr}
         </svg>`;
 
-        // Legend
+        // Legend removed — colors already shown in Yard Map's Export Vessels legend
         const le = document.getElementById('berthGanttLegend');
-        if (le) {
-            const uniq = [...new Set(vessels.map(v => v.carrier))];
-            le.innerHTML = uniq.map(c => {
-                const act = vessels.find(v => v.carrier===c&&v.eta<=now&&v.etd>=now);
-                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold" style="background:${colorMap[c]};color:white">
-                    ${act?'<span class="w-2 h-2 rounded-full bg-white animate-pulse inline-block"></span>':''} ${c}
-                </span>`;
-            }).join('');
-        }
+        if (le) le.innerHTML = '';
 
         // Update zoom label
         const lbl = document.getElementById('ganttZoomLabel');
