@@ -880,7 +880,7 @@ document.getElementById('sumTotalCap').innerText =
     function zoomGantt(factor) {
         const el = document.getElementById('berthGanttContent');
         const cur = parseFloat(el?.dataset?.pph || '30');
-        _ganttPph = (factor === 0) ? null : Math.max(10, Math.min(300, cur * factor));
+        _ganttPph = (factor === 0) ? null : Math.max(2, Math.min(300, cur * factor));
         renderBerthGantt();
         const lbl = document.getElementById('ganttZoomLabel');
         if (lbl) lbl.textContent = _ganttPph ? Math.round(_ganttPph) + 'px/h' : 'FIT';
@@ -937,7 +937,7 @@ document.getElementById('sumTotalCap').innerText =
         const FIT_AVAIL_H = 420;
         const PX_PER_HOUR = _ganttPph !== null
             ? _ganttPph
-            : Math.max(12, Math.min(100, (FIT_AVAIL_H - HEADER_H) / totalHours));
+            : Math.max(2, Math.min(100, (FIT_AVAIL_H - HEADER_H) / totalHours));
         container.dataset.pph = PX_PER_HOUR;
 
         const CHART_H = Math.ceil(totalHours * PX_PER_HOUR);
@@ -1167,11 +1167,17 @@ document.getElementById('sumTotalCap').innerText =
                 if (!el) return;
                 const carrier = el.getAttribute('data-gantt-carrier');
                 if (!carrier) return;
-                // Toggle yard map filter (same as clicking the vessel chip)
+                // Filter the YARD MAP visual (yardmap.js) — this is the actual yard highlight
+                if (typeof highlightYardCarrier === 'function') {
+                    highlightYardCarrier(carrier);
+                }
+                // Also filter cluster spreading table (yp.js)
                 toggleVesselFilter(carrier);
-                // Scroll page to vessel filter chips so user sees the filter applied
-                const filterEl = document.getElementById('vesselFilterList');
-                if (filterEl) filterEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Scroll to yard map so user sees the highlight
+                const scrollTarget = document.getElementById('yardMapLegend')
+                    || document.getElementById('yardMapContent')
+                    || document.getElementById('vesselFilterList');
+                if (scrollTarget) scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         }
     }
