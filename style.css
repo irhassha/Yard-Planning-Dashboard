@@ -539,7 +539,7 @@ body.ai-chat-sidebar-open {
     border-radius: 1px;
     flex-shrink: 0;
     transition: opacity 0.2s ease, filter 0.2s ease;
-    cursor: default;
+    cursor: pointer;
     position: relative;
     border: 1px solid transparent;
 }

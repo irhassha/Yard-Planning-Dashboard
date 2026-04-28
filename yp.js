@@ -3247,7 +3247,9 @@ function downloadImage() {
 // --- TAB 4: EMPTY SUMMARY RENDER ---
 function renderEmptySummary() {
     const impDiv = document.getElementById('emptyImportSummary');
-    const expBody = document.getElementById('emptyExportBody');
+    const impLineBody = document.getElementById('emptyImportByLineBody');
+    const expInsideBody = document.getElementById('emptyExportInsideBody');
+    const expOutsideBody = document.getElementById('emptyExportOutsideBody');
     
     // 1. Filter Data: Hanya yang statusnya Empty/MT
     // EXCLUDE entries where block or slot starts with '8'
@@ -3256,18 +3258,30 @@ function renderEmptySummary() {
     // Normalize service values
     emptyData.forEach(d => { if(!d.service) d.service = ""; });
 
-    // 2. IMPORT LOGIC (Summarize by Length Only)
+    // 2. IMPORT LOGIC
     let impStats = { c20: 0, c40: 0, c45: 0, total: 0 };
+    let impByLine = {};
+    
     emptyData.filter(d => d.move.includes('import')).forEach(d => {
+        // Overall stats
         if(d.length.startsWith('20')) impStats.c20++;
         else if(d.length.startsWith('45')) impStats.c45++;
         else impStats.c40++;
         impStats.total++;
+        
+        // Per-LINE stats
+        const line = d.line || 'UNKNOWN';
+        if (!impByLine[line]) impByLine[line] = { line, c20: 0, c40: 0, c45: 0, total: 0 };
+        if(d.length.startsWith('20')) impByLine[line].c20++;
+        else if(d.length.startsWith('45')) impByLine[line].c45++;
+        else impByLine[line].c40++;
+        impByLine[line].total++;
     });
 
     // Compute TEUs for empty imports
     const impTeus = (impStats.c20 * 1) + (impStats.c40 * 2) + (impStats.c45 * 2.25);
 
+    // Render Summary Cards
     impDiv.innerHTML = `
         <div class="bg-white p-4 rounded-2xl text-center border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
             <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wide mb-1">20' Empty</div>
@@ -3291,7 +3305,43 @@ function renderEmptySummary() {
         </div>
     `;
 
-    // 3. EXPORT LOGIC (Summarize by Carrier & Service & Length)
+    // Render Per-LINE Import Table
+    const sortedLines = Object.values(impByLine).sort((a, b) => b.total - a.total);
+    if (sortedLines.length === 0) {
+        impLineBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No Import Empty found.</td></tr>';
+    } else {
+        const _lineRows = [];
+        sortedLines.forEach(ln => {
+            const teus = (ln.c20 * 1) + (ln.c40 * 2) + (ln.c45 * 2.25);
+            _lineRows.push(`
+                <tr class="hover:bg-amber-50/30 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-slate-700">${ln.line}</td>
+                    <td class="px-4 py-2.5 text-center">${ln.c20 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center">${ln.c40 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center">${ln.c45 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center font-bold bg-amber-50/50 text-slate-800">${ln.total}</td>
+                    <td class="px-4 py-2.5 text-center font-bold text-amber-600">${Number(teus.toFixed(2))}</td>
+                </tr>
+            `);
+        });
+        const grandLine = sortedLines.reduce((acc, l) => ({
+            c20: acc.c20 + l.c20, c40: acc.c40 + l.c40, c45: acc.c45 + l.c45, total: acc.total + l.total
+        }), { c20: 0, c40: 0, c45: 0, total: 0 });
+        const grandLineTeus = (grandLine.c20 * 1) + (grandLine.c40 * 2) + (grandLine.c45 * 2.25);
+        _lineRows.push(`
+            <tr class="bg-amber-50 border-t-2 border-amber-200 font-bold">
+                <td class="px-4 py-2.5 text-slate-800">GRAND TOTAL</td>
+                <td class="px-4 py-2.5 text-center text-amber-700">${grandLine.c20}</td>
+                <td class="px-4 py-2.5 text-center text-amber-700">${grandLine.c40}</td>
+                <td class="px-4 py-2.5 text-center text-amber-700">${grandLine.c45}</td>
+                <td class="px-4 py-2.5 text-center text-amber-800 font-extrabold">${grandLine.total}</td>
+                <td class="px-4 py-2.5 text-center text-amber-800 font-extrabold">${Number(grandLineTeus.toFixed(2))}</td>
+            </tr>
+        `);
+        impLineBody.innerHTML = _lineRows.join('');
+    }
+
+    // 3. EXPORT LOGIC - Split into All / Inside Block / Outside Block
     const scheduleMap = {};
     (scheduleData || []).forEach(s => {
         const key = `${s.carrier}||${String(s.service || '').toUpperCase()}`;
@@ -3299,87 +3349,104 @@ function renderEmptySummary() {
         scheduleMap[key].push(s);
     });
 
-    let expStats = {};
-    emptyData.filter(d => d.move.includes('export')).forEach(d => {
-        let key = `${d.carrier}||${String(d.service || '').toUpperCase()}`;
-        if(!expStats[key]) expStats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, eta: null };
-        
-        if(d.length.startsWith('20')) expStats[key].c20++;
-        else if(d.length.startsWith('45')) expStats[key].c45++;
-        else expStats[key].c40++;
-        expStats[key].total++;
-        
-        const scheduleRows = scheduleMap[key] || [];
-        if (scheduleRows.length && !expStats[key].eta) {
-            const earliest = scheduleRows.reduce((min, row) => {
-                return !min || row.eta.getTime() < min.getTime() ? row.eta : min;
-            }, null);
-            if (earliest) expStats[key].eta = earliest;
-        }
-    });
+    function buildExportStats(filterFn) {
+        let stats = {};
+        emptyData.filter(d => d.move.includes('export') && filterFn(d)).forEach(d => {
+            let key = `${d.carrier}||${String(d.service || '').toUpperCase()}`;
+            if(!stats[key]) stats[key] = { carrier: d.carrier, service: d.service || '', c20: 0, c40: 0, c45: 0, total: 0, eta: null };
+            if(d.length.startsWith('20')) stats[key].c20++;
+            else if(d.length.startsWith('45')) stats[key].c45++;
+            else stats[key].c40++;
+            stats[key].total++;
+            const scheduleRows = scheduleMap[key] || [];
+            if (scheduleRows.length && !stats[key].eta) {
+                const earliest = scheduleRows.reduce((min, row) => (!min || row.eta.getTime() < min.getTime() ? row.eta : min), null);
+                if (earliest) stats[key].eta = earliest;
+            }
+        });
+        return Object.values(stats).sort((a,b) => {
+            if (a.eta && b.eta) return a.eta - b.eta;
+            if (a.eta) return -1;
+            if (b.eta) return 1;
+            return b.total - a.total;
+        });
+    }
 
-    // Sort by ETA then Total Descending
-    let sortedExp = Object.values(expStats).sort((a,b) => {
-        if (a.eta && b.eta) return a.eta - b.eta;
-        if (a.eta) return -1;
-        if (b.eta) return 1;
-        return b.total - a.total;
-    });
-    
-    expBody.innerHTML = '';
-    if(sortedExp.length === 0) {
-        expBody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-slate-400 italic">No Export Empty found.</td></tr>';
-    } else {
-        const _expRows = [];
-        sortedExp.forEach(s => {
+    function renderExportTable(sortedData, tbody, emptyMsg) {
+        tbody.innerHTML = '';
+        if (sortedData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400 italic">${emptyMsg}</td></tr>`;
+            return;
+        }
+        const _rows = [];
+        sortedData.forEach(s => {
             let etbText = '-', hourText = '-';
             if(s.eta) {
                 const et = s.eta;
                 etbText = `${et.getDate().toString().padStart(2,'0')}/${(et.getMonth()+1).toString().padStart(2,'0')}`;
                 hourText = `${et.getHours().toString().padStart(2,'0')}:${et.getMinutes().toString().padStart(2,'0')}`;
             }
-
-            const carrier = s.carrier || '-';
-            const service = s.service || '-';
-            const totalTeus = (s.c20 * 1) + (s.c40 * 2) + (s.c45 * 2.25);
-            _expRows.push(`
+            _rows.push(`
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-3 font-bold text-slate-700">${carrier}</td>
-                    <td class="px-6 py-3 text-center font-semibold text-slate-700 border-r border-slate-100">${etbText}</td>
-                    <td class="px-6 py-3 text-center font-bold text-slate-600 border-r border-slate-100">${hourText}</td>
-                    <td class="px-6 py-3 text-center font-medium text-slate-600">${service}</td>
-                    <td class="px-6 py-3 text-center">${s.c20 || '-'}</td>
-                    <td class="px-6 py-3 text-center">${s.c40 || '-'}</td>
-                    <td class="px-6 py-3 text-center">${s.c45 || '-'}</td>
-                    <td class="px-6 py-3 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
-                    <td class="px-6 py-3 text-center font-bold text-emerald-600">${Number(totalTeus.toFixed(2))}</td>
+                    <td class="px-4 py-2.5 font-bold text-slate-700">${s.carrier || '-'}</td>
+                    <td class="px-4 py-2.5 text-center font-semibold text-slate-700 border-r border-slate-100">${etbText}</td>
+                    <td class="px-4 py-2.5 text-center font-bold text-slate-600 border-r border-slate-100">${hourText}</td>
+                    <td class="px-4 py-2.5 text-center font-medium text-slate-600">${s.service || '-'}</td>
+                    <td class="px-4 py-2.5 text-center">${s.c20 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center">${s.c40 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center">${s.c45 || '-'}</td>
+                    <td class="px-4 py-2.5 text-center font-bold bg-slate-50 text-slate-800">${s.total}</td>
+                    <td class="px-4 py-2.5 text-center font-bold text-emerald-600">${Number(((s.c20*1)+(s.c40*2)+(s.c45*2.25)).toFixed(2))}</td>
                 </tr>
             `);
         });
-        // Add Grand Total Row
-        let grand = sortedExp.reduce((acc, curr) => ({
-            c20: acc.c20 + curr.c20,
-            c40: acc.c40 + curr.c40,
-            c45: acc.c45 + curr.c45,
+        let grand = sortedData.reduce((acc, curr) => ({
+            c20: acc.c20 + curr.c20, c40: acc.c40 + curr.c40, c45: acc.c45 + curr.c45,
             total: acc.total + curr.total,
             teus: acc.teus + ((curr.c20 * 1) + (curr.c40 * 2) + (curr.c45 * 2.25))
         }), {c20:0, c40:0, c45:0, total:0, teus:0});
-        
-        _expRows.push(`
+        _rows.push(`
             <tr class="bg-slate-100 border-t-2 border-slate-200 font-bold">
-                <td class="px-6 py-3 text-slate-800">GRAND TOTAL</td>
-                <td colspan="2" class="px-6 py-3 text-center text-slate-700 border-r border-slate-200">-</td>
-                <td class="px-6 py-3 text-center text-slate-700">-</td>
-                <td class="px-6 py-3 text-center text-blue-600">${grand.c20}</td>
-                <td class="px-6 py-3 text-center text-blue-600">${grand.c40}</td>
-                <td class="px-6 py-3 text-center text-blue-600">${grand.c45}</td>
-                <td class="px-6 py-3 text-center text-emerald-600 text-lg">${grand.total}</td>
-                <td class="px-6 py-3 text-center text-emerald-700 text-lg">${Number(grand.teus.toFixed(2))}</td>
+                <td class="px-4 py-2.5 text-slate-800">GRAND TOTAL</td>
+                <td colspan="2" class="px-4 py-2.5 text-center text-slate-700 border-r border-slate-200">-</td>
+                <td class="px-4 py-2.5 text-center text-slate-700">-</td>
+                <td class="px-4 py-2.5 text-center text-blue-600">${grand.c20}</td>
+                <td class="px-4 py-2.5 text-center text-blue-600">${grand.c40}</td>
+                <td class="px-4 py-2.5 text-center text-blue-600">${grand.c45}</td>
+                <td class="px-4 py-2.5 text-center text-emerald-600 font-extrabold">${grand.total}</td>
+                <td class="px-4 py-2.5 text-center text-emerald-700 font-extrabold">${Number(grand.teus.toFixed(2))}</td>
             </tr>
         `);
-        expBody.innerHTML = _expRows.join('');
+        tbody.innerHTML = _rows.join('');
     }
+
+    const expAllBody = document.getElementById('emptyExportAllBody');
+
+    // All = no filter
+    const allData = buildExportStats(() => true);
+    renderExportTable(allData, expAllBody, 'No Export Empty found.');
+
+    // Inside Block = blocks NOT starting with 'E'
+    const insideData = buildExportStats(d => !String(d.block || '').toUpperCase().startsWith('E'));
+    renderExportTable(insideData, expInsideBody, 'No Inside Block export empty found.');
+
+    // Outside Block = blocks starting with 'E'
+    const outsideData = buildExportStats(d => String(d.block || '').toUpperCase().startsWith('E'));
+    renderExportTable(outsideData, expOutsideBody, 'No Outside Block (E-) export empty found.');
 }
+
+// Tab switcher for Export Empty All/Inside/Outside
+function switchExportEmptyTab(tab) {
+    const panels = { all: 'exportAllPanel', inside: 'exportInsidePanel', outside: 'exportOutsidePanel' };
+    const btns = { all: 'btnExportAll', inside: 'btnExportInside', outside: 'btnExportOutside' };
+    const active = 'bg-white text-slate-800 shadow-sm border border-slate-200';
+    const inactive = 'text-slate-500 hover:text-slate-700';
+    Object.keys(panels).forEach(key => {
+        document.getElementById(panels[key]).classList.toggle('hidden', key !== tab);
+        document.getElementById(btns[key]).className = `px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all ${key === tab ? active : inactive}`;
+    });
+}
+
 
 
 function normalizeProjectionType(rawType = '', blockHint = '') {
@@ -3946,12 +4013,21 @@ window.showClusterDetail = function(carrier, service, block, part) {
         return true;
     });
 
-    // Pivot data by Size -> SPOD -> WC
-    const pivotData = {
-        '20': { spods: new Set(), wcs: new Set(), matrix: {} },
-        '40': { spods: new Set(), wcs: new Set(), matrix: {} },
-        '45': { spods: new Set(), wcs: new Set(), matrix: {} }
+    // Helper to determine F/E code
+    const getFECode = (loadStatus) => {
+        const ls = String(loadStatus || 'FULL').toUpperCase();
+        return (ls.includes('EMPTY') || ls === 'MT') ? 'E' : 'F';
     };
+
+    // Pivot data by Size -> F/E -> SPOD -> WC
+    const feGroups = ['F', 'E'];
+    const pivotData = {};
+    ['20', '40', '45'].forEach(sz => {
+        pivotData[sz] = {};
+        feGroups.forEach(fe => {
+            pivotData[sz][fe] = { spods: new Set(), wcs: new Set(), matrix: {} };
+        });
+    });
     
     filteredRows.forEach(it => {
         let sizeGroup = '40';
@@ -3961,8 +4037,9 @@ window.showClusterDetail = function(carrier, service, block, part) {
         
         const spod = String(it.spod || 'UNKNOWN').toUpperCase();
         const wc = String(it.wtcl || 'UNKNOWN').toUpperCase();
+        const fe = getFECode(it.loadStatus);
         
-        const g = pivotData[sizeGroup];
+        const g = pivotData[sizeGroup][fe];
         g.spods.add(spod);
         g.wcs.add(wc);
         
@@ -3975,54 +4052,94 @@ window.showClusterDetail = function(carrier, service, block, part) {
     
     let matrixTablesHtml = '';
     ['20', '40', '45'].forEach(size => {
-        const g = pivotData[size];
-        if (g.spods.size === 0) return; // No data for this size
-        
-        const sortedWCs = Array.from(g.wcs).sort();
-        const sortedSPODs = Array.from(g.spods).sort();
-        
-        let thWc = sortedWCs.map(wc => `<th class="py-2 px-2 text-center border-r border-slate-200/50">${wc}</th>`).join('');
-        let headerRow = `<thead class="bg-slate-100 uppercase text-[10px] text-slate-500 font-bold border-b border-slate-200">
-            <tr>
-                <th class="py-2 px-3 text-left border-r border-slate-200 bg-white">SPOD / WC</th>
-                ${thWc}
-                <th class="py-2 px-3 text-center border-l bg-slate-200/50 border-slate-200">Total</th>
-            </tr>
-        </thead>`;
-        
-        let trSpods = sortedSPODs.map(spod => {
-            let rowTotal = 0;
-            let tdWc = sortedWCs.map(wc => {
-                let count = g.matrix[spod][wc] || 0;
-                rowTotal += count;
-                return `<td class="py-1.5 px-2 text-center text-xs font-semibold border-r border-slate-100">${count > 0 ? count : '<span class="text-slate-300">-</span>'}</td>`;
-            }).join('');
-            
-            return `<tr class="border-b border-slate-100 last:border-0 hover:bg-blue-50/30 transition-colors">
-                <td class="py-1.5 px-3 text-[11px] font-bold text-slate-700 border-r border-slate-200 bg-slate-50/50">${spod}</td>
-                ${tdWc}
-                <td class="py-1.5 px-3 text-xs font-black text-slate-800 text-center border-l border-slate-200 bg-slate-50/50">${rowTotal}</td>
-            </tr>`;
-        }).join('');
-        
-        // Grand totals row
-        let grandTotal = 0;
-        let tfWc = sortedWCs.map(wc => {
-            let colTotal = 0;
-            sortedSPODs.forEach(spod => colTotal += (g.matrix[spod][wc] || 0));
-            grandTotal += colTotal;
-            return `<td class="py-2 px-2 text-center text-xs font-black text-slate-800 border-r border-slate-200/50">${colTotal > 0 ? colTotal : '-'}</td>`;
-        }).join('');
-        
-        let footerRow = `<tfoot class="bg-blue-50/60 border-t border-slate-200">
-            <tr>
-                <td class="py-2 px-3 text-[11px] font-bold text-slate-600 border-r border-slate-200 text-right uppercase tracking-wider bg-white">Total</td>
-                ${tfWc}
-                <td class="py-2 px-3 text-sm font-black text-blue-700 text-center border-l border-slate-200 bg-blue-100/50 block-group-end" style="border-right-width: 0px !important;">${grandTotal}</td>
-            </tr>
-        </tfoot>`;
+        // Check if this size has any data at all
+        const hasFullData = pivotData[size]['F'].spods.size > 0;
+        const hasEmptyData = pivotData[size]['E'].spods.size > 0;
+        if (!hasFullData && !hasEmptyData) return;
         
         let headerColor = size === '20' ? 'bg-amber-500' : (size === '40' ? 'bg-blue-600' : 'bg-emerald-600');
+        
+        // Calculate total units for this size across F and E
+        let sizeTotalUnits = 0;
+        feGroups.forEach(fe => {
+            const g = pivotData[size][fe];
+            Array.from(g.spods).forEach(spod => {
+                Array.from(g.wcs).forEach(wc => {
+                    sizeTotalUnits += (g.matrix[spod] && g.matrix[spod][wc]) || 0;
+                });
+            });
+        });
+        
+        let feTablesHtml = '';
+        feGroups.forEach(fe => {
+            const g = pivotData[size][fe];
+            if (g.spods.size === 0) return;
+            
+            const feLabel = fe === 'F' ? 'Full' : 'Empty';
+            const feBadgeColor = fe === 'F' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-orange-100 text-orange-700 border-orange-200';
+            
+            const sortedWCs = Array.from(g.wcs).sort();
+            const sortedSPODs = Array.from(g.spods).sort();
+            
+            let thWc = sortedWCs.map(wc => `<th class="py-2 px-2 text-center border-r border-slate-200/50">${wc}</th>`).join('');
+            let headerRow = `<thead class="bg-slate-100 uppercase text-[10px] text-slate-500 font-bold border-b border-slate-200">
+                <tr>
+                    <th class="py-2 px-3 text-left border-r border-slate-200 bg-white">SPOD / WC</th>
+                    ${thWc}
+                    <th class="py-2 px-3 text-center border-l bg-slate-200/50 border-slate-200">Total</th>
+                </tr>
+            </thead>`;
+            
+            let trSpods = sortedSPODs.map(spod => {
+                let rowTotal = 0;
+                let tdWc = sortedWCs.map(wc => {
+                    let count = g.matrix[spod][wc] || 0;
+                    rowTotal += count;
+                    return `<td class="py-1.5 px-2 text-center text-xs font-semibold border-r border-slate-100">${count > 0 ? count : '<span class="text-slate-300">-</span>'}</td>`;
+                }).join('');
+                
+                return `<tr class="border-b border-slate-100 last:border-0 hover:bg-blue-50/30 transition-colors">
+                    <td class="py-1.5 px-3 text-[11px] font-bold text-slate-700 border-r border-slate-200 bg-slate-50/50">${spod}</td>
+                    ${tdWc}
+                    <td class="py-1.5 px-3 text-xs font-black text-slate-800 text-center border-l border-slate-200 bg-slate-50/50">${rowTotal}</td>
+                </tr>`;
+            }).join('');
+            
+            // Grand totals row
+            let grandTotal = 0;
+            let tfWc = sortedWCs.map(wc => {
+                let colTotal = 0;
+                sortedSPODs.forEach(spod => colTotal += (g.matrix[spod][wc] || 0));
+                grandTotal += colTotal;
+                return `<td class="py-2 px-2 text-center text-xs font-black text-slate-800 border-r border-slate-200/50">${colTotal > 0 ? colTotal : '-'}</td>`;
+            }).join('');
+            
+            let footerRow = `<tfoot class="bg-blue-50/60 border-t border-slate-200">
+                <tr>
+                    <td class="py-2 px-3 text-[11px] font-bold text-slate-600 border-r border-slate-200 text-right uppercase tracking-wider bg-white">Total</td>
+                    ${tfWc}
+                    <td class="py-2 px-3 text-sm font-black text-blue-700 text-center border-l border-slate-200 bg-blue-100/50 block-group-end" style="border-right-width: 0px !important;">${grandTotal}</td>
+                </tr>
+            </tfoot>`;
+            
+            feTablesHtml += `
+                <div class="mb-2">
+                    <div class="flex items-center gap-1.5 mb-1 px-1">
+                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded border ${feBadgeColor}">${feLabel} (${fe})</span>
+                        <span class="text-[10px] text-slate-400 font-semibold">${grandTotal} units</span>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left">
+                            ${headerRow}
+                            <tbody class="divide-y divide-slate-100">
+                                ${trSpods}
+                            </tbody>
+                            ${footerRow}
+                        </table>
+                    </div>
+                </div>
+            `;
+        });
         
         matrixTablesHtml += `
             <div class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-5">
@@ -4031,16 +4148,10 @@ window.showClusterDetail = function(carrier, service, block, part) {
                         <span class="material-symbols-outlined text-[16px] opacity-80">grid_on</span>
                         SIZE ${size}'
                     </h4>
-                    <span class="text-[10px] font-bold bg-black/20 px-2 py-0.5 rounded-md backdrop-blur-sm">${grandTotal} UNITS</span>
+                    <span class="text-[10px] font-bold bg-black/20 px-2 py-0.5 rounded-md backdrop-blur-sm">${sizeTotalUnits} UNITS</span>
                 </div>
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left">
-                        ${headerRow}
-                        <tbody class="divide-y divide-slate-100">
-                            ${trSpods}
-                        </tbody>
-                        ${footerRow}
-                    </table>
+                <div class="p-3">
+                    ${feTablesHtml}
                 </div>
             </div>
         `;
@@ -4115,6 +4226,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
             spod: String(it.spod || 'UNKNOWN').toUpperCase(),
             wc: String(it.wtcl || '-').toUpperCase(),
             unit: it.unit || '',
+            fe: getFECode(it.loadStatus),
             isOther: false
         });
     });
@@ -4141,6 +4253,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
             wc: String(it.wtcl || '-').toUpperCase(),
             unit: it.unit || '',
             carrier: it.carrier || '',
+            fe: getFECode(it.loadStatus),
             isOther: isExport,
             isImport: isImport
         });
@@ -4192,17 +4305,19 @@ window.showClusterDetail = function(carrier, service, block, part) {
                     const cont = rowTierMap[r] && rowTierMap[r][t];
                     if (cont) {
                         const sizeLabel = cont.size.startsWith('20') ? '20' : (cont.size.startsWith('45') ? '45' : '40');
+                        const feCode = cont.fe || 'F';
+                        const feBadge = `<span class="text-[7px] font-black leading-none px-1 rounded" style="background:${feCode === 'E' ? 'rgba(251,146,60,0.3)' : 'rgba(74,222,128,0.3)'};color:${feCode === 'E' ? '#c2410c' : '#166534'}">${feCode}</span>`;
                         if (cont.isImport) {
                             cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px" title="Import Container">
                                 <div class="px-1 py-0.5 text-center slot-cell-import" style="min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-                                    <span class="text-[9px] font-extrabold leading-none text-amber-700">${sizeLabel}'</span>
+                                    <span class="text-[9px] font-extrabold leading-none text-amber-700">${sizeLabel}' ${feBadge}</span>
                                     <span class="text-[8px] font-black leading-tight text-amber-800">IMPORT</span>
                                 </div>
                             </td>`;
                         } else if (cont.isOther) {
                             cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px" title="${cont.carrier}">
                                 <div class="px-1 py-0.5 text-center slot-cell-other" style="min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-                                    <span class="text-[9px] font-extrabold leading-none text-slate-500">${sizeLabel}'</span>
+                                    <span class="text-[9px] font-extrabold leading-none text-slate-500">${sizeLabel}' ${feBadge}</span>
                                     <span class="text-[8px] font-bold leading-tight text-slate-400">${cont.spod}</span>
                                     <span class="text-[7px] font-semibold leading-none text-slate-400">${cont.wc}</span>
                                 </div>
@@ -4211,7 +4326,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
                             const color = SPOD_COLORS[cont.spod] || { bg: '#94a3b8', text: '#fff' };
                             cells += `<td class="border border-slate-300 p-0 align-top" style="min-width:62px">
                                 <div class="px-1 py-0.5 text-center" style="background:${color.bg};color:${color.text};min-height:38px;display:flex;flex-direction:column;justify-content:center;align-items:center">
-                                    <span class="text-[9px] font-extrabold leading-none">${sizeLabel}'</span>
+                                    <span class="text-[9px] font-extrabold leading-none">${sizeLabel}' <span style="background:rgba(255,255,255,0.3);padding:0 2px;border-radius:2px">${feCode}</span></span>
                                     <span class="text-[8px] font-bold leading-tight">${cont.spod}</span>
                                     <span class="text-[7px] font-semibold opacity-80 leading-none">${cont.wc}</span>
                                 </div>
@@ -4260,7 +4375,7 @@ window.showClusterDetail = function(carrier, service, block, part) {
             <!-- RIGHT: Summary Tables -->
             <div class="min-w-0 border-l border-slate-200 pl-4">
                 ${infoCardHtml}
-                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 pl-1"><span class="material-symbols-outlined text-[14px]">table_chart</span> Matrix Breakdown by Size</div>
+                <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 pl-1"><span class="material-symbols-outlined text-[14px]">table_chart</span> Matrix Breakdown by Size &amp; F/E</div>
                 ${matrixTablesHtml}
             </div>
         </div>

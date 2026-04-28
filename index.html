@@ -689,38 +689,108 @@
         <div id="tab-empty" class="hidden animate-fade-in mt-4">
             <div id="captureAreaEmpty" class="space-y-6">
 
+                <!-- IMPORT EMPTY SUMMARY -->
                 <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40">
                     <h3 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
                         <span class="material-symbols-outlined text-amber-500">input</span>
                         Import Empty Summary
                     </h3>
-                    <div id="emptyImportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <!-- Summary Cards -->
+                    <div id="emptyImportSummary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                    </div>
+                    <!-- Per-LINE Breakdown Table -->
+                    <div class="overflow-x-auto custom-scrollbar rounded-xl border border-slate-200">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-amber-50/80 uppercase text-[10px] text-amber-700 font-bold">
+                                <tr>
+                                    <th class="px-4 py-2.5 border-b border-amber-200">Line</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center">20'</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center">40'</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center">45'</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center bg-amber-100/50">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center bg-amber-50">TEUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emptyImportByLineBody" class="divide-y divide-slate-100 bg-white/50">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
+                <!-- EXPORT EMPTY SUMMARY -->
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-                    <div class="p-4 border-b border-slate-200/50 bg-white/20">
+                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-500">output</span>
                             Export Empty Summary
                         </h3>
+                        <!-- Toggle Tabs: All / Inside / Outside Block -->
+                        <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200 shadow-sm">
+                            <button id="btnExportAll" onclick="switchExportEmptyTab('all')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">All</button>
+                            <button id="btnExportInside" onclick="switchExportEmptyTab('inside')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Inside Block</button>
+                            <button id="btnExportOutside" onclick="switchExportEmptyTab('outside')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Outside Block (E-)</button>
+                        </div>
                     </div>
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 uppercase text-xs text-slate-500 font-bold">
+
+                    <!-- All Panel -->
+                    <div id="exportAllPanel" class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-emerald-50/80 uppercase text-[10px] text-emerald-700 font-bold">
                                 <tr>
-                                    <th class="px-6 py-3 border-b">Carrier</th>
-                                    <th class="px-6 py-3 border-b text-center">ETB</th>
-                                    <th class="px-6 py-3 border-b text-center">Hour</th>
-                                    <th class="px-6 py-3 border-b text-center">Service</th>
-                                    <th class="px-6 py-3 border-b text-center">20'</th>
-                                    <th class="px-6 py-3 border-b text-center">40'</th>
-                                    <th class="px-6 py-3 border-b text-center">45'</th>
-                                    <th class="px-6 py-3 border-b text-center bg-slate-100">Total</th>
-                                    <th class="px-6 py-3 border-b text-center bg-slate-50">Total TEUs</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200">Carrier</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">ETB</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">Hour</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">Service</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">20'</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">40'</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center">45'</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-100/50">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-50">TEUs</th>
                                 </tr>
                             </thead>
-                            <tbody id="emptyExportBody" class="divide-y divide-slate-100 bg-white/50">
+                            <tbody id="emptyExportAllBody" class="divide-y divide-slate-100 bg-white/50">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Inside Block Table -->
+                    <div id="exportInsidePanel" class="overflow-x-auto custom-scrollbar hidden">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-50/80 uppercase text-[10px] text-slate-500 font-bold">
+                                <tr>
+                                    <th class="px-4 py-2.5 border-b border-slate-200">Carrier</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">ETB</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">Hour</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">Service</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">20'</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">40'</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center">45'</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center bg-slate-100">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center bg-slate-50">TEUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emptyExportInsideBody" class="divide-y divide-slate-100 bg-white/50">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Outside Block Table -->
+                    <div id="exportOutsidePanel" class="overflow-x-auto custom-scrollbar hidden">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-orange-50/80 uppercase text-[10px] text-orange-700 font-bold">
+                                <tr>
+                                    <th class="px-4 py-2.5 border-b border-orange-200">Carrier</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">ETB</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">Hour</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">Service</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">20'</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">40'</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center">45'</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-100/50">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-50">TEUs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emptyExportOutsideBody" class="divide-y divide-slate-100 bg-white/50">
                             </tbody>
                         </table>
                     </div>
