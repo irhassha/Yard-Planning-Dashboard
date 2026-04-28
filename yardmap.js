@@ -680,9 +680,11 @@ function showYardSlotDetail(block, slotNum) {
     const allSpods = new Set();
     slotRows.forEach(it => allSpods.add(String(it.spod||'UNKNOWN').toUpperCase()));
     Array.from(allSpods).sort().forEach(sp => { spodColors[sp] = SPOD_PALETTE[spIdx++ % SPOD_PALETTE.length]; });
-    const parseTier = raw => { const s = String(raw||''); return s.length >= 6 ? (parseInt(s.charAt(5))||1) : 1; };
-    const parseRow = raw => { const s = String(raw||''); return s.length >= 5 ? (parseInt(s.charAt(4))||1) : 1; };
-    const rowTierMap = {}; let maxTier = 1;
+    const parseTier = raw => { if (!raw) return 1; const s = String(raw); if (!s.includes('-')) return 1; const p = s.split('-'); return p.length >= 4 ? (parseInt(p[3])||1) : (p.length >= 3 ? (parseInt(p[p.length-1])||1) : 1); };
+    const parseRow = raw => { if (!raw) return 1; const s = String(raw); if (!s.includes('-')) return 1; const p = s.split('-'); return p.length >= 3 ? (parseInt(p[2])||1) : 1; };
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const blockTierMax = (CAP[block] && CAP[block].tier) || 5;
+    const rowTierMap = {}; let maxTier = blockTierMax;
     slotRows.forEach(it => {
         const r = it.row || parseRow(it._raw_slot);
         const t = parseTier(it._raw_slot);
@@ -696,7 +698,7 @@ function showYardSlotDetail(block, slotNum) {
         rowTierMap[r][t] = {size:sz, spod:String(it.spod||'UNKNOWN').toUpperCase(), wc:String(it.wtcl||'-').toUpperCase(), carrier:it.carrier||'', fe, isExport:isExp};
     });
     const rows = Object.keys(rowTierMap).map(Number).sort((a,b) => a-b);
-    let maxRow = Math.max(1, ...rows);
+    let maxRow = Math.max(6, ...rows);
     const allRows = []; for (let r = 1; r <= maxRow; r++) allRows.push(r);
     const expCnt = slotRows.filter(it => { const m = String(it.move||'').toLowerCase(); return !m.includes('import') && !m.includes('disc') && !m.includes('vessel'); }).length;
     const othCnt = slotRows.length - expCnt;
