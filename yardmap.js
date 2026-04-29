@@ -739,9 +739,51 @@ function showYardSlotDetail(block, slotNum) {
         h += `</tr>`;
     }
     h += `</tbody></table></div>`;
+    
+    // Build summary by Carrier -> SPOD -> WC
+    const summary = {};
+    slotRows.forEach(it => {
+        const carrier = (it.carrier || 'IMP').toUpperCase();
+        const spod = (it.spod || 'UNKNOWN').toUpperCase();
+        const wc = (it.wtcl || '-').toUpperCase();
+        const key = `${carrier}|${spod}|${wc}`;
+        if (!summary[key]) {
+            summary[key] = { carrier, spod, wc, count: 0 };
+        }
+        summary[key].count++;
+    });
+
+    let summaryHtml = `<div class="mt-4"><h4 class="text-[11px] font-bold text-slate-600 mb-2 uppercase tracking-wider flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">summarize</span> Summary List</h4>`;
+    summaryHtml += `<div class="overflow-hidden rounded border border-slate-200 shadow-sm"><table class="w-full text-left text-[10px] border-collapse bg-white">
+        <thead class="bg-slate-50 text-slate-500 uppercase">
+            <tr>
+                <th class="px-3 py-2 border-b border-r border-slate-200 font-bold">Carrier / Vessel</th>
+                <th class="px-3 py-2 border-b border-r border-slate-200 font-bold">SPOD</th>
+                <th class="px-3 py-2 border-b border-r border-slate-200 font-bold text-center">Weight Class</th>
+                <th class="px-3 py-2 border-b border-slate-200 text-center font-bold">Total Units</th>
+            </tr>
+        </thead>
+        <tbody>`;
+    
+    Object.values(summary).sort((a, b) => {
+        if (a.carrier !== b.carrier) return a.carrier.localeCompare(b.carrier);
+        if (a.spod !== b.spod) return a.spod.localeCompare(b.spod);
+        return a.wc.localeCompare(b.wc);
+    }).forEach(item => {
+        const spodColor = spodColors[item.spod] || { bg: '#94a3b8', text: '#fff' };
+        summaryHtml += `
+            <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                <td class="px-3 py-1.5 border-r border-slate-100 font-bold text-slate-700">${item.carrier}</td>
+                <td class="px-3 py-1.5 border-r border-slate-100"><span class="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold" style="background:${spodColor.bg};color:${spodColor.text}">${item.spod}</span></td>
+                <td class="px-3 py-1.5 border-r border-slate-100 font-semibold text-slate-600 text-center">${item.wc}</td>
+                <td class="px-3 py-1.5 text-center font-black text-indigo-600">${item.count}</td>
+            </tr>`;
+    });
+    summaryHtml += `</tbody></table></div></div>`;
+
     const cd = document.getElementById('clusterDetailContent');
     if (!cd) return;
-    cd.innerHTML = `<div class="mb-3"><div class="flex items-center gap-2 mb-1"><span class="text-lg font-black text-slate-800">Block ${block}</span><span class="text-slate-300">&middot;</span><span class="text-lg font-bold text-indigo-600">Slot ${slotNum}</span></div></div>${h}`;
+    cd.innerHTML = `<div class="mb-3"><div class="flex items-center gap-2 mb-1"><span class="text-lg font-black text-slate-800">Block ${block}</span><span class="text-slate-300">&middot;</span><span class="text-lg font-bold text-indigo-600">Slot ${slotNum}</span></div></div>${h}${summaryHtml}`;
     const drawer = document.getElementById('clusterDetailDrawer');
     const overlay = document.getElementById('clusterDetailOverlay');
     if (overlay) overlay.classList.remove('hidden');
