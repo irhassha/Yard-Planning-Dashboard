@@ -124,7 +124,7 @@ async function scrape() {
                     });
                 });
                 return result;
-            }, indices);
+            }, colIndices);
         }
 
         // Paginate through ALL DataTable pages
