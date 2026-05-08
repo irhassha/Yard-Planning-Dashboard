@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-05-08T13:03:01.514Z",
-  "totalScraped": 64,
-  "totalFiltered": 34,
+  "lastUpdated": "2026-05-08T19:00:39.152Z",
+  "totalScraped": 61,
+  "totalFiltered": 35,
   "vessels": [
     {
       "vessel": "SITC DECHENG",
@@ -27,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-05-08 05:00:00",
       "ata": "2026-05-08 01:00:00",
-      "etd": "2026-05-09 12:00:00",
+      "etd": "2026-05-09 17:00:00",
       "atd": "",
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 03:00:00",
@@ -42,11 +42,26 @@
       "status": "ACTIVE",
       "etb": "2026-05-08 00:00:00",
       "ata": "2026-05-07 23:42:00",
-      "etd": "2026-05-09 09:00:00",
+      "etd": "2026-05-09 11:00:00",
       "atd": "",
       "openStacking": "2026-04-30 01:00:00",
       "closingDocument": "2026-05-05 21:59:00",
       "closingPhysic": "2026-05-05 23:59:00"
+    },
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2613S",
+      "voyOut": "2614S",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-05-22 09:00:00",
+      "ata": "",
+      "etd": "2026-05-23 09:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BOOMY",
@@ -454,6 +469,21 @@
       "closingPhysic": "2026-05-08 23:00:00"
     },
     {
+      "vessel": "MSC GINA",
+      "line": "MSC",
+      "voyIn": "HW616A",
+      "voyOut": "HW616A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-05-09 19:00:00",
+      "ata": "",
+      "etd": "2026-05-10 19:00:00",
+      "atd": "",
+      "openStacking": "2026-05-02 01:00:00",
+      "closingDocument": "2026-05-06 18:00:00",
+      "closingPhysic": "2026-05-06 20:00:00"
+    },
+    {
       "vessel": "HMM MANILA",
       "line": "HMM",
       "voyIn": "0022S",
@@ -467,21 +497,6 @@
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-07 13:00:00",
       "closingPhysic": "2026-05-07 15:00:00"
-    },
-    {
-      "vessel": "MSC GINA",
-      "line": "MSC",
-      "voyIn": "HW616A",
-      "voyOut": "HW616A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-05-09 14:00:00",
-      "ata": "",
-      "etd": "2026-05-10 15:00:00",
-      "atd": "",
-      "openStacking": "2026-05-02 01:00:00",
-      "closingDocument": "2026-05-06 18:00:00",
-      "closingPhysic": "2026-05-06 20:00:00"
     },
     {
       "vessel": "HF LUCKY",
