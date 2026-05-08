@@ -677,8 +677,17 @@ document.getElementById('sumTotalCap').innerText =
 
         const searchInput = document.getElementById('npct1SearchInput');
         const query = searchInput ? searchInput.value.trim().toUpperCase() : '';
+        const showAllChk = document.getElementById('npct1ShowNoOpenStack');
+        const showAll = showAllChk ? showAllChk.checked : false;
 
         let filtered = npct1ScheduleData;
+
+        // Default: hide vessels without open stacking date (unless Show All is checked)
+        if (!showAll) {
+            filtered = filtered.filter(v => v.openStacking && v.openStacking.trim() !== '');
+        }
+
+        // Search filter
         if (query) {
             filtered = filtered.filter(v =>
                 (v.vessel || '').toUpperCase().includes(query) ||
@@ -686,6 +695,16 @@ document.getElementById('sumTotalCap').innerText =
                 (v.line || '').toUpperCase().includes(query)
             );
         }
+
+        // Sort by ETB date
+        filtered = [...filtered].sort((a, b) => {
+            const da = a.etb ? new Date(a.etb) : null;
+            const db = b.etb ? new Date(b.etb) : null;
+            if (da && db) return da - db;
+            if (da) return -1;
+            if (db) return 1;
+            return 0;
+        });
 
         if (!filtered.length) {
             body.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-slate-400">
@@ -750,13 +769,20 @@ document.getElementById('sumTotalCap').innerText =
         let openStackCount = 0;
         let ltcCount = 0;
         const serviceVessels = {}; // service -> [{vessel, etb}]
+        let totalStackDays = 0;
+        let stackDaysCount = 0;
 
         allData.forEach(v => {
             const osDate = v.openStacking ? new Date(v.openStacking) : null;
             const cpDate = v.closingPhysic ? new Date(v.closingPhysic) : null;
             const isInOpenStack = osDate && !isNaN(osDate) && osDate <= now;
 
-            if (isInOpenStack) openStackCount++;
+            if (isInOpenStack) {
+                openStackCount++;
+                const days = (now - osDate) / (1000 * 60 * 60 * 24);
+                totalStackDays += days;
+                stackDaysCount++;
+            }
             if (cpDate && !isNaN(cpDate) && cpDate < now) ltcCount++;
 
             // Group by service for multiple-call detection (only open stack vessels)
@@ -772,13 +798,18 @@ document.getElementById('sumTotalCap').innerText =
             .filter(([, vessels]) => vessels.length > 1)
             .sort((a, b) => b[1].length - a[1].length);
 
+        // Avg stacking period
+        const avgDays = stackDaysCount > 0 ? (totalStackDays / stackDaysCount).toFixed(1) : '—';
+
         // Update cards
         const osEl = document.getElementById('npct1OpenStackCount');
         const ltcEl = document.getElementById('npct1LTCCount');
         const mcEl = document.getElementById('npct1MultiCallCount');
+        const avgEl = document.getElementById('npct1AvgStackDays');
         if (osEl) osEl.textContent = openStackCount;
         if (ltcEl) ltcEl.textContent = ltcCount;
         if (mcEl) mcEl.textContent = multiCallServices.length;
+        if (avgEl) avgEl.innerHTML = avgDays !== '—' ? `${avgDays} <span class="text-lg font-bold">days</span>` : '—';
 
         // Multiple Call Detail
         const mcDetail = document.getElementById('npct1MultiCallDetail');

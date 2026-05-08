@@ -457,7 +457,7 @@
 
                     <!-- Summary Cards -->
                     <div class="p-4 space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="npct1SummaryCards">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="npct1SummaryCards">
                             <!-- Open Stack Vessels -->
                             <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200/60">
                                 <div class="flex items-center gap-2 mb-1">
@@ -465,7 +465,7 @@
                                     <span class="text-[10px] font-bold uppercase text-amber-700 tracking-wider">Open Stack Vessels</span>
                                 </div>
                                 <div class="text-3xl font-black text-amber-700" id="npct1OpenStackCount">0</div>
-                                <p class="text-[10px] text-amber-500 mt-0.5">Vessels currently in stacking period</p>
+                                <p class="text-[10px] text-amber-500 mt-0.5">Vessels in stacking period</p>
                             </div>
                             <!-- LTC Vessels -->
                             <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 border border-red-200/60">
@@ -474,7 +474,16 @@
                                     <span class="text-[10px] font-bold uppercase text-red-700 tracking-wider">Closing Vessels (LTC)</span>
                                 </div>
                                 <div class="text-3xl font-black text-red-700" id="npct1LTCCount">0</div>
-                                <p class="text-[10px] text-red-400 mt-0.5">Vessels past closing physic</p>
+                                <p class="text-[10px] text-red-400 mt-0.5">Past closing physic</p>
+                            </div>
+                            <!-- Avg Stacking Period -->
+                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200/60">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-emerald-600 text-lg">avg_pace</span>
+                                    <span class="text-[10px] font-bold uppercase text-emerald-700 tracking-wider">Avg Stacking Period</span>
+                                </div>
+                                <div class="text-3xl font-black text-emerald-700" id="npct1AvgStackDays">—</div>
+                                <p class="text-[10px] text-emerald-500 mt-0.5">Average days in open stack</p>
                             </div>
                             <!-- Multiple Call per Service -->
                             <div class="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl p-4 border border-violet-200/60">
@@ -483,7 +492,7 @@
                                     <span class="text-[10px] font-bold uppercase text-violet-700 tracking-wider">Multiple Call Services</span>
                                 </div>
                                 <div class="text-3xl font-black text-violet-700" id="npct1MultiCallCount">0</div>
-                                <p class="text-[10px] text-violet-400 mt-0.5">Services with &gt;1 vessel in open stack</p>
+                                <p class="text-[10px] text-violet-400 mt-0.5">Services with &gt;1 vessel</p>
                             </div>
                         </div>
 
@@ -501,6 +510,10 @@
                                 <span id="npct1VesselCount" class="text-[10px] font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">0 vessels</span>
                             </div>
                             <div class="flex items-center gap-2">
+                                <label class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm cursor-pointer" onclick="event.stopPropagation()">
+                                    <input type="checkbox" id="npct1ShowNoOpenStack" onchange="renderNPCT1Schedule()" class="w-3 h-3 rounded accent-indigo-500">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Show All</span>
+                                </label>
                                 <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm" onclick="event.stopPropagation()">
                                     <span class="material-symbols-outlined text-[16px] text-slate-400">search</span>
                                     <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()" placeholder="Search vessel..."
