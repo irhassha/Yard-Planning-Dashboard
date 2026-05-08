@@ -1194,6 +1194,27 @@
         </div>
     </div>
 
+    <!-- Anomalies Modal -->
+    <div id="anomaliesModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-5 py-4 border-b bg-red-50/80">
+                <div>
+                    <h4 class="font-bold text-red-800 text-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-red-600">warning</span>
+                        Yard Anomalies Check
+                    </h4>
+                    <p class="text-xs text-red-600 mt-1 font-medium">MIX VESSEL & MIX SPOD Detection per Row</p>
+                </div>
+                <button onclick="document.getElementById('anomaliesModal').classList.add('hidden')" class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+            </div>
+            <div id="anomaliesModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar bg-slate-50/30">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+
     <div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
             <div class="flex items-center justify-between px-5 py-3 border-b">

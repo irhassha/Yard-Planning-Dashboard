@@ -1425,7 +1425,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service w-[1%] whitespace-nowrap">Svc</th>
                         <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
                         <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
-                        <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black">TOTAL<br>UNITS</th>
+                        <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black cursor-pointer hover:bg-slate-200 transition-colors" onclick="showAllAnomalies()" title="Anomalies Check">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="text-[10px]">
                         ${blockHeaders}
@@ -1455,7 +1455,7 @@ document.getElementById('sumTotalCap').innerText =
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">Service</th>
                         <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
                         <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
-                        <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black">TOTAL<br>UNITS</th>
+                        <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black cursor-pointer hover:bg-slate-200 transition-colors" onclick="showAllAnomalies()" title="Anomalies Check">TOTAL<br>UNITS</th>
                     </tr>
                     <tr class="border-t border-slate-200">
                         ${blockHeaders}
@@ -1714,6 +1714,117 @@ document.getElementById('sumTotalCap').innerText =
             html = '<div class="p-8 text-center text-slate-400 italic">No units found for this vessel.</div>';
         }
         
+        body.innerHTML = html;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    };
+
+    window.showAllAnomalies = function() {
+        if (!window.invData || window.invData.length === 0) return;
+
+        const modal = document.getElementById('anomaliesModal');
+        const body = document.getElementById('anomaliesModalBody');
+
+        // Group ALL inventory by row
+        const rowItems = {};
+        window.invData.forEach(it => {
+            const r = parseInt(it.row);
+            const s = parseInt(it.slot);
+            if (it.block && !isNaN(s) && !isNaN(r) && r > 0) {
+                const rowKey = `${it.block}-${String(s).padStart(2,'0')}-${String(r).padStart(2,'0')}`;
+                if (!rowItems[rowKey]) rowItems[rowKey] = [];
+                rowItems[rowKey].push(it);
+            }
+        });
+
+        const mixVesselRows = [];
+        const mixSpodRows = [];
+
+        Object.keys(rowItems).forEach(rowKey => {
+            const items = rowItems[rowKey];
+            const uniqueVessels = new Set();
+            const uniqueSpods = new Set();
+            
+            items.forEach(it => {
+                const c = String(it.carrier || '').trim().toUpperCase();
+                if (c && c !== '0' && c !== 'NIL' && c !== '-') {
+                    uniqueVessels.add(c);
+                }
+                const sp = String(it.spod || '').trim().toUpperCase();
+                if (sp && sp !== '0' && sp !== 'NIL' && sp !== '-' && sp !== '') {
+                    uniqueSpods.add(sp);
+                }
+            });
+
+            if (uniqueVessels.size >= 2) {
+                mixVesselRows.push({ rowKey, vessels: Array.from(uniqueVessels) });
+            }
+            if (uniqueSpods.size >= 2) {
+                mixSpodRows.push({ rowKey, spods: Array.from(uniqueSpods) });
+            }
+        });
+
+        // Generate HTML
+        let html = '';
+        
+        const renderTable = (title, icon, colorClass, bgClass, borderClass, anomalies, typeLabel, detailLabel) => {
+            if (anomalies.length === 0) {
+                return `
+                    <div class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px] ${colorClass}">${icon}</span>
+                            <h5 class="font-bold text-sm text-slate-700">${title}</h5>
+                        </div>
+                        <div class="p-6 text-center text-slate-400 italic bg-white">
+                            No anomalies detected for ${title}.
+                        </div>
+                    </div>
+                `;
+            }
+
+            let tableRows = '';
+            // Sort by rowKey
+            anomalies.sort((a, b) => a.rowKey.localeCompare(b.rowKey));
+            anomalies.forEach(anomaly => {
+                const details = anomaly.vessels ? anomaly.vessels.join(', ') : anomaly.spods.join(', ');
+                tableRows += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-2 font-bold text-slate-700 border-r border-slate-100 whitespace-nowrap">${anomaly.rowKey}</td>
+                        <td class="px-4 py-2 text-center border-r border-slate-100">
+                            <span class="${bgClass} ${colorClass} px-2 py-0.5 rounded font-bold whitespace-nowrap text-[10px] uppercase border ${borderClass}">${typeLabel}</span>
+                        </td>
+                        <td class="px-4 py-2 text-slate-600 font-medium"><strong>${detailLabel}:</strong> ${details}</td>
+                    </tr>
+                `;
+            });
+
+            return `
+                <div class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] ${colorClass}">${icon}</span>
+                        <h5 class="font-bold text-sm text-slate-700">${title} <span class="ml-2 text-xs font-normal text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200">${anomalies.length} found</span></h5>
+                    </div>
+                    <div class="overflow-x-auto bg-white">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50/50 text-[11px] uppercase text-slate-500 font-bold border-b border-slate-100">
+                                <tr>
+                                    <th class="px-4 py-2 border-r border-slate-100 w-1/4">Location</th>
+                                    <th class="px-4 py-2 border-r border-slate-100 w-1/4 text-center">Type</th>
+                                    <th class="px-4 py-2">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                ${tableRows}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        };
+
+        html += renderTable('MIX VESSEL Anomalies', 'directions_boat', 'text-red-600', 'bg-red-50', 'border-red-200', mixVesselRows, 'MIX VESSEL', 'Vessels');
+        html += renderTable('MIX SPOD Anomalies', 'location_on', 'text-orange-600', 'bg-orange-50', 'border-orange-200', mixSpodRows, 'MIX SPOD', 'SPODs');
+
         body.innerHTML = html;
         modal.classList.remove('hidden');
         modal.classList.add('flex');
