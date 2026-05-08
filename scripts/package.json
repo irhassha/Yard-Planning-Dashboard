@@ -1,0 +1,7 @@
+{
+  "name": "npct1-vessel-scraper",
+  "private": true,
+  "dependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}

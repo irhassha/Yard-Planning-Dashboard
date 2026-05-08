@@ -435,49 +435,67 @@
         <div id="tab-analytics" class="hidden animate-fade-in mt-4">
             <div id="captureAreaAnalytics" class="space-y-4">
 
-                <!-- Recommended Spreading -->
-                <details
-                    class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 recommended-panel">
-                    <summary
-                        class="p-4 border-b border-slate-200/50 bg-white/20 cursor-pointer flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-800">Cluster Spreading by Vessel</h2>
-                        </div>
-                        <span class="material-symbols-outlined toggle-icon text-slate-500">expand_more</span>
-                    </summary>
-                    <div class="p-4 space-y-4">
-                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                            <div class="flex flex-wrap gap-2" id="vesselFilterList"></div>
-                            <div class="text-sm text-slate-600 font-semibold">
-                                Total Export Vessels On Yard: <span id="totalVesselsOnYard"
-                                    class="text-slate-900">0</span>
+                <!-- NPCT1 Vessel Schedule -->
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40" id="npct1SchedulePanel">
+                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-600">
+                                <span class="material-symbols-outlined text-2xl">directions_boat</span>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800">NPCT1 Vessel Schedule</h2>
+                                <p class="text-[11px] text-slate-400 font-medium">Source: npct1.co.id &middot; Active & Registered Vessels</p>
                             </div>
                         </div>
-                        <div id="activeVesselFilterInfo" class="hidden mt-2 text-xs text-slate-500">
-                            Filter aktif: <span id="activeVesselFilterName" class="font-semibold text-slate-800"></span>
-                            <button type="button" onclick="clearVesselFilter()"
-                                class="ml-3 text-blue-600 hover:text-blue-800 font-bold">Clear</button>
-                        </div>
-                        <div class="text-xs text-slate-500 bg-blue-50 p-3 rounded-lg border border-blue-200">
-                            <p><strong>How it works:</strong> The maximum vessels per block is calculated as
-                                <code>ceil(total expected clusters / total unique vessels)</code>. Vessels beyond this
-                                limit are displayed with reduced opacity, suggesting they are candidates for House
-                                Keeping (HK) to optimize yard space.</p>
-                        </div>
-                        <div class="overflow-x-auto custom-scrollbar">
-                            <table class="w-full text-left cluster-details-table" id="recommendedSpreadingTable">
-                                <thead class="text-xs bg-slate-50/80 uppercase text-slate-500">
-                                    <tr>
-                                        <th class="px-4 py-2">Block</th>
-                                        <th class="px-4 py-2">Recommended Vessels</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recommendedSpreadingBody" class="divide-y divide-slate-100 bg-white/50">
-                                </tbody>
-                            </table>
+                        <div class="flex items-center gap-3">
+                            <div id="npct1LastUpdated" class="text-[11px] text-slate-400 font-mono bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                                <span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span>
+                                Loading...
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                                <span class="material-symbols-outlined text-[16px] text-slate-400">search</span>
+                                <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()" placeholder="Search vessel..."
+                                    class="text-xs border-0 p-0 focus:ring-0 bg-transparent w-28 text-slate-700 placeholder-slate-400">
+                            </div>
                         </div>
                     </div>
-                </details>
+
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full text-left text-[11px]" id="npct1ScheduleTable">
+                            <thead class="bg-indigo-50/80 uppercase text-[10px] text-indigo-700 font-bold">
+                                <tr>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center w-8">#</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200">Vessel</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Line</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Service</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Status</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETB</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETD</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-amber-50/50">Open Stacking</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-red-50/50">Closing Physic</th>
+                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-indigo-50/50">Stacking Period</th>
+                                </tr>
+                            </thead>
+                            <tbody id="npct1ScheduleBody" class="divide-y divide-slate-100 bg-white/50">
+                                <tr>
+                                    <td colspan="10" class="px-4 py-12 text-center text-slate-400">
+                                        <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_download</span>
+                                        <span class="text-sm font-medium">Loading vessel schedule data...</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
+                        <div class="flex items-center gap-4">
+                            <span id="npct1VesselCount" class="font-bold text-slate-600">0 vessels</span>
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
+                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
+                        </div>
+                        <div class="text-slate-400 italic">Data auto-refreshes every 6 hours via GitHub Actions</div>
+                    </div>
+                </div>
 
                 <!-- Detailed Table -->
                 <div id="clusterSpreadingContainer" class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 flex flex-col bg-slate-50 transition-all duration-300">

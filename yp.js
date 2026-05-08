@@ -6,7 +6,7 @@
     let isReservationLoaded = false; // Flag for reservation file status
     let globalClashes = []; // Store clashes for sorting/filtering
     let activeFilterBlock = null;
-    let activeVesselFilter = null;
+
     let projectionPreplanRows = [];
     const PROJECTION_TYPES = ['Fixed Import', 'IMDG', 'Reefer', 'OOG'];
     let projectionTypeFilter = 'ALL';
@@ -463,6 +463,53 @@ function updateCapacity(block, newSlots, newTier) {
             let stacked = (d.c20 * 1) + (d.c40 * 2) + (d.c45 * 2.25);
             let occ = (cap.cap > 0) ? (stacked / cap.cap) * 100 : 0;
             
+            let totBox = d.c20 + d.c40 + d.c45;
+            let remark = "-";
+            let rCls = "";
+
+            // === SPECIAL BLOCKS (PRIORITY, JANGAN DITIMPA) ===
+            if (b === "") {
+              remark = " Area";
+              rCls = "row-";
+            } else if (b === "RC9" || b === "BR9") {
+              remark = "Reefer Area";
+              rCls = "row-reefer";
+            } else if (b === "C01" || b === "C02") {
+              remark = "DG Area";
+              rCls = "row-dg";
+            } else {
+              // === ZERO BLOCK (VERY LOW OCCUPANCY) ===
+              if (occ < 3) {
+                remark = "Zero Block";
+                rCls = "row-zero";
+              } else if (totBox > 0) {
+                // === NORMAL LOGIC ===
+                let iPct = (d.impT / (d.impT + d.expT)) * 100;
+                let ePct = 100 - iPct;
+
+                if (iPct >= 95) {
+                  remark = "Import Only";
+                  rCls = "row-import";
+                } else if (ePct >= 95) {
+                  remark = "Export Only";
+                  rCls = "row-export";
+                } else {
+                  remark = `${Math.round(iPct)}% Import | ${Math.round(ePct)}% Export`;
+                  rCls = "row-mixed";
+                }
+
+                // If Import Only or Mayoritas Import (Import > 50%)
+                if (iPct > 50) {
+                  cap.tier = 4.5;
+                  cap.cap = Math.round(cap.slots * cap.tier * 6);
+                }
+              }
+            }
+
+            // Recalculate occ based on potentially updated cap
+            occ = (cap.cap > 0) ? (stacked / cap.cap) * 100 : 0;
+            let barColor = occ > 100 ? 'bg-blue-500' : (occ > 65 ? 'bg-red-500' : (occ >= 50 ? 'bg-yellow-400' : 'bg-emerald-500'));
+
             if(!EXCLUDED_BLOCKS_YARD.includes(b)) {
                 let totT = d.impT + d.expT;
                 if(totT > 0) {
@@ -472,50 +519,6 @@ function updateCapacity(block, newSlots, newTier) {
                 }
                 s.impS += d.impT; s.expS += d.expT;
             }
-
-            // Updated thresholds: Normal <50, Moderate 50-65, High >65, Over >100
-            let barColor = occ > 100 ? 'bg-blue-500' : (occ > 65 ? 'bg-red-500' : (occ >= 50 ? 'bg-yellow-400' : 'bg-emerald-500'));
-            let totBox = d.c20 + d.c40 + d.c45;
-let remark = "-";
-let rCls = "";
-
-// === SPECIAL BLOCKS (PRIORITY, JANGAN DITIMPA) ===
-if (b === "") {
-  remark = " Area";
-  rCls = "row-";
-
-} else if (b === "RC9" || b === "BR9") {
-  remark = "Reefer Area";
-  rCls = "row-reefer";
-
-} else if (b === "C01" || b === "C02") {
-  remark = "DG Area";
-  rCls = "row-dg";
-
-} else {
-
-  // === ZERO BLOCK (VERY LOW OCCUPANCY) ===
-  if (occ < 3) {
-    remark = "Zero Block";
-    rCls = "row-zero";
-
-  } else if (totBox > 0) {
-    // === NORMAL LOGIC ===
-    let iPct = (d.impT / (d.impT + d.expT)) * 100;
-    let ePct = 100 - iPct;
-
-    if (iPct >= 95) {
-      remark = "Import Only";
-      rCls = "row-import";
-    } else if (ePct >= 95) {
-      remark = "Export Only";
-      rCls = "row-export";
-    } else {
-      remark = `${Math.round(iPct)}% Import | ${Math.round(ePct)}% Export`;
-      rCls = "row-mixed";
-    }
-  }
-}
 
             _overviewRows.push(`
                 <tr class="${rCls} hover:bg-slate-50 transition-colors">
@@ -630,136 +633,123 @@ document.getElementById('sumTotalCap').innerText =
         setR('ringImp', yImp); setR('ringExp', yExp); setR('ringTotal', yTot);
     }
 
-    // --- TAB 2: ANALYTICS (Enhanced) ---
-    function renderRecommendedSpreading() {
-        const body = document.getElementById('recommendedSpreadingBody');
-        body.innerHTML = '';
+    // --- TAB 2: ANALYTICS — NPCT1 Vessel Schedule ---
+    let npct1ScheduleData = [];
 
-        const allowedBlocks = new Set(RECOMMENDED_SPREAD_BLOCKS);
-        const vesselBlocks = {};
-
-        invData.forEach(it => {
-            if (!it.move.includes('export')) return;
-            const block = String(it.block || '').toUpperCase();
-            if (!allowedBlocks.has(block)) return;
-            let c = it.carrier;
-            if (!c || c === '0' || c === 'NIL') return;
-            const service = String(it.service || '').toUpperCase();
-            const key = `${c}||${service}`;
-            if (!vesselBlocks[key]) vesselBlocks[key] = { carrier: c, service, blocks: {} };
-            vesselBlocks[key].blocks[block] = (vesselBlocks[key].blocks[block] || 0) + 1;
-        });
-
-        // Calculate total expected cluster and total vessels
-        let totalExpected = 0;
-        const vesselSet = new Set();
-        Object.values(vesselBlocks).forEach(v => {
-            const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(v.service) : null;
-            if (expected !== null) totalExpected += expected;
-            vesselSet.add(v.carrier);
-        });
-        const totalVessels = vesselSet.size;
-        const maxPerBlock = totalVessels > 0 ? Math.ceil(totalExpected / totalVessels) : 5; // default 5 if no data
-
-        const blockSummary = {};
-        Object.values(vesselBlocks).forEach(v => {
-            const expected = typeof getExpectedClusterForService === 'function' ? getExpectedClusterForService(v.service) : null;
-            const blockEntries = Object.entries(v.blocks).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-            const selected = expected !== null && blockEntries.length > expected ? blockEntries.slice(0, expected) : blockEntries;
-            selected.forEach(([block, count]) => {
-                if (!blockSummary[block]) blockSummary[block] = [];
-                blockSummary[block].push({ carrier: v.carrier, count });
+    function loadNPCT1Schedule() {
+        const jsonUrl = './data/vessel_schedule.json';
+        fetch(jsonUrl)
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to load vessel schedule');
+                return res.json();
+            })
+            .then(data => {
+                npct1ScheduleData = data.vessels || [];
+                // Update last updated timestamp
+                const el = document.getElementById('npct1LastUpdated');
+                if (el && data.lastUpdated) {
+                    const d = new Date(data.lastUpdated);
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const mi = String(d.getMinutes()).padStart(2, '0');
+                    el.innerHTML = `<span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span> Updated: ${dd}/${mm} ${hh}:${mi}`;
+                }
+                renderNPCT1Schedule();
+            })
+            .catch(err => {
+                console.warn('NPCT1 Schedule load failed:', err.message);
+                const body = document.getElementById('npct1ScheduleBody');
+                if (body) {
+                    body.innerHTML = `<tr><td colspan="10" class="px-4 py-12 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_off</span>
+                        <span class="text-sm font-medium">Vessel schedule data not available yet.</span>
+                        <br><span class="text-xs mt-1 block">Push to GitHub and trigger the scraper workflow first.</span>
+                    </td></tr>`;
+                }
             });
-        });
+    }
 
-        const results = RECOMMENDED_SPREAD_BLOCKS.map(block => {
-            const vessels = (blockSummary[block] || []).sort((a, b) => b.count - a.count || a.carrier.localeCompare(b.carrier));
-            return { block, vessels };
-        }).filter(row => row.vessels.length && !['C01', 'C02'].includes(row.block));
+    function renderNPCT1Schedule() {
+        const body = document.getElementById('npct1ScheduleBody');
+        const countEl = document.getElementById('npct1VesselCount');
+        if (!body) return;
 
-        if (!results.length) {
-            body.innerHTML = '<tr><td colspan="2" class="p-8 text-center text-slate-400">No recommended spreading data available.</td></tr>';
-            renderVesselFilterChips(results);
+        const searchInput = document.getElementById('npct1SearchInput');
+        const query = searchInput ? searchInput.value.trim().toUpperCase() : '';
+
+        let filtered = npct1ScheduleData;
+        if (query) {
+            filtered = filtered.filter(v =>
+                (v.vessel || '').toUpperCase().includes(query) ||
+                (v.service || '').toUpperCase().includes(query) ||
+                (v.line || '').toUpperCase().includes(query)
+            );
+        }
+
+        if (!filtered.length) {
+            body.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-slate-400">
+                <span class="material-symbols-outlined text-3xl block mb-1 opacity-40">search_off</span>
+                ${query ? 'No vessels match your search.' : 'No vessel schedule data available.'}
+            </td></tr>`;
+            if (countEl) countEl.textContent = '0 vessels';
             return;
         }
 
-        const _recRows = [];
-        results.forEach(row => {
-            const isMatch = activeVesselFilter && row.vessels.some(v => v.carrier === activeVesselFilter);
-            const rowClass = `transition ${isMatch ? 'bg-blue-50/40' : 'hover:bg-slate-50'}`;
-            const blockCellClass = `px-4 py-3 font-bold text-slate-700 ${isMatch ? 'border-l-4 border-blue-500 pl-3' : ''}`;
-            const primaryVessels = row.vessels.slice(0, maxPerBlock);
-            const secondaryVessels = row.vessels.slice(maxPerBlock);
-            const badges = [
-                ...primaryVessels.map(v => {
-                    let cls = v.count > 200 ? 'bg-red-600 text-white shadow-sm' : (v.count > 100 ? 'bg-amber-400 text-slate-900' : 'bg-blue-50 text-blue-700 border border-blue-100');
-                    if (activeVesselFilter && v.carrier === activeVesselFilter) {
-                        cls = 'bg-blue-600 text-white border border-blue-700 shadow-lg';
-                    }
-                    return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
-                }),
-                ...secondaryVessels.map(v => {
-                    let cls = 'bg-gray-200 text-gray-500 border border-gray-300 opacity-60';
-                    if (activeVesselFilter && v.carrier === activeVesselFilter) {
-                        cls = 'bg-blue-100 text-blue-800 border border-blue-300 shadow-sm';
-                    }
-                    return `<span class="inline-flex items-center justify-between px-2 py-1 rounded text-[10px] font-bold ${cls} mr-1 mb-1 min-w-[3.5rem]"><span class="mr-1">${v.carrier}</span><span>${v.count}</span></span>`;
-                })
-            ].join('');
-            _recRows.push(`<tr class="${rowClass}"><td class="${blockCellClass}">${row.block}</td><td class="px-4 py-3">${badges}</td></tr>`);
-        });
-        body.innerHTML = _recRows.join('');
-        renderVesselFilterChips(results);
-    }
+        if (countEl) countEl.textContent = `${filtered.length} vessels`;
 
-    function renderVesselFilterChips(results) {
-        const container = document.getElementById('vesselFilterList');
-        const totalLabel = document.getElementById('totalVesselsOnYard');
-        const activeInfo = document.getElementById('activeVesselFilterInfo');
-        const activeName = document.getElementById('activeVesselFilterName');
-        if (!container || !totalLabel) return;
+        const now = new Date();
+        const rows = filtered.map((v, i) => {
+            const isActive = (v.status || '').toUpperCase() === 'ACTIVE';
+            const statusBadge = isActive
+                ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 border border-emerald-200 uppercase">Active</span>'
+                : '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-100 text-blue-600 border border-blue-200 uppercase">Register</span>';
 
-        const vessels = Array.from(new Set(
-            (results === undefined ? invData
-                .filter(it => String(it.move || '').toLowerCase().includes('export'))
-                .map(it => String(it.carrier || '').trim().toUpperCase())
-                .filter(v => v && v !== '0' && v !== 'NIL') : results.flatMap(row => row.vessels.map(v => v.carrier)))
-        )).sort((a, b) => a.localeCompare(b));
-
-        if (activeVesselFilter && !vessels.includes(activeVesselFilter)) {
-            activeVesselFilter = null;
-        }
-
-        totalLabel.innerText = vessels.length;
-        container.innerHTML = vessels.length ? vessels.map(v => `<button type="button" class="vessel-filter-chip ${activeVesselFilter === v ? 'active' : ''}" data-vessel="${v}">${v}</button>`).join('') : '<span class="text-slate-500 text-xs">No recommended vessels available.</span>';
-
-        if (activeInfo && activeName) {
-            if (activeVesselFilter) {
-                activeInfo.classList.remove('hidden');
-                activeName.innerText = activeVesselFilter;
-            } else {
-                activeInfo.classList.add('hidden');
-                activeName.innerText = '';
+            // Highlight closing physic if within 24 hours
+            let closingClass = '';
+            if (v.closingPhysic) {
+                const cp = new Date(v.closingPhysic);
+                if (!isNaN(cp)) {
+                    const hoursLeft = (cp - now) / (1000 * 60 * 60);
+                    if (hoursLeft < 0) closingClass = 'text-red-600 font-bold';
+                    else if (hoursLeft <= 24) closingClass = 'text-red-600 font-black animate-pulse';
+                    else if (hoursLeft <= 48) closingClass = 'text-amber-600 font-bold';
+                }
             }
-        }
-    }
 
-    function toggleVesselFilter(vessel) {
-        activeVesselFilter = activeVesselFilter === vessel ? null : vessel;
-        renderRecommendedSpreading();
-    }
+            const formatDt = (raw) => {
+                if (!raw) return '<span class="text-slate-300">—</span>';
+                // Try to parse and format nicely
+                const d = new Date(raw);
+                if (isNaN(d)) return `<span class="text-slate-500">${raw}</span>`;
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const hh = String(d.getHours()).padStart(2, '0');
+                const mi = String(d.getMinutes()).padStart(2, '0');
+                return `${dd}/${mm} <span class="text-slate-400">${hh}:${mi}</span>`;
+            };
 
-    function clearVesselFilter() {
-        activeVesselFilter = null;
-        renderRecommendedSpreading();
-    }
+            return `<tr class="hover:bg-indigo-50/30 transition-colors ${isActive ? '' : 'opacity-80'}">
+                <td class="px-4 py-2 text-center text-slate-400 font-mono">${i + 1}</td>
+                <td class="px-4 py-2 font-bold text-slate-800">${v.vessel || '—'}</td>
+                <td class="px-4 py-2 text-center"><span class="px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-bold text-slate-600">${v.line || '—'}</span></td>
+                <td class="px-4 py-2 text-center font-bold text-indigo-600">${v.service || '—'}</td>
+                <td class="px-4 py-2 text-center">${statusBadge}</td>
+                <td class="px-4 py-2 text-center font-mono text-[10px]">${formatDt(v.etb)}</td>
+                <td class="px-4 py-2 text-center font-mono text-[10px]">${formatDt(v.etd)}</td>
+                <td class="px-4 py-2 text-center font-mono text-[10px] bg-amber-50/30">${formatDt(v.openStacking)}</td>
+                <td class="px-4 py-2 text-center font-mono text-[10px] bg-red-50/30 ${closingClass}">${formatDt(v.closingPhysic)}${v.closingPhysic && !isNaN(new Date(v.closingPhysic)) && new Date(v.closingPhysic) < now ? ' <span class="ml-1 px-1.5 py-0.5 rounded-full text-[8px] font-black bg-red-600 text-white border border-red-700 uppercase animate-pulse">LTC</span>' : ''}</td>
+                <td class="px-4 py-2 text-center font-mono text-[10px] bg-indigo-50/20">${(() => { if (!v.openStacking) return '<span class="text-slate-300">—</span>'; const os = new Date(v.openStacking); if (isNaN(os)) return '<span class="text-slate-300">—</span>'; const days = Math.floor((now - os) / (1000 * 60 * 60 * 24)); if (days < 0) return '<span class="text-slate-400">Not started</span>'; const cls = days >= 7 ? 'text-red-600 font-black' : days >= 4 ? 'text-amber-600 font-bold' : 'text-emerald-600 font-bold'; return '<span class="' + cls + '">' + days + ' day' + (days !== 1 ? 's' : '') + '</span>'; })()}</td>
+            </tr>`;
+        });
 
-    document.addEventListener('click', function(event) {
-        const el = event.target.closest('.vessel-filter-chip');
-        if (!el) return;
-        const vessel = el.dataset.vessel;
-        if (vessel) toggleVesselFilter(vessel);
-    });
+        body.innerHTML = rows.join('');
+    }
+    window.renderNPCT1Schedule = renderNPCT1Schedule;
+
+    // Load NPCT1 schedule on page load
+    loadNPCT1Schedule();
+
 
     // ── Scroll Gantt chart to a specific carrier
     function scrollGanttToVessel(carrier) {
@@ -1168,8 +1158,7 @@ document.getElementById('sumTotalCap').innerText =
                 if (typeof highlightYardCarrier === 'function') {
                     highlightYardCarrier(carrier);
                 }
-                // Also filter cluster spreading table (yp.js)
-                toggleVesselFilter(carrier);
+
 
             });
             wrapper.addEventListener('dblclick', function(e) {
@@ -1252,7 +1241,7 @@ document.getElementById('sumTotalCap').innerText =
             if (b.eta) return 1;
             return b.totalAll - a.totalAll;
         });
-        if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; renderRecommendedSpreading(); renderVesselFilterChips(); return; }
+        if(!sorted.length) { body.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-slate-400">No Export Data.</td></tr>'; return; }
 
         let filtered = showAll ? sorted : sorted.filter(e => e[1].totalAll >= 50);
 
@@ -1508,7 +1497,7 @@ document.getElementById('sumTotalCap').innerText =
         });
         window.clusterStatsData = stats;
         body.innerHTML = _clusterRows.join('');
-        renderRecommendedSpreading();
+
     }
 
     window.showVesselSummary = function(key) {
