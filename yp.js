@@ -2542,8 +2542,8 @@ function downloadImage() {
     let fileName = "Overview";
 
     if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
-        activeId = "captureAreaAnalytics";
-        fileName = "Analytics";
+        activeId = "clusterSpreadingContainer";
+        fileName = "Cluster_Spreading";
     } else if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
         activeId = "captureAreaClash";
         fileName = "Clash";
