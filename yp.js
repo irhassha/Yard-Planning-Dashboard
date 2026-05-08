@@ -3220,146 +3220,222 @@ function downloadImage() {
                     startY: curY, margin: { left: margin, right: margin },
                     head: [['Carrier', 'Service', "20'", "40'", "45'", 'Total', 'TEUs']],
                     body: emptyBody, theme: 'grid',
-                    headStyles: { fillColor: C.emerald, textColor: C.white, fontSize: 7, fontStyle: 'bold', halign: 'center', cellPadding: 2.5 },
-                    bodyStyles: { fontSize: 7, textColor: C.text, cellPadding: 2, halign: 'center' },
-                    columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 30 }, 1: { cellWidth: 25 } },
-                    alternateRowStyles: { fillColor: C.lightBg }, tableLineColor: C.border, tableLineWidth: 0.15,
-                    didParseCell: function(data) {
-                        if (data.section === 'body' && data.row.index === emptyBody.length - 1) {
-                            data.cell.styles.fillColor = C.borderLight; data.cell.styles.fontStyle = 'bold'; data.cell.styles.textColor = C.dark;
-                        }
+async function generatePDFReport(sectionNotes = {}) {
+        if (!isInvLoaded) { alert("No data loaded. Please upload Unit List first."); return; }
+
+        const loader = document.getElementById('loadingOverlay');
+        loader.classList.remove('hidden');
+        setProgress(5, 'Preparing PDF Report...');
+
+        await new Promise(r => setTimeout(r, 80));
+
+        const originalActiveTab = document.querySelector('.tab-btn.active')?.id.replace('btn-', '') || 'overview';
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const margin = 10;
+            const contentW = pageW - margin * 2;
+            let curY = margin;
+            const now = new Date();
+            const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
+            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+
+            const C = {
+                primary: [0, 100, 210], primaryDark: [0, 70, 160],
+                dark: [15, 23, 42],
+                border: [226, 232, 240],
+                lightText: [100, 116, 139],
+                white: [255, 255, 255],
+            };
+
+            const setFont = (style = 'normal', size = 9) => {
+                doc.setFontSize(size);
+                if (style === 'bold') doc.setFont('helvetica', 'bold');
+                else if (style === 'italic') doc.setFont('helvetica', 'italic');
+                else doc.setFont('helvetica', 'normal');
+            };
+
+            const drawRoundedRect = (x, y, w, h, r, fillColor, borderColor) => {
+                if (fillColor) { doc.setFillColor(...fillColor); doc.roundedRect(x, y, w, h, r, r, 'F'); }
+                if (borderColor) { doc.setDrawColor(...borderColor); doc.setLineWidth(0.2); doc.roundedRect(x, y, w, h, r, r, 'S'); }
+            };
+
+            const drawSectionHeader = (title, sectionNum) => {
+                if (curY > pageH - 40) {
+                    doc.addPage();
+                    curY = margin;
+                }
+                doc.setFillColor(...C.primary);
+                doc.rect(margin, curY, 3, 8, 'F');
+                setFont('bold', 13);
+                doc.setTextColor(...C.dark);
+                doc.text(`${sectionNum}. ${title}`, margin + 6, curY + 6);
+                doc.setDrawColor(...C.primary);
+                doc.setLineWidth(0.4);
+                doc.line(margin, curY + 10, pageW - margin, curY + 10);
+                curY += 14;
+            };
+
+            const applyFooters = () => {
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let p = 1; p <= totalPages; p++) {
+                    doc.setPage(p);
+                    doc.setDrawColor(...C.border);
+                    doc.setLineWidth(0.3);
+                    doc.line(margin, pageH - 9, pageW - margin, pageH - 9);
+                    setFont('normal', 6);
+                    doc.setTextColor(...C.lightText);
+                    doc.text('NPCT1 Yard Planning Dashboard \u2014 Internal Use Only', margin, pageH - 5);
+                    doc.text(`Page ${p} / ${totalPages}`, pageW - margin, pageH - 5, { align: 'right' });
+                    doc.text(`${dateStr}  ${timeStr}`, pageW / 2, pageH - 5, { align: 'center' });
+                }
+            };
+
+            const populateDensityDetailTable = () => {
+                const tbody = document.getElementById('densityDetailBody');
+                if (!tbody) return;
+                let yardMapCalc = {};
+                Object.keys(activeCapacity).forEach(b => yardMapCalc[b] = { impT: 0, expT: 0 });
+                invData.forEach(it => {
+                    if (!yardMapCalc[it.block]) return;
+                    let teus = it.length.startsWith('20') ? 1 : (it.length.startsWith('45') ? 2.25 : 2);
+                    if (it.move.includes('import') || it.move.includes('disc') || it.move.includes('vessel')) {
+                        yardMapCalc[it.block].impT += teus;
+                    } else { yardMapCalc[it.block].expT += teus; }
+                });
+
+                let html = '';
+                Object.keys(yardMapCalc).sort().forEach(b => {
+                    if (!EXCLUDED_BLOCKS_YARD.includes(b)) {
+                        let d = yardMapCalc[b];
+                        let cap = activeCapacity[b]?.cap || 0;
+                        let totS = d.impT + d.expT;
+                        let yorVal = cap > 0 ? (totS / cap * 100) : 0;
+                        let textCol = yorVal > 80 ? 'text-red-600 font-bold' : (yorVal > 60 ? 'text-amber-600 font-bold' : 'text-emerald-600');
+                        html += `
+                            <tr>
+                                <td class="px-4 py-2 font-bold">${b}</td>
+                                <td class="px-4 py-2">${Math.round(d.impT).toLocaleString()}</td>
+                                <td class="px-4 py-2">${Math.round(d.expT).toLocaleString()}</td>
+                                <td class="px-4 py-2 font-semibold">${Math.round(totS).toLocaleString()}</td>
+                                <td class="px-4 py-2">${cap.toLocaleString()}</td>
+                                <td class="px-4 py-2 ${textCol}">${Math.round(yorVal)}%</td>
+                            </tr>
+                        `;
                     }
                 });
-            } else {
-                setFont('italic', 8); doc.setTextColor(...C.lightText);
-                doc.text('No export empty data found.', margin + 6, curY + 2);
-            }
+                tbody.innerHTML = html;
+            };
 
-            // ==================================================================
-            // PAGE 5: BALANCE SPACE PROJECTION
-            // ==================================================================
-            setProgress(75, 'Capturing Balance Space Projection...');
-            doc.addPage(); curY = margin;
-            
-            doc.setFillColor(...C.dark);
-            doc.rect(0, 0, pageW, 14, 'F');
-            doc.setFillColor(...C.teal);
-            doc.rect(0, 13, pageW, 1.5, 'F');
-            setFont('bold', 11);
-            doc.setTextColor(...C.white);
-            doc.text('5. Balance Space Projection (Fixed Import)', margin + 2, 9);
-            setFont('normal', 7);
-            doc.setTextColor(180, 220, 210);
-            doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
-            curY = 20;
+            const captureAndAppend = async (elementId, title, sectionNum, isHiddenTab = null, forceFilter = null, isDensityTable = false) => {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                
+                setProgress(20 + (sectionNum * 10), `Capturing ${title}...`);
+                drawSectionHeader(title, sectionNum);
 
-            const projTable = document.querySelector('#captureAreaProjection .overflow-x-auto');
-            if (projTable && window.projectionData && window.projectionData.length > 0) {
-                try {
-                    // Force the filter
-                    let previousFilter = window.currentProjectionFilter || 'ALL';
-                    if (typeof setProjectionTypeFilter === 'function') setProjectionTypeFilter('Fixed Import');
-                    // Ensure the table breakdown is hidden for clean screenshot
+                if (isHiddenTab) {
+                    switchTab(isHiddenTab);
+                    await new Promise(r => setTimeout(r, 400));
+                }
+
+                let prevFilter = null;
+                if (forceFilter && typeof setProjectionTypeFilter === 'function') {
+                    prevFilter = window.currentProjectionFilter || 'ALL';
+                    setProjectionTypeFilter(forceFilter);
                     const isBreakdownVisible = document.getElementById('btnProjectionBreakdown')?.textContent.includes('Hide');
                     if (isBreakdownVisible && typeof toggleProjectionBreakdown === 'function') toggleProjectionBreakdown();
+                    await new Promise(r => setTimeout(r, 300));
+                }
 
-                    await new Promise(r => setTimeout(r, 250));
+                if (isDensityTable) {
+                    populateDensityDetailTable();
+                    el.classList.remove('hidden');
+                    await new Promise(r => setTimeout(r, 100));
+                }
 
-                    const canvas = await html2canvas(projTable, { 
-                        scale: 1.5, 
-                        backgroundColor: '#ffffff',
-                        windowWidth: 1400 
-                    });
-                    
-                    // Restore filter & state
-                    if (typeof setProjectionTypeFilter === 'function') setProjectionTypeFilter(previousFilter);
-                    if (isBreakdownVisible && typeof toggleProjectionBreakdown === 'function') toggleProjectionBreakdown();
-
+                try {
+                    const canvas = await html2canvas(el, { scale: 1.5, backgroundColor: '#ffffff', windowWidth: 1400 });
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     const imgAspect = canvas.width / canvas.height;
                     let imgW = contentW;
                     let imgH = imgW / imgAspect;
-                    if (curY + imgH > pageH - 15) { doc.addPage(); curY = margin; }
-                    doc.addImage(imgData, 'JPEG', margin, curY, imgW, imgH);
-                    curY += imgH + 8;
-                } catch (e) {
-                    console.warn('Projection capture failed:', e);
-                    setFont('italic', 8); doc.setTextColor(...C.lightText);
-                    doc.text('Balance Space Projection capture failed.', margin + 6, curY + 4);
-                }
-            } else {
-                 setFont('italic', 8); doc.setTextColor(...C.lightText);
-                 doc.text('No Balance Space Projection data found.', margin + 6, curY + 4);
-            }
 
-            // ==================================================================
-            // PAGE 6: YARD BLOCK DENSITY DETAIL PER BLOCK
-            // ==================================================================
-            setProgress(85, 'Building Block Density Table...');
-            doc.addPage(); curY = margin;
-
-            doc.setFillColor(...C.dark);
-            doc.rect(0, 0, pageW, 14, 'F');
-            doc.setFillColor(...C.orange);
-            doc.rect(0, 13, pageW, 1.5, 'F');
-            setFont('bold', 11);
-            doc.setTextColor(...C.white);
-            doc.text('6. Yard Block Density Detail per Block', margin + 2, 9);
-            setFont('normal', 7);
-            doc.setTextColor(255, 220, 180);
-            doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
-            curY = 20;
-
-            const densityRows = [];
-            Object.keys(yardMapCalc).sort().forEach(b => {
-                if (!EXCLUDED_BLOCKS_YARD.includes(b)) {
-                    let d = yardMapCalc[b];
-                    let cap = activeCapacity[b]?.cap || 0;
-                    let totS = d.impT + d.expT;
-                    let yorVal = cap > 0 ? (totS / cap * 100) : 0;
-                    densityRows.push([
-                        b,
-                        Math.round(d.impT).toLocaleString(),
-                        Math.round(d.expT).toLocaleString(),
-                        Math.round(totS).toLocaleString(),
-                        cap.toLocaleString(),
-                        `${Math.round(yorVal)}%`
-                    ]);
-                }
-            });
-
-            if (densityRows.length > 0) {
-                doc.autoTable({
-                    startY: curY, margin: { left: margin, right: margin },
-                    head: [['Block', 'Import TEUs', 'Export TEUs', 'Total Stack (TEUs)', 'Capacity (TEUs)', 'YOR %']],
-                    body: densityRows,
-                    theme: 'grid',
-                    headStyles: { fillColor: C.orange, textColor: C.white, fontSize: 8, fontStyle: 'bold', halign: 'center', cellPadding: 2.5 },
-                    bodyStyles: { fontSize: 8, textColor: C.text, cellPadding: 2, halign: 'center' },
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 25 } },
-                    alternateRowStyles: { fillColor: C.lightBg }, 
-                    tableLineColor: C.border, tableLineWidth: 0.15,
-                    didParseCell: function(data) {
-                        if (data.section === 'body' && data.column.index === 5) {
-                            const pctVal = parseInt(data.cell.raw);
-                            if (!isNaN(pctVal)) {
-                                if (pctVal > 80) { data.cell.styles.textColor = [220, 38, 38]; data.cell.styles.fontStyle = 'bold'; }
-                                else if (pctVal > 60) { data.cell.styles.textColor = [217, 119, 6]; data.cell.styles.fontStyle = 'bold'; }
-                                else { data.cell.styles.textColor = [5, 150, 105]; }
+                    if (curY + imgH > pageH - 15) {
+                        if (curY <= margin + 18) {
+                            imgH = pageH - curY - 15;
+                            imgW = imgH * imgAspect;
+                        } else {
+                            doc.addPage();
+                            curY = margin;
+                            if (imgH > pageH - margin - 15) {
+                                imgH = pageH - margin - 15;
+                                imgW = imgH * imgAspect;
                             }
                         }
                     }
-                });
-            } else {
-                setFont('italic', 8); doc.setTextColor(...C.lightText);
-                doc.text('No density data available.', margin + 6, curY + 2);
+
+                    const imgX = margin + (contentW - imgW)/2;
+                    doc.addImage(imgData, 'JPEG', imgX, curY, imgW, imgH);
+                    curY += imgH + 10;
+                } catch (e) {
+                    console.warn(`Failed to capture ${title}:`, e);
+                    setFont('italic', 8); doc.setTextColor(...C.lightText);
+                    doc.text(`Failed to capture ${title}.`, margin + 6, curY + 4);
+                    curY += 10;
+                } finally {
+                    if (isDensityTable) el.classList.add('hidden');
+                    if (forceFilter && typeof setProjectionTypeFilter === 'function') {
+                        setProjectionTypeFilter(prevFilter);
+                    }
+                }
+            };
+
+            setProgress(10, 'Drawing cover page...');
+            doc.setFillColor(...C.dark);
+            doc.rect(0, 0, pageW, 32, 'F');
+            doc.setFillColor(...C.primary);
+            doc.rect(0, 30, pageW, 2, 'F');
+
+            setFont('bold', 22);
+            doc.setTextColor(...C.white);
+            doc.text('NPCT1 Yard Planning Report', margin + 2, 14);
+            setFont('normal', 9);
+            doc.setTextColor(180, 200, 240);
+            doc.text(`All-in-One Summary  |  Generated: ${dateStr}, ${timeStr}`, margin + 2, 22);
+            doc.setFillColor(249, 168, 37);
+            doc.rect(margin + 2, 26, 35, 1.5, 'F');
+
+            curY = 40;
+            const noteText = sectionNotes.global;
+            if (noteText) {
+                const lines = doc.splitTextToSize(noteText, contentW - 20);
+                const noteH = 10 + (lines.length * 4);
+                drawRoundedRect(margin, curY, contentW, noteH, 2, [255, 251, 235], [251, 191, 36]);
+                doc.setFillColor(251, 191, 36);
+                doc.roundedRect(margin, curY, 2.5, noteH, 2, 0, 'F');
+                setFont('bold', 6.5);
+                doc.setTextColor(161, 98, 7);
+                doc.text('\u270E  NOTE', margin + 7, curY + 5);
+                setFont('normal', 7);
+                doc.setTextColor(120, 53, 15);
+                doc.text(lines, margin + 7, curY + 10);
+                curY += noteH + 8;
             }
 
-            // ==================================================================
-            // APPLY FOOTERS & SAVE
-            // ==================================================================
+            await captureAndAppend('captureAreaYorCards', 'Yard Block Density Summary', 1, 'overview');
+            await captureAndAppend('npct1SchedulePanel', 'Summary Vessel Schedule', 2, 'overview');
+            await captureAndAppend('clusterSpreadingContainer', 'Cluster Spreading by Block', 3, 'overview');
+            await captureAndAppend('captureAreaEmpty', 'Empty Container Summary', 4, 'empty');
+            await captureAndAppend('captureAreaProjection', 'Balance Space Projection (Fixed Import)', 5, 'projection', 'Fixed Import');
+            await captureAndAppend('captureAreaDensityDetail', 'Yard Block Density Detail per Block', 6, null, null, true);
+
             setProgress(95, 'Finalizing...');
             applyFooters();
+            switchTab(originalActiveTab);
 
             setProgress(100, 'Saving PDF...');
             const ts = now.getFullYear() + (('0' + (now.getMonth() + 1)).slice(-2)) + (('0' + now.getDate()).slice(-2)) + '_' + (('0' + now.getHours()).slice(-2)) + (('0' + now.getMinutes()).slice(-2));
