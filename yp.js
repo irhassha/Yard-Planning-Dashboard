@@ -1727,7 +1727,10 @@ document.getElementById('sumTotalCap').innerText =
 
         // Group ALL inventory by row
         const rowItems = {};
+        const excludedBlocks = new Set(['C01', 'C02', 'D01', 'BR9', 'RC9', 'OOG']);
+        
         window.invData.forEach(it => {
+            if (it.block && excludedBlocks.has(it.block.toUpperCase())) return;
             const r = parseInt(it.row);
             const s = parseInt(it.slot);
             if (it.block && !isNaN(s) && !isNaN(r) && r > 0) {
@@ -2767,17 +2770,13 @@ function downloadImage() {
         document.body.style.overflow = '';
     }
     function clearAllPdfNotes() {
-        for (let i = 1; i <= 7; i++) {
-            const el = document.getElementById('pdfNote' + i);
-            if (el) el.value = '';
-        }
+        const el = document.getElementById('pdfGlobalNote');
+        if (el) el.value = '';
     }
     function confirmGeneratePdf() {
+        const el = document.getElementById('pdfGlobalNote');
         const notes = {};
-        for (let i = 1; i <= 7; i++) {
-            const el = document.getElementById('pdfNote' + i);
-            if (el && el.value.trim()) notes[i] = el.value.trim();
-        }
+        if (el && el.value.trim()) notes['global'] = el.value.trim();
         closePdfReviewDrawer();
         generatePDFReport(notes);
     }
@@ -2847,9 +2846,9 @@ function downloadImage() {
                 doc.line(margin, curY + 10, pageW - margin, curY + 10);
                 curY += 14;
             };
-            // Draw a note box for a given section
-            const drawNote = (sectionNum) => {
-                const noteText = sectionNotes[sectionNum];
+            // Draw a global note box
+            const drawNote = () => {
+                const noteText = sectionNotes.global;
                 if (!noteText) return;
                 // Check if we need a new page for the note
                 const lines = doc.splitTextToSize(noteText, contentW - 20);
@@ -2909,6 +2908,8 @@ function downloadImage() {
             doc.rect(margin + 2, 26, 35, 1.5, 'F');
 
             curY = 40;
+            drawNote();
+            curY += 5;
 
             // --- 1. YOR SECTION ---
             setProgress(20, 'Calculating YOR...');
@@ -2936,7 +2937,7 @@ function downloadImage() {
             let yorExp = sm.expC > 0 ? (sm.expS / sm.expC * 100) : 0;
             let yorTotal = totalC > 0 ? (totalS / totalC * 100) : 0;
 
-            drawSectionHeader('Yard Occupancy Ratio (YOR)', 1, C.primary);
+            drawSectionHeader('Yard Block Density Summary', 1, C.primary);
 
             // YOR Cards — 3 cols
             const cardW = (contentW - 8) / 3;
@@ -2961,124 +2962,33 @@ function downloadImage() {
                 doc.setTextColor(...C.lightText);
                 doc.text(card.sub, x + 7, curY + 21.5);
             });
-            curY += cardH + 8;
-            drawNote(1);
+            curY += cardH + 12;
 
-            // --- 2. KEY METRICS ---
-            setProgress(30, 'Computing metrics...');
-            drawSectionHeader('Key Metrics Summary', 2, C.indigo);
-
-            const exportVessels = new Set();
-            invData.forEach(it => { if (it.move.includes('export') && it.carrier && it.carrier !== '0' && it.carrier !== 'NIL') exportVessels.add(it.carrier); });
-            const totalExportVessels = exportVessels.size;
-
-            let emptyInsideBlock = 0, emptyOutsideBlock = 0;
-            invData.forEach(d => {
-                const isEmpty = (d.loadStatus.includes('EMPTY') || d.loadStatus === 'MT');
-                if (!isEmpty) return;
-                const block = String(d.block || '').toUpperCase();
-                if (block.startsWith('80') || String(d.slot || '').startsWith('80')) emptyOutsideBlock++; else emptyInsideBlock++;
-            });
-            const totalEmpty = emptyInsideBlock + emptyOutsideBlock;
-
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            let longstayImport = 0, longstayExport = 0;
-            invData.forEach(item => {
-                const ad = parseArrivalDate(item?.arrivalDate); if (!ad) return;
-                ad.setHours(0, 0, 0, 0);
-                const diff = Math.floor((today.getTime() - ad.getTime()) / 86400000);
-                if (diff > 7) {
-                    if (item.move.includes('import') || item.move.includes('disc') || item.move.includes('vessel')) longstayImport++; else longstayExport++;
+            // --- 2. SUMMARY VESSEL SCHEDULE ---
+            setProgress(30, 'Capturing Summary Vessel Schedule...');
+            drawSectionHeader('Summary Vessel Schedule', 2, C.indigo);
+            const schedulePanel = document.getElementById('npct1SchedulePanel');
+            if (schedulePanel) {
+                try {
+                    const canvas = await html2canvas(schedulePanel, { scale: 1.5, backgroundColor: '#ffffff' });
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const imgAspect = canvas.width / canvas.height;
+                    let imgW = contentW;
+                    let imgH = imgW / imgAspect;
+                    if (curY + imgH > pageH - 15) { doc.addPage(); curY = margin; }
+                    doc.addImage(imgData, 'JPEG', margin, curY, imgW, imgH);
+                    curY += imgH + 8;
+                } catch (e) {
+                    console.warn('Vessel schedule capture failed:', e);
+                    setFont('italic', 8); doc.setTextColor(...C.lightText);
+                    doc.text('Vessel schedule capture failed.', margin + 6, curY + 4);
+                    curY += 10;
                 }
-            });
-
-            let totalOOG = 0;
-            invData.forEach(d => {
-                const oogVal = String(d.oog || '').toUpperCase();
-                const block = String(d.block || '').toUpperCase();
-                if (oogVal === 'Y' || oogVal === 'YES' || oogVal === 'OOG' || block === 'OOG') totalOOG++;
-            });
-
-            const metricW = (contentW - 12) / 4;
-            const metricH = 28;
-            const metricCards = [
-                { title: 'EXPORT VESSELS', sub: 'ON YARD', value: String(totalExportVessels), color: C.blue, bg: C.accentBg },
-                { title: 'TOTAL EMPTY', sub: `In: ${emptyInsideBlock}  |  Out: ${emptyOutsideBlock}`, value: String(totalEmpty), color: C.purple, bg: C.purpleBg },
-                { title: 'LONGSTAY > 7D', sub: `Imp: ${longstayImport}  |  Exp: ${longstayExport}`, value: String(longstayImport + longstayExport), color: C.orange, bg: C.orangeBg },
-                { title: 'TOTAL OOG', sub: 'IN YARD', value: String(totalOOG), color: C.red, bg: C.redBg },
-            ];
-            metricCards.forEach((m, i) => {
-                const x = margin + i * (metricW + 4);
-                drawRoundedRect(x, curY, metricW, metricH, 2, m.bg, C.border);
-                doc.setFillColor(...m.color);
-                doc.roundedRect(x, curY, 2.5, metricH, 2, 0, 'F');
-                setFont('bold', 6.5);
-                doc.setTextColor(...m.color);
-                doc.text(m.title, x + 7, curY + 7);
-                setFont('bold', 22);
-                doc.text(m.value, x + 7, curY + 19);
-                setFont('normal', 6);
-                doc.setTextColor(...C.lightText);
-                doc.text(m.sub, x + 7, curY + 24);
-            });
-            curY += metricH + 8;
-            drawNote(2);
-
-            // --- 3. DOUBLE CALL PER SERVICE ---
-            setProgress(35, 'Analyzing double calls...');
-            drawSectionHeader('Double Call per Service', 3, C.purple);
-
-            // Group by SERVICE with multiple carriers
-            const serviceCarrierMap = {};
-            invData.forEach(it => {
-                if (!it.move.includes('export')) return;
-                
-                // IGNORE IF NO ETA/ARRIVAL DATE
-                const arrivalDateStr = String(it.arrivalDate || '').toUpperCase().trim();
-                if (!arrivalDateStr || arrivalDateStr === 'UNKNOWN' || arrivalDateStr === 'NIL' || arrivalDateStr === '0' || arrivalDateStr === '') return;
-
-                const carrier = String(it.carrier || '').toUpperCase().trim();
-                const service = String(it.service || '').toUpperCase().trim();
-                if (!carrier || carrier === '0' || carrier === 'NIL' || !service) return;
-                
-                if (!serviceCarrierMap[service]) serviceCarrierMap[service] = {};
-                if (!serviceCarrierMap[service][carrier]) serviceCarrierMap[service][carrier] = 0;
-                serviceCarrierMap[service][carrier]++;
-            });
-            const doubleCallServices = [];
-            Object.entries(serviceCarrierMap).forEach(([service, carriers]) => {
-                const carrierKeys = Object.keys(carriers);
-                if (carrierKeys.length >= 2) {
-                    doubleCallServices.push({
-                        service,
-                        carriers: carrierKeys.join(', '),
-                        carrierCount: carrierKeys.length,
-                        details: carrierKeys.map(c => `${c} (${carriers[c]})`).join(', ')
-                    });
-                }
-            });
-            doubleCallServices.sort((a, b) => b.carrierCount - a.carrierCount);
-
-            if (doubleCallServices.length > 0) {
-                doc.autoTable({
-                    startY: curY,
-                    margin: { left: margin, right: margin },
-                    head: [['#', 'Service', 'Carriers', 'Detail (Units per Carrier)']],
-                    body: doubleCallServices.map((v, i) => [i + 1, v.service, v.carriers, v.details]),
-                    theme: 'grid',
-                    headStyles: { fillColor: C.purple, textColor: C.white, fontSize: 7, fontStyle: 'bold', halign: 'center', cellPadding: 2.5 },
-                    bodyStyles: { fontSize: 7, textColor: C.text, cellPadding: 2.2 },
-                    columnStyles: { 0: { halign: 'center', cellWidth: 8 }, 1: { fontStyle: 'bold', cellWidth: 25 }, 2: { cellWidth: 55 }, 3: { cellWidth: 'auto' } },
-                    alternateRowStyles: { fillColor: C.lightBg },
-                    tableLineColor: C.border, tableLineWidth: 0.15,
-                });
-                curY = doc.lastAutoTable.finalY + 4;
             } else {
-                setFont('italic', 8); doc.setTextColor(...C.lightText);
-                doc.text('No double call per service found.', margin + 6, curY + 2);
-                curY += 8;
+                 setFont('italic', 8); doc.setTextColor(...C.lightText);
+                 doc.text('No Vessel Schedule data found.', margin + 6, curY + 4);
+                 curY += 10;
             }
-            drawNote(3);
 
             // ==================================================================
             // PAGE 2: CLUSTER SPREADING BY BLOCK
@@ -3093,7 +3003,7 @@ function downloadImage() {
             doc.rect(0, 13, pageW, 1.5, 'F');
             setFont('bold', 11);
             doc.setTextColor(...C.white);
-            doc.text('4. Cluster Spreading by Block', margin + 2, 9);
+            doc.text('3. Cluster Spreading by Block', margin + 2, 9);
             setFont('normal', 7);
             doc.setTextColor(180, 220, 200);
             doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
@@ -3236,74 +3146,8 @@ function downloadImage() {
                 doc.text('No cluster spreading data available.', margin + 6, curY + 4);
                 curY += 10;
             }
-            drawNote(4);
 
-            // ==================================================================
-            // PAGE 3: YARD MAP VISUALIZATION
-            // ==================================================================
-            setProgress(55, 'Capturing yard map...');
-            doc.addPage(); curY = margin;
 
-            doc.setFillColor(...C.dark);
-            doc.rect(0, 0, pageW, 14, 'F');
-            doc.setFillColor(...C.teal);
-            doc.rect(0, 13, pageW, 1.5, 'F');
-            setFont('bold', 11);
-            doc.setTextColor(...C.white);
-            doc.text('5. Yard Map Visualization', margin + 2, 9);
-            setFont('normal', 7);
-            doc.setTextColor(180, 220, 210);
-            doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
-            curY = 20;
-
-            // Capture the yardMapContent via html2canvas
-            const yardMapEl = document.getElementById('captureAreaYardMap');
-            if (yardMapEl && isInvLoaded) {
-                try {
-                    // Ensure yard map is rendered
-                    if (typeof renderYardMap === 'function') renderYardMap();
-                    await new Promise(r => setTimeout(r, 300));
-
-                    const yardEl = yardMapEl;
-                    const scrollW = yardEl.scrollWidth;
-                    const canvas = await html2canvas(yardEl, {
-                        scale: 1.5,
-                        windowWidth: Math.max(scrollW + 100, 1600),
-                        backgroundColor: '#ffffff',
-                        onclone: (clonedDoc) => {
-                            const clonedRoot = clonedDoc.getElementById('captureAreaYardMap');
-                            if (clonedRoot) {
-                                clonedRoot.style.width = scrollW + 'px';
-                                clonedRoot.style.maxWidth = 'none';
-                                clonedRoot.style.padding = '8px';
-                                clonedRoot.querySelectorAll('.overflow-x-auto, .overflow-y-auto').forEach(div => {
-                                    div.style.overflow = 'visible'; div.style.width = 'auto'; div.style.maxWidth = 'none';
-                                });
-                            }
-                        }
-                    });
-                    const imgData = canvas.toDataURL('image/jpeg', 0.92);
-                    const imgAspect = canvas.width / canvas.height;
-                    const maxImgW = contentW;
-                    const maxImgH = pageH - curY - 15;
-                    let imgW = maxImgW;
-                    let imgH = imgW / imgAspect;
-                    if (imgH > maxImgH) { imgH = maxImgH; imgW = imgH * imgAspect; }
-                    const imgX = margin + (contentW - imgW) / 2;
-                    doc.addImage(imgData, 'JPEG', imgX, curY, imgW, imgH);
-                    curY += imgH + 4;
-                } catch (e) {
-                    console.warn('Yard map capture failed:', e);
-                    setFont('italic', 8); doc.setTextColor(...C.lightText);
-                    doc.text('Yard map capture failed. Please ensure Yard Map tab has been rendered.', margin + 6, curY + 4);
-                    curY += 10;
-                }
-            } else {
-                setFont('italic', 8); doc.setTextColor(...C.lightText);
-                doc.text('No yard map data available. Upload unit list and visit Yard Map tab first.', margin + 6, curY + 4);
-                curY += 10;
-            }
-            drawNote(5);
 
             // ==================================================================
             // PAGE 4: EMPTY CONTAINER SUMMARY
@@ -3317,7 +3161,7 @@ function downloadImage() {
             doc.rect(0, 13, pageW, 1.5, 'F');
             setFont('bold', 11);
             doc.setTextColor(...C.white);
-            doc.text('6. Empty Container Summary', margin + 2, 9);
+            doc.text('4. Empty Container Summary', margin + 2, 9);
             setFont('normal', 7);
             doc.setTextColor(180, 220, 200);
             doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
@@ -3390,12 +3234,68 @@ function downloadImage() {
                 setFont('italic', 8); doc.setTextColor(...C.lightText);
                 doc.text('No export empty data found.', margin + 6, curY + 2);
             }
-            drawNote(6);
 
             // ==================================================================
-            // PAGE 5: LONGSTAY > 7 DAYS
+            // PAGE 5: BALANCE SPACE PROJECTION
             // ==================================================================
-            setProgress(85, 'Building longstay table...');
+            setProgress(75, 'Capturing Balance Space Projection...');
+            doc.addPage(); curY = margin;
+            
+            doc.setFillColor(...C.dark);
+            doc.rect(0, 0, pageW, 14, 'F');
+            doc.setFillColor(...C.teal);
+            doc.rect(0, 13, pageW, 1.5, 'F');
+            setFont('bold', 11);
+            doc.setTextColor(...C.white);
+            doc.text('5. Balance Space Projection (Fixed Import)', margin + 2, 9);
+            setFont('normal', 7);
+            doc.setTextColor(180, 220, 210);
+            doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
+            curY = 20;
+
+            const projTable = document.querySelector('#captureAreaProjection .overflow-x-auto');
+            if (projTable && window.projectionData && window.projectionData.length > 0) {
+                try {
+                    // Force the filter
+                    let previousFilter = window.currentProjectionFilter || 'ALL';
+                    if (typeof setProjectionTypeFilter === 'function') setProjectionTypeFilter('Fixed Import');
+                    // Ensure the table breakdown is hidden for clean screenshot
+                    const isBreakdownVisible = document.getElementById('btnProjectionBreakdown')?.textContent.includes('Hide');
+                    if (isBreakdownVisible && typeof toggleProjectionBreakdown === 'function') toggleProjectionBreakdown();
+
+                    await new Promise(r => setTimeout(r, 250));
+
+                    const canvas = await html2canvas(projTable, { 
+                        scale: 1.5, 
+                        backgroundColor: '#ffffff',
+                        windowWidth: 1400 
+                    });
+                    
+                    // Restore filter & state
+                    if (typeof setProjectionTypeFilter === 'function') setProjectionTypeFilter(previousFilter);
+                    if (isBreakdownVisible && typeof toggleProjectionBreakdown === 'function') toggleProjectionBreakdown();
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    const imgAspect = canvas.width / canvas.height;
+                    let imgW = contentW;
+                    let imgH = imgW / imgAspect;
+                    if (curY + imgH > pageH - 15) { doc.addPage(); curY = margin; }
+                    doc.addImage(imgData, 'JPEG', margin, curY, imgW, imgH);
+                    curY += imgH + 8;
+                } catch (e) {
+                    console.warn('Projection capture failed:', e);
+                    setFont('italic', 8); doc.setTextColor(...C.lightText);
+                    doc.text('Balance Space Projection capture failed.', margin + 6, curY + 4);
+                }
+            } else {
+                 setFont('italic', 8); doc.setTextColor(...C.lightText);
+                 doc.text('No Balance Space Projection data found.', margin + 6, curY + 4);
+            }
+
+            // ==================================================================
+            // PAGE 6: YARD BLOCK DENSITY DETAIL PER BLOCK
+            // ==================================================================
+            setProgress(85, 'Building Block Density Table...');
             doc.addPage(); curY = margin;
 
             doc.setFillColor(...C.dark);
@@ -3404,60 +3304,56 @@ function downloadImage() {
             doc.rect(0, 13, pageW, 1.5, 'F');
             setFont('bold', 11);
             doc.setTextColor(...C.white);
-            doc.text('7. Longstay > 7 Days Detail by Block', margin + 2, 9);
+            doc.text('6. Yard Block Density Detail per Block', margin + 2, 9);
             setFont('normal', 7);
             doc.setTextColor(255, 220, 180);
             doc.text(`${dateStr} ${timeStr}`, pageW - margin - 2, 9, { align: 'right' });
             curY = 20;
 
-            // Summary cards
-            const lsW = 40, lsH = 18;
-            const lsCards = [
-                { label: 'IMPORT LONGSTAY', value: String(longstayImport), color: C.amber, bg: C.amberBg },
-                { label: 'EXPORT LONGSTAY', value: String(longstayExport), color: C.emerald, bg: C.emeraldBg },
-                { label: 'TOTAL LONGSTAY', value: String(longstayImport + longstayExport), color: C.orange, bg: C.orangeBg },
-            ];
-            lsCards.forEach((lc, i) => {
-                const x = margin + i * (lsW + 4);
-                drawRoundedRect(x, curY, lsW, lsH, 2, lc.bg, C.border);
-                doc.setFillColor(...lc.color); doc.roundedRect(x, curY, 2.5, lsH, 2, 0, 'F');
-                setFont('bold', 5.5); doc.setTextColor(...lc.color); doc.text(lc.label, x + 7, curY + 5.5);
-                setFont('bold', 14); doc.text(lc.value, x + 7, curY + 14);
-            });
-            curY += lsH + 8;
-
-            const longstayByBlock = {};
-            invData.forEach(item => {
-                const ad = parseArrivalDate(item?.arrivalDate); if (!ad) return;
-                ad.setHours(0, 0, 0, 0);
-                const diff = Math.floor((today.getTime() - ad.getTime()) / 86400000);
-                if (diff > 7) {
-                    const block = String(item.block || 'UNKNOWN').toUpperCase();
-                    const mt = (item.move.includes('import') || item.move.includes('disc') || item.move.includes('vessel')) ? 'import' : 'export';
-                    if (!longstayByBlock[block]) longstayByBlock[block] = { import: 0, export: 0, total: 0 };
-                    longstayByBlock[block][mt] += 1; longstayByBlock[block].total += 1;
+            const densityRows = [];
+            Object.keys(yardMapCalc).sort().forEach(b => {
+                if (!EXCLUDED_BLOCKS_YARD.includes(b)) {
+                    let d = yardMapCalc[b];
+                    let cap = activeCapacity[b]?.cap || 0;
+                    let totS = d.impT + d.expT;
+                    let yorVal = cap > 0 ? (totS / cap * 100) : 0;
+                    densityRows.push([
+                        b,
+                        Math.round(d.impT).toLocaleString(),
+                        Math.round(d.expT).toLocaleString(),
+                        Math.round(totS).toLocaleString(),
+                        cap.toLocaleString(),
+                        `${Math.round(yorVal)}%`
+                    ]);
                 }
             });
-            const longstayRows = Object.entries(longstayByBlock).sort((a, b) => b[1].total - a[1].total);
 
-            if (longstayRows.length > 0) {
+            if (densityRows.length > 0) {
                 doc.autoTable({
                     startY: curY, margin: { left: margin, right: margin },
-                    head: [['Block', 'Import', 'Export', 'Total']],
-                    body: longstayRows.map(([block, d]) => [block, d.import, d.export, d.total]),
-                    foot: [['TOTAL', longstayImport, longstayExport, longstayImport + longstayExport]],
+                    head: [['Block', 'Import TEUs', 'Export TEUs', 'Total Stack (TEUs)', 'Capacity (TEUs)', 'YOR %']],
+                    body: densityRows,
                     theme: 'grid',
-                    headStyles: { fillColor: C.orange, textColor: C.white, fontSize: 7, fontStyle: 'bold', halign: 'center', cellPadding: 2.5 },
-                    bodyStyles: { fontSize: 7, textColor: C.text, cellPadding: 2, halign: 'center' },
-                    footStyles: { fillColor: C.borderLight, textColor: C.dark, fontStyle: 'bold', halign: 'center', fontSize: 7, cellPadding: 2.5 },
+                    headStyles: { fillColor: C.orange, textColor: C.white, fontSize: 8, fontStyle: 'bold', halign: 'center', cellPadding: 2.5 },
+                    bodyStyles: { fontSize: 8, textColor: C.text, cellPadding: 2, halign: 'center' },
                     columnStyles: { 0: { fontStyle: 'bold', cellWidth: 25 } },
-                    alternateRowStyles: { fillColor: C.lightBg }, tableLineColor: C.border, tableLineWidth: 0.15,
+                    alternateRowStyles: { fillColor: C.lightBg }, 
+                    tableLineColor: C.border, tableLineWidth: 0.15,
+                    didParseCell: function(data) {
+                        if (data.section === 'body' && data.column.index === 5) {
+                            const pctVal = parseInt(data.cell.raw);
+                            if (!isNaN(pctVal)) {
+                                if (pctVal > 80) { data.cell.styles.textColor = [220, 38, 38]; data.cell.styles.fontStyle = 'bold'; }
+                                else if (pctVal > 60) { data.cell.styles.textColor = [217, 119, 6]; data.cell.styles.fontStyle = 'bold'; }
+                                else { data.cell.styles.textColor = [5, 150, 105]; }
+                            }
+                        }
+                    }
                 });
             } else {
                 setFont('italic', 8); doc.setTextColor(...C.lightText);
-                doc.text('No longstay containers found.', margin + 6, curY + 2);
+                doc.text('No density data available.', margin + 6, curY + 2);
             }
-            drawNote(7);
 
             // ==================================================================
             // APPLY FOOTERS & SAVE

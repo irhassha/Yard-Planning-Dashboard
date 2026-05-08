@@ -89,7 +89,8 @@
     <div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-16 md:-mt-24 relative z-20">
         <div class="floating-control-card">
             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                <div class="flex items-center gap-1 p-1.5 bg-[#E9EEF6] rounded-full w-full xl:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div
+                    class="flex items-center gap-1 p-1.5 bg-[#E9EEF6] rounded-full w-full xl:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active shrink-0"><span
                             class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
                     <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive shrink-0"><span
@@ -101,10 +102,12 @@
                     <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">check_box_outline_blank</span> Empty
                         Summary</button>
-                    <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive shrink-0"><span
+                    <button onclick="switchTab('projection')" id="btn-projection"
+                        class="tab-btn inactive shrink-0"><span
                             class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge
                         Projection</button>
-                    <button onclick="switchTab('replan')" id="btn-replan" class="tab-btn inactive replan-trigger shrink-0"><span
+                    <button onclick="switchTab('replan')" id="btn-replan"
+                        class="tab-btn inactive replan-trigger shrink-0"><span
                             class="material-symbols-outlined text-lg">view_column</span> Smart Replan</button>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
@@ -436,19 +439,23 @@
             <div id="captureAreaAnalytics" class="space-y-4">
 
                 <!-- NPCT1 Vessel Schedule -->
-                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40" id="npct1SchedulePanel">
-                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40"
+                    id="npct1SchedulePanel">
+                    <div
+                        class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
                         <div class="flex items-center gap-3">
                             <div class="p-2 bg-indigo-500/10 rounded-lg text-indigo-600">
                                 <span class="material-symbols-outlined text-2xl">directions_boat</span>
                             </div>
                             <div>
                                 <h2 class="text-lg font-bold text-slate-800">NPCT1 Vessel Schedule</h2>
-                                <p class="text-[11px] text-slate-400 font-medium">Source: npct1.co.id &middot; Active & Registered Vessels</p>
+                                <p class="text-[11px] text-slate-400 font-medium">Source: npct1.co.id &middot; Active &
+                                    Registered Vessels</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div id="npct1LastUpdated" class="text-[11px] text-slate-400 font-mono bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                            <div id="npct1LastUpdated"
+                                class="text-[11px] text-slate-400 font-mono bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                                 <span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span>
                                 Loading...
                             </div>
@@ -459,37 +466,46 @@
                     <div class="p-4 space-y-4">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="npct1SummaryCards">
                             <!-- Open Stack Vessels -->
-                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200/60">
+                            <div
+                                class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200/60">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="material-symbols-outlined text-amber-600 text-lg">inventory_2</span>
-                                    <span class="text-[10px] font-bold uppercase text-amber-700 tracking-wider">Open Stack Vessels</span>
+                                    <span class="text-[10px] font-bold uppercase text-amber-700 tracking-wider">Open
+                                        Stack Vessels</span>
                                 </div>
                                 <div class="text-3xl font-black text-amber-700" id="npct1OpenStackCount">0</div>
                                 <p class="text-[10px] text-amber-500 mt-0.5">Vessels in stacking period</p>
                             </div>
                             <!-- LTC Vessels -->
-                            <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 border border-red-200/60">
+                            <div
+                                class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 border border-red-200/60">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="material-symbols-outlined text-red-600 text-lg">warning</span>
-                                    <span class="text-[10px] font-bold uppercase text-red-700 tracking-wider">Closing Vessels (LTC)</span>
+                                    <span class="text-[10px] font-bold uppercase text-red-700 tracking-wider">Closing
+                                        Vessels (LTC)</span>
                                 </div>
                                 <div class="text-3xl font-black text-red-700" id="npct1LTCCount">0</div>
                                 <p class="text-[10px] text-red-400 mt-0.5">Past closing physic</p>
                             </div>
                             <!-- Avg Stacking Period -->
-                            <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200/60">
+                            <div
+                                class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200/60">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="material-symbols-outlined text-emerald-600 text-lg">avg_pace</span>
-                                    <span class="text-[10px] font-bold uppercase text-emerald-700 tracking-wider">Avg Stacking Period</span>
+                                    <span class="text-[10px] font-bold uppercase text-emerald-700 tracking-wider">Avg
+                                        Stacking Period</span>
                                 </div>
                                 <div class="text-3xl font-black text-emerald-700" id="npct1AvgStackDays">—</div>
                                 <p class="text-[10px] text-emerald-500 mt-0.5">Average days in open stack</p>
                             </div>
                             <!-- Multiple Call per Service -->
-                            <div class="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl p-4 border border-violet-200/60">
+                            <div
+                                class="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl p-4 border border-violet-200/60">
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="material-symbols-outlined text-violet-600 text-lg">call_split</span>
-                                    <span class="text-[10px] font-bold uppercase text-violet-700 tracking-wider">Multiple Call Services</span>
+                                    <span
+                                        class="text-[10px] font-bold uppercase text-violet-700 tracking-wider">Multiple
+                                        Call Services</span>
                                 </div>
                                 <div class="text-3xl font-black text-violet-700" id="npct1MultiCallCount">0</div>
                                 <p class="text-[10px] text-violet-400 mt-0.5">Services with &gt;1 vessel</p>
@@ -503,20 +519,30 @@
 
                     <!-- Collapsible Table -->
                     <details class="group" id="npct1ScheduleDetails">
-                        <summary class="px-4 py-3 border-t border-slate-200/50 bg-slate-50/50 cursor-pointer flex items-center justify-between hover:bg-slate-100/50 transition-colors select-none">
+                        <summary
+                            class="px-4 py-3 border-t border-slate-200/50 bg-slate-50/50 cursor-pointer flex items-center justify-between hover:bg-slate-100/50 transition-colors select-none">
                             <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-slate-400 text-lg transition-transform group-open:rotate-90">chevron_right</span>
-                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Vessel Schedule Table</span>
-                                <span id="npct1VesselCount" class="text-[10px] font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">0 vessels</span>
+                                <span
+                                    class="material-symbols-outlined text-slate-400 text-lg transition-transform group-open:rotate-90">chevron_right</span>
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Vessel Schedule
+                                    Table</span>
+                                <span id="npct1VesselCount"
+                                    class="text-[10px] font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">0
+                                    vessels</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <label class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm cursor-pointer" onclick="event.stopPropagation()">
-                                    <input type="checkbox" id="npct1ShowNoOpenStack" onchange="renderNPCT1Schedule()" class="w-3 h-3 rounded accent-indigo-500">
+                                <label
+                                    class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm cursor-pointer"
+                                    onclick="event.stopPropagation()">
+                                    <input type="checkbox" id="npct1ShowNoOpenStack" onchange="renderNPCT1Schedule()"
+                                        class="w-3 h-3 rounded accent-indigo-500">
                                     <span class="text-[10px] font-bold text-slate-500 uppercase">Show All</span>
                                 </label>
-                                <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm" onclick="event.stopPropagation()">
+                                <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm"
+                                    onclick="event.stopPropagation()">
                                     <span class="material-symbols-outlined text-[16px] text-slate-400">search</span>
-                                    <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()" placeholder="Search vessel..."
+                                    <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()"
+                                        placeholder="Search vessel..."
                                         class="text-xs border-0 p-0 focus:ring-0 bg-transparent w-28 text-slate-700 placeholder-slate-400">
                                 </div>
                             </div>
@@ -532,15 +558,19 @@
                                         <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Status</th>
                                         <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETB</th>
                                         <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETD</th>
-                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-amber-50/50">Open Stacking</th>
-                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-red-50/50">Closing Physic</th>
-                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-indigo-50/50">Stacking Period</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-amber-50/50">
+                                            Open Stacking</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-red-50/50">
+                                            Closing Physic</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-indigo-50/50">
+                                            Stacking Period</th>
                                     </tr>
                                 </thead>
                                 <tbody id="npct1ScheduleBody" class="divide-y divide-slate-100 bg-white/50">
                                     <tr>
                                         <td colspan="10" class="px-4 py-12 text-center text-slate-400">
-                                            <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_download</span>
+                                            <span
+                                                class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_download</span>
                                             <span class="text-sm font-medium">Loading vessel schedule data...</span>
                                         </td>
                                     </tr>
@@ -549,24 +579,33 @@
                         </div>
                     </details>
 
-                    <div class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
+                    <div
+                        class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
                         <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
-                            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
+                            <div class="flex items-center gap-1.5"><span
+                                    class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
                         </div>
-                        <div class="text-slate-400 italic">Data auto-refreshes every 6 hours via GitHub Actions</div>
+                        <div class="text-slate-400 italic">Data auto-refreshes every 6 hours</div>
                     </div>
                 </div>
 
                 <!-- Detailed Table -->
-                <div id="clusterSpreadingContainer" class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 flex flex-col bg-slate-50 transition-all duration-300">
+                <div id="clusterSpreadingContainer"
+                    class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 flex flex-col bg-slate-50 transition-all duration-300">
                     <div class="p-4 border-b border-slate-200/50 bg-white/20 flex justify-between items-center">
                         <h2 class="text-lg font-bold text-slate-800">Cluster Spreading by Block</h2>
                         <div class="flex items-center gap-3">
-                            <label class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
-                                <input class="sr-only peer" id="toggleDetailedCluster" onchange="renderClusterSpreading()" type="checkbox">
-                                <div class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full"></div>
-                                <span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Detailed (X/Y/Z)</span>
+                            <label
+                                class="relative inline-flex items-center cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                                <input class="sr-only peer" id="toggleDetailedCluster"
+                                    onchange="renderClusterSpreading()" type="checkbox">
+                                <div
+                                    class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:bg-blue-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-full">
+                                </div>
+                                <span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Detailed
+                                    (X/Y/Z)</span>
                             </label>
 
                             <label
@@ -578,7 +617,9 @@
                                 </div><span class="ml-2 text-[10px] font-bold text-slate-600 uppercase">Show All</span>
                             </label>
 
-                            <button onclick="toggleFullScreenCluster()" class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-blue-600 shadow-sm ml-2" title="Toggle Full Screen">
+                            <button onclick="toggleFullScreenCluster()"
+                                class="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-blue-600 shadow-sm ml-2"
+                                title="Toggle Full Screen">
                                 <span class="material-symbols-outlined text-[18px]">fullscreen</span>
                             </button>
                         </div>
@@ -600,14 +641,20 @@
                             <tbody id="clusterBody" class="divide-y divide-slate-100 bg-white/50"></tbody>
                         </table>
                     </div>
-                    <div id="clusterLegend" class="px-4 py-3 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap gap-6 items-center">
+                    <div id="clusterLegend"
+                        class="px-4 py-3 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap gap-6 items-center">
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sub-Block Legend:</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sub-Block
+                                Legend:</span>
                         </div>
                         <div class="flex items-center gap-4 text-[10px] text-slate-600">
-                            <div class="flex items-center gap-1.5"><strong class="text-blue-700">X:</strong> <span>A/B (1-12), C (1-15)</span></div>
-                            <div class="flex items-center gap-1.5"><strong class="text-amber-600">Y:</strong> <span>A/B (13-25), C (16-30)</span></div>
-                            <div class="flex items-center gap-1.5"><strong class="text-emerald-600">Z:</strong> <span>A/B (26-37), C (31-45)</span></div>
+                            <div class="flex items-center gap-1.5"><strong class="text-blue-700">X:</strong> <span>A/B
+                                    (1-12), C (1-15)</span></div>
+                            <div class="flex items-center gap-1.5"><strong class="text-amber-600">Y:</strong> <span>A/B
+                                    (13-25), C (16-30)</span></div>
+                            <div class="flex items-center gap-1.5"><strong class="text-emerald-600">Z:</strong>
+                                <span>A/B (26-37), C (31-45)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -786,7 +833,8 @@
                                     <th class="px-4 py-2.5 border-b border-amber-200 text-center">20'</th>
                                     <th class="px-4 py-2.5 border-b border-amber-200 text-center">40'</th>
                                     <th class="px-4 py-2.5 border-b border-amber-200 text-center">45'</th>
-                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center bg-amber-100/50">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-amber-200 text-center bg-amber-100/50">Total
+                                    </th>
                                     <th class="px-4 py-2.5 border-b border-amber-200 text-center bg-amber-50">TEUs</th>
                                 </tr>
                             </thead>
@@ -798,16 +846,22 @@
 
                 <!-- EXPORT EMPTY SUMMARY -->
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
-                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div
+                        class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
                             <span class="material-symbols-outlined text-emerald-500">output</span>
                             Export Empty Summary
                         </h3>
                         <!-- Toggle Tabs: All / Inside / Outside Block -->
                         <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200 shadow-sm">
-                            <button id="btnExportAll" onclick="switchExportEmptyTab('all')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">All</button>
-                            <button id="btnExportInside" onclick="switchExportEmptyTab('inside')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Inside Block</button>
-                            <button id="btnExportOutside" onclick="switchExportEmptyTab('outside')" class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Outside Block (E-)</button>
+                            <button id="btnExportAll" onclick="switchExportEmptyTab('all')"
+                                class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-white text-slate-800 shadow-sm border border-slate-200">All</button>
+                            <button id="btnExportInside" onclick="switchExportEmptyTab('inside')"
+                                class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Inside
+                                Block</button>
+                            <button id="btnExportOutside" onclick="switchExportEmptyTab('outside')"
+                                class="px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all text-slate-500 hover:text-slate-700">Outside
+                                Block (E-)</button>
                         </div>
                     </div>
 
@@ -823,8 +877,10 @@
                                     <th class="px-4 py-2.5 border-b border-emerald-200 text-center">20'</th>
                                     <th class="px-4 py-2.5 border-b border-emerald-200 text-center">40'</th>
                                     <th class="px-4 py-2.5 border-b border-emerald-200 text-center">45'</th>
-                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-100/50">Total</th>
-                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-50">TEUs</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-100/50">
+                                        Total</th>
+                                    <th class="px-4 py-2.5 border-b border-emerald-200 text-center bg-emerald-50">TEUs
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="emptyExportAllBody" class="divide-y divide-slate-100 bg-white/50">
@@ -844,7 +900,8 @@
                                     <th class="px-4 py-2.5 border-b border-slate-200 text-center">20'</th>
                                     <th class="px-4 py-2.5 border-b border-slate-200 text-center">40'</th>
                                     <th class="px-4 py-2.5 border-b border-slate-200 text-center">45'</th>
-                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center bg-slate-100">Total</th>
+                                    <th class="px-4 py-2.5 border-b border-slate-200 text-center bg-slate-100">Total
+                                    </th>
                                     <th class="px-4 py-2.5 border-b border-slate-200 text-center bg-slate-50">TEUs</th>
                                 </tr>
                             </thead>
@@ -865,8 +922,10 @@
                                     <th class="px-4 py-2.5 border-b border-orange-200 text-center">20'</th>
                                     <th class="px-4 py-2.5 border-b border-orange-200 text-center">40'</th>
                                     <th class="px-4 py-2.5 border-b border-orange-200 text-center">45'</th>
-                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-100/50">Total</th>
-                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-50">TEUs</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-100/50">
+                                        Total</th>
+                                    <th class="px-4 py-2.5 border-b border-orange-200 text-center bg-orange-50">TEUs
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="emptyExportOutsideBody" class="divide-y divide-slate-100 bg-white/50">
@@ -913,15 +972,19 @@
                         <div class="flex items-center gap-2">
                             <button onclick="selectAllBlocks()" class="secondary-pill text-xs">Select All</button>
                             <button onclick="deselectAllBlocks()" class="secondary-pill text-xs">Deselect All</button>
-                            <button onclick="selectPureImportBlocks()" class="secondary-pill text-xs">Pure Import Only</button>
-                            <button onclick="selectBlocksBasedOnDensity()" class="secondary-pill text-xs">Based on Yard Density</button>
-                            <span class="text-xs text-slate-500 ml-2">Pure Import: A06,A07,A08,B06,B07,B08,C05,C06,C07,C08</span>
+                            <button onclick="selectPureImportBlocks()" class="secondary-pill text-xs">Pure Import
+                                Only</button>
+                            <button onclick="selectBlocksBasedOnDensity()" class="secondary-pill text-xs">Based on Yard
+                                Density</button>
+                            <span class="text-xs text-slate-500 ml-2">Pure Import:
+                                A06,A07,A08,B06,B07,B08,C05,C06,C07,C08</span>
                         </div>
                         <div id="blockSelectionGrid" class="grid grid-cols-4 md:grid-cols-8 gap-2">
                             <!-- Blocks will be populated by JavaScript -->
                         </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">Select blocks to include in discharge projection calculation.</p>
+                    <p class="text-xs text-slate-500 mt-2">Select blocks to include in discharge projection calculation.
+                    </p>
                 </div>
 
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
@@ -988,7 +1051,8 @@
                 <!-- HERO INPUT -->
                 <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40 mb-6 text-center">
                     <div class="mb-4 space-y-3">
-                        <span class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 shadow-sm">
+                        <span
+                            class="inline-block py-1 px-3 rounded-full bg-emerald-100/50 text-emerald-700 text-xs font-bold uppercase tracking-wider border border-emerald-200/50 shadow-sm">
                             Smart Slot Finder
                         </span>
                         <h1 class="text-2xl font-bold text-slate-800">
@@ -1000,16 +1064,18 @@
                     </div>
 
                     <div class="relative max-w-3xl mx-auto">
-                        <div class="relative flex items-start rounded-2xl p-3 bg-white/70 shadow-inner border border-slate-200 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-                            <span class="material-symbols-outlined text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
+                        <div
+                            class="relative flex items-start rounded-2xl p-3 bg-white/70 shadow-inner border border-slate-200 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                            <span
+                                class="material-symbols-outlined text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">search_check</span>
                             <textarea id="rawInput"
                                 class="w-full min-h-[48px] bg-transparent border-none focus:ring-0 p-0 text-sm text-slate-700 placeholder-slate-400 resize-none font-mono leading-5 outline-none"
-                                placeholder="Paste Header & Data here (Ctrl+V)..."
-                                oninput="analyzeReplan()"
-                                rows="2"
+                                placeholder="Paste Header & Data here (Ctrl+V)..." oninput="analyzeReplan()" rows="2"
                                 spellcheck="false"></textarea>
                             <div class="ml-2 pl-3 border-l border-slate-200 h-full flex items-start pt-1">
-                                <button onclick="clearReplanInput()" class="p-2 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all" title="Clear Data">
+                                <button onclick="clearReplanInput()"
+                                    class="p-2 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                                    title="Clear Data">
                                     <span class="material-symbols-outlined text-xl transition-colors">delete</span>
                                 </button>
                             </div>
@@ -1023,13 +1089,15 @@
                         <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                             <span class="material-symbols-outlined text-lg">history</span> Selection History
                         </h2>
-                        <button onclick="clearReplanHistory()" class="text-[10px] font-bold text-red-500 hover:text-red-700 transition-colors bg-white/50 px-3 py-1.5 rounded-lg border border-red-200">Reset</button>
+                        <button onclick="clearReplanHistory()"
+                            class="text-[10px] font-bold text-red-500 hover:text-red-700 transition-colors bg-white/50 px-3 py-1.5 rounded-lg border border-red-200">Reset</button>
                     </div>
 
                     <div class="overflow-hidden rounded-xl border border-slate-200 bg-white/40">
                         <div class="max-h-[300px] overflow-y-auto custom-scrollbar">
                             <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 z-10 border-b border-slate-200">
+                                <thead
+                                    class="bg-slate-50 text-slate-500 uppercase font-bold sticky top-0 z-10 border-b border-slate-200">
                                     <tr>
                                         <th class="px-4 py-3">Time</th>
                                         <th class="px-4 py-3">Slot</th>
@@ -1038,7 +1106,8 @@
                                 </thead>
                                 <tbody id="replanHistoryBody" class="divide-y divide-slate-100 bg-white/50">
                                     <tr>
-                                        <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots selected yet.</td>
+                                        <td colspan="3" class="px-4 py-8 text-center text-slate-400 italic">No slots
+                                            selected yet.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1073,7 +1142,8 @@
                                     class="material-symbols-outlined text-[16px]">search</span></button>
                             <button onclick="zoomYardMap(0.1)" class="secondary-pill text-xs px-2" title="Zoom In"><span
                                     class="material-symbols-outlined text-[16px]">zoom_in</span></button>
-                            <button onclick="toggleYardRowMode()" id="yardRowModeBtn" class="secondary-pill text-xs"><span
+                            <button onclick="toggleYardRowMode()" id="yardRowModeBtn"
+                                class="secondary-pill text-xs"><span
                                     class="material-symbols-outlined text-[16px]">view_column</span> Show Rows</button>
                             <button onclick="toggleYardText()" id="yardTextToggleBtn"
                                 class="secondary-pill text-xs"><span
@@ -1098,17 +1168,20 @@
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 mt-0">
 
                     <!-- Chart area — no header above, flush with yard map -->
-                    <div class="overflow-x-auto overflow-y-auto custom-scrollbar" style="max-height:460px;min-height:120px;background:white;" id="berthGanttWrapper">
+                    <div class="overflow-x-auto overflow-y-auto custom-scrollbar"
+                        style="max-height:460px;min-height:120px;background:white;" id="berthGanttWrapper">
                         <div id="berthGanttContent" class="p-0">
                             <div class="flex flex-col items-center justify-center py-16 text-slate-400">
                                 <span class="material-symbols-outlined text-5xl mb-3 opacity-40">anchor</span>
-                                <p class="text-sm font-medium text-slate-500">Upload Call List dengan data bollard untuk melihat Berth Schedule.</p>
+                                <p class="text-sm font-medium text-slate-500">Upload Call List dengan data bollard untuk
+                                    melihat Berth Schedule.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Controls bar — below chart -->
-                    <div class="px-4 py-2.5 border-t border-slate-200/60 bg-white/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div
+                        class="px-4 py-2.5 border-t border-slate-200/60 bg-white/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div class="flex items-center gap-2.5">
                             <div class="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-600">
                                 <span class="material-symbols-outlined text-lg">anchor</span>
@@ -1119,28 +1192,40 @@
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap">
                             <!-- Text Size Slider -->
-                            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200" title="Adjust Text Size">
+                            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200"
+                                title="Adjust Text Size">
                                 <span class="material-symbols-outlined text-[14px] text-slate-500">format_size</span>
-                                <input type="range" id="ganttTextSizeSlider" min="0.6" max="2" step="0.1" value="1" oninput="window.ganttTextSizeMult=parseFloat(this.value); if(typeof renderBerthGantt==='function') renderBerthGantt()" class="w-16 h-1 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                                <input type="range" id="ganttTextSizeSlider" min="0.6" max="2" step="0.1" value="1"
+                                    oninput="window.ganttTextSizeMult=parseFloat(this.value); if(typeof renderBerthGantt==='function') renderBerthGantt()"
+                                    class="w-16 h-1 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-500">
                             </div>
                             <!-- Zoom controls -->
-                            <div class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
-                                <button onclick="zoomGantt(0.67)" class="px-2 py-1.5 hover:bg-white text-slate-600 transition-colors border-r border-slate-200 text-sm" title="Zoom Out (−)">
+                            <div
+                                class="flex items-center bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                                <button onclick="zoomGantt(0.67)"
+                                    class="px-2 py-1.5 hover:bg-white text-slate-600 transition-colors border-r border-slate-200 text-sm"
+                                    title="Zoom Out (−)">
                                     <span class="material-symbols-outlined text-[17px] align-middle">zoom_out</span>
                                 </button>
-                                <button onclick="zoomGantt(0)" class="px-2.5 py-1.5 hover:bg-white text-slate-600 transition-colors text-[10px] font-bold font-mono min-w-[40px] text-center border-r border-slate-200" id="ganttZoomLabel" title="Fit to screen">FIT</button>
-                                <button onclick="zoomGantt(1.5)" class="px-2 py-1.5 hover:bg-white text-slate-600 transition-colors text-sm" title="Zoom In (+)">
+                                <button onclick="zoomGantt(0)"
+                                    class="px-2.5 py-1.5 hover:bg-white text-slate-600 transition-colors text-[10px] font-bold font-mono min-w-[40px] text-center border-r border-slate-200"
+                                    id="ganttZoomLabel" title="Fit to screen">FIT</button>
+                                <button onclick="zoomGantt(1.5)"
+                                    class="px-2 py-1.5 hover:bg-white text-slate-600 transition-colors text-sm"
+                                    title="Zoom In (+)">
                                     <span class="material-symbols-outlined text-[17px] align-middle">zoom_in</span>
                                 </button>
                             </div>
-                            <button onclick="renderBerthGantt()" class="secondary-pill text-xs py-1.5" title="Refresh & Fit">
+                            <button onclick="renderBerthGantt()" class="secondary-pill text-xs py-1.5"
+                                title="Refresh & Fit">
                                 <span class="material-symbols-outlined text-[14px]">refresh</span> Refresh
                             </button>
                         </div>
                     </div>
 
                     <!-- Stats bar -->
-                    <div class="px-4 py-1.5 border-t border-slate-100 bg-slate-50/80 flex flex-wrap items-center gap-3 text-xs text-slate-500" id="berthGanttStats">
+                    <div class="px-4 py-1.5 border-t border-slate-100 bg-slate-50/80 flex flex-wrap items-center gap-3 text-xs text-slate-500"
+                        id="berthGanttStats">
                         <span class="italic">Upload Call List to view berth schedule.</span>
                     </div>
 
@@ -1149,323 +1234,373 @@
 
                 </div>
 
+            </div>
+
+
         </div>
 
+        <!-- Reservation Checker Modal -->
+        <div id="reservationModal"
+            class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between px-5 py-4 border-b">
+                    <h4 class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                        <span class="material-symbols-outlined text-amber-500">assignment_turned_in</span>
+                        Reservation Checker
+                    </h4>
+                    <button onclick="document.getElementById('reservationModal').classList.add('hidden')"
+                        class="text-slate-400 hover:text-red-500 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div id="reservationModalBody"
+                    class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar space-y-4">
+                    <!-- Content injected here -->
+                </div>
+            </div>
+        </div>
+        <input type="file" id="reservationFileInput" accept=".xlsx,.xls,.csv" class="hidden"
+            onchange="handleReservationFile(event)" />
 
-    </div>
+        <!-- Vessel Summary Modal -->
+        <div id="vesselSummaryModal"
+            class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between px-5 py-4 border-b bg-slate-50/80">
+                    <div>
+                        <h4 id="vesselSummaryModalTitle"
+                            class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-blue-600">directions_boat</span>
+                            Vessel Summary
+                        </h4>
+                        <p id="vesselSummaryModalSubtitle" class="text-xs text-slate-500 mt-1 font-medium"></p>
+                    </div>
+                    <button onclick="document.getElementById('vesselSummaryModal').classList.add('hidden')"
+                        class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                    </button>
+                </div>
+                <div id="vesselSummaryModalBody"
+                    class="p-0 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar bg-slate-50/30">
+                    <!-- Content injected here -->
+                </div>
+            </div>
+        </div>
 
-    <!-- Reservation Checker Modal -->
-    <div id="reservationModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between px-5 py-4 border-b">
-                <h4 class="font-bold text-slate-700 text-lg flex items-center gap-2">
-                    <span class="material-symbols-outlined text-amber-500">assignment_turned_in</span>
-                    Reservation Checker
-                </h4>
-                <button onclick="document.getElementById('reservationModal').classList.add('hidden')" class="text-slate-400 hover:text-red-500 transition-colors">
+        <!-- Anomalies Modal -->
+        <div id="anomaliesModal"
+            class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between px-5 py-4 border-b bg-red-50/80">
+                    <div>
+                        <h4 class="font-bold text-red-800 text-lg flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-600">warning</span>
+                            Yard Anomalies Check
+                        </h4>
+                        <p class="text-xs text-red-600 mt-1 font-medium">MIX VESSEL & MIX SPOD Detection per Row</p>
+                    </div>
+                    <button onclick="document.getElementById('anomaliesModal').classList.add('hidden')"
+                        class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                    </button>
+                </div>
+                <div id="anomaliesModalBody"
+                    class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar bg-slate-50/30">
+                    <!-- Content injected here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
+            <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-3 border-b">
+                    <h4 id="freeSlotModalTitle" class="font-bold text-slate-700">Free Slot List</h4>
+                    <button onclick="closeFreeSlotModal()"
+                        class="text-slate-500 hover:text-red-600 font-bold">✕</button>
+                </div>
+                <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
+            </div>
+        </div>
+
+        <!-- Replan Analysis Modal -->
+        <div id="analysisModal"
+            class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div
+                class="bg-white rounded-3xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col border border-white/60">
+                <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Comparison & Recommended Slot</h2>
+                        <p class="text-xs text-slate-500">Auto-generated after paste data.</p>
+                    </div>
+                    <button onclick="closeAnalysisModal()"
+                        class="h-9 w-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors flex items-center justify-center">
+                        <span class="material-symbols-outlined text-slate-600 font-bold">close</span>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
+                    <!-- Comparison Data -->
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2
+                                class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
+                            </h2>
+                        </div>
+                        <div id="replanPreviewContainer"
+                            class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
+                                        <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="replanPBody">
+                                    <tr>
+                                        <td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data
+                                            paste...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Slots -->
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm min-h-[300px]">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 pb-4 gap-4">
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
+                                <p class="text-sm text-slate-500">Filtered only available slots from Unit List.</p>
+                            </div>
+                            <span
+                                class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
+                                TIER &le; 5
+                            </span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <div class="flex flex-col gap-3">
+                                <div id="replanPriorityContainer" class="flex flex-wrap gap-2">
+                                    <button id="priority-NORMAL" onclick="setReplanPriority('NORMAL')"
+                                        class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-300">Normal</button>
+                                    <button id="priority-MIX_WC" onclick="setReplanPriority('MIX_WC')"
+                                        class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX
+                                        WC</button>
+                                    <button id="priority-MIX_SPOD_WC" onclick="setReplanPriority('MIX_SPOD_WC')"
+                                        class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX
+                                        SPOD & WC</button>
+                                </div>
+                                <div id="replanPriorityStatus" class="text-xs text-slate-500">Mode aktif: <span
+                                        class="font-semibold text-emerald-600">Normal</span></div>
+                            </div>
+
+                            <div
+                                class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="toggleGreyOutBlocks" class="sr-only peer"
+                                        onchange="calculateAvailableSlotsReplan()" checked>
+                                    <div
+                                        class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500">
+                                    </div>
+                                    <span class="ml-2 text-xs font-bold text-slate-600">Hide Full/Greyed Blocks</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="replanFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
+
+                        <div id="replanSlotDisplay" class="space-y-8">
+                            <div class="flex flex-col items-center justify-center py-20 text-slate-400">
+                                <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">dns</span>
+                                <p class="text-sm">Waiting for data input...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification Element -->
+        <div id="replanToast"
+            class="fixed transition-all duration-300 z-[200] flex items-center justify-center gap-2 transform -translate-x-1/2 left-1/2 bottom-[-100px] opacity-0 bg-slate-800/95 text-white px-4 py-3 rounded-lg shadow-xl border border-slate-600 text-sm font-medium">
+            <span class="material-symbols-outlined text-emerald-400 text-[18px]">content_copy</span>
+            <span id="replanToastMsg">Slot copied to clipboard!</span>
+        </div>
+
+        <!-- PDF REPORT REVIEW DRAWER -->
+        <div id="pdfReviewDrawer" class="pdf-drawer-overlay hidden">
+            <div class="pdf-drawer">
+                <div class="pdf-drawer-header">
+                    <div class="pdf-drawer-title-wrap">
+                        <span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+                        <div>
+                            <h3 class="pdf-drawer-title">Report Preview & Notes</h3>
+                            <p class="pdf-drawer-sub">Review sections and add comments before generating.</p>
+                        </div>
+                    </div>
+                    <button onclick="closePdfReviewDrawer()" class="pdf-drawer-close">&times;</button>
+                </div>
+
+                <div class="pdf-drawer-body" id="pdfDrawerBody">
+                    <!-- Section 1: YOR -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #0064d2;">1</div>
+                        <div class="pdf-section-info">
+                            <h4>Yard Occupancy Ratio (YOR)</h4>
+                            <p>Import, Export, and Overall YOR metrics with TEU breakdown.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-blue-500">donut_large</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote1"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for YOR</label>
+                        <textarea id="pdfNote1" placeholder="Add comments about YOR (optional)..." rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 2: Key Metrics -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #4f46e5;">2</div>
+                        <div class="pdf-section-info">
+                            <h4>Key Metrics Summary</h4>
+                            <p>Export vessels, empty containers, longstay &gt;7 days, OOG totals.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-indigo-500">analytics</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote2"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Key Metrics</label>
+                        <textarea id="pdfNote2" placeholder="Add comments about key metrics (optional)..."
+                            rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 3: Double Call -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #7c3aed;">3</div>
+                        <div class="pdf-section-info">
+                            <h4>Double Call per Service</h4>
+                            <p>Services with multiple carriers sharing the same route.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-purple-500">call_split</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote3"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Double Call</label>
+                        <textarea id="pdfNote3" placeholder="Add comments about double calls (optional)..."
+                            rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 4: Cluster Spreading -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #059669;">4</div>
+                        <div class="pdf-section-info">
+                            <h4>Cluster Spreading by Block</h4>
+                            <p>Export vessel distribution across blocks with block YOR row.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-emerald-500">grid_view</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote4"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Cluster Spreading</label>
+                        <textarea id="pdfNote4" placeholder="Add comments about cluster spreading (optional)..."
+                            rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 5: Yard Map -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #0d9488;">5</div>
+                        <div class="pdf-section-info">
+                            <h4>Yard Map Visualization</h4>
+                            <p>Full yard slot-level screenshot showing carrier distributions.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-teal-500">map</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote5"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Yard Map</label>
+                        <textarea id="pdfNote5" placeholder="Add comments about yard map (optional)..."
+                            rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 6: Empty -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #059669;">6</div>
+                        <div class="pdf-section-info">
+                            <h4>Empty Container Summary</h4>
+                            <p>Import/export empty breakdown by carrier with TEU totals.</p>
+                        </div>
+                        <span
+                            class="material-symbols-outlined pdf-section-icon text-emerald-500">check_box_outline_blank</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote6"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Empty Summary</label>
+                        <textarea id="pdfNote6" placeholder="Add comments about empty containers (optional)..."
+                            rows="2"></textarea>
+                    </div>
+
+                    <!-- Section 7: Longstay -->
+                    <div class="pdf-section-card">
+                        <div class="pdf-section-badge" style="--accent: #ea580c;">7</div>
+                        <div class="pdf-section-info">
+                            <h4>Longstay &gt; 7 Days Detail</h4>
+                            <p>Block-level breakdown of longstay containers with totals.</p>
+                        </div>
+                        <span class="material-symbols-outlined pdf-section-icon text-orange-500">timer</span>
+                    </div>
+                    <div class="pdf-note-wrap">
+                        <label for="pdfNote7"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
+                            for Longstay</label>
+                        <textarea id="pdfNote7" placeholder="Add comments about longstay units (optional)..."
+                            rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div class="pdf-drawer-footer">
+                    <button onclick="closePdfReviewDrawer()" class="pdf-btn-cancel">Cancel</button>
+                    <button onclick="clearAllPdfNotes()" class="pdf-btn-clear">
+                        <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear Notes
+                    </button>
+                    <button onclick="confirmGeneratePdf()" class="pdf-btn-generate">
+                        <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Generate PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cluster Detail Drawer -->
+        <div id="clusterDetailDrawer"
+            class="fixed inset-y-0 right-0 w-full md:max-w-[90vw] md:w-auto bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[130] flex flex-col">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">inventory_2</span>
+                    Slot Summary Tracker
+                </h3>
+                <button onclick="closeClusterDetailDrawer()"
+                    class="text-slate-400 hover:text-red-500 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
-            <div id="reservationModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar space-y-4">
-                <!-- Content injected here -->
-            </div>
-        </div>
-    </div>
-    <input type="file" id="reservationFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleReservationFile(event)" />
-
-    <!-- Vessel Summary Modal -->
-    <div id="vesselSummaryModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between px-5 py-4 border-b bg-slate-50/80">
-                <div>
-                    <h4 id="vesselSummaryModalTitle" class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                        <span class="material-symbols-outlined text-blue-600">directions_boat</span>
-                        Vessel Summary
-                    </h4>
-                    <p id="vesselSummaryModalSubtitle" class="text-xs text-slate-500 mt-1 font-medium"></p>
-                </div>
-                <button onclick="document.getElementById('vesselSummaryModal').classList.add('hidden')" class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
-                    <span class="material-symbols-outlined text-xl">close</span>
-                </button>
-            </div>
-            <div id="vesselSummaryModalBody" class="p-0 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar bg-slate-50/30">
-                <!-- Content injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Anomalies Modal -->
-    <div id="anomaliesModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
-            <div class="flex items-center justify-between px-5 py-4 border-b bg-red-50/80">
-                <div>
-                    <h4 class="font-bold text-red-800 text-lg flex items-center gap-2">
-                        <span class="material-symbols-outlined text-red-600">warning</span>
-                        Yard Anomalies Check
-                    </h4>
-                    <p class="text-xs text-red-600 mt-1 font-medium">MIX VESSEL & MIX SPOD Detection per Row</p>
-                </div>
-                <button onclick="document.getElementById('anomaliesModal').classList.add('hidden')" class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
-                    <span class="material-symbols-outlined text-xl">close</span>
-                </button>
-            </div>
-            <div id="anomaliesModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto flex-1 custom-scrollbar bg-slate-50/30">
-                <!-- Content injected here -->
-            </div>
-        </div>
-    </div>
-
-    <div id="freeSlotModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-            <div class="flex items-center justify-between px-5 py-3 border-b">
-                <h4 id="freeSlotModalTitle" class="font-bold text-slate-700">Free Slot List</h4>
-                <button onclick="closeFreeSlotModal()" class="text-slate-500 hover:text-red-600 font-bold">✕</button>
-            </div>
-            <div id="freeSlotModalBody" class="p-4 text-sm text-slate-700 overflow-y-auto max-h-[65vh]"></div>
-        </div>
-    </div>
-
-    <!-- Replan Analysis Modal -->
-    <div id="analysisModal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-        <div class="bg-white rounded-3xl shadow-xl w-full max-w-6xl max-h-[90vh] flex flex-col border border-white/60">
-            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800">Comparison & Recommended Slot</h2>
-                    <p class="text-xs text-slate-500">Auto-generated after paste data.</p>
-                </div>
-                <button onclick="closeAnalysisModal()" class="h-9 w-9 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors flex items-center justify-center">
-                    <span class="material-symbols-outlined text-slate-600 font-bold">close</span>
-                </button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
-                <!-- Comparison Data -->
-                <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
-                        </h2>
-                    </div>
-                    <div id="replanPreviewContainer" class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold text-slate-500">Key</th>
-                                    <th class="px-4 py-3 font-semibold text-slate-500">Value</th>
-                                </tr>
-                            </thead>
-                            <tbody id="replanPBody">
-                                <tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Recommended Slots -->
-                <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm min-h-[300px]">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 pb-4 gap-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
-                            <p class="text-sm text-slate-500">Filtered only available slots from Unit List.</p>
-                        </div>
-                        <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
-                            TIER &le; 5
-                        </span>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <div class="flex flex-col gap-3">
-                            <div id="replanPriorityContainer" class="flex flex-wrap gap-2">
-                                <button id="priority-NORMAL" onclick="setReplanPriority('NORMAL')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-emerald-50 text-emerald-700 border-emerald-300">Normal</button>
-                                <button id="priority-MIX_WC" onclick="setReplanPriority('MIX_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX WC</button>
-                                <button id="priority-MIX_SPOD_WC" onclick="setReplanPriority('MIX_SPOD_WC')" class="px-3 py-1.5 text-xs font-bold rounded-lg border bg-white text-slate-500 border-slate-200">MIX SPOD & WC</button>
-                            </div>
-                            <div id="replanPriorityStatus" class="text-xs text-slate-500">Mode aktif: <span class="font-semibold text-emerald-600">Normal</span></div>
-                        </div>
-
-                        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg">
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="toggleGreyOutBlocks" class="sr-only peer" onchange="calculateAvailableSlotsReplan()" checked>
-                                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
-                                <span class="ml-2 text-xs font-bold text-slate-600">Hide Full/Greyed Blocks</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div id="replanFilterContainer" class="flex flex-wrap gap-2 mb-6 hidden"></div>
-
-                    <div id="replanSlotDisplay" class="space-y-8">
-                        <div class="flex flex-col items-center justify-center py-20 text-slate-400">
-                            <span class="material-symbols-outlined text-6xl mb-4 text-slate-300">dns</span>
-                            <p class="text-sm">Waiting for data input...</p>
-                        </div>
-                    </div>
+            <div class="p-4 flex-1 overflow-y-auto bg-slate-50">
+                <div id="clusterDetailContent" class="space-y-4">
+                    <!-- Content will be injected here -->
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Toast Notification Element -->
-    <div id="replanToast" class="fixed transition-all duration-300 z-[200] flex items-center justify-center gap-2 transform -translate-x-1/2 left-1/2 bottom-[-100px] opacity-0 bg-slate-800/95 text-white px-4 py-3 rounded-lg shadow-xl border border-slate-600 text-sm font-medium">
-        <span class="material-symbols-outlined text-emerald-400 text-[18px]">content_copy</span>
-        <span id="replanToastMsg">Slot copied to clipboard!</span>
-    </div>
+        <!-- Drawer Overlay -->
+        <div id="clusterDetailOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[125] hidden"
+            onclick="closeClusterDetailDrawer()"></div>
 
-    <!-- PDF REPORT REVIEW DRAWER -->
-    <div id="pdfReviewDrawer" class="pdf-drawer-overlay hidden">
-        <div class="pdf-drawer">
-            <div class="pdf-drawer-header">
-                <div class="pdf-drawer-title-wrap">
-                    <span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
-                    <div>
-                        <h3 class="pdf-drawer-title">Report Preview & Notes</h3>
-                        <p class="pdf-drawer-sub">Review sections and add comments before generating.</p>
-                    </div>
-                </div>
-                <button onclick="closePdfReviewDrawer()" class="pdf-drawer-close">&times;</button>
-            </div>
+        <footer
+            class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
+            © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
+        </footer>
 
-            <div class="pdf-drawer-body" id="pdfDrawerBody">
-                <!-- Section 1: YOR -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #0064d2;">1</div>
-                    <div class="pdf-section-info">
-                        <h4>Yard Occupancy Ratio (YOR)</h4>
-                        <p>Import, Export, and Overall YOR metrics with TEU breakdown.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-blue-500">donut_large</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote1"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for YOR</label>
-                    <textarea id="pdfNote1" placeholder="Add comments about YOR (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 2: Key Metrics -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #4f46e5;">2</div>
-                    <div class="pdf-section-info">
-                        <h4>Key Metrics Summary</h4>
-                        <p>Export vessels, empty containers, longstay &gt;7 days, OOG totals.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-indigo-500">analytics</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote2"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Key Metrics</label>
-                    <textarea id="pdfNote2" placeholder="Add comments about key metrics (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 3: Double Call -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #7c3aed;">3</div>
-                    <div class="pdf-section-info">
-                        <h4>Double Call per Service</h4>
-                        <p>Services with multiple carriers sharing the same route.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-purple-500">call_split</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote3"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Double Call</label>
-                    <textarea id="pdfNote3" placeholder="Add comments about double calls (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 4: Cluster Spreading -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #059669;">4</div>
-                    <div class="pdf-section-info">
-                        <h4>Cluster Spreading by Block</h4>
-                        <p>Export vessel distribution across blocks with block YOR row.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-emerald-500">grid_view</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote4"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Cluster Spreading</label>
-                    <textarea id="pdfNote4" placeholder="Add comments about cluster spreading (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 5: Yard Map -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #0d9488;">5</div>
-                    <div class="pdf-section-info">
-                        <h4>Yard Map Visualization</h4>
-                        <p>Full yard slot-level screenshot showing carrier distributions.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-teal-500">map</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote5"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Yard Map</label>
-                    <textarea id="pdfNote5" placeholder="Add comments about yard map (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 6: Empty -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #059669;">6</div>
-                    <div class="pdf-section-info">
-                        <h4>Empty Container Summary</h4>
-                        <p>Import/export empty breakdown by carrier with TEU totals.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-emerald-500">check_box_outline_blank</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote6"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Empty Summary</label>
-                    <textarea id="pdfNote6" placeholder="Add comments about empty containers (optional)..." rows="2"></textarea>
-                </div>
-
-                <!-- Section 7: Longstay -->
-                <div class="pdf-section-card">
-                    <div class="pdf-section-badge" style="--accent: #ea580c;">7</div>
-                    <div class="pdf-section-info">
-                        <h4>Longstay &gt; 7 Days Detail</h4>
-                        <p>Block-level breakdown of longstay containers with totals.</p>
-                    </div>
-                    <span class="material-symbols-outlined pdf-section-icon text-orange-500">timer</span>
-                </div>
-                <div class="pdf-note-wrap">
-                    <label for="pdfNote7"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note for Longstay</label>
-                    <textarea id="pdfNote7" placeholder="Add comments about longstay units (optional)..." rows="2"></textarea>
-                </div>
-            </div>
-
-            <div class="pdf-drawer-footer">
-                <button onclick="closePdfReviewDrawer()" class="pdf-btn-cancel">Cancel</button>
-                <button onclick="clearAllPdfNotes()" class="pdf-btn-clear">
-                    <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear Notes
-                </button>
-                <button onclick="confirmGeneratePdf()" class="pdf-btn-generate">
-                    <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Generate PDF
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cluster Detail Drawer -->
-    <div id="clusterDetailDrawer" class="fixed inset-y-0 right-0 w-full md:max-w-[90vw] md:w-auto bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-[130] flex flex-col">
-        <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary">inventory_2</span>
-                Slot Summary Tracker
-            </h3>
-            <button onclick="closeClusterDetailDrawer()" class="text-slate-400 hover:text-red-500 transition-colors">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="p-4 flex-1 overflow-y-auto bg-slate-50">
-            <div id="clusterDetailContent" class="space-y-4">
-                <!-- Content will be injected here -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Drawer Overlay -->
-    <div id="clusterDetailOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[125] hidden" onclick="closeClusterDetailDrawer()"></div>
-
-    <footer
-        class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
-        © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
-    </footer>
-
-    <script src="expectedCluster.js"></script>
-    <script src="yp.js"></script>
-    <script src="replan.js"></script>
-    <script src="yardmap.js"></script>
+        <script src="expectedCluster.js"></script>
+        <script src="yp.js"></script>
+        <script src="replan.js"></script>
+        <script src="yardmap.js"></script>
 </body>
 
 </html>
