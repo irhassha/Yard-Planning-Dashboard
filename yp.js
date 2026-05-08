@@ -775,18 +775,26 @@ document.getElementById('sumTotalCap').innerText =
         allData.forEach(v => {
             const osDate = v.openStacking ? new Date(v.openStacking) : null;
             const cpDate = v.closingPhysic ? new Date(v.closingPhysic) : null;
-            const isInOpenStack = osDate && !isNaN(osDate) && osDate <= now;
+            const hasOpenStackStarted = osDate && !isNaN(osDate) && osDate <= now;
+            const isLTC = cpDate && !isNaN(cpDate) && cpDate < now;
 
-            if (isInOpenStack) {
+            // Open Stack = stacking started AND closing hasn't passed yet
+            if (hasOpenStackStarted && !isLTC) {
                 openStackCount++;
+            }
+
+            // LTC = closing physic has passed
+            if (isLTC) ltcCount++;
+
+            // Avg stacking period: count days for ALL vessels where stacking has started
+            if (hasOpenStackStarted) {
                 const days = (now - osDate) / (1000 * 60 * 60 * 24);
                 totalStackDays += days;
                 stackDaysCount++;
             }
-            if (cpDate && !isNaN(cpDate) && cpDate < now) ltcCount++;
 
-            // Group by service for multiple-call detection (only open stack vessels)
-            if (isInOpenStack && v.service) {
+            // Group by service for multiple-call detection (only vessels where stacking started)
+            if (hasOpenStackStarted && v.service) {
                 const svc = v.service.trim().toUpperCase();
                 if (!serviceVessels[svc]) serviceVessels[svc] = [];
                 serviceVessels[svc].push({ vessel: v.vessel, etb: v.etb, line: v.line });
