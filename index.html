@@ -1443,116 +1443,71 @@
                 </div>
 
                 <div class="pdf-drawer-body" id="pdfDrawerBody">
-                    <!-- Section 1: YOR -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #0064d2;">1</div>
-                        <div class="pdf-section-info">
-                            <h4>Yard Occupancy Ratio (YOR)</h4>
-                            <p>Import, Export, and Overall YOR metrics with TEU breakdown.</p>
-                        </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-blue-500">donut_large</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote1"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for YOR</label>
-                        <textarea id="pdfNote1" placeholder="Add comments about YOR (optional)..." rows="2"></textarea>
+                    <!-- Global Note -->
+                    <div class="pdf-note-wrap mb-4">
+                        <label for="pdfGlobalNote" class="font-bold text-gray-700">
+                            <span class="material-symbols-outlined text-[16px] align-middle mr-1">edit_note</span> 
+                            Global Report Notes
+                        </label>
+                        <textarea id="pdfGlobalNote" placeholder="Add any high-level comments or notes for this report (optional)..." rows="4" class="w-full mt-2 p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                     </div>
 
-                    <!-- Section 2: Key Metrics -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #4f46e5;">2</div>
-                        <div class="pdf-section-info">
-                            <h4>Key Metrics Summary</h4>
-                            <p>Export vessels, empty containers, longstay &gt;7 days, OOG totals.</p>
+                    <div class="mt-4 mb-2">
+                        <h4 class="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wider">Report Contents</h4>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #0064d2;">1</div>
+                            <div class="pdf-section-info">
+                                <h4>Yard Block Density Summary</h4>
+                                <p>High-level YOR Import, Export, and Overall metrics.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-blue-500">donut_large</span>
                         </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-indigo-500">analytics</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote2"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Key Metrics</label>
-                        <textarea id="pdfNote2" placeholder="Add comments about key metrics (optional)..."
-                            rows="2"></textarea>
-                    </div>
-
-                    <!-- Section 3: Double Call -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #7c3aed;">3</div>
-                        <div class="pdf-section-info">
-                            <h4>Double Call per Service</h4>
-                            <p>Services with multiple carriers sharing the same route.</p>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #4f46e5;">2</div>
+                            <div class="pdf-section-info">
+                                <h4>Summary Vessel Schedule</h4>
+                                <p>Snapshot of the current NPCT1 Vessel Schedule.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-indigo-500">directions_boat</span>
                         </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-purple-500">call_split</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote3"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Double Call</label>
-                        <textarea id="pdfNote3" placeholder="Add comments about double calls (optional)..."
-                            rows="2"></textarea>
-                    </div>
-
-                    <!-- Section 4: Cluster Spreading -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #059669;">4</div>
-                        <div class="pdf-section-info">
-                            <h4>Cluster Spreading by Block</h4>
-                            <p>Export vessel distribution across blocks with block YOR row.</p>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #059669;">3</div>
+                            <div class="pdf-section-info">
+                                <h4>Cluster Spreading by Block</h4>
+                                <p>Export vessel distribution and clustering mapped across blocks.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-emerald-500">grid_view</span>
                         </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-emerald-500">grid_view</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote4"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Cluster Spreading</label>
-                        <textarea id="pdfNote4" placeholder="Add comments about cluster spreading (optional)..."
-                            rows="2"></textarea>
-                    </div>
-
-                    <!-- Section 5: Yard Map -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #0d9488;">5</div>
-                        <div class="pdf-section-info">
-                            <h4>Yard Map Visualization</h4>
-                            <p>Full yard slot-level screenshot showing carrier distributions.</p>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #0d9488;">4</div>
+                            <div class="pdf-section-info">
+                                <h4>Empty Container Summary</h4>
+                                <p>Import/Export empty container breakdown by size and carrier.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-teal-500">check_box_outline_blank</span>
                         </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-teal-500">map</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote5"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Yard Map</label>
-                        <textarea id="pdfNote5" placeholder="Add comments about yard map (optional)..."
-                            rows="2"></textarea>
-                    </div>
-
-                    <!-- Section 6: Empty -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #059669;">6</div>
-                        <div class="pdf-section-info">
-                            <h4>Empty Container Summary</h4>
-                            <p>Import/export empty breakdown by carrier with TEU totals.</p>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #ea580c;">5</div>
+                            <div class="pdf-section-info">
+                                <h4>Balance Space Projection</h4>
+                                <p>Projection analysis filtered by Fixed Import.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-orange-500">trending_up</span>
                         </div>
-                        <span
-                            class="material-symbols-outlined pdf-section-icon text-emerald-500">check_box_outline_blank</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote6"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Empty Summary</label>
-                        <textarea id="pdfNote6" placeholder="Add comments about empty containers (optional)..."
-                            rows="2"></textarea>
-                    </div>
-
-                    <!-- Section 7: Longstay -->
-                    <div class="pdf-section-card">
-                        <div class="pdf-section-badge" style="--accent: #ea580c;">7</div>
-                        <div class="pdf-section-info">
-                            <h4>Longstay &gt; 7 Days Detail</h4>
-                            <p>Block-level breakdown of longstay containers with totals.</p>
+                        
+                        <div class="pdf-section-card">
+                            <div class="pdf-section-badge" style="--accent: #d97706;">6</div>
+                            <div class="pdf-section-info">
+                                <h4>Yard Block Density Detail per Block</h4>
+                                <p>Detailed capacity and YOR breakdown for every block.</p>
+                            </div>
+                            <span class="material-symbols-outlined pdf-section-icon text-amber-500">density_medium</span>
                         </div>
-                        <span class="material-symbols-outlined pdf-section-icon text-orange-500">timer</span>
-                    </div>
-                    <div class="pdf-note-wrap">
-                        <label for="pdfNote7"><span class="material-symbols-outlined text-[14px]">edit_note</span> Note
-                            for Longstay</label>
-                        <textarea id="pdfNote7" placeholder="Add comments about longstay units (optional)..."
-                            rows="2"></textarea>
                     </div>
                 </div>
 
