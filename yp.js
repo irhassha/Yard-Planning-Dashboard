@@ -744,11 +744,90 @@ document.getElementById('sumTotalCap').innerText =
         });
 
         body.innerHTML = rows.join('');
+
+        // --- Compute Summary Stats (always use full data, not search-filtered) ---
+        const allData = npct1ScheduleData;
+        let openStackCount = 0;
+        let ltcCount = 0;
+        const serviceVessels = {}; // service -> [{vessel, etb}]
+
+        allData.forEach(v => {
+            const osDate = v.openStacking ? new Date(v.openStacking) : null;
+            const cpDate = v.closingPhysic ? new Date(v.closingPhysic) : null;
+            const isInOpenStack = osDate && !isNaN(osDate) && osDate <= now;
+
+            if (isInOpenStack) openStackCount++;
+            if (cpDate && !isNaN(cpDate) && cpDate < now) ltcCount++;
+
+            // Group by service for multiple-call detection (only open stack vessels)
+            if (isInOpenStack && v.service) {
+                const svc = v.service.trim().toUpperCase();
+                if (!serviceVessels[svc]) serviceVessels[svc] = [];
+                serviceVessels[svc].push({ vessel: v.vessel, etb: v.etb, line: v.line });
+            }
+        });
+
+        // Multiple call = services with >1 vessel in open stack
+        const multiCallServices = Object.entries(serviceVessels)
+            .filter(([, vessels]) => vessels.length > 1)
+            .sort((a, b) => b[1].length - a[1].length);
+
+        // Update cards
+        const osEl = document.getElementById('npct1OpenStackCount');
+        const ltcEl = document.getElementById('npct1LTCCount');
+        const mcEl = document.getElementById('npct1MultiCallCount');
+        if (osEl) osEl.textContent = openStackCount;
+        if (ltcEl) ltcEl.textContent = ltcCount;
+        if (mcEl) mcEl.textContent = multiCallServices.length;
+
+        // Multiple Call Detail
+        const mcDetail = document.getElementById('npct1MultiCallDetail');
+        if (mcDetail) {
+            if (multiCallServices.length > 0) {
+                mcDetail.classList.remove('hidden');
+                const formatEtb = (raw) => {
+                    if (!raw) return '—';
+                    const d = new Date(raw);
+                    if (isNaN(d)) return raw;
+                    return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+                };
+                mcDetail.innerHTML = `
+                    <div class="bg-violet-50/50 rounded-xl border border-violet-200/60 p-3">
+                        <div class="text-[10px] font-bold text-violet-700 uppercase mb-2 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm">info</span>
+                            Multiple Call Detail — Services with &gt;1 vessel in open stack
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${multiCallServices.map(([svc, vessels]) => `
+                                <div class="bg-white rounded-lg border border-violet-200 px-3 py-2 shadow-sm">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-xs font-black text-violet-700">${svc}</span>
+                                        <span class="px-1.5 py-0.5 rounded-full text-[8px] font-black bg-violet-600 text-white">${vessels.length} calls</span>
+                                    </div>
+                                    <div class="flex flex-col gap-0.5">
+                                        ${vessels.map(vv => `
+                                            <div class="text-[10px] text-slate-600 flex items-center gap-1.5">
+                                                <span class="w-1 h-1 rounded-full bg-violet-400 inline-block"></span>
+                                                <span class="font-semibold">${vv.vessel}</span>
+                                                <span class="text-slate-400">(${vv.line || '—'}) ETB: ${formatEtb(vv.etb)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+            } else {
+                mcDetail.classList.add('hidden');
+                mcDetail.innerHTML = '';
+            }
+        }
     }
     window.renderNPCT1Schedule = renderNPCT1Schedule;
 
     // Load NPCT1 schedule on page load
     loadNPCT1Schedule();
+
 
 
     // ── Scroll Gantt chart to a specific carrier

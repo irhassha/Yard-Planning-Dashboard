@@ -452,44 +452,92 @@
                                 <span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span>
                                 Loading...
                             </div>
-                            <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
-                                <span class="material-symbols-outlined text-[16px] text-slate-400">search</span>
-                                <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()" placeholder="Search vessel..."
-                                    class="text-xs border-0 p-0 focus:ring-0 bg-transparent w-28 text-slate-700 placeholder-slate-400">
-                            </div>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full text-left text-[11px]" id="npct1ScheduleTable">
-                            <thead class="bg-indigo-50/80 uppercase text-[10px] text-indigo-700 font-bold">
-                                <tr>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center w-8">#</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200">Vessel</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Line</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Service</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Status</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETB</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETD</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-amber-50/50">Open Stacking</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-red-50/50">Closing Physic</th>
-                                    <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-indigo-50/50">Stacking Period</th>
-                                </tr>
-                            </thead>
-                            <tbody id="npct1ScheduleBody" class="divide-y divide-slate-100 bg-white/50">
-                                <tr>
-                                    <td colspan="10" class="px-4 py-12 text-center text-slate-400">
-                                        <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_download</span>
-                                        <span class="text-sm font-medium">Loading vessel schedule data...</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- Summary Cards -->
+                    <div class="p-4 space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="npct1SummaryCards">
+                            <!-- Open Stack Vessels -->
+                            <div class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200/60">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-amber-600 text-lg">inventory_2</span>
+                                    <span class="text-[10px] font-bold uppercase text-amber-700 tracking-wider">Open Stack Vessels</span>
+                                </div>
+                                <div class="text-3xl font-black text-amber-700" id="npct1OpenStackCount">0</div>
+                                <p class="text-[10px] text-amber-500 mt-0.5">Vessels currently in stacking period</p>
+                            </div>
+                            <!-- LTC Vessels -->
+                            <div class="bg-gradient-to-br from-red-50 to-rose-50 rounded-xl p-4 border border-red-200/60">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-red-600 text-lg">warning</span>
+                                    <span class="text-[10px] font-bold uppercase text-red-700 tracking-wider">Closing Vessels (LTC)</span>
+                                </div>
+                                <div class="text-3xl font-black text-red-700" id="npct1LTCCount">0</div>
+                                <p class="text-[10px] text-red-400 mt-0.5">Vessels past closing physic</p>
+                            </div>
+                            <!-- Multiple Call per Service -->
+                            <div class="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-xl p-4 border border-violet-200/60">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-violet-600 text-lg">call_split</span>
+                                    <span class="text-[10px] font-bold uppercase text-violet-700 tracking-wider">Multiple Call Services</span>
+                                </div>
+                                <div class="text-3xl font-black text-violet-700" id="npct1MultiCallCount">0</div>
+                                <p class="text-[10px] text-violet-400 mt-0.5">Services with &gt;1 vessel in open stack</p>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Call Detail -->
+                        <div id="npct1MultiCallDetail" class="hidden">
+                        </div>
                     </div>
+
+                    <!-- Collapsible Table -->
+                    <details class="group" id="npct1ScheduleDetails">
+                        <summary class="px-4 py-3 border-t border-slate-200/50 bg-slate-50/50 cursor-pointer flex items-center justify-between hover:bg-slate-100/50 transition-colors select-none">
+                            <div class="flex items-center gap-3">
+                                <span class="material-symbols-outlined text-slate-400 text-lg transition-transform group-open:rotate-90">chevron_right</span>
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Vessel Schedule Table</span>
+                                <span id="npct1VesselCount" class="text-[10px] font-bold text-slate-400 bg-slate-200/60 px-2 py-0.5 rounded-full">0 vessels</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm" onclick="event.stopPropagation()">
+                                    <span class="material-symbols-outlined text-[16px] text-slate-400">search</span>
+                                    <input type="text" id="npct1SearchInput" oninput="renderNPCT1Schedule()" placeholder="Search vessel..."
+                                        class="text-xs border-0 p-0 focus:ring-0 bg-transparent w-28 text-slate-700 placeholder-slate-400">
+                                </div>
+                            </div>
+                        </summary>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="w-full text-left text-[11px]" id="npct1ScheduleTable">
+                                <thead class="bg-indigo-50/80 uppercase text-[10px] text-indigo-700 font-bold">
+                                    <tr>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center w-8">#</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200">Vessel</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Line</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Service</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center">Status</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETB</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center">ETD</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-amber-50/50">Open Stacking</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-red-50/50">Closing Physic</th>
+                                        <th class="px-4 py-2.5 border-b border-indigo-200 text-center bg-indigo-50/50">Stacking Period</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="npct1ScheduleBody" class="divide-y divide-slate-100 bg-white/50">
+                                    <tr>
+                                        <td colspan="10" class="px-4 py-12 text-center text-slate-400">
+                                            <span class="material-symbols-outlined text-4xl block mb-2 opacity-40">cloud_download</span>
+                                            <span class="text-sm font-medium">Loading vessel schedule data...</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
 
                     <div class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
                         <div class="flex items-center gap-4">
-                            <span id="npct1VesselCount" class="font-bold text-slate-600">0 vessels</span>
                             <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
                             <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
                         </div>
