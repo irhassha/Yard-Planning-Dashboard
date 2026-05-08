@@ -3301,7 +3301,8 @@ async function generatePDFReport(sectionNotes = {}) {
                 Object.keys(activeCapacity).forEach(b => yardMapCalc[b] = { impT: 0, expT: 0 });
                 invData.forEach(it => {
                     if (!yardMapCalc[it.block]) return;
-                    let teus = it.length.startsWith('20') ? 1 : (it.length.startsWith('45') ? 2.25 : 2);
+                    let lenStr = String(it.length || '');
+                    let teus = lenStr.startsWith('20') ? 1 : (lenStr.startsWith('45') ? 2.25 : 2);
                     if (it.move.includes('import') || it.move.includes('disc') || it.move.includes('vessel')) {
                         yardMapCalc[it.block].impT += teus;
                     } else { yardMapCalc[it.block].expT += teus; }
@@ -3358,7 +3359,21 @@ async function generatePDFReport(sectionNotes = {}) {
                 }
 
                 try {
-                    const canvas = await html2canvas(el, { scale: 1.5, backgroundColor: '#ffffff', windowWidth: 1400 });
+                    const canvas = await html2canvas(el, { 
+                        scale: 1.5, 
+                        backgroundColor: '#ffffff', 
+                        windowWidth: 1400,
+                        onclone: (clonedDoc) => {
+                            const clonedRoot = clonedDoc.getElementById(elementId);
+                            if (clonedRoot) {
+                                clonedRoot.querySelectorAll('.overflow-x-auto, .overflow-y-auto').forEach(div => {
+                                    div.style.overflow = 'visible'; 
+                                    div.style.width = 'auto'; 
+                                    div.style.maxWidth = 'none';
+                                });
+                            }
+                        }
+                    });
                     const imgData = canvas.toDataURL('image/jpeg', 0.95);
                     const imgAspect = canvas.width / canvas.height;
                     let imgW = contentW;
