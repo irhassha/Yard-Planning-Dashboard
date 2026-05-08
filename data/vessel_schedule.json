@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-08T07:12:25.161Z",
+  "lastUpdated": "2026-05-08T13:03:01.514Z",
   "totalScraped": 64,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "SITC DECHENG",
+      "line": "SIT",
+      "voyIn": "2610S",
+      "voyOut": "2611N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-05-08 18:00:00",
+      "ata": "2026-05-08 17:14:00",
+      "etd": "2026-05-09 15:00:00",
+      "atd": "",
+      "openStacking": "2026-05-01 01:00:00",
+      "closingDocument": "2026-05-04 16:00:00",
+      "closingPhysic": "2026-05-04 18:00:00"
+    },
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-04-30 01:00:00",
       "closingDocument": "2026-05-05 21:59:00",
       "closingPhysic": "2026-05-05 23:59:00"
-    },
-    {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1187-078B",
-      "voyOut": "1187-078B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-05-07 16:00:00",
-      "ata": "2026-05-07 16:30:19",
-      "etd": "2026-05-08 15:00:00",
-      "atd": "",
-      "openStacking": "2026-05-03 01:00:00",
-      "closingDocument": "2026-05-06 16:00:00",
-      "closingPhysic": "2026-05-06 18:00:00"
     },
     {
       "vessel": "EVER BOOMY",
@@ -149,9 +149,9 @@
       "ata": "",
       "etd": "2026-05-18 23:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-05-12 01:00:00",
+      "closingDocument": "2026-05-16 13:00:00",
+      "closingPhysic": "2026-05-16 15:00:00"
     },
     {
       "vessel": "EVER ORIENT",
@@ -364,32 +364,32 @@
       "closingPhysic": "2026-05-11 15:00:00"
     },
     {
-      "vessel": "MAERSK HAI PHONG",
-      "line": "MCC",
-      "voyIn": "559X",
-      "voyOut": "560Y",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-05-12 12:00:00",
-      "ata": "",
-      "etd": "2026-05-13 15:00:00",
-      "atd": "",
-      "openStacking": "2026-05-07 01:00:00",
-      "closingDocument": "2026-05-11 16:00:00",
-      "closingPhysic": "2026-05-11 18:00:00"
-    },
-    {
       "vessel": "SITC SHEKOU",
       "line": "SIT",
       "voyIn": "2610S",
       "voyOut": "2611N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-05-12 01:00:00",
+      "etb": "2026-05-12 13:00:00",
       "ata": "",
-      "etd": "2026-05-13 01:00:00",
+      "etd": "2026-05-13 14:00:00",
       "atd": "",
       "openStacking": "2026-05-08 01:00:00",
+      "closingDocument": "2026-05-11 16:00:00",
+      "closingPhysic": "2026-05-11 18:00:00"
+    },
+    {
+      "vessel": "MAERSK HAI PHONG",
+      "line": "MCC",
+      "voyIn": "559X",
+      "voyOut": "560Y",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-05-12 01:00:00",
+      "ata": "",
+      "etd": "2026-05-13 02:00:00",
+      "atd": "",
+      "openStacking": "2026-05-07 01:00:00",
       "closingDocument": "2026-05-11 16:00:00",
       "closingPhysic": "2026-05-11 18:00:00"
     },
@@ -462,7 +462,7 @@
       "status": "REGISTER",
       "etb": "2026-05-09 18:00:00",
       "ata": "",
-      "etd": "2026-05-10 19:00:00",
+      "etd": "2026-05-10 20:00:00",
       "atd": "",
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-07 13:00:00",
@@ -492,26 +492,11 @@
       "status": "REGISTER",
       "etb": "2026-05-09 13:00:00",
       "ata": "",
-      "etd": "2026-05-10 04:00:00",
+      "etd": "2026-05-10 06:00:00",
       "atd": "",
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 13:00:00",
       "closingPhysic": "2026-05-06 15:00:00"
-    },
-    {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2610S",
-      "voyOut": "2611N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-05-08 18:00:00",
-      "ata": "",
-      "etd": "2026-05-09 15:00:00",
-      "atd": "",
-      "openStacking": "2026-05-01 01:00:00",
-      "closingDocument": "2026-05-04 16:00:00",
-      "closingPhysic": "2026-05-04 18:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
