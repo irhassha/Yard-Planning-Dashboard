@@ -1107,25 +1107,29 @@ document.getElementById('sumTotalCap').innerText =
             const hasTeu    = bH>28 && teuLabel && bW>50;
             const hasEtaEtd = bH>52 && bW>80;
             const rowCount  = 1 + (hasService?1:0) + (hasTeu?1:0) + (hasEtaEtd?1:0);
-            const startY    = ly - ((rowCount - 1) * 6); // center the block
+            const tMult = window.ganttTextSizeMult || 1;
+            const rowStep = 11 * tMult; // Base row gap
+            // Adjust center offset based on dynamic spacing
+            const startY    = ly - ((rowCount - 1) * (rowStep/2)); 
             let rowY = startY;
             if (bW>20 && bH>16) {
-                const fs = Math.min(14, bW/4, bH/2.5);
+                const fs = Math.min(14 * tMult, Math.max(8, bW/(4/tMult)), bH/(2.5/tMult));
                 chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-weight="800" fill="white" font-family="'Plus Jakarta Sans',sans-serif">${v.carrier}</text>`;
-                rowY += 13;
+                rowY += 13 * tMult;
                 if (hasService) {
-                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="9.5" fill="white" opacity="0.85" font-family="monospace">${v.service}</text>`;
-                    rowY += 11;
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="${9.5 * tMult}" fill="white" opacity="0.85" font-family="monospace">${v.service}</text>`;
+                    rowY += 11 * tMult;
                 }
                 if (hasTeu) {
                     // Pill background behind TEU count
-                    const tw = Math.min(bW - 12, teuLabel.length * 5.8 + 10);
-                    chart += `<rect x="${lx - tw/2}" y="${rowY - 7}" width="${tw}" height="13" rx="6" fill="rgba(0,0,0,0.25)"/>`;
-                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="white" font-weight="700" font-family="monospace" opacity="0.95">${teuLabel}</text>`;
-                    rowY += 11;
+                    const pillH = 13 * tMult;
+                    const tw = Math.min(bW - 12, (teuLabel.length * 5.8 * tMult) + (10 * tMult));
+                    chart += `<rect x="${lx - tw/2}" y="${rowY - (pillH/2)}" width="${tw}" height="${pillH}" rx="${6 * tMult}" fill="rgba(0,0,0,0.25)"/>`;
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="${8.5 * tMult}" fill="white" font-weight="700" font-family="monospace" opacity="0.95">${teuLabel}</text>`;
+                    rowY += 11 * tMult;
                 }
                 if (hasEtaEtd) {
-                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="8.5" fill="white" opacity="0.75" font-family="monospace">${fmt(v.eta)} → ${fmt(v.etd)}</text>`;
+                    chart += `<text x="${lx}" y="${rowY}" text-anchor="middle" dominant-baseline="middle" font-size="${8.5 * tMult}" fill="white" opacity="0.75" font-family="monospace">${fmt(v.eta)} → ${fmt(v.etd)}</text>`;
                 }
             }
             if (bW>50&&bH>22) {
@@ -1169,7 +1173,7 @@ document.getElementById('sumTotalCap').innerText =
                 leftLbls += `<rect x="0" y="${y-12}" width="${LABEL_W-3}" height="16" rx="3" fill="${we?'#ede9fe':'#e2e8f0'}"/>`;
                 leftLbls += `<text x="${LABEL_W-7}" y="${y+3}" text-anchor="end" font-size="11" fill="${we?'#7c3aed':'#1e293b'}" font-weight="800" font-family="monospace">${dd}/${mo}</text>`;
             } else {
-                leftLbls += `<text x="${LABEL_W-7}" y="${y+4}" text-anchor="end" font-size="9.5" fill="#64748b" font-family="monospace">${hh}:00</text>`;
+                leftLbls += `<text x="${LABEL_W-7}" y="${y+4}" text-anchor="end" font-size="9.5" fill="#64748b" font-family="monospace">${dd}/${mo}</text>`;
             }
         });
         // NOW left label
