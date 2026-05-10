@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-05-10T07:50:54.910Z",
+  "lastUpdated": "2026-05-10T12:45:18.894Z",
   "totalScraped": 67,
-  "totalFiltered": 39,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "AS NARA",
@@ -11,7 +11,7 @@
       "service": "IA4",
       "status": "ACTIVE",
       "etb": "2026-05-10 12:00:00",
-      "ata": "2026-05-10 13:08:15",
+      "ata": "2026-05-10 10:00:00",
       "etd": "2026-05-11 22:00:00",
       "atd": "",
       "openStacking": "2026-05-02 01:00:00",
@@ -32,21 +32,6 @@
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 18:00:00",
       "closingPhysic": "2026-05-06 20:00:00"
-    },
-    {
-      "vessel": "HMM MANILA",
-      "line": "HMM",
-      "voyIn": "0022S",
-      "voyOut": "0022N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-05-09 18:00:00",
-      "ata": "2026-05-09 20:35:00",
-      "etd": "2026-05-10 19:00:00",
-      "atd": "",
-      "openStacking": "2026-05-02 01:00:00",
-      "closingDocument": "2026-05-07 13:00:00",
-      "closingPhysic": "2026-05-07 15:00:00"
     },
     {
       "vessel": "EVER BEAMY",
@@ -565,7 +550,7 @@
       "voyOut": "620N",
       "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-05-10 21:00:00",
+      "etb": "2026-05-11 00:00:00",
       "ata": "",
       "etd": "2026-05-12 03:00:00",
       "atd": "",
