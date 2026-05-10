@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-10T12:45:18.894Z",
-  "totalScraped": 67,
-  "totalFiltered": 38,
+  "lastUpdated": "2026-05-10T18:41:37.761Z",
+  "totalScraped": 68,
+  "totalFiltered": 41,
   "vessels": [
+    {
+      "vessel": "ERASMUS LEO",
+      "line": "MCC",
+      "voyIn": "618S",
+      "voyOut": "620N",
+      "service": "I15",
+      "status": "ACTIVE",
+      "etb": "2026-05-11 00:00:00",
+      "ata": "2026-05-10 21:24:00",
+      "etd": "2026-05-12 03:00:00",
+      "atd": "",
+      "openStacking": "2026-05-05 01:00:00",
+      "closingDocument": "2026-05-10 05:00:00",
+      "closingPhysic": "2026-05-10 07:00:00"
+    },
     {
       "vessel": "AS NARA",
       "line": "MCC",
@@ -32,6 +47,51 @@
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 18:00:00",
       "closingPhysic": "2026-05-06 20:00:00"
+    },
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "621E",
+      "voyOut": "622N",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-05-24 12:00:00",
+      "ata": "",
+      "etd": "2026-05-25 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "STARSHIP VENUS",
+      "line": "NSS",
+      "voyIn": "2604S",
+      "voyOut": "2604N",
+      "service": "KCI",
+      "status": "REGISTER",
+      "etb": "2026-05-24 11:00:00",
+      "ata": "",
+      "etd": "2026-05-25 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2612S",
+      "voyOut": "2613N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-05-24 06:00:00",
+      "ata": "",
+      "etd": "2026-05-25 05:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BEAMY",
@@ -542,21 +602,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "ERASMUS LEO",
-      "line": "MCC",
-      "voyIn": "618S",
-      "voyOut": "620N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-05-11 00:00:00",
-      "ata": "",
-      "etd": "2026-05-12 03:00:00",
-      "atd": "",
-      "openStacking": "2026-05-05 01:00:00",
-      "closingDocument": "2026-05-10 05:00:00",
-      "closingPhysic": "2026-05-10 07:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
