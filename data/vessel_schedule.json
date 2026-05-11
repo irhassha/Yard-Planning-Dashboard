@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-11T14:14:32.850Z",
-  "totalScraped": 67,
+  "lastUpdated": "2026-05-11T19:23:02.365Z",
+  "totalScraped": 66,
   "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "MERATUS TOMINI",
+      "line": "MCC",
+      "voyIn": "617S",
+      "voyOut": "619N",
+      "service": "IA1",
+      "status": "ACTIVE",
+      "etb": "2026-05-12 00:00:00",
+      "ata": "2026-05-11 22:26:00",
+      "etd": "2026-05-12 21:00:00",
+      "atd": "",
+      "openStacking": "2026-05-06 01:00:00",
+      "closingDocument": "2026-05-06 23:00:00",
+      "closingPhysic": "2026-05-07 01:00:00"
+    },
     {
       "vessel": "SITC YUHE",
       "line": "SIT",
@@ -19,21 +34,6 @@
       "closingPhysic": "2026-05-08 18:00:00"
     },
     {
-      "vessel": "AS NARA",
-      "line": "MCC",
-      "voyIn": "615S",
-      "voyOut": "619N",
-      "service": "IA4",
-      "status": "ACTIVE",
-      "etb": "2026-05-10 12:00:00",
-      "ata": "2026-05-10 10:00:00",
-      "etd": "2026-05-11 21:00:00",
-      "atd": "",
-      "openStacking": "2026-05-02 01:00:00",
-      "closingDocument": "2026-05-08 21:00:00",
-      "closingPhysic": "2026-05-08 23:00:00"
-    },
-    {
       "vessel": "MSC GINA",
       "line": "MSC",
       "voyIn": "HW616A",
@@ -47,6 +47,21 @@
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 18:00:00",
       "closingPhysic": "2026-05-06 20:00:00"
+    },
+    {
+      "vessel": "EVER BEAMY",
+      "line": "EMA",
+      "voyIn": "1192-080A",
+      "voyOut": "1192-080A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-05-25 07:00:00",
+      "ata": "",
+      "etd": "2026-05-26 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "AS PENELOPE",
@@ -244,6 +259,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "619S",
+      "voyOut": "621N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-05-19 04:00:00",
+      "ata": "",
+      "etd": "2026-05-20 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER BLISS",
       "line": "EMC",
       "voyIn": "1189-111B",
@@ -272,21 +302,6 @@
       "openStacking": "2026-05-15 01:00:00",
       "closingDocument": "2026-05-18 16:00:00",
       "closingPhysic": "2026-05-18 18:00:00"
-    },
-    {
-      "vessel": "BIG BREEZY",
-      "line": "MCC",
-      "voyIn": "619S",
-      "voyOut": "621N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-05-19 04:00:00",
-      "ata": "",
-      "etd": "2026-05-20 04:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "EVER ORIENT",
@@ -542,21 +557,6 @@
       "openStacking": "2026-05-08 01:00:00",
       "closingDocument": "2026-05-10 16:00:00",
       "closingPhysic": "2026-05-10 18:00:00"
-    },
-    {
-      "vessel": "MERATUS TOMINI",
-      "line": "MCC",
-      "voyIn": "617S",
-      "voyOut": "619N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-05-12 00:00:00",
-      "ata": "",
-      "etd": "2026-05-12 21:00:00",
-      "atd": "",
-      "openStacking": "2026-05-06 01:00:00",
-      "closingDocument": "2026-05-06 23:00:00",
-      "closingPhysic": "2026-05-07 01:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
