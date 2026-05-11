@@ -1,22 +1,22 @@
 {
-  "lastUpdated": "2026-05-11T08:51:50.102Z",
+  "lastUpdated": "2026-05-11T14:14:32.850Z",
   "totalScraped": 67,
-  "totalFiltered": 39,
+  "totalFiltered": 38,
   "vessels": [
     {
-      "vessel": "BG. LL 2528  - TB.LL DODI",
-      "line": "SSD",
-      "voyIn": "31 JN",
-      "voyOut": "31 JN",
-      "service": "SSD TRANS",
+      "vessel": "SITC YUHE",
+      "line": "SIT",
+      "voyIn": "2611S",
+      "voyOut": "2613N",
+      "service": "JTH",
       "status": "ACTIVE",
-      "etb": "2026-05-11 03:00:00",
-      "ata": "2026-05-11 03:59:00",
-      "etd": "2026-05-11 15:00:00",
-      "atd": "2026-05-11 15:34:00",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "etb": "2026-05-11 17:00:00",
+      "ata": "2026-05-11 16:52:00",
+      "etd": "2026-05-12 13:00:00",
+      "atd": "",
+      "openStacking": "2026-05-05 01:00:00",
+      "closingDocument": "2026-05-08 16:00:00",
+      "closingPhysic": "2026-05-08 18:00:00"
     },
     {
       "vessel": "AS NARA",
@@ -184,6 +184,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "HMM DAVAO",
+      "line": "HMM",
+      "voyIn": "0021S",
+      "voyOut": "0021N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-05-21 09:00:00",
+      "ata": "",
+      "etd": "2026-05-22 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER BURLY",
       "line": "EMC",
       "voyIn": "S090",
@@ -239,9 +254,9 @@
       "ata": "",
       "etd": "2026-05-20 03:00:00",
       "atd": "",
-      "openStacking": "2026-05-15 10:00:00",
-      "closingDocument": "2026-05-18 14:00:00",
-      "closingPhysic": "2026-05-18 16:00:00"
+      "openStacking": "2026-05-16 01:00:00",
+      "closingDocument": "2026-05-18 16:00:00",
+      "closingPhysic": "2026-05-18 18:00:00"
     },
     {
       "vessel": "SITC NANSHA",
@@ -364,21 +379,6 @@
       "closingPhysic": "2026-05-15 12:00:00"
     },
     {
-      "vessel": "HMM DAVAO",
-      "line": "HMM",
-      "voyIn": "0021S",
-      "voyOut": "0021N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-05-16 09:30:00",
-      "ata": "",
-      "etd": "2026-05-17 07:30:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "SITC SHEKOU",
       "line": "SIT",
       "voyIn": "2610S",
@@ -405,8 +405,8 @@
       "etd": "2026-05-17 01:00:00",
       "atd": "",
       "openStacking": "2026-05-12 01:00:00",
-      "closingDocument": "2026-05-16 10:00:00",
-      "closingPhysic": "2026-05-16 12:00:00"
+      "closingDocument": "2026-05-15 14:00:00",
+      "closingPhysic": "2026-05-15 16:00:00"
     },
     {
       "vessel": "MSC BERN V",
@@ -557,21 +557,6 @@
       "openStacking": "2026-05-06 01:00:00",
       "closingDocument": "2026-05-06 23:00:00",
       "closingPhysic": "2026-05-07 01:00:00"
-    },
-    {
-      "vessel": "SITC YUHE",
-      "line": "SIT",
-      "voyIn": "2611S",
-      "voyOut": "2613N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-05-11 17:00:00",
-      "ata": "",
-      "etd": "2026-05-12 13:00:00",
-      "atd": "",
-      "openStacking": "2026-05-05 01:00:00",
-      "closingDocument": "2026-05-08 16:00:00",
-      "closingPhysic": "2026-05-08 18:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
