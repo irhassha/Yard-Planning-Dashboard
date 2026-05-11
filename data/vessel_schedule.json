@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-10T18:41:37.761Z",
+  "lastUpdated": "2026-05-11T01:47:11.153Z",
   "totalScraped": 68,
   "totalFiltered": 41,
   "vessels": [
+    {
+      "vessel": "BG. LL 2528  - TB.LL DODI",
+      "line": "SSD",
+      "voyIn": "31 JN",
+      "voyOut": "31 JN",
+      "service": "SSD TRANS",
+      "status": "ACTIVE",
+      "etb": "2026-05-11 03:00:00",
+      "ata": "2026-05-11 03:59:00",
+      "etd": "2026-05-11 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "ERASMUS LEO",
       "line": "MCC",
@@ -43,7 +58,7 @@
       "etb": "2026-05-09 19:00:00",
       "ata": "2026-05-09 22:39:27",
       "etd": "2026-05-11 01:00:00",
-      "atd": "",
+      "atd": "2026-05-11 03:25:00",
       "openStacking": "2026-05-02 01:00:00",
       "closingDocument": "2026-05-06 18:00:00",
       "closingPhysic": "2026-05-06 20:00:00"
@@ -587,21 +602,6 @@
       "openStacking": "2026-05-05 01:00:00",
       "closingDocument": "2026-05-08 16:00:00",
       "closingPhysic": "2026-05-08 18:00:00"
-    },
-    {
-      "vessel": "BG. LL 2528  - TB.LL DODI",
-      "line": "SSD",
-      "voyIn": "31 JN",
-      "voyOut": "31 JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-05-11 03:00:00",
-      "ata": "",
-      "etd": "2026-05-11 12:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
