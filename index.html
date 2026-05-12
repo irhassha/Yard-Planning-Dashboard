@@ -56,7 +56,7 @@
     </div>
 
     <div class="hero-shell">
-        <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-5 md:pt-8 pb-28 md:pb-36 relative z-10">
+        <div class="max-w-[1400px] mx-auto px-4 md:px-6 pt-5 md:pt-8 pb-16 md:pb-20 relative z-10">
             <input type="file" id="fileInv" accept=".csv, .xlsx, .xls" hidden>
             <input type="file" id="scheduleInput" accept=".xlsx, .csv" hidden>
             <header class="flex justify-between items-center mb-12">
@@ -86,64 +86,52 @@
         </div>
     </div>
 
-    <div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-16 md:-mt-24 relative z-20">
-        <div class="floating-control-card">
+    <div class="max-w-[1400px] mx-auto px-4 md:px-6 -mt-8 md:-mt-12 relative z-20">
+        <div id="stickyTabContainer" class="floating-control-card sticky top-4 z-[100] transition-all duration-300">
             <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
-                <div
-                    class="flex items-center gap-1 p-1.5 bg-[#E9EEF6] rounded-full w-full xl:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active shrink-0"><span
-                            class="material-symbols-outlined text-lg">grid_view</span> Yard Density</button>
-                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive shrink-0"><span
-                            class="material-symbols-outlined text-lg">bar_chart</span> Cluster Spreading</button>
-                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive shrink-0"><span
-                            class="material-symbols-outlined text-lg">map</span> Yard Map</button>
-                    <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive shrink-0"><span
-                            class="material-symbols-outlined text-lg">crisis_alert</span> Clash Analysis</button>
-                    <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive shrink-0"><span
-                            class="material-symbols-outlined text-lg">check_box_outline_blank</span> Empty
-                        Summary</button>
-                    <button onclick="switchTab('projection')" id="btn-projection"
-                        class="tab-btn inactive shrink-0"><span
-                            class="material-symbols-outlined text-lg">stacked_bar_chart</span> Discharge
-                        Projection</button>
-                    <button onclick="switchTab('replan')" id="btn-replan"
-                        class="tab-btn inactive replan-trigger shrink-0"><span
-                            class="material-symbols-outlined text-lg">view_column</span> Smart Replan</button>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button id="aiChatToggle" class="secondary-pill ai-chat-trigger shadow-lg" type="button"
-                        onclick="toggleAiChatbox()" aria-expanded="false" aria-controls="aiChatWindow"><span
-                            class="material-symbols-outlined text-[18px]">smart_toy</span> YP Ai Assistant</button>
+                <nav id="navTabsContainer" class="flex items-center gap-1 p-1.5 bg-[#E9EEF6] rounded-full w-full xl:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] transition-all duration-300">
+                    <button onclick="switchTab('overview')" id="btn-overview" class="tab-btn active shrink-0" title="Yard Density"><span class="material-symbols-outlined text-lg">grid_view</span> <span class="sidebar-text whitespace-nowrap">Yard Density</span></button>
+                    <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive shrink-0" title="Cluster Spreading"><span class="material-symbols-outlined text-lg">bar_chart</span> <span class="sidebar-text whitespace-nowrap">Cluster Spreading</span></button>
+                    <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive shrink-0" title="Yard Map"><span class="material-symbols-outlined text-lg">map</span> <span class="sidebar-text whitespace-nowrap">Yard Map</span></button>
+                    <button onclick="switchTab('clash')" id="btn-clash" class="tab-btn inactive shrink-0" title="Clash Analysis"><span class="material-symbols-outlined text-lg">crisis_alert</span> <span class="sidebar-text whitespace-nowrap">Clash Analysis</span></button>
+                    <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive shrink-0" title="Empty Summary"><span class="material-symbols-outlined text-lg">check_box_outline_blank</span> <span class="sidebar-text whitespace-nowrap">Empty Summary</span></button>
+                    <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive shrink-0" title="Discharge Projection"><span class="material-symbols-outlined text-lg">stacked_bar_chart</span> <span class="sidebar-text whitespace-nowrap">Discharge Projection</span></button>
+                    <button onclick="switchTab('replan')" id="btn-replan" class="tab-btn inactive replan-trigger shrink-0" title="Smart Replan"><span class="material-symbols-outlined text-lg">view_column</span> <span class="sidebar-text whitespace-nowrap">Smart Replan</span></button>
+                </nav>
+
+                <div class="flex flex-wrap items-center justify-end gap-2 shrink-0">
+                    <button id="aiChatToggle" class="secondary-pill ai-chat-trigger shadow-lg flex items-center gap-2" type="button" onclick="toggleAiChatbox()">
+                        <span class="material-symbols-outlined text-[18px]">smart_toy</span> <span class="sidebar-text whitespace-nowrap">YP Ai Assistant</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <section id="aiChatWindow" class="ai-chat-window ai-chat-sidebar hidden" aria-label="AI Chatbox"
-            aria-live="polite">
-            <header class="ai-chat-header">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">auto_awesome</span>
-                    <div>
-                        <p class="font-bold text-sm">YP Ai Assistant</p>
-                        <p class="text-[11px] text-blue-100">Online</p>
+            <section id="aiChatWindow" class="ai-chat-window ai-chat-sidebar" aria-label="AI Chatbox" aria-live="polite">
+                <header class="ai-chat-header">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        <div>
+                            <p class="font-bold text-sm">YP Ai Assistant</p>
+                            <p class="text-[11px] text-blue-100">Online</p>
+                        </div>
                     </div>
+                    <button type="button" class="ai-chat-close" onclick="toggleAiChatbox()" aria-label="Close chat">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </header>
+
+                <div id="aiChatHistory" class="ai-chat-history">
+                    <div class="ai-chat-bubble bot">Halo! Saya siap bantu analisa data yard Anda.</div>
                 </div>
-                <button type="button" class="ai-chat-close" onclick="toggleAiChatbox()" aria-label="Close chat">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </header>
 
-            <div id="aiChatHistory" class="ai-chat-history">
-                <div class="ai-chat-bubble bot">Halo! Saya siap bantu analisa data yard Anda.</div>
-            </div>
-
-            <form class="ai-chat-form" onsubmit="sendAiChatMessage(event)">
-                <input id="aiChatInput" type="text" placeholder="Ketik pertanyaan Anda..." autocomplete="off" />
-                <button type="submit" aria-label="Send message">
-                    <span class="material-symbols-outlined">send</span>
-                </button>
-            </form>
-        </section>
+                <form class="ai-chat-form" onsubmit="sendAiChatMessage(event)">
+                    <input id="aiChatInput" type="text" placeholder="Ketik pertanyaan Anda..." autocomplete="off" />
+                    <button type="submit" aria-label="Send message">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </form>
+            </section>
 
         <!-- TAB 1: OVERVIEW -->
         <div id="tab-overview" class="block mt-4">
@@ -1570,6 +1558,8 @@
         <!-- Drawer Overlay -->
         <div id="clusterDetailOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[125] hidden"
             onclick="closeClusterDetailDrawer()"></div>
+
+    </div> <!-- Close max-w-[1400px] main container -->
 
         <footer
             class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">

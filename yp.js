@@ -2067,21 +2067,7 @@ document.getElementById('sumTotalCap').innerText =
         renderCurrentClashes();
     }
 
-    function toggleAiChatbox() {
-        const chatWindow = document.getElementById('aiChatWindow');
-        const toggleButton = document.getElementById('aiChatToggle');
-        if (!chatWindow || !toggleButton) return;
-
-        const willOpen = chatWindow.classList.contains('hidden');
-        chatWindow.classList.toggle('hidden');
-        toggleButton.setAttribute('aria-expanded', String(willOpen));
-
-        if (willOpen) {
-            document.body.classList.add('ai-chat-sidebar-open');
-        } else {
-            document.body.classList.remove('ai-chat-sidebar-open');
-        }
-    }
+    function toggleAiChatbox() { const cw = document.getElementById('aiChatWindow'); if(!cw) return; const wo = !cw.classList.contains('active'); cw.classList.toggle('active'); document.querySelectorAll('.ai-chat-trigger').forEach(b => b.setAttribute('aria-expanded', String(wo))); if(wo) document.body.classList.add('ai-chat-sidebar-open'); else document.body.classList.remove('ai-chat-sidebar-open'); }
 
     function escapeHtml(value) {
         return String(value || '')
@@ -4412,3 +4398,16 @@ function clearReservationCache() {
         </div>
     `;
 }
+
+
+// Sticky Tab Scroll Logic
+window.addEventListener('scroll', () => {
+    const container = document.getElementById('stickyTabContainer');
+    if (container) {
+        if (window.scrollY > 50) {
+            container.classList.add('scrolled');
+        } else {
+            container.classList.remove('scrolled');
+        }
+    }
+});
