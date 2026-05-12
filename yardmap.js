@@ -431,33 +431,9 @@ function renderYardMap() {
             }
         }
         
-        // 5: Double call per service
-        // (hanya carrier yang ada di dalam list export, yaitu yardCarrierColorMap)
-        // (ABAikan JIKA TIDAK ADA ETA/ARRIVAL DATE)
-        const arrivalDateStr = String(c.arrivalDate || '').toUpperCase().trim();
-        const hasEta = arrivalDateStr && arrivalDateStr !== 'UNKNOWN' && arrivalDateStr !== 'NIL' && arrivalDateStr !== '0' && arrivalDateStr !== '';
         
-        if (hasEta && isYardExport(c) && c.service && c.service !== 'UNKNOWN' && c.service !== '' && c.carrier && c.carrier !== 'UNKNOWN' && c.carrier !== 'NIL' && c.carrier !== '0') {
-            if (yardCarrierColorMap.hasOwnProperty(c.carrier)) {
-                if (!serviceMap[c.service]) serviceMap[c.service] = new Set();
-                serviceMap[c.service].add(c.carrier);
-            }
-        }
+        // Removed double call logic
     });
-
-    let doubleCallHtml = '';
-    let doubleCallCount = 0;
-    Object.keys(serviceMap).forEach(srv => {
-        if (serviceMap[srv].size >= 2) {
-            doubleCallCount++;
-            const carriers = Array.from(serviceMap[srv]).join(', ');
-            doubleCallHtml += `<div class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-[2px] rounded text-[10px]"><span class="font-bold">${srv}</span>: ${carriers}</div>`;
-        }
-    });
-
-    if (doubleCallHtml === '') {
-        doubleCallHtml = `<div class="text-slate-400 italic text-[10px]">No double calls detected</div>`;
-    }
 
     let html = '<div class="ym-yard">';
     html += `<div class="ym-stats-bar">
@@ -507,16 +483,6 @@ function renderYardMap() {
                     <span class="font-black text-red-600 text-sm">${longstayCount} <span class="text-[9px] font-bold text-red-300">TEUS</span></span>
                 </div>
             </div>
-        </div>
-
-        <div class="flex flex-col ml-auto border-t md:border-t-0 md:border-l border-slate-200/60 pt-3 md:pt-0 pl-0 md:pl-5 md:min-w-[320px]">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-slate-500 font-semibold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[14px]">call_split</span> Double Call per Service
-                </span>
-                <span class="bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">${doubleCallCount} Services</span>
-            </div>
-            <div class="flex flex-wrap gap-1.5 custom-scrollbar overflow-y-auto max-h-16 pr-1">${doubleCallHtml}</div>
         </div>
     </div>`;
 

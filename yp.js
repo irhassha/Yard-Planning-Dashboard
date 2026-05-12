@@ -85,7 +85,13 @@
         }
         // Plain number
         const plain = parseInt(s);
-        if (!isNaN(plain)) return plain;
+        if (!isNaN(plain)) {
+            if (plain < 10) {
+                const entry = BOLLARD_TABLE.find(b => b.num === plain);
+                return entry ? entry.pos : null;
+            }
+            return plain;
+        }
         return null;
     }
 
