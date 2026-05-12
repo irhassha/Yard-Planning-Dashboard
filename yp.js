@@ -1008,6 +1008,13 @@ document.getElementById('sumTotalCap').innerText =
         const now = new Date();
         const BOLLARD_RANGE = BOLLARD_MAX_POS - BOLLARD_MIN_POS;
 
+        // Auto-reparse bollard positions to ensure they use the latest parsing rules
+        (scheduleData || []).forEach(v => {
+            if (v.startBolRaw !== undefined) v.startPos = parseBollardToPos(v.startBolRaw);
+            if (v.endBolRaw !== undefined) v.endPos = parseBollardToPos(v.endBolRaw);
+            v.hasBerth = v.startPos !== null && v.endPos !== null;
+        });
+
         const vessels = (scheduleData || []).filter(v => v.hasBerth && v.etd >= now);
         const totalAll = (scheduleData || []).length;
         const totalWithBerth = (scheduleData || []).filter(v => v.hasBerth).length;
