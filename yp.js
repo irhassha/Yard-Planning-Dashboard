@@ -86,7 +86,8 @@
         // Plain number
         const plain = parseInt(s);
         if (!isNaN(plain)) {
-            if (plain < 10) {
+            // Treat any plain number <= 30 as a bollard number (since there are 29 bollards)
+            if (plain <= 30) {
                 const entry = BOLLARD_TABLE.find(b => b.num === plain);
                 return entry ? entry.pos : null;
             }
@@ -1179,7 +1180,7 @@ document.getElementById('sumTotalCap').innerText =
             }
             if (bW>50&&bH>22) {
                 const bS=posToNearestBollard(v.startPos), bE=posToNearestBollard(v.endPos);
-                chart += `<text x="${xR-4}" y="${y1+bH-4}" text-anchor="end" font-size="8.5" fill="white" opacity="0.75" font-family="monospace">BL${Math.min(bS?.num||0,bE?.num||0)}-${Math.max(bS?.num||0,bE?.num||0)}</text>`;
+                chart += `<text x="${xR-4}" y="${y1+bH-4}" text-anchor="end" font-size="8.5" fill="white" opacity="0.75" font-family="monospace">BL${Math.min(bS?.num||0,bE?.num||0)}-BL${Math.max(bS?.num||0,bE?.num||0)}</text>`;
             }
 
             if (active) {
