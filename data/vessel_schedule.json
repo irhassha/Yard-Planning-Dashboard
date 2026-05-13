@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-12T19:25:05.321Z",
+  "lastUpdated": "2026-05-13T01:47:51.548Z",
   "totalScraped": 63,
-  "totalFiltered": 36,
+  "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "MAERSK HAI PHONG",
+      "line": "MCC",
+      "voyIn": "559X",
+      "voyOut": "560Y",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-05-12 23:59:00",
+      "ata": "2026-05-13 06:00:00",
+      "etd": "2026-05-14 05:00:00",
+      "atd": "",
+      "openStacking": "2026-05-07 01:00:00",
+      "closingDocument": "2026-05-11 16:00:00",
+      "closingPhysic": "2026-05-11 18:00:00"
+    },
     {
       "vessel": "INTERASIA ENGAGE",
       "line": "IAL",
@@ -32,21 +47,6 @@
       "openStacking": "2026-05-08 01:00:00",
       "closingDocument": "2026-05-10 16:00:00",
       "closingPhysic": "2026-05-10 18:00:00"
-    },
-    {
-      "vessel": "MERATUS TOMINI",
-      "line": "MCC",
-      "voyIn": "617S",
-      "voyOut": "619N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-05-12 00:00:00",
-      "ata": "2026-05-11 22:26:00",
-      "etd": "2026-05-12 21:00:00",
-      "atd": "",
-      "openStacking": "2026-05-06 01:00:00",
-      "closingDocument": "2026-05-06 23:00:00",
-      "closingPhysic": "2026-05-07 01:00:00"
     },
     {
       "vessel": "EVER BEAMY",
@@ -512,21 +512,6 @@
       "openStacking": "2026-05-08 01:00:00",
       "closingDocument": "2026-05-13 03:00:00",
       "closingPhysic": "2026-05-13 05:00:00"
-    },
-    {
-      "vessel": "MAERSK HAI PHONG",
-      "line": "MCC",
-      "voyIn": "559X",
-      "voyOut": "560Y",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-05-12 23:59:00",
-      "ata": "",
-      "etd": "2026-05-14 05:00:00",
-      "atd": "",
-      "openStacking": "2026-05-07 01:00:00",
-      "closingDocument": "2026-05-11 16:00:00",
-      "closingPhysic": "2026-05-11 18:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
