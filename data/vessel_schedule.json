@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-05-14T08:22:06.088Z",
+  "lastUpdated": "2026-05-14T13:21:41.262Z",
   "totalScraped": 66,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "SKY PEACE",
+      "line": "MCC",
+      "voyIn": "618S",
+      "voyOut": "620N",
+      "service": "IA1",
+      "status": "ACTIVE",
+      "etb": "2026-05-14 20:00:00",
+      "ata": "2026-05-14 19:07:21",
+      "etd": "2026-05-15 20:00:00",
+      "atd": "",
+      "openStacking": "2026-05-09 01:00:00",
+      "closingDocument": "2026-05-14 11:00:00",
+      "closingPhysic": "2026-05-14 13:00:00"
+    },
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "618S",
+      "voyOut": "619W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-05-14 16:00:00",
+      "ata": "2026-05-14 15:54:38",
+      "etd": "2026-05-15 22:00:00",
+      "atd": "",
+      "openStacking": "2026-05-05 01:00:00",
+      "closingDocument": "2026-05-09 06:00:00",
+      "closingPhysic": "2026-05-09 08:00:00"
+    },
     {
       "vessel": "EVER BIRTH",
       "line": "EMA",
@@ -17,21 +47,6 @@
       "openStacking": "2026-05-10 01:00:00",
       "closingDocument": "2026-05-12 16:00:00",
       "closingPhysic": "2026-05-12 18:00:00"
-    },
-    {
-      "vessel": "ARTOTINA",
-      "line": "MCC",
-      "voyIn": "617S",
-      "voyOut": "620N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-05-13 19:30:00",
-      "ata": "2026-05-13 17:20:00",
-      "etd": "2026-05-14 16:30:00",
-      "atd": "",
-      "openStacking": "2026-05-08 01:00:00",
-      "closingDocument": "2026-05-13 03:00:00",
-      "closingPhysic": "2026-05-13 05:00:00"
     },
     {
       "vessel": "EVER OBEY",
@@ -482,36 +497,6 @@
       "openStacking": "2026-05-10 01:00:00",
       "closingDocument": "2026-05-15 05:00:00",
       "closingPhysic": "2026-05-15 07:00:00"
-    },
-    {
-      "vessel": "SKY PEACE",
-      "line": "MCC",
-      "voyIn": "618S",
-      "voyOut": "620N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-05-14 19:00:00",
-      "ata": "",
-      "etd": "2026-05-15 20:00:00",
-      "atd": "",
-      "openStacking": "2026-05-09 01:00:00",
-      "closingDocument": "2026-05-14 11:00:00",
-      "closingPhysic": "2026-05-14 13:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "618S",
-      "voyOut": "619W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-05-14 16:00:00",
-      "ata": "",
-      "etd": "2026-05-15 22:00:00",
-      "atd": "",
-      "openStacking": "2026-05-05 01:00:00",
-      "closingDocument": "2026-05-09 06:00:00",
-      "closingPhysic": "2026-05-09 08:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
