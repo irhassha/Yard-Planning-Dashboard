@@ -847,11 +847,16 @@ document.getElementById('sumTotalCap').innerText =
             // LTC = closing physic has passed
             if (isLTC) ltcCount++;
 
-            // Avg stacking period: count days for ALL vessels where stacking has started
-            if (hasOpenStackStarted) {
-                const days = (now - osDate) / (1000 * 60 * 60 * 24);
-                totalStackDays += days;
-                stackDaysCount++;
+            // Avg stacking period: count days for ALL vessels where stacking has started (including LTC)
+            if (hasOpenStackStarted || isLTC) {
+                if (osDate && !isNaN(osDate)) {
+                    const days = (now - osDate) / (1000 * 60 * 60 * 24);
+                    // Only count if stacking actually started (positive days)
+                    if (days >= 0) {
+                        totalStackDays += days;
+                        stackDaysCount++;
+                    }
+                }
             }
 
             // Group by service for multiple-call detection (only vessels where stacking started)
@@ -869,12 +874,16 @@ document.getElementById('sumTotalCap').innerText =
 
         // Avg stacking period
         const avgDays = stackDaysCount > 0 ? (totalStackDays / stackDaysCount).toFixed(1) : '—';
+        const totalActiveCount = openStackCount + ltcCount;
 
         // Update cards
+        const totalActiveEl = document.getElementById('npct1TotalActiveCount');
         const osEl = document.getElementById('npct1OpenStackCount');
         const ltcEl = document.getElementById('npct1LTCCount');
         const mcEl = document.getElementById('npct1MultiCallCount');
         const avgEl = document.getElementById('npct1AvgStackDays');
+
+        if (totalActiveEl) totalActiveEl.textContent = totalActiveCount;
         if (osEl) osEl.textContent = openStackCount;
         if (ltcEl) ltcEl.textContent = ltcCount;
         if (mcEl) mcEl.textContent = multiCallServices.length;

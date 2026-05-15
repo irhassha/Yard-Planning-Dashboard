@@ -456,7 +456,17 @@
 
                     <!-- Summary Cards -->
                     <div class="p-4 space-y-4">
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="npct1SummaryCards">
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3" id="npct1SummaryCards">
+                            <!-- Total Active Vessels -->
+                            <div
+                                class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200/60">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg">directions_boat</span>
+                                    <span class="text-[10px] font-bold uppercase text-blue-700 tracking-wider">Total Active Vessels</span>
+                                </div>
+                                <div class="text-3xl font-black text-blue-700" id="npct1TotalActiveCount">0</div>
+                                <p class="text-[10px] text-blue-500 mt-0.5">Vessels currently in yard</p>
+                            </div>
                             <!-- Open Stack Vessels -->
                             <div
                                 class="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200/60">
