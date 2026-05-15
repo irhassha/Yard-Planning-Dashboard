@@ -30,10 +30,11 @@
     const DEFAULT_CAPACITY = {
         "A01": { slots: 37, tier: 5, cap: 1110 }, "A02": { slots: 37, tier: 5, cap: 1110 }, "A03": { slots: 37, tier: 5, cap: 1110 }, "A04": { slots: 37, tier: 5, cap: 1110 }, "A05": { slots: 37, tier: 5, cap: 1110 }, "A06": { slots: 37, tier: 5, cap: 1110 }, "A07": { slots: 37, tier: 5, cap: 1110 }, "A08": { slots: 37, tier: 5, cap: 1110 },
         "B01": { slots: 37, tier: 5, cap: 1110 }, "B02": { slots: 37, tier: 5, cap: 1110 }, "B03": { slots: 37, tier: 5, cap: 1110 }, "B04": { slots: 37, tier: 5, cap: 1110 }, "B05": { slots: 37, tier: 5, cap: 1110 }, "B06": { slots: 37, tier: 5, cap: 1110 }, "B07": { slots: 23, tier: 5, cap: 690 }, "B08": { slots: 23, tier: 5, cap: 690 },
-        "C01": { slots: 45, tier: 3, cap: 810 }, "C02": { slots: 45, tier: 4, cap: 1080 }, "C03": { slots: 45, tier: 5, cap: 1350 }, "C04": { slots: 45, tier: 5, cap: 1350 }, "C05": { slots: 45, tier: 5, cap: 1350 }, "C06": { slots: 45, tier: 5, cap: 1350 }, "C07": { slots: 45, tier: 5, cap: 1350 }, "C08": { slots: 45, tier: 5, cap: 1350 },
-        "BR9": { slots: 18, tier: 5, cap: 540 }, "RC9": { slots: 12, tier: 5, cap: 360 }, "OOG": { slots: 45, tier: 1, cap: 270 }
+        "C01": { slots: 21, tier: 3, cap: 378 }, "C02": { slots: 45, tier: 4, cap: 1080 }, "C03": { slots: 45, tier: 5, cap: 1350 }, "C04": { slots: 45, tier: 5, cap: 1350 }, "C05": { slots: 45, tier: 5, cap: 1350 }, "C06": { slots: 45, tier: 5, cap: 1350 }, "C07": { slots: 45, tier: 5, cap: 1350 }, "C08": { slots: 45, tier: 5, cap: 1350 },
+        "BR9": { slots: 18, tier: 5, cap: 540 }, "RC9": { slots: 16, tier: 5, cap: 480 }, "OOG": { slots: 25, tier: 1, cap: 150 }
     };
-    let activeCapacity = JSON.parse(localStorage.getItem("yardCapData")) || JSON.parse(JSON.stringify(DEFAULT_CAPACITY));
+    // Always use DEFAULT_CAPACITY (slots are fixed, not editable)
+    let activeCapacity = JSON.parse(JSON.stringify(DEFAULT_CAPACITY));
 
     // Helper Utils
     function cleanStr(str) { return String(str || "").toLowerCase().replace(/_x000d_|\n|\r/g, "").trim(); }
@@ -274,17 +275,13 @@
 function updateCapacity(block, newSlots, newTier) {
   if (!activeCapacity[block]) return;
 
-  if (newSlots !== null) {
-    activeCapacity[block].slots = Number(newSlots);
-  }
+  // Slots are fixed and not editable, only tier can be changed
   if (newTier !== null) {
     activeCapacity[block].tier = Number(newTier);
   }
 
   activeCapacity[block].cap =
     Math.round(activeCapacity[block].slots * activeCapacity[block].tier * 6);
-
-  localStorage.setItem("yardCapData", JSON.stringify(activeCapacity));
 
   renderOverview();
 }
@@ -445,10 +442,28 @@ function updateCapacity(block, newSlots, newTier) {
 
     // --- TAB 1: OVERVIEW RENDER ---
     function renderOverview() {
+        // Reset activeCapacity from defaults each render (slots are fixed)
+        activeCapacity = JSON.parse(JSON.stringify(DEFAULT_CAPACITY));
+
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         let yardMap = {};
         Object.keys(activeCapacity).forEach(b => yardMap[b] = { c20:0, c40:0, c45:0, impT:0, expT:0, impCount:0, expCount:0 });
+
+        // Count OOG containers in C08 (oog column = "Y") to adjust C08 and OOG slots
+        const c08OogSlots = new Set();
+        invData.forEach(it => {
+            if (it.block === 'C08' && it.oog === 'Y' && it.slot > 0) {
+                c08OogSlots.add(it.slot);
+            }
+        });
+        const oogSlotsUsedInC08 = c08OogSlots.size;
+        // C08 slots = base 45 minus slots occupied by OOG
+        activeCapacity['C08'].slots = 45 - oogSlotsUsedInC08;
+        activeCapacity['C08'].cap = Math.round(activeCapacity['C08'].slots * activeCapacity['C08'].tier * 6);
+        // OOG block gets base 25 + slots transferred from C08
+        activeCapacity['OOG'].slots = 25 + oogSlotsUsedInC08;
+        activeCapacity['OOG'].cap = Math.round(activeCapacity['OOG'].slots * activeCapacity['OOG'].tier * 6);
 
         invData.forEach(it => {
             if(!yardMap[it.block]) return;
@@ -549,10 +564,7 @@ function updateCapacity(block, newSlots, newTier) {
                     <td class="p-1 text-center border-r border-slate-200/50 font-bold bg-white/30">${totBox}</td>
                     <td class="p-1 text-center border-r border-slate-200/50 font-black text-blue-600 bg-white/30">${stacked.toFixed(1)}</td>
                     <td class="col-detail p-1 text-center border-r border-slate-200/50">
-  <input type="number" min="1"
-    class="w-16 h-8 text-sm text-center appearance-none bg-white/70 border border-slate-300 rounded"
-    value="${cap.slots}"
-    onchange="updateCapacity('${b}', this.value, null)">
+  <span class="inline-block w-16 h-8 leading-8 text-sm text-center font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded select-none">${cap.slots}</span>
 </td>
 
 <td class="col-detail p-1 text-center border-r border-slate-200/50">
@@ -589,6 +601,29 @@ const date =
 
 document.getElementById('lastUpdated').innerText =
   `Generated: ${date}, ${time}`;
+
+// --- Tier Change Remark ---
+const tierChanges = [];
+Object.keys(activeCapacity).forEach(block => {
+    const current = activeCapacity[block].tier;
+    const def = DEFAULT_CAPACITY[block] ? DEFAULT_CAPACITY[block].tier : current;
+    if (current !== def) {
+        tierChanges.push(`<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 rounded-lg border border-amber-300 font-bold"><span class="text-amber-700">${block}</span><span class="text-slate-400">:</span><span class="line-through text-slate-400">${def}</span><span class="text-amber-900">→ ${current}</span></span>`);
+    }
+});
+const remarkEl = document.getElementById('tierChangeRemark');
+const remarkContentEl = document.getElementById('tierChangeRemarkContent');
+if (remarkEl && remarkContentEl) {
+    if (tierChanges.length > 0) {
+        remarkContentEl.innerHTML = `<span class="font-bold text-amber-900">Tier modified from default:</span> <span class="flex flex-wrap gap-1.5 mt-1">${tierChanges.join('')}</span>`;
+        // Show if breakdown is currently visible
+        const isBreakdownOn = document.getElementById('mainTable')?.classList.contains('show-details');
+        remarkEl.classList.toggle('hidden', !isBreakdownOn);
+    } else {
+        remarkContentEl.innerHTML = '';
+        remarkEl.classList.add('hidden');
+    }
+}
 
     }
 
@@ -635,10 +670,28 @@ document.getElementById('sumTotalCap').innerText =
         
         const setR = (id, v) => {
   const pct = Math.min(v, 100);
-  document.getElementById(id).style.strokeDashoffset = 100 - pct;
+  const el = document.getElementById(id);
+  if (el) el.style.strokeDashoffset = 100 - pct;
 };
-;
         setR('ringImp', yImp); setR('ringExp', yExp); setR('ringTotal', yTot);
+
+        // Dynamic ring color for YOR Overall
+        const ringTotalEl = document.getElementById('ringTotal');
+        if (ringTotalEl) {
+            const svgParent = ringTotalEl.closest('svg');
+            // Remove all possible color classes and reset glow
+            ringTotalEl.classList.remove('text-blue-600', 'text-red-500', 'text-red-600');
+            if (svgParent) svgParent.style.filter = '';
+            if (yTot > 80) {
+                ringTotalEl.classList.add('text-red-600');
+                // Add vivid glow effect for critical density
+                if (svgParent) svgParent.style.filter = 'drop-shadow(0 0 6px rgba(220, 38, 38, 0.7))';
+            } else if (yTot >= 65) {
+                ringTotalEl.classList.add('text-red-500');
+            } else {
+                ringTotalEl.classList.add('text-blue-600');
+            }
+        }
     }
 
     // --- TAB 2: ANALYTICS — NPCT1 Vessel Schedule ---
@@ -2645,7 +2698,15 @@ function switchTab(t) {
 }
 
 function toggleDetails() { 
-    document.getElementById('mainTable').classList.toggle('show-details'); 
+    const table = document.getElementById('mainTable');
+    table.classList.toggle('show-details');
+    const isShowing = table.classList.contains('show-details');
+    // Show/hide tier change remark based on breakdown visibility
+    const remarkEl = document.getElementById('tierChangeRemark');
+    const remarkContentEl = document.getElementById('tierChangeRemarkContent');
+    if (remarkEl && remarkContentEl && remarkContentEl.innerHTML.trim() !== '') {
+        remarkEl.classList.toggle('hidden', !isShowing);
+    }
 }
 
 function clearCache() { 
