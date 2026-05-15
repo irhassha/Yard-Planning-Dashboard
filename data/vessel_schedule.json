@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-15T08:34:13.094Z",
+  "lastUpdated": "2026-05-15T13:20:37.062Z",
   "totalScraped": 65,
   "totalFiltered": 35,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "KIS",
       "status": "ACTIVE",
       "etb": "2026-05-15 15:00:00",
-      "ata": "2026-05-15 15:17:46",
+      "ata": "2026-05-15 12:05:00",
       "etd": "2026-05-16 18:00:00",
       "atd": "",
       "openStacking": "2026-05-10 01:00:00",
@@ -299,9 +299,9 @@
       "ata": "",
       "etd": "2026-05-22 16:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-05-17 01:00:00",
+      "closingDocument": "2026-05-21 07:00:00",
+      "closingPhysic": "2026-05-21 09:00:00"
     },
     {
       "vessel": "HMM DAVAO",
