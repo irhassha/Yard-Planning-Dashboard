@@ -164,6 +164,7 @@
                 }
 
                 scheduleData = rows;
+                window.scheduleData = scheduleData; // Expose globally for stowage module
                 if (typeof onComplete === 'function') onComplete();
             } catch (err) {
                 alert(err.message);

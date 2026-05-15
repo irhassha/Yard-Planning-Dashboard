@@ -1167,8 +1167,20 @@
                         </div>
                     </div>
 
+                    <!-- Stowage View Content (hidden by default) -->
+                    <div id="stowageContent" class="hidden" style="max-height:460px;min-height:120px;background:white;overflow:auto;position:relative; border-bottom: 1px solid #e2e8f0;">
+                        <div class="flex flex-col items-center justify-center py-16 text-slate-400">
+                            <span class="material-symbols-outlined text-5xl mb-3 opacity-30">directions_boat</span>
+                            <p class="text-sm font-semibold text-slate-500">Upload BAPLIE EDI file to view stowage plan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Work Sequence Content (hidden by default) -->
+                    <div id="sequenceContent" class="hidden" style="background:white;overflow-x:auto;">
+                    </div>
+
                     <!-- Controls bar — below chart -->
-                    <div
+                    <div id="ganttControlsBar"
                         class="px-4 py-2.5 border-t border-slate-200/60 bg-white/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                         <div class="flex items-center gap-2.5">
                             <div class="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-600">
@@ -1207,6 +1219,67 @@
                             <button onclick="renderBerthGantt()" class="secondary-pill text-xs py-1.5"
                                 title="Refresh & Fit">
                                 <span class="material-symbols-outlined text-[14px]">refresh</span> Refresh
+                            </button>
+                            <div class="h-5 w-px bg-slate-300"></div>
+                            <button id="berthStowageToggleBtn" onclick="toggleBerthStowageView()" class="secondary-pill text-xs py-1.5 bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100">
+                                <span class="material-symbols-outlined text-[16px]">directions_boat</span> Stowage View
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Controls bar — Stowage View (hidden by default) -->
+                    <div id="stowageControlsBar"
+                        class="px-4 py-2.5 border-t border-slate-200/60 bg-white/30 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hidden">
+                        <div class="flex items-center gap-2.5">
+                            <div class="p-1.5 bg-sky-500/10 rounded-lg text-sky-600">
+                                <span class="material-symbols-outlined text-lg">directions_boat</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-700">Stowage Plan — Bay Mapping</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <div class="flex flex-col gap-1.5">
+                                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase w-12 tracking-widest">BAPLIE</span>
+                                    <input type="file" id="ediFileInput" accept=".edi,.EDI,.txt" onchange="handleEdiUpload(event)"
+                                        class="block w-full max-w-[180px] text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200 cursor-pointer bg-white" />
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase w-12 tracking-widest">SEQ PDF</span>
+                                    <input type="file" id="seqPdfInput" accept="application/pdf" onchange="handleSequencePdfUpload(event)"
+                                        class="block w-full max-w-[180px] text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-indigo-100 file:text-indigo-700 hover:file:bg-indigo-200 cursor-pointer bg-white" />
+                                </div>
+                            </div>
+                            
+                            <!-- Zoom Controls -->
+                            <div class="flex items-center bg-white rounded-lg border border-slate-200 overflow-hidden h-full shadow-sm ml-2">
+                                <button onclick="setStowageZoom(window.stowageZoomLevel - 0.1)" class="px-2 hover:bg-slate-100 text-slate-600 flex items-center justify-center h-full py-1.5" title="Zoom Out"><span class="material-symbols-outlined text-sm">zoom_out</span></button>
+                                <button onclick="setStowageZoom(1)" id="stowageZoomLabelBtn" class="px-3 text-[10px] font-bold text-slate-700 border-l border-r border-slate-200 hover:bg-slate-50 h-full py-1.5" title="Reset Zoom">100%</button>
+                                <button onclick="setStowageZoom(window.stowageZoomLevel + 0.1)" class="px-2 hover:bg-slate-100 text-slate-600 flex items-center justify-center h-full py-1.5" title="Zoom In"><span class="material-symbols-outlined text-sm">zoom_in</span></button>
+                            </div>
+
+                            <!-- DIS Toggle & GCR Setting -->
+                            <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg ml-2">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="toggleDisBay" class="sr-only peer"
+                                        onchange="window.showDisBay=this.checked; if(typeof renderStowageView==='function') renderStowageView(typeof stowageData!=='undefined'?stowageData:null)">
+                                    <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-rose-500"></div>
+                                    <span class="ml-1.5 text-[10px] font-bold text-slate-600">DIS</span>
+                                </label>
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">GCR</span>
+                                <input type="number" id="gcrInput" min="10" max="60" value="25"
+                                    class="w-10 h-5 text-[10px] text-center font-bold bg-white border border-slate-300 rounded appearance-none text-slate-700"
+                                    onchange="window.stowageGCR=parseInt(this.value)||25; if(typeof renderStowageView==='function') renderStowageView(typeof stowageData!=='undefined'?stowageData:null)"
+                                    title="Gross Crane Rate (box/hour)">
+                                <span class="text-[8px] text-slate-400 font-bold">b/h</span>
+                            </div>
+
+                            <div class="h-10 w-px bg-slate-300 mx-2"></div>
+                            <button onclick="toggleBerthStowageView()" class="secondary-pill text-xs py-1.5 h-full bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100">
+                                <span class="material-symbols-outlined text-[16px]">anchor</span> Berth View
                             </button>
                         </div>
                     </div>
@@ -1566,10 +1639,17 @@
             © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
         </footer>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+        <script>
+            // Set worker source for PDF.js
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+        </script>
         <script src="expectedCluster.js"></script>
         <script src="yp.js"></script>
         <script src="replan.js"></script>
         <script src="yardmap.js"></script>
+        <script src="stowage.js"></script>
+        <script src="work_sequence.js"></script>
 </body>
 
 </html>

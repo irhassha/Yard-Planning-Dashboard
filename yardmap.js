@@ -187,7 +187,7 @@ function buildYardRowGrid(containers, maxSlots, blockName) {
         const is40 = len.startsWith('40') || len.startsWith('45');
         const exp = isYardExport(c) && isAllowedBlock;
         const color = exp ? getYardColor(c.carrier) : '#FFFFFF';
-        const info = { color, carrier: c.carrier || '', isExport: exp };
+        const info = { color, carrier: c.carrier || '', isExport: exp, unit: c.unit || '' };
 
         if (is40) {
             const ext = s + 1;
@@ -219,13 +219,13 @@ function buildYardRowGrid(containers, maxSlots, blockName) {
                 items.push({ t: 'e', r: r, cSpan: 1, col: col, s: p }); 
                 p--;
             } else if (cell.type === 'start40') {
-                items.push({ t: '4', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 2, col: col });
+                items.push({ t: '4', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 2, col: col, un: cell.unit || '' });
                 p -= 2;
             } else if (cell.type === 'cont') {
-                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: p, r: r, cSpan: 1, col: col });
+                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: p, r: r, cSpan: 1, col: col, un: cell.unit || '' });
                 p--;
             } else {
-                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 1, col: col });
+                items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, r: r, cSpan: 1, col: col, un: cell.unit || '' });
                 p--;
             }
         }
@@ -268,7 +268,7 @@ function buildYardSlotItems(containers, maxSlots, blockName) {
         // Only classify as export (and thus color it) if it's in the allowed blocks
         const exp = isYardExport(c) && isAllowedBlock;
         const color = exp ? getYardColor(c.carrier) : '#FFFFFF';
-        const info = { color, carrier: c.carrier || '', isExport: exp };
+        const info = { color, carrier: c.carrier || '', isExport: exp, unit: c.unit || '' };
 
         if (is40) {
             // 40ft extends LEFT → slot s+1 (higher number = leftward)
@@ -301,14 +301,14 @@ function buildYardSlotItems(containers, maxSlots, blockName) {
             items.push({ t: 'e', s: p });           // empty
             p--;
         } else if (cell.type === 'start40') {
-            items.push({ t: '4', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src });
+            items.push({ t: '4', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, un: cell.unit || '' });
             p -= 2;
         } else if (cell.type === 'cont') {
             // Orphan continuation – show as single occupied
-            items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: p });
+            items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: p, un: cell.unit || '' });
             p--;
         } else {
-            items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src });
+            items.push({ t: '2', c: cell.color, cr: cell.carrier, ex: cell.isExport, s: cell.src, un: cell.unit || '' });
             p--;
         }
     }
@@ -515,10 +515,10 @@ function renderYardMap() {
                         } else if (item.t === '4') {
                             const tc = yardContrastText(item.c);
                             const bc = item.ex ? 'rgba(0,0,0,0.18)' : '#cbd5e1';
-                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px; font-size:4px;" title="Slot ${item.s} Row ${item.r}: ${item.cr} (40ft)" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}"><span style="color:${tc}">${item.cr}</span></div>`;
+                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px; font-size:4px;" title="Slot ${item.s} Row ${item.r}: ${item.cr} (40ft)" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}" data-unit="${item.un || ''}"><span style="color:${tc}">${item.cr}</span></div>`;
                         } else {
                             const bc = item.ex ? 'rgba(0,0,0,0.15)' : '#cbd5e1';
-                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px;" title="Slot ${item.s} Row ${item.r}: ${item.cr}" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}"></div>`;
+                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="${styleNode} background:${item.c};border-color:${bc}; height: 11px;" title="Slot ${item.s} Row ${item.r}: ${item.cr}" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}" data-unit="${item.un || ''}"></div>`;
                         }
                     });
                     html += `</div>`;
@@ -531,10 +531,10 @@ function renderYardMap() {
                         } else if (item.t === '4') {
                             const tc = yardContrastText(item.c);
                             const bc = item.ex ? 'rgba(0,0,0,0.18)' : '#cbd5e1';
-                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr} (40ft)" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}"><span style="color:${tc}">${item.cr}</span></div>`;
+                            html += `<div class="ym-slot ym-40${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr} (40ft)" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}" data-unit="${item.un || ''}"><span style="color:${tc}">${item.cr}</span></div>`;
                         } else {
                             const bc = item.ex ? 'rgba(0,0,0,0.15)' : '#cbd5e1';
-                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr}" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}"></div>`;
+                            html += `<div class="ym-slot ym-20${item.ex ? ' ym-exp' : ' ym-imp'}" style="background:${item.c};border-color:${bc}" title="Slot ${item.s}: ${item.cr}" data-carrier="${item.cr}" data-block="${bn}" data-slot="${item.s}" data-unit="${item.un || ''}"></div>`;
                         }
                     });
                     html += `</div>`;  // ym-slots
@@ -608,6 +608,38 @@ function highlightYardCarrier(carrier) {
         } else {
             el.classList.remove('ym-legend-active');
         }
+    });
+}
+
+// ── Container Highlight (for Stowage View) ──────────────────────────
+
+let yardActiveContainerHighlight = new Set();
+
+function highlightYardContainers(containerIds) {
+    if (containerIds === null) {
+        yardActiveContainerHighlight.clear();
+    } else {
+        yardActiveContainerHighlight = new Set(containerIds.map(id => id.toUpperCase()));
+    }
+
+    const hasSelection = yardActiveContainerHighlight.size > 0;
+
+    document.querySelectorAll('.ym-slot[data-unit]').forEach(el => {
+        const unit = (el.dataset.unit || '').toUpperCase();
+        if (!hasSelection) {
+            el.style.opacity = '1';
+            el.style.filter = '';
+        } else if (unit && yardActiveContainerHighlight.has(unit)) {
+            el.style.opacity = '1';
+            el.style.filter = '';
+        } else {
+            el.style.opacity = '0.1';
+            el.style.filter = 'grayscale(1)';
+        }
+    });
+
+    document.querySelectorAll('.ym-empty').forEach(el => {
+        el.style.opacity = hasSelection ? '0.25' : '1';
     });
 }
 

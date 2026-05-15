@@ -922,3 +922,21 @@ body.ai-chat-sidebar-open {
         #fde68a 6px
     ) !important;
 }
+
+/* ===== STOWAGE VIEW BAY BADGES ===== */
+.stowage-bay-active {
+    outline: 3px solid #4f46e5 !important;
+    outline-offset: -1px;
+    box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.25) !important;
+    transform: scale(1.05);
+}
+
+.bg-stripes-black-10 {
+    background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 6px,
+        rgba(0, 0, 0, 0.15) 6px,
+        rgba(0, 0, 0, 0.15) 12px
+    );
+}
