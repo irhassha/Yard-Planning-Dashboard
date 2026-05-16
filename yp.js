@@ -17,15 +17,15 @@ const MAX_CHAT_MESSAGES = 24;
 
 // Constants
 const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
-const EXCLUDED_BLOCKS_YARD = ["C01", "C02", "OOG", "RC9", "BR9"];
-const EXCLUDED_BLOCKS_CLASH = ["C01", "C02", "OOG", "RC9", "BR9"];
+const EXCLUDED_BLOCKS_YARD = ["C01", "C02", "D01", "OOG", "RC9", "BR9"];
+const EXCLUDED_BLOCKS_CLASH = ["C01", "C02", "D01", "OOG", "RC9", "BR9"];
 const RECOMMENDED_SPREAD_BLOCKS = [
     "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
     "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08",
     "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
     "D01"
 ];
-const PURE_IMPORT_BLOCKS = ["A06", "A07", "A08", "B06", "B07", "B08", "C05", "C06", "C07", "C08", "D01"];
+const PURE_IMPORT_BLOCKS = ["A06", "A07", "A08", "B06", "B07", "B08", "C05", "C06", "C07", "C08"];
 let selectedBlocks = [...PURE_IMPORT_BLOCKS]; // Default to pure import blocks
 
 const DEFAULT_CAPACITY = {
@@ -511,7 +511,7 @@ function renderOverview() {
         } else if (b === "RC9" || b === "BR9") {
             remark = "Reefer Area";
             rCls = "row-reefer";
-        } else if (b === "C01" || b === "C02") {
+        } else if (b === "C01" || b === "C02" || b === "D01") {
             remark = "DG Area";
             rCls = "row-dg";
         } else {
