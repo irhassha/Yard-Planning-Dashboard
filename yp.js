@@ -17,13 +17,12 @@ const MAX_CHAT_MESSAGES = 24;
 
 // Constants
 const EXPORT_DEFAULTS = ["A01", "A02", "A03", "A04", "A05", "B01", "B02", "B03", "B04", "B05", "C03", "C04"];
-const EXCLUDED_BLOCKS_YARD = ["C01", "C02", "D01", "OOG", "RC9", "BR9"];
-const EXCLUDED_BLOCKS_CLASH = ["C01", "C02", "D01", "OOG", "RC9", "BR9"];
+const EXCLUDED_BLOCKS_YARD = ["C01", "D01", "C02", "BR9", "RC9", "OOG"];
+const EXCLUDED_BLOCKS_CLASH = ["C01", "D01", "C02", "BR9", "RC9", "OOG"];
 const RECOMMENDED_SPREAD_BLOCKS = [
     "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
     "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08",
-    "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
-    "D01"
+    "C01", "D01", "C02", "C03", "C04", "C05", "C06", "C07", "C08"
 ];
 const PURE_IMPORT_BLOCKS = ["A06", "A07", "A08", "B06", "B07", "B08", "C05", "C06", "C07", "C08"];
 let selectedBlocks = [...PURE_IMPORT_BLOCKS]; // Default to pure import blocks
@@ -31,8 +30,7 @@ let selectedBlocks = [...PURE_IMPORT_BLOCKS]; // Default to pure import blocks
 const DEFAULT_CAPACITY = {
     "A01": { slots: 37, tier: 5, cap: 1110 }, "A02": { slots: 37, tier: 5, cap: 1110 }, "A03": { slots: 37, tier: 5, cap: 1110 }, "A04": { slots: 37, tier: 5, cap: 1110 }, "A05": { slots: 34, tier: 5, cap: 1020 }, "A06": { slots: 37, tier: 5, cap: 1110 }, "A07": { slots: 37, tier: 5, cap: 1110 }, "A08": { slots: 37, tier: 5, cap: 1110 },
     "B01": { slots: 37, tier: 5, cap: 1110 }, "B02": { slots: 37, tier: 5, cap: 1110 }, "B03": { slots: 37, tier: 5, cap: 1110 }, "B04": { slots: 37, tier: 5, cap: 1110 }, "B05": { slots: 37, tier: 5, cap: 1110 }, "B06": { slots: 37, tier: 5, cap: 1110 }, "B07": { slots: 23, tier: 5, cap: 690 }, "B08": { slots: 23, tier: 5, cap: 690 },
-    "C01": { slots: 21, tier: 4, cap: 504 }, "C02": { slots: 45, tier: 4, cap: 1080 }, "C03": { slots: 45, tier: 5, cap: 1350 }, "C04": { slots: 45, tier: 5, cap: 1350 }, "C05": { slots: 45, tier: 5, cap: 1350 }, "C06": { slots: 45, tier: 5, cap: 1350 }, "C07": { slots: 45, tier: 5, cap: 1350 }, "C08": { slots: 45, tier: 5, cap: 1350 },
-    "D01": { slots: 24, tier: 3, cap: 360 },
+    "C01": { slots: 21, tier: 4, cap: 504 }, "D01": { slots: 24, tier: 3, cap: 360 }, "C02": { slots: 45, tier: 4, cap: 1080 }, "C03": { slots: 45, tier: 5, cap: 1350 }, "C04": { slots: 45, tier: 5, cap: 1350 }, "C05": { slots: 45, tier: 5, cap: 1350 }, "C06": { slots: 45, tier: 5, cap: 1350 }, "C07": { slots: 45, tier: 5, cap: 1350 }, "C08": { slots: 45, tier: 5, cap: 1350 },
     "BR9": { slots: 18, tier: 5, cap: 540 }, "RC9": { slots: 16, tier: 5, cap: 480 }, "OOG": { slots: 25, tier: 1, cap: 150 }
 };
 // Always use DEFAULT_CAPACITY (slots are fixed, not editable)
@@ -1401,7 +1399,7 @@ function renderClusterSpreading() {
 
     body.innerHTML = '';
 
-    const IGNORED_CLUSTER_BLOCKS = new Set(['C01', 'C02', 'D01', 'BR9', 'RC9', 'OOG', 'N']);
+    const IGNORED_CLUSTER_BLOCKS = new Set(['C01', 'D01', 'C02', 'BR9', 'RC9', 'OOG', 'N']);
     const scheduleMap = {};
     (scheduleData || []).forEach(s => {
         const key = `${s.carrier}||${s.service || ''}`;
@@ -1821,7 +1819,7 @@ window.showAllAnomalies = function () {
 
     // Group ALL inventory by row
     const rowItems = {};
-    const excludedBlocks = new Set(['C01', 'C02', 'D01', 'BR9', 'RC9', 'OOG']);
+    const excludedBlocks = new Set(['C01', 'D01', 'C02', 'BR9', 'RC9', 'OOG']);
 
     window.invData.forEach(it => {
         if (it.block && excludedBlocks.has(it.block.toUpperCase())) return;
