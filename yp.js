@@ -493,7 +493,7 @@ function renderOverview() {
 
     let s = { impC: 0, expC: 0, impS: 0, expS: 0 };
     const _overviewRows = [];
-    Object.keys(yardMap).sort().forEach(b => {
+    Object.keys(yardMap).forEach(b => {
         let d = yardMap[b], cap = activeCapacity[b];
         let stacked = (d.c20 * 1) + (d.c40 * 2) + (d.c45 * 2.25);
         let occ = (cap.cap > 0) ? (stacked / cap.cap) * 100 : 0;
@@ -1465,7 +1465,10 @@ function renderClusterSpreading() {
             if (b.toUpperCase() !== 'CG1') uniqueBlocks.add(b);
         });
     });
-    let sortedBlocks = Array.from(uniqueBlocks).sort();
+    let sortedBlocks = Array.from(uniqueBlocks).sort((a, b) => {
+        const order = Object.keys(DEFAULT_CAPACITY);
+        return order.indexOf(a) - order.indexOf(b);
+    });
 
     // Calculate block occupancy for header display
     const blockOccupancy = {};
@@ -2951,7 +2954,7 @@ async function generatePDFReport(sectionNotes = {}) {
             });
 
             let html = '';
-            Object.keys(yardMapCalc).sort().forEach(b => {
+            Object.keys(yardMapCalc).forEach(b => {
                 if (!EXCLUDED_BLOCKS_YARD.includes(b)) {
                     let d = yardMapCalc[b];
                     let cap = activeCapacity[b]?.cap || 0;
