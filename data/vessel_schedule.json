@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-16T18:44:16.410Z",
+  "lastUpdated": "2026-05-17T01:45:11.111Z",
   "totalScraped": 66,
-  "totalFiltered": 38,
+  "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "SITC SHEKOU",
+      "line": "SIT",
+      "voyIn": "2610S",
+      "voyOut": "2611N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-05-17 07:00:00",
+      "ata": "2026-05-17 06:04:00",
+      "etd": "2026-05-18 08:00:00",
+      "atd": "",
+      "openStacking": "2026-05-08 01:00:00",
+      "closingDocument": "2026-05-14 21:00:00",
+      "closingPhysic": "2026-05-14 23:00:00"
+    },
     {
       "vessel": "JULIUS-S",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-05-09 01:00:00",
       "closingDocument": "2026-05-14 14:00:00",
       "closingPhysic": "2026-05-14 16:00:00"
-    },
-    {
-      "vessel": "HMM CEBU",
-      "line": "HMM",
-      "voyIn": "0026S",
-      "voyOut": "0026N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-05-15 15:00:00",
-      "ata": "2026-05-15 12:05:00",
-      "etd": "2026-05-17 05:00:00",
-      "atd": "",
-      "openStacking": "2026-05-10 01:00:00",
-      "closingDocument": "2026-05-15 05:00:00",
-      "closingPhysic": "2026-05-15 07:00:00"
     },
     {
       "vessel": "HMM MANILA",
@@ -424,19 +424,19 @@
       "closingPhysic": "2026-05-18 18:00:00"
     },
     {
-      "vessel": "EVER OPTIMA",
-      "line": "EGH",
-      "voyIn": "0474-046S",
-      "voyOut": "0474-046N",
-      "service": "CIT",
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2612S",
+      "voyOut": "2613N",
+      "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-05-20 06:00:00",
+      "etb": "2026-05-20 10:00:00",
       "ata": "",
-      "etd": "2026-05-21 02:00:00",
+      "etd": "2026-05-21 03:00:00",
       "atd": "",
-      "openStacking": "2026-05-16 01:00:00",
-      "closingDocument": "2026-05-18 21:59:00",
-      "closingPhysic": "2026-05-18 23:59:00"
+      "openStacking": "2026-05-12 01:00:00",
+      "closingDocument": "2026-05-15 16:00:00",
+      "closingPhysic": "2026-05-15 18:00:00"
     },
     {
       "vessel": "BIG BREEZY",
@@ -454,19 +454,19 @@
       "closingPhysic": "2026-05-18 18:00:00"
     },
     {
-      "vessel": "EVER BLISS",
-      "line": "EMC",
-      "voyIn": "1189-111B",
-      "voyOut": "1189-111B",
-      "service": "JPI-B",
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0474-046S",
+      "voyOut": "0474-046N",
+      "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-05-19 07:00:00",
+      "etb": "2026-05-19 10:00:00",
       "ata": "",
-      "etd": "2026-05-20 04:00:00",
+      "etd": "2026-05-20 07:00:00",
       "atd": "",
-      "openStacking": "2026-05-15 01:00:00",
-      "closingDocument": "2026-05-17 21:59:00",
-      "closingPhysic": "2026-05-17 23:59:00"
+      "openStacking": "2026-05-16 01:00:00",
+      "closingDocument": "2026-05-18 21:59:00",
+      "closingPhysic": "2026-05-18 23:59:00"
     },
     {
       "vessel": "TS VANCOUVER",
@@ -484,19 +484,19 @@
       "closingPhysic": "2026-05-16 15:00:00"
     },
     {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2612S",
-      "voyOut": "2613N",
-      "service": "JTH",
+      "vessel": "EVER BLISS",
+      "line": "EMC",
+      "voyIn": "1189-111B",
+      "voyOut": "1189-111B",
+      "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-05-18 10:00:00",
+      "etb": "2026-05-18 11:00:00",
       "ata": "",
-      "etd": "2026-05-19 05:00:00",
+      "etd": "2026-05-19 08:00:00",
       "atd": "",
-      "openStacking": "2026-05-12 01:00:00",
-      "closingDocument": "2026-05-15 16:00:00",
-      "closingPhysic": "2026-05-15 18:00:00"
+      "openStacking": "2026-05-15 01:00:00",
+      "closingDocument": "2026-05-17 21:59:00",
+      "closingPhysic": "2026-05-17 23:59:00"
     },
     {
       "vessel": "EVER ORIENT",
@@ -542,21 +542,6 @@
       "openStacking": "2026-05-11 01:00:00",
       "closingDocument": "2026-05-15 21:00:00",
       "closingPhysic": "2026-05-15 23:00:00"
-    },
-    {
-      "vessel": "SITC SHEKOU",
-      "line": "SIT",
-      "voyIn": "2610S",
-      "voyOut": "2611N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-05-17 07:00:00",
-      "ata": "",
-      "etd": "2026-05-18 08:00:00",
-      "atd": "",
-      "openStacking": "2026-05-08 01:00:00",
-      "closingDocument": "2026-05-14 21:00:00",
-      "closingPhysic": "2026-05-14 23:00:00"
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
