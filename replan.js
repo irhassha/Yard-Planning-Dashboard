@@ -8,6 +8,11 @@ let activeReplanBlockFilter = 'ALL';
 let replanPriorityMode = 'NORMAL';
 let isAnalysisModalOpen = false;
 
+// --- MULTI-CONTAINER STATE ---
+let parsedHeadersReplan = [];
+let parsedContainersReplan = [];  // Array of {values, parsed, display}
+let selectedContainerIdxReplan = 0;
+
 function openAnalysisModal() {
     const modal = document.getElementById('analysisModal');
     if (!modal || isAnalysisModalOpen) return;
@@ -66,8 +71,9 @@ function setReplanPriority(mode) {
     if (replanPriorityMode === mode) return;
     replanPriorityMode = mode;
     updatePriorityButtonsReplan();
-    if (document.getElementById('rawInput').value.trim() && (window.invData || []).length) {
-        analyzeReplan();
+    // Re-analyze the currently selected container without re-parsing
+    if (parsedContainersReplan.length > 0 && (window.invData || []).length) {
+        selectContainerReplan(selectedContainerIdxReplan);
     }
 }
 
@@ -83,46 +89,121 @@ function analyzeReplan() {
 
     openAnalysisModal();
 
-    const lines = text.split(/\r?\n/);
-    const headers = lines[0].split('\t').map(h => h.trim());
-    const values = lines[1] ? lines[1].split('\t').map(v => v.trim()) : [];
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    parsedHeadersReplan = lines[0].split('\t').map(h => h.trim());
 
+    // Parse ALL data rows (line 1..N)
+    parsedContainersReplan = [];
     const targetKeys = ['Unit', 'Service Out', 'Carrier Out', 'SPOD', 'Unit length', 'Wt. cl.', 'Cont. type', 'Unit height'];
-    let gridContent = "";
-    targetKeys.forEach(key => {
-        const idx = headers.indexOf(key);
-        const val = idx !== -1 ? values[idx] : "-";
-        gridContent += `
-            <div class="flex flex-col p-3 bg-white rounded-lg border border-slate-200 shadow-sm">
-                <span class="text-[10px] uppercase font-bold text-slate-400 mb-1">${key}</span>
-                <span class="text-sm font-mono font-bold text-slate-700 truncate" title="${val}">${val}</span>
-            </div>`;
-    });
-    
-    const previewContainer = document.getElementById('replanPreviewContainer');
-    if(previewContainer) {
-        previewContainer.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 p-4">${gridContent}</div>`;
+
+    for (let i = 1; i < lines.length; i++) {
+        const vals = lines[i].split('\t').map(v => v.trim());
+        if (vals.length <= 1) continue;
+
+        const findVal = (name) => {
+            const cName = cleanReplanKey(name);
+            const idx = parsedHeadersReplan.findIndex(h => cleanReplanKey(h) === cName);
+            return idx !== -1 ? normalizeReplan(vals[idx]) : "";
+        };
+        const getRawVal = (name) => {
+            const idx = parsedHeadersReplan.indexOf(name);
+            return idx !== -1 ? vals[idx] : "-";
+        };
+
+        parsedContainersReplan.push({
+            values: vals,
+            parsed: {
+                unit: findVal('Unit').toUpperCase(),
+                svc: findVal('Service Out'),
+                carr: findVal('Carrier Out'),
+                spod: findVal('SPOD'),
+                len: findVal('Unit length'),
+                wt: findVal('Wt. cl.'),
+                type: findVal('Cont. type'),
+                height: findVal('Unit height'),
+            },
+            display: targetKeys.reduce((o, k) => { o[k] = getRawVal(k); return o; }, {})
+        });
     }
 
-    const findVal = (name) => {
-        const cleanName = cleanReplanKey(name);
-        const idx = headers.findIndex(h => cleanReplanKey(h) === cleanName);
-        return idx !== -1 ? normalizeReplan(values[idx]) : "";
-    };
+    if (parsedContainersReplan.length === 0) {
+        renderEmptyStateReplan();
+        return;
+    }
 
-    currentReplanUnit = findVal("Unit").toUpperCase();
+    // Render comparison table
+    renderComparisonTableReplan();
 
-    const target = {
-        svc: findVal("Service Out"),
-        carr: findVal("Carrier Out"),
-        spod: findVal("SPOD"),
-        len: findVal("Unit length"),
-        wt: findVal("Wt. cl."),
-        type: findVal("Cont. type"),
-        height: findVal("Unit height")
-    };
+    // Auto-select first container
+    selectedContainerIdxReplan = 0;
+    selectContainerReplan(0);
+}
+
+function renderComparisonTableReplan() {
+    const targetKeys = ['Unit', 'Service Out', 'Carrier Out', 'SPOD', 'Unit length', 'Wt. cl.', 'Cont. type', 'Unit height'];
+    const container = document.getElementById('replanPreviewContainer');
+    if (!container) return;
+
+    // Build a badge showing how many containers were parsed
+    const countBadge = `<span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">${parsedContainersReplan.length} container${parsedContainersReplan.length > 1 ? 's' : ''}</span>`;
+
+    // Update header badge
+    const badgeEl = document.getElementById('replanComparisonBadge');
+    if (badgeEl) badgeEl.innerHTML = countBadge;
+
+    let tableHtml = `
+        <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 sticky top-0 z-10">
+                    <tr>
+                        <th class="px-3 py-2.5 font-semibold text-slate-500 w-8 text-center">#</th>
+                        ${targetKeys.map(k => `<th class="px-3 py-2.5 font-semibold text-slate-500 whitespace-nowrap">${k}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    ${parsedContainersReplan.map((c, idx) => `
+                        <tr id="replan-container-row-${idx}" class="replan-container-row cursor-pointer transition-all hover:bg-emerald-50/50 ${idx === selectedContainerIdxReplan ? 'bg-emerald-50 border-l-[3px] border-l-emerald-500' : ''}" onclick="selectContainerReplan(${idx})">
+                            <td class="px-3 py-2.5 text-center">
+                                <div class="w-4 h-4 rounded-full border-2 ${idx === selectedContainerIdxReplan ? 'border-emerald-500' : 'border-slate-300'} flex items-center justify-center mx-auto">
+                                    ${idx === selectedContainerIdxReplan ? '<div class="w-2 h-2 rounded-full bg-emerald-500"></div>' : ''}
+                                </div>
+                            </td>
+                            ${targetKeys.map(k => {
+                                const val = c.display[k] || '-';
+                                const isUnit = k === 'Unit';
+                                return `<td class="px-3 py-2.5 font-mono whitespace-nowrap ${isUnit ? 'font-bold text-slate-800' : 'text-slate-600'}">${val}</td>`;
+                            }).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    container.innerHTML = tableHtml;
+}
+
+function selectContainerReplan(idx) {
+    if (idx < 0 || idx >= parsedContainersReplan.length) return;
+    selectedContainerIdxReplan = idx;
+    const db = window.invData || [];
+
+    // Re-render comparison table to update row highlighting
+    renderComparisonTableReplan();
+
+    const selected = parsedContainersReplan[idx];
+    const target = selected.parsed;
+
+    currentReplanUnit = target.unit;
     window.currentReplanTarget = target;
 
+    // Update Recommended Slots header with active unit
+    const slotHeader = document.getElementById('replanSlotHeaderUnit');
+    if (slotHeader) {
+        slotHeader.innerHTML = `Recommended Slots <span class="text-emerald-600">— ${currentReplanUnit || 'N/A'}</span>`;
+    }
+
+    // Run matching logic
     currentReplanMatches = db.filter(item => {
         const matchSvc = normalizeReplan(item.service) === target.svc;
         const matchCarr = normalizeReplan(item.carrier) === target.carr;
@@ -415,6 +496,10 @@ function updateHistoryTableReplan() {
 }
 
 function renderEmptyStateReplan() {
+    parsedContainersReplan = [];
+    parsedHeadersReplan = [];
+    selectedContainerIdxReplan = 0;
+
     const slotDisplay = document.getElementById('replanSlotDisplay');
     const pContainer = document.getElementById('replanPreviewContainer');
     const filterContainer = document.getElementById('replanFilterContainer');
@@ -422,6 +507,11 @@ function renderEmptyStateReplan() {
     if(slotDisplay) slotDisplay.innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-slate-400"><span class="material-symbols-outlined text-6xl mb-4 text-slate-300">dns</span><p class="text-sm font-medium">Waiting for data input...</p></div>`;
     if(pContainer) pContainer.innerHTML = `<table class="w-full text-left text-xs"><thead class="bg-slate-50"><tr><th class="px-4 py-3 font-semibold text-slate-500">Key</th><th class="px-4 py-3 font-semibold text-slate-500">Value</th></tr></thead><tbody><tr><td colspan="2" class="text-center italic p-6 text-slate-400">Waiting for data paste...</td></tr></tbody></table>`;
     
+    const slotHeader = document.getElementById('replanSlotHeaderUnit');
+    if (slotHeader) slotHeader.innerHTML = 'Recommended Slots';
+    const badgeEl = document.getElementById('replanComparisonBadge');
+    if (badgeEl) badgeEl.innerHTML = '';
+
     closeAnalysisModal();
     if(filterContainer) filterContainer.classList.add('hidden');
 }
@@ -430,6 +520,9 @@ function clearReplanInput() {
     const input = document.getElementById('rawInput');
     if(input) input.value = "";
     activeReplanBlockFilter = 'ALL';
+    parsedContainersReplan = [];
+    parsedHeadersReplan = [];
+    selectedContainerIdxReplan = 0;
     renderEmptyStateReplan();
 }
 

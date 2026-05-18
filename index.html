@@ -1460,15 +1460,19 @@
                 </div>
                 <div class="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
                     <!-- Comparison Data -->
-                    <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50">
+                    <div class="sticky -top-6 z-20 border border-slate-200 rounded-2xl p-5 bg-slate-50 shadow-md">
                         <div class="flex justify-between items-center mb-4">
                             <h2
                                 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
                                 <span class="material-symbols-outlined text-lg">compare_arrows</span> Comparison Data
                             </h2>
+                            <div class="flex items-center gap-2">
+                                <span id="replanComparisonBadge"></span>
+                                <span class="text-xs text-slate-400 bg-white/80 px-2 py-1 rounded shadow-sm">Click row to analyze</span>
+                            </div>
                         </div>
                         <div id="replanPreviewContainer"
-                            class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+                            class="overflow-x-auto rounded-lg border border-slate-200 bg-white max-h-[180px] overflow-y-auto custom-scrollbar">
                             <table class="w-full text-left text-xs">
                                 <thead class="bg-slate-50">
                                     <tr>
@@ -1491,7 +1495,7 @@
                         <div
                             class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 pb-4 gap-4">
                             <div>
-                                <h2 class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
+                                <h2 id="replanSlotHeaderUnit" class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
                                 <p class="text-sm text-slate-500">Filtered only available slots from Unit List.</p>
                             </div>
                             <span
