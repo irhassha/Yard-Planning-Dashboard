@@ -1467,7 +1467,12 @@ function renderClusterSpreading() {
     });
     let sortedBlocks = Array.from(uniqueBlocks).sort((a, b) => {
         const order = Object.keys(DEFAULT_CAPACITY);
-        return order.indexOf(a) - order.indexOf(b);
+        const idxA = order.indexOf(a);
+        const idxB = order.indexOf(b);
+        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
     });
 
     // Calculate block occupancy for header display
