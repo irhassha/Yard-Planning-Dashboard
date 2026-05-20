@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-05-20T14:25:41.792Z",
-  "totalScraped": 61,
-  "totalFiltered": 33,
+  "lastUpdated": "2026-05-20T19:57:56.582Z",
+  "totalScraped": 62,
+  "totalFiltered": 35,
   "vessels": [
     {
       "vessel": "BIG BREEZY",
@@ -42,11 +42,41 @@
       "status": "ACTIVE",
       "etb": "2026-05-20 07:00:00",
       "ata": "2026-05-20 05:30:00",
-      "etd": "2026-05-21 20:00:00",
+      "etd": "2026-05-21 18:00:00",
       "atd": "",
       "openStacking": "2026-05-12 01:00:00",
       "closingDocument": "2026-05-16 13:00:00",
       "closingPhysic": "2026-05-16 15:00:00"
+    },
+    {
+      "vessel": "WAN HAI 373",
+      "line": "WHL",
+      "voyIn": "S026",
+      "voyOut": "N026",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-06-03 20:00:00",
+      "ata": "",
+      "etd": "2026-06-04 20:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S122",
+      "voyOut": "N122",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-06-03 06:00:00",
+      "ata": "",
+      "etd": "2026-06-04 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "HMM MANILA",
