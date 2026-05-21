@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-21T14:32:04.714Z",
+  "lastUpdated": "2026-05-21T19:40:02.994Z",
   "totalScraped": 61,
-  "totalFiltered": 32,
+  "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2612S",
+      "voyOut": "2613N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-05-21 22:00:00",
+      "ata": "2026-05-21 21:34:00",
+      "etd": "2026-05-23 03:00:00",
+      "atd": "",
+      "openStacking": "2026-05-15 01:00:00",
+      "closingDocument": "2026-05-18 16:00:00",
+      "closingPhysic": "2026-05-18 18:00:00"
+    },
     {
       "vessel": "HMM DAVAO",
       "line": "HMM",
@@ -34,19 +49,34 @@
       "closingPhysic": "2026-05-18 07:00:00"
     },
     {
-      "vessel": "EVER OPTIMA",
-      "line": "EGH",
-      "voyIn": "0474-046S",
-      "voyOut": "0474-046N",
-      "service": "CIT",
-      "status": "ACTIVE",
-      "etb": "2026-05-20 07:00:00",
-      "ata": "2026-05-20 05:10:00",
-      "etd": "2026-05-21 05:00:00",
-      "atd": "2026-05-21 03:21:00",
-      "openStacking": "2026-05-16 01:00:00",
-      "closingDocument": "2026-05-18 21:59:00",
-      "closingPhysic": "2026-05-18 23:59:00"
+      "vessel": "MIRADOR EXPRESS",
+      "line": "HLC",
+      "voyIn": "0001E",
+      "voyOut": "623W",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-06-04 22:00:00",
+      "ata": "",
+      "etd": "2026-06-06 09:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "WAN HAI 373",
+      "line": "WHL",
+      "voyIn": "S026",
+      "voyOut": "N026",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-06-04 20:00:00",
+      "ata": "",
+      "etd": "2026-06-06 02:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ITAL BONUS",
@@ -452,21 +482,6 @@
       "openStacking": "2026-05-12 01:00:00",
       "closingDocument": "2026-05-15 16:00:00",
       "closingPhysic": "2026-05-15 18:00:00"
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2612S",
-      "voyOut": "2613N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-05-21 22:00:00",
-      "ata": "",
-      "etd": "2026-05-23 03:00:00",
-      "atd": "",
-      "openStacking": "2026-05-15 01:00:00",
-      "closingDocument": "2026-05-18 16:00:00",
-      "closingPhysic": "2026-05-18 18:00:00"
     },
     {
       "vessel": "EVER ORIENT",
