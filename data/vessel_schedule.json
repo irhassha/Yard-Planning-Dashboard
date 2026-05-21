@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-20T19:57:56.582Z",
+  "lastUpdated": "2026-05-21T01:52:54.948Z",
   "totalScraped": 62,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "ITAL BONNY",
+      "line": "LT",
+      "voyIn": "S101",
+      "voyOut": "N101",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-05-21 07:00:00",
+      "ata": "2026-05-21 07:42:31",
+      "etd": "2026-05-22 17:00:00",
+      "atd": "",
+      "openStacking": "2026-05-15 01:00:00",
+      "closingDocument": "2026-05-18 05:00:00",
+      "closingPhysic": "2026-05-18 07:00:00"
+    },
     {
       "vessel": "BIG BREEZY",
       "line": "MCC",
@@ -17,21 +32,6 @@
       "openStacking": "2026-05-14 01:00:00",
       "closingDocument": "2026-05-18 16:00:00",
       "closingPhysic": "2026-05-18 18:00:00"
-    },
-    {
-      "vessel": "EVER OPTIMA",
-      "line": "EGH",
-      "voyIn": "0474-046S",
-      "voyOut": "0474-046N",
-      "service": "CIT",
-      "status": "ACTIVE",
-      "etb": "2026-05-20 07:00:00",
-      "ata": "2026-05-20 05:10:00",
-      "etd": "2026-05-21 05:00:00",
-      "atd": "",
-      "openStacking": "2026-05-16 01:00:00",
-      "closingDocument": "2026-05-18 21:59:00",
-      "closingPhysic": "2026-05-18 23:59:00"
     },
     {
       "vessel": "TS VANCOUVER",
@@ -415,7 +415,7 @@
       "voyOut": "2615N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-05-23 21:00:00",
+      "etb": "2026-05-23 23:00:00",
       "ata": "",
       "etd": "2026-05-24 20:00:00",
       "atd": "",
@@ -497,21 +497,6 @@
       "openStacking": "2026-05-15 01:00:00",
       "closingDocument": "2026-05-19 21:00:00",
       "closingPhysic": "2026-05-19 23:00:00"
-    },
-    {
-      "vessel": "ITAL BONNY",
-      "line": "LT",
-      "voyIn": "S101",
-      "voyOut": "N101",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-05-21 07:00:00",
-      "ata": "",
-      "etd": "2026-05-22 17:00:00",
-      "atd": "",
-      "openStacking": "2026-05-15 01:00:00",
-      "closingDocument": "2026-05-18 05:00:00",
-      "closingPhysic": "2026-05-18 07:00:00"
     },
     {
       "vessel": "EVER ORIENT",
