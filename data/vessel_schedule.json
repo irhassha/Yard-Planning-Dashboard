@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-23T08:00:26.916Z",
+  "lastUpdated": "2026-05-23T12:51:33.728Z",
   "totalScraped": 59,
   "totalFiltered": 32,
   "vessels": [
@@ -11,8 +11,8 @@
       "service": "KCI",
       "status": "ACTIVE",
       "etb": "2026-05-23 09:00:00",
-      "ata": "2026-05-23 11:44:48",
-      "etd": "2026-05-24 13:00:00",
+      "ata": "2026-05-23 09:05:00",
+      "etd": "2026-05-24 15:00:00",
       "atd": "",
       "openStacking": "2026-05-17 01:00:00",
       "closingDocument": "2026-05-21 13:00:00",
@@ -224,9 +224,9 @@
       "ata": "",
       "etd": "2026-06-01 04:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-05-26 01:00:00",
+      "closingDocument": "2026-05-30 13:00:00",
+      "closingPhysic": "2026-05-30 15:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
@@ -430,7 +430,7 @@
       "voyOut": "N090",
       "service": "CIM",
       "status": "REGISTER",
-      "etb": "2026-05-24 16:00:00",
+      "etb": "2026-05-24 17:00:00",
       "ata": "",
       "etd": "2026-05-25 22:00:00",
       "atd": "",
