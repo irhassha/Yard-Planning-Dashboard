@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-23T01:45:48.388Z",
+  "lastUpdated": "2026-05-23T08:00:26.916Z",
   "totalScraped": 59,
   "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "AS CASPRIA",
+      "line": "GSL",
+      "voyIn": "377N",
+      "voyOut": "377N",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-05-23 09:00:00",
+      "ata": "2026-05-23 11:44:48",
+      "etd": "2026-05-24 13:00:00",
+      "atd": "",
+      "openStacking": "2026-05-17 01:00:00",
+      "closingDocument": "2026-05-21 13:00:00",
+      "closingPhysic": "2026-05-21 15:00:00"
+    },
     {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
@@ -452,21 +467,6 @@
       "openStacking": "2026-05-19 01:00:00",
       "closingDocument": "2026-05-22 16:00:00",
       "closingPhysic": "2026-05-22 18:00:00"
-    },
-    {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "377N",
-      "voyOut": "377N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-05-23 09:00:00",
-      "ata": "",
-      "etd": "2026-05-24 13:00:00",
-      "atd": "",
-      "openStacking": "2026-05-17 01:00:00",
-      "closingDocument": "2026-05-21 13:00:00",
-      "closingPhysic": "2026-05-21 15:00:00"
     },
     {
       "vessel": "EVER ORIENT",
