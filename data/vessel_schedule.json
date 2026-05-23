@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-05-22T19:19:04.813Z",
+  "lastUpdated": "2026-05-23T01:45:48.388Z",
   "totalScraped": 59,
-  "totalFiltered": 33,
+  "totalFiltered": 32,
   "vessels": [
     {
       "vessel": "SPIL NISAKA",
@@ -11,7 +11,7 @@
       "service": "IN1",
       "status": "ACTIVE",
       "etb": "2026-05-23 05:00:00",
-      "ata": "2026-05-22 23:46:41",
+      "ata": "2026-05-23 02:00:00",
       "etd": "2026-05-24 13:00:00",
       "atd": "",
       "openStacking": "2026-05-17 01:00:00",
@@ -27,26 +27,11 @@
       "status": "ACTIVE",
       "etb": "2026-05-22 22:00:00",
       "ata": "2026-05-22 20:00:00",
-      "etd": "2026-05-23 20:00:00",
+      "etd": "2026-05-23 17:00:00",
       "atd": "",
       "openStacking": "2026-05-12 01:00:00",
       "closingDocument": "2026-05-15 16:00:00",
       "closingPhysic": "2026-05-15 18:00:00"
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2612S",
-      "voyOut": "2613N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-05-21 22:00:00",
-      "ata": "2026-05-21 21:34:00",
-      "etd": "2026-05-23 03:00:00",
-      "atd": "",
-      "openStacking": "2026-05-15 01:00:00",
-      "closingDocument": "2026-05-18 16:00:00",
-      "closingPhysic": "2026-05-18 18:00:00"
     },
     {
       "vessel": "EVER BLISS",
