@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-05-24T18:55:53.276Z",
+  "lastUpdated": "2026-05-25T01:57:54.662Z",
   "totalScraped": 62,
   "totalFiltered": 35,
   "vessels": [
@@ -35,7 +35,7 @@
     },
     {
       "vessel": "EVER BURLY",
-      "line": "EMC",
+      "line": "EMA",
       "voyIn": "S090",
       "voyOut": "N090",
       "service": "CIM",
