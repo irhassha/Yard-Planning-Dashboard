@@ -1,23 +1,8 @@
 {
-  "lastUpdated": "2026-05-26T09:01:37.179Z",
+  "lastUpdated": "2026-05-26T14:29:34.939Z",
   "totalScraped": 61,
-  "totalFiltered": 33,
+  "totalFiltered": 32,
   "vessels": [
-    {
-      "vessel": "FRASER MAS",
-      "line": "TMAS",
-      "voyIn": "0226",
-      "voyOut": "0326",
-      "service": "TMAS",
-      "status": "ACTIVE",
-      "etb": "2026-05-26 05:00:00",
-      "ata": "2026-05-26 06:15:27",
-      "etd": "2026-05-26 17:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
     {
       "vessel": "STARSHIP VENUS",
       "line": "NSS",
