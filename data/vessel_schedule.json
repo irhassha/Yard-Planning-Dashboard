@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-29T14:31:27.175Z",
-  "totalScraped": 66,
-  "totalFiltered": 40,
+  "lastUpdated": "2026-05-29T20:02:21.470Z",
+  "totalScraped": 67,
+  "totalFiltered": 42,
   "vessels": [
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2614S",
+      "voyOut": "2615N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-05-29 23:00:00",
+      "ata": "2026-05-29 21:57:00",
+      "etd": "2026-05-30 21:00:00",
+      "atd": "",
+      "openStacking": "2026-05-26 01:00:00",
+      "closingDocument": "2026-05-29 16:00:00",
+      "closingPhysic": "2026-05-29 18:00:00"
+    },
     {
       "vessel": "EVER BUILD",
       "line": "EMC",
@@ -32,6 +47,36 @@
       "openStacking": "2026-05-23 01:00:00",
       "closingDocument": "2026-05-28 10:00:00",
       "closingPhysic": "2026-05-28 12:00:00"
+    },
+    {
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "623S",
+      "voyOut": "624N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-06-12 11:00:00",
+      "ata": "",
+      "etd": "2026-06-13 13:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MSC PRECISION V",
+      "line": "MSC",
+      "voyIn": "HW622A",
+      "voyOut": "HW622A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-06-12 06:00:00",
+      "ata": "",
+      "etd": "2026-06-13 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BIRTH",
@@ -572,21 +617,6 @@
       "openStacking": "2026-05-24 01:00:00",
       "closingDocument": "2026-05-27 16:00:00",
       "closingPhysic": "2026-05-27 18:00:00"
-    },
-    {
-      "vessel": "GREEN PACIFIC",
-      "line": "SIT",
-      "voyIn": "2614S",
-      "voyOut": "2615N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-05-29 23:00:00",
-      "ata": "",
-      "etd": "2026-05-30 21:00:00",
-      "atd": "",
-      "openStacking": "2026-05-26 01:00:00",
-      "closingDocument": "2026-05-29 16:00:00",
-      "closingPhysic": "2026-05-29 18:00:00"
     },
     {
       "vessel": "EVER ORIENT",
