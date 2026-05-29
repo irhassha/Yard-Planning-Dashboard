@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-05-28T20:00:29.903Z",
-  "totalScraped": 62,
-  "totalFiltered": 37,
+  "lastUpdated": "2026-05-29T01:51:42.090Z",
+  "totalScraped": 63,
+  "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "EVER BUILD",
+      "line": "EMC",
+      "voyIn": "1194-086A",
+      "voyOut": "1194-086A",
+      "service": "JPI-A",
+      "status": "ACTIVE",
+      "etb": "2026-05-29 05:00:00",
+      "ata": "2026-05-29 03:33:00",
+      "etd": "2026-05-30 10:00:00",
+      "atd": "",
+      "openStacking": "2026-05-26 01:00:00",
+      "closingDocument": "2026-05-28 21:59:00",
+      "closingPhysic": "2026-05-28 23:59:00"
+    },
     {
       "vessel": "MSC BANJUL IV",
       "line": "MSC",
@@ -274,6 +289,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "MAERSK DAVAO",
+      "line": "MCC",
+      "voyIn": "614X",
+      "voyOut": "614Y",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-06-06 04:00:00",
+      "ata": "",
+      "etd": "2026-06-07 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "JOSEPHINE MAERSK",
       "line": "MCC",
       "voyIn": "623N",
@@ -325,9 +355,9 @@
       "voyOut": "623W",
       "service": "JKF",
       "status": "REGISTER",
-      "etb": "2026-06-04 11:00:00",
+      "etb": "2026-06-03 19:00:00",
       "ata": "",
-      "etd": "2026-06-05 17:00:00",
+      "etd": "2026-06-05 03:00:00",
       "atd": "",
       "openStacking": "2026-05-29 01:00:00",
       "closingDocument": "2026-06-02 21:00:00",
@@ -492,7 +522,7 @@
       "status": "REGISTER",
       "etb": "2026-05-30 15:00:00",
       "ata": "",
-      "etd": "2026-05-31 14:00:00",
+      "etd": "2026-05-31 17:00:00",
       "atd": "",
       "openStacking": "2026-05-26 01:00:00",
       "closingDocument": "2026-05-30 13:00:00",
@@ -527,21 +557,6 @@
       "openStacking": "2026-05-26 01:00:00",
       "closingDocument": "2026-05-29 16:00:00",
       "closingPhysic": "2026-05-29 18:00:00"
-    },
-    {
-      "vessel": "EVER BUILD",
-      "line": "EMC",
-      "voyIn": "1194-086A",
-      "voyOut": "1194-086A",
-      "service": "JPI-A",
-      "status": "REGISTER",
-      "etb": "2026-05-29 05:00:00",
-      "ata": "",
-      "etd": "2026-05-30 10:00:00",
-      "atd": "",
-      "openStacking": "2026-05-26 01:00:00",
-      "closingDocument": "2026-05-28 21:59:00",
-      "closingPhysic": "2026-05-28 23:59:00"
     },
     {
       "vessel": "EVER ORIENT",
