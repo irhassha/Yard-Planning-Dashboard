@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-05-30T08:11:57.763Z",
+  "lastUpdated": "2026-05-30T12:55:49.916Z",
   "totalScraped": 67,
-  "totalFiltered": 40,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "SPIL NIKEN",
@@ -11,7 +11,7 @@
       "service": "IA8",
       "status": "ACTIVE",
       "etb": "2026-05-30 15:00:00",
-      "ata": "2026-05-30 15:04:50",
+      "ata": "2026-05-30 14:30:00",
       "etd": "2026-05-31 17:00:00",
       "atd": "",
       "openStacking": "2026-05-26 01:00:00",
@@ -32,21 +32,6 @@
       "openStacking": "2026-05-24 01:00:00",
       "closingDocument": "2026-05-27 16:00:00",
       "closingPhysic": "2026-05-27 18:00:00"
-    },
-    {
-      "vessel": "GREEN PACIFIC",
-      "line": "SIT",
-      "voyIn": "2614S",
-      "voyOut": "2615N",
-      "service": "JTH",
-      "status": "ACTIVE",
-      "etb": "2026-05-29 23:00:00",
-      "ata": "2026-05-29 21:57:00",
-      "etd": "2026-05-30 21:00:00",
-      "atd": "",
-      "openStacking": "2026-05-26 01:00:00",
-      "closingDocument": "2026-05-29 16:00:00",
-      "closingPhysic": "2026-05-29 18:00:00"
     },
     {
       "vessel": "BIG BREEZY",
@@ -379,6 +364,21 @@
       "closingPhysic": "2026-06-05 05:00:00"
     },
     {
+      "vessel": "ERASMUS LEO",
+      "line": "MCC",
+      "voyIn": "622S",
+      "voyOut": "623N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-06-05 12:00:00",
+      "ata": "",
+      "etd": "2026-06-06 08:00:00",
+      "atd": "",
+      "openStacking": "2026-05-31 01:00:00",
+      "closingDocument": "2026-06-05 00:00:00",
+      "closingPhysic": "2026-06-05 02:00:00"
+    },
+    {
       "vessel": "MSC SHAULA",
       "line": "MSC",
       "voyIn": "HW620A",
@@ -392,21 +392,6 @@
       "openStacking": "2026-05-31 01:00:00",
       "closingDocument": "2026-06-04 17:00:00",
       "closingPhysic": "2026-06-04 19:00:00"
-    },
-    {
-      "vessel": "ERASMUS LEO",
-      "line": "MCC",
-      "voyIn": "622S",
-      "voyOut": "623N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-06-04 12:00:00",
-      "ata": "",
-      "etd": "2026-06-05 17:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "BG SINDO GARUDA KENCANA - TB BUANA 1302",
