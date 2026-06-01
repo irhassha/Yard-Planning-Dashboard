@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-01T17:08:04.847Z",
+  "lastUpdated": "2026-06-01T21:18:52.098Z",
   "totalScraped": 66,
   "totalFiltered": 40,
   "vessels": [
+    {
+      "vessel": "BG SINDO GARUDA KENCANA - TB BUANA 1302",
+      "line": "SSD",
+      "voyIn": "341JN",
+      "voyOut": "341JN",
+      "service": "SSD TRANS",
+      "status": "ACTIVE",
+      "etb": "2026-06-02 02:00:00",
+      "ata": "2026-06-01 18:03:00",
+      "etd": "2026-06-02 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "JOSEPHINE MAERSK",
       "line": "MCC",
@@ -587,21 +602,6 @@
       "openStacking": "2026-05-30 01:00:00",
       "closingDocument": "2026-06-01 21:59:00",
       "closingPhysic": "2026-06-01 23:59:00"
-    },
-    {
-      "vessel": "BG SINDO GARUDA KENCANA - TB BUANA 1302",
-      "line": "SSD",
-      "voyIn": "341JN",
-      "voyOut": "341JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-06-02 02:00:00",
-      "ata": "",
-      "etd": "2026-06-02 08:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     }
   ]
 }
