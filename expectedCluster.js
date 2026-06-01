@@ -15,6 +15,7 @@ window.SERVICE_CLUSTER_MAP = {
   "JTH": 6,
   "JPI-B": 5,
   "KIS": 6,
+  "TX4": 6,
   "CIT": 4,
   "IA1": 8
 };
