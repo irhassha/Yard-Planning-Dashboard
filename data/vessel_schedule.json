@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-02T15:49:29.794Z",
-  "totalScraped": 68,
-  "totalFiltered": 39,
+  "lastUpdated": "2026-06-02T20:32:05.554Z",
+  "totalScraped": 69,
+  "totalFiltered": 40,
   "vessels": [
     {
       "vessel": "JML FORTUNE",
@@ -32,6 +32,21 @@
       "openStacking": "2026-05-30 01:00:00",
       "closingDocument": "2026-06-01 21:59:00",
       "closingPhysic": "2026-06-01 23:59:00"
+    },
+    {
+      "vessel": "EVER BLISS",
+      "line": "EMA",
+      "voyIn": "1197-112A",
+      "voyOut": "1197-112A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-06-16 10:00:00",
+      "ata": "",
+      "etd": "2026-06-17 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER ORIENT",
