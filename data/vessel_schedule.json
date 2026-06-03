@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-03T10:27:27.981Z",
+  "lastUpdated": "2026-06-03T16:08:31.073Z",
   "totalScraped": 65,
-  "totalFiltered": 36,
+  "totalFiltered": 35,
   "vessels": [
     {
       "vessel": "JULIUS-S",
@@ -47,21 +47,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "EVER ONWARD",
-      "line": "EGH",
-      "voyIn": "0478-050S",
-      "voyOut": "0478-050N",
-      "service": "CIT",
-      "status": "ACTIVE",
-      "etb": "2026-06-02 16:00:00",
-      "ata": "2026-06-02 14:42:00",
-      "etd": "2026-06-03 13:00:00",
-      "atd": "",
-      "openStacking": "2026-05-30 01:00:00",
-      "closingDocument": "2026-06-01 21:59:00",
-      "closingPhysic": "2026-06-01 23:59:00"
     },
     {
       "vessel": "EVER BUILD",
