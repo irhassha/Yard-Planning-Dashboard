@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-04T19:51:08.054Z",
+  "lastUpdated": "2026-06-05T01:58:40.429Z",
   "totalScraped": 69,
   "totalFiltered": 42,
   "vessels": [
@@ -415,13 +415,13 @@
       "voyOut": "HW621A",
       "service": "PERTIWI",
       "status": "REGISTER",
-      "etb": "2026-06-10 12:00:00",
+      "etb": "2026-06-10 17:00:00",
       "ata": "",
-      "etd": "2026-06-11 20:00:00",
+      "etd": "2026-06-12 01:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-05 01:00:00",
+      "closingDocument": "2026-06-10 05:00:00",
+      "closingPhysic": "2026-06-10 07:00:00"
     },
     {
       "vessel": "ITAL BONUS",
@@ -454,19 +454,19 @@
       "closingPhysic": "2026-06-08 18:00:00"
     },
     {
-      "vessel": "HMM MOMBASA",
-      "line": "HMM",
-      "voyIn": "0007S",
-      "voyOut": "0007N",
-      "service": "KIS",
+      "vessel": "MAERSK DAVAO",
+      "line": "MCC",
+      "voyIn": "614X",
+      "voyOut": "614Y",
+      "service": "TX4",
       "status": "REGISTER",
-      "etb": "2026-06-09 09:00:00",
+      "etb": "2026-06-09 13:00:00",
       "ata": "",
-      "etd": "2026-06-10 08:00:00",
+      "etd": "2026-06-10 23:00:00",
       "atd": "",
-      "openStacking": "2026-05-31 01:00:00",
-      "closingDocument": "2026-06-06 13:00:00",
-      "closingPhysic": "2026-06-06 15:00:00"
+      "openStacking": "2026-06-01 01:00:00",
+      "closingDocument": "2026-06-06 00:00:00",
+      "closingPhysic": "2026-06-06 02:00:00"
     },
     {
       "vessel": "SINAR BANGKA",
@@ -484,19 +484,19 @@
       "closingPhysic": "2026-06-07 15:00:00"
     },
     {
-      "vessel": "MAERSK DAVAO",
-      "line": "MCC",
-      "voyIn": "614X",
-      "voyOut": "614Y",
-      "service": "TX4",
+      "vessel": "HMM MOMBASA",
+      "line": "HMM",
+      "voyIn": "0007S",
+      "voyOut": "0007N",
+      "service": "KIS",
       "status": "REGISTER",
       "etb": "2026-06-08 07:00:00",
       "ata": "",
-      "etd": "2026-06-09 19:00:00",
+      "etd": "2026-06-09 05:00:00",
       "atd": "",
-      "openStacking": "2026-06-01 01:00:00",
-      "closingDocument": "2026-06-06 00:00:00",
-      "closingPhysic": "2026-06-06 02:00:00"
+      "openStacking": "2026-05-31 01:00:00",
+      "closingDocument": "2026-06-06 13:00:00",
+      "closingPhysic": "2026-06-06 15:00:00"
     },
     {
       "vessel": "SKY PEACE",
@@ -507,7 +507,7 @@
       "status": "REGISTER",
       "etb": "2026-06-07 23:00:00",
       "ata": "",
-      "etd": "2026-06-09 06:00:00",
+      "etd": "2026-06-09 10:00:00",
       "atd": "",
       "openStacking": "2026-06-03 01:00:00",
       "closingDocument": "2026-06-07 21:00:00",
