@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-05T14:15:13.309Z",
+  "lastUpdated": "2026-06-05T19:25:58.127Z",
   "totalScraped": 69,
-  "totalFiltered": 41,
+  "totalFiltered": 42,
   "vessels": [
     {
       "vessel": "SITC YUHE",
@@ -12,7 +12,7 @@
       "status": "ACTIVE",
       "etb": "2026-06-05 20:00:00",
       "ata": "2026-06-05 18:00:00",
-      "etd": "2026-06-06 22:00:00",
+      "etd": "2026-06-06 20:00:00",
       "atd": "",
       "openStacking": "2026-06-02 01:00:00",
       "closingDocument": "2026-06-05 16:00:00",
@@ -42,11 +42,26 @@
       "status": "ACTIVE",
       "etb": "2026-06-04 23:00:00",
       "ata": "2026-06-04 23:15:00",
-      "etd": "2026-06-06 10:00:00",
+      "etd": "2026-06-06 06:00:00",
       "atd": "",
       "openStacking": "2026-06-01 01:00:00",
       "closingDocument": "2026-06-05 03:00:00",
       "closingPhysic": "2026-06-05 05:00:00"
+    },
+    {
+      "vessel": "EVER BIRTH",
+      "line": "EMA",
+      "voyIn": "1196-108A",
+      "voyOut": "1196-108A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-06-19 15:00:00",
+      "ata": "",
+      "etd": "",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MSC BERN V",
