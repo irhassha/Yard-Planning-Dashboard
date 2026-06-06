@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-05T19:25:58.127Z",
+  "lastUpdated": "2026-06-06T01:50:14.098Z",
   "totalScraped": 69,
-  "totalFiltered": 42,
+  "totalFiltered": 41,
   "vessels": [
     {
       "vessel": "SITC YUHE",
@@ -32,21 +32,6 @@
       "openStacking": "2026-05-31 01:00:00",
       "closingDocument": "2026-06-05 00:00:00",
       "closingPhysic": "2026-06-05 02:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "622S",
-      "voyOut": "623W",
-      "service": "JKF",
-      "status": "ACTIVE",
-      "etb": "2026-06-04 23:00:00",
-      "ata": "2026-06-04 23:15:00",
-      "etd": "2026-06-06 06:00:00",
-      "atd": "",
-      "openStacking": "2026-06-01 01:00:00",
-      "closingDocument": "2026-06-05 03:00:00",
-      "closingPhysic": "2026-06-05 05:00:00"
     },
     {
       "vessel": "EVER BIRTH",
@@ -404,9 +389,9 @@
       "ata": "",
       "etd": "2026-06-13 08:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-07 01:00:00",
+      "closingDocument": "2026-06-11 22:01:00",
+      "closingPhysic": "2026-06-12 00:01:00"
     },
     {
       "vessel": "JULIUS-S",
