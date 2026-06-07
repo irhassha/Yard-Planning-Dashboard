@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-07T13:12:40.190Z",
+  "lastUpdated": "2026-06-07T19:01:13.140Z",
   "totalScraped": 71,
-  "totalFiltered": 44,
+  "totalFiltered": 46,
   "vessels": [
+    {
+      "vessel": "SKY PEACE",
+      "line": "MCC",
+      "voyIn": "622S",
+      "voyOut": "623N",
+      "service": "IA1",
+      "status": "ACTIVE",
+      "etb": "2026-06-08 03:00:00",
+      "ata": "2026-06-07 23:29:36",
+      "etd": "2026-06-09 12:00:00",
+      "atd": "",
+      "openStacking": "2026-06-03 01:00:00",
+      "closingDocument": "2026-06-07 21:00:00",
+      "closingPhysic": "2026-06-07 23:00:00"
+    },
     {
       "vessel": "MSC SHAULA",
       "line": "MSC",
@@ -19,19 +34,34 @@
       "closingPhysic": "2026-06-04 19:00:00"
     },
     {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2612S",
-      "voyOut": "2613N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-06-06 23:59:00",
-      "ata": "2026-06-07 00:05:00",
-      "etd": "2026-06-07 21:00:00",
+      "vessel": "EVER OBEY",
+      "line": "EMA",
+      "voyIn": "0481-055S",
+      "voyOut": "0481-055N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-06-21 17:00:00",
+      "ata": "",
+      "etd": "2026-06-22 17:00:00",
       "atd": "",
-      "openStacking": "2026-05-29 01:00:00",
-      "closingDocument": "2026-06-01 16:00:00",
-      "closingPhysic": "2026-06-01 18:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "624S",
+      "voyOut": "626N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-06-21 13:00:00",
+      "ata": "",
+      "etd": "2026-06-23 02:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "JULIUS-S",
@@ -379,6 +409,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "623W",
+      "voyOut": "624E",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-06-14 13:00:00",
+      "ata": "",
+      "etd": "2026-06-16 01:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "MERATUS JAYAWIJAYA",
       "line": "MCC",
       "voyIn": "621S",
@@ -602,21 +647,6 @@
       "openStacking": "2026-05-31 01:00:00",
       "closingDocument": "2026-06-06 21:59:00",
       "closingPhysic": "2026-06-06 23:59:00"
-    },
-    {
-      "vessel": "SKY PEACE",
-      "line": "MCC",
-      "voyIn": "622S",
-      "voyOut": "623N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-06-08 03:00:00",
-      "ata": "",
-      "etd": "2026-06-09 12:00:00",
-      "atd": "",
-      "openStacking": "2026-06-03 01:00:00",
-      "closingDocument": "2026-06-07 21:00:00",
-      "closingPhysic": "2026-06-07 23:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
