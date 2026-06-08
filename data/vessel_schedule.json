@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-07T19:01:13.140Z",
+  "lastUpdated": "2026-06-08T02:08:44.018Z",
   "totalScraped": 71,
   "totalFiltered": 46,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "IA1",
       "status": "ACTIVE",
       "etb": "2026-06-08 03:00:00",
-      "ata": "2026-06-07 23:29:36",
+      "ata": "2026-06-08 00:00:00",
       "etd": "2026-06-09 12:00:00",
       "atd": "",
       "openStacking": "2026-06-03 01:00:00",
