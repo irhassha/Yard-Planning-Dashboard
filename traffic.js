@@ -45,7 +45,7 @@ function analyzeTraffic() {
 
     for (let i = 1; i < lines.length; i++) {
         const row = lines[i].split('\t');
-        if (row.length <= Math.max(unitIdx, carrierTypeIdx, typeIdx)) continue;
+        if (row.length < 3) continue; // Skip empty or invalid rows
 
         const unit = (row[unitIdx] || '').trim().toUpperCase();
         const carrierType = (row[carrierTypeIdx] || '').trim().toUpperCase();
@@ -63,13 +63,14 @@ function analyzeTraffic() {
         }
         
         // Vessel Ops logic
-        if (gcIdx !== -1 && statusIdx !== -1 && currOpsIdx !== -1 && carrierColIdx !== -1) {
-            const gc = (row[gcIdx] || '').trim();
-            const status = (row[statusIdx] || '').trim();
-            const currOps = (row[currOpsIdx] || '').trim();
-            const carrier = (row[carrierColIdx] || '').trim();
+        const gc = gcIdx !== -1 ? (row[gcIdx] || '').trim() : '';
+        const status = statusIdx !== -1 ? (row[statusIdx] || '').trim() : '';
+        const currOps = currOpsIdx !== -1 ? (row[currOpsIdx] || '').trim() : '';
+        const carrier = carrierColIdx !== -1 ? (row[carrierColIdx] || '').trim() : '';
 
-            if (status.toLowerCase() === 'active' && gc !== '') {
+        // If it's a VS (Vessel) carrier type and status is active (or if status column is missing but gc is present)
+        if (carrierType === 'VS' && gc !== '') {
+            if (statusIdx === -1 || status.toLowerCase() === 'active') {
                 if (!vesselOpsMap[carrier]) vesselOpsMap[carrier] = new Set();
                 // Store unique combination of GC and operation
                 vesselOpsMap[carrier].add(`${gc}|${currOps}`);
