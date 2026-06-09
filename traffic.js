@@ -20,6 +20,11 @@ function analyzeTraffic() {
     const typeIdx = headers.indexOf('type');
     const durationIdx = headers.indexOf('duration');
     const izIdx = headers.indexOf('iz');
+    const tr1Idx = headers.indexOf('tr. 1');
+    const gcIdx = headers.indexOf('gantry crane');
+    const statusIdx = headers.indexOf('status');
+    const currOpsIdx = headers.indexOf('current operation');
+    const carrierColIdx = headers.indexOf('carrier');
 
     if (unitIdx === -1 || carrierTypeIdx === -1 || typeIdx === -1) {
         console.warn("Traffic Data: Missing required columns (Unit, Carrier type, Type)");
@@ -34,6 +39,9 @@ function analyzeTraffic() {
     let importItems = [];
     let cicItems = [];
     window.currentCicUnits = [];
+    
+    let rtgSet = new Set();
+    let vesselOpsMap = {};
 
     for (let i = 1; i < lines.length; i++) {
         const row = lines[i].split('\t');
@@ -45,6 +53,28 @@ function analyzeTraffic() {
         const durationStr = durationIdx !== -1 ? (row[durationIdx] || '').trim() : '0';
         const izStr = izIdx !== -1 ? (row[izIdx] || '').trim() : '-';
         let durationMin = 0;
+        
+        // RTG logic
+        if (tr1Idx !== -1) {
+            const tr1 = (row[tr1Idx] || '').trim();
+            if (tr1.startsWith('6')) {
+                rtgSet.add(tr1);
+            }
+        }
+        
+        // Vessel Ops logic
+        if (gcIdx !== -1 && statusIdx !== -1 && currOpsIdx !== -1 && carrierColIdx !== -1) {
+            const gc = (row[gcIdx] || '').trim();
+            const status = (row[statusIdx] || '').trim();
+            const currOps = (row[currOpsIdx] || '').trim();
+            const carrier = (row[carrierColIdx] || '').trim();
+
+            if (status.toLowerCase() === 'active' && gc !== '') {
+                if (!vesselOpsMap[carrier]) vesselOpsMap[carrier] = new Set();
+                // Store unique combination of GC and operation
+                vesselOpsMap[carrier].add(`${gc}|${currOps}`);
+            }
+        }
         
         if (durationStr) {
             if (durationStr.includes(':')) {
@@ -126,6 +156,49 @@ function analyzeTraffic() {
 
     safeSetText('trafficTotalCount', totalTrucks);
     safeSetText('trafficTotalTrt', formatTrt(avgTotalTrt));
+    safeSetText('trafficActiveRtg', rtgSet.size);
+    
+    // Render Vessel Ops
+    const vesselOpsEl = document.getElementById('trafficVesselOpsList');
+    if (vesselOpsEl) {
+        if (Object.keys(vesselOpsMap).length === 0) {
+            vesselOpsEl.innerHTML = `<div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>`;
+        } else {
+            let html = '';
+            for (const [carrier, ops] of Object.entries(vesselOpsMap)) {
+                if (!carrier) continue;
+                html += `
+                    <div class="mb-2 last:mb-0 border border-sky-100 rounded-lg overflow-hidden bg-white/50">
+                        <div class="bg-sky-100/50 px-2 py-1 border-b border-sky-100 font-bold text-sky-800 text-[11px] uppercase tracking-wider flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">directions_boat</span>
+                            ${carrier}
+                        </div>
+                        <div class="p-1.5 space-y-1">
+                `;
+                
+                const sortedOps = Array.from(ops).sort();
+                sortedOps.forEach(opStr => {
+                    const [gc, currOps] = opStr.split('|');
+                    let opColor = 'bg-slate-100 text-slate-600';
+                    if (currOps.toLowerCase().includes('disch')) opColor = 'bg-emerald-100 text-emerald-700';
+                    else if (currOps.toLowerCase().includes('load')) opColor = 'bg-blue-100 text-blue-700';
+                    
+                    html += `
+                        <div class="flex items-center justify-between text-xs px-1">
+                            <span class="font-mono font-bold text-slate-700">${gc}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold ${opColor}">${currOps || 'Active'}</span>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            vesselOpsEl.innerHTML = html;
+        }
+    }
     
     // Sort and render Top 10 lists
     exportItems.sort((a, b) => b.durationMin - a.durationMin);
@@ -209,6 +282,10 @@ function clearTrafficInput() {
     document.getElementById('trafficImportList').innerHTML = '<div class="text-center text-blue-600/40 text-xs italic py-2">No data</div>';
     document.getElementById('trafficCicList').innerHTML = '<div class="text-center text-purple-600/40 text-xs italic py-2">No data</div>';
     
+    const vesselOpsEl = document.getElementById('trafficVesselOpsList');
+    if (vesselOpsEl) vesselOpsEl.innerHTML = '<div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>';
+    
+    document.getElementById('trafficActiveRtg').textContent = '0';
     document.getElementById('trafficCicHandled').textContent = '0';
     window.currentCicUnits = [];
 }
