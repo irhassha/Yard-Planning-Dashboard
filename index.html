@@ -1183,65 +1183,65 @@
                     </div>
                 </div>
 
-                <!-- OVERALL SUMMARY GRID -->
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-                    <!-- General Stats (Takes 3 cols) -->
-                    <div class="lg:col-span-3 glass-panel rounded-2xl p-6 shadow-sm border border-amber-200 bg-white flex flex-col justify-center">
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left divide-x divide-amber-100">
+                <!-- SUMMARY & VESSEL OPS ROW -->
+                <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                    <!-- OVERALL SUMMARY STATS -->
+                    <div class="glass-panel rounded-2xl p-4 sm:p-6 shadow-sm border border-amber-200 bg-white flex-grow flex-1">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 divide-y divide-amber-100 sm:divide-y-0 sm:divide-x h-full items-center">
                             <!-- Total Trucks -->
-                            <div class="flex items-center gap-4 px-2">
-                                <div class="p-3 bg-amber-100 rounded-xl text-amber-600 hidden lg:block">
-                                    <span class="material-symbols-outlined text-3xl">local_shipping</span>
+                            <div class="flex items-center gap-2 xl:gap-4 px-2">
+                                <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
+                                    <span class="material-symbols-outlined text-2xl">local_shipping</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-amber-800 font-bold text-[11px] uppercase tracking-wider mb-1">Trucks in Yard</h2>
-                                    <div class="text-3xl font-black text-amber-600" id="trafficTotalCount">0</div>
+                                    <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">Trucks in Yard</h2>
+                                    <div class="text-2xl xl:text-3xl font-black text-amber-600" id="trafficTotalCount">0</div>
                                 </div>
                             </div>
                             
                             <!-- Avg TRT -->
-                            <div class="flex items-center gap-4 px-2 lg:pl-6">
-                                <div class="p-3 bg-amber-100 rounded-xl text-amber-600 hidden lg:block">
-                                    <span class="material-symbols-outlined text-3xl">schedule</span>
+                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
+                                <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
+                                    <span class="material-symbols-outlined text-2xl">schedule</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-amber-800 font-bold text-[11px] uppercase tracking-wider mb-1">Overall TRT</h2>
-                                    <div class="text-3xl font-black text-amber-600" id="trafficTotalTrt">0m</div>
+                                    <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">Overall TRT</h2>
+                                    <div class="text-2xl xl:text-3xl font-black text-amber-600" id="trafficTotalTrt">0m</div>
                                 </div>
                             </div>
                             
                             <!-- RTG Active -->
-                            <div class="flex items-center gap-4 px-2 lg:pl-6">
-                                <div class="p-3 bg-amber-100 rounded-xl text-amber-600 hidden lg:block">
-                                    <span class="material-symbols-outlined text-3xl">forklift</span>
+                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
+                                <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
+                                    <span class="material-symbols-outlined text-2xl">settings</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-amber-800 font-bold text-[11px] uppercase tracking-wider mb-1">RTG Active</h2>
-                                    <div class="text-3xl font-black text-amber-600" id="trafficActiveRtg">0</div>
+                                    <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">RTG Active</h2>
+                                    <div class="text-2xl xl:text-3xl font-black text-amber-600" id="trafficActiveRtg">0</div>
                                 </div>
                             </div>
 
                             <!-- Last Updated -->
-                            <div class="flex items-center gap-4 px-2 lg:pl-6">
-                                <div class="p-3 bg-amber-100 rounded-xl text-amber-600 hidden lg:block">
-                                    <span class="material-symbols-outlined text-3xl">update</span>
+                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
+                                <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
+                                    <span class="material-symbols-outlined text-2xl">update</span>
                                 </div>
                                 <div>
-                                    <h2 class="text-amber-800 font-bold text-[11px] uppercase tracking-wider mb-1">Last Updated</h2>
-                                    <div class="text-lg font-bold text-amber-700 mt-1" id="trafficLastUpdated">-</div>
+                                    <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">Last Updated</h2>
+                                    <div class="text-xs sm:text-sm xl:text-base font-bold text-amber-700 mt-1" id="trafficLastUpdated">-</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Vessel Ops Summary (Takes 1 col) -->
-                    <div class="glass-panel rounded-2xl p-4 shadow-sm border border-sky-200 bg-gradient-to-br from-sky-50 to-white flex flex-col">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="material-symbols-outlined text-sky-600">sailing</span>
-                            <h3 class="text-sky-800 font-bold text-sm uppercase tracking-wider">Update Vessel Ops</h3>
+                    <!-- VESSEL OPS SUMMARY -->
+                    <div id="trafficVesselOpsContainer" class="glass-panel rounded-2xl p-4 shadow-sm border border-sky-200 bg-gradient-to-br from-sky-50 to-white flex flex-col justify-between min-w-[280px] shrink-0">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="material-symbols-outlined text-sky-600 text-lg">sailing</span>
+                            <h3 class="text-sky-800 font-bold text-xs uppercase tracking-wider">Update Vessel Ops</h3>
                         </div>
-                        <div id="trafficVesselOpsList" class="flex-1 overflow-y-auto max-h-[120px] custom-scrollbar space-y-3 text-sm">
-                            <div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>
+                        <div id="trafficVesselOpsList" class="flex gap-3 text-sm flex-1 items-center overflow-x-auto custom-scrollbar">
+                            <div class="text-center text-sky-600/40 text-xs italic py-2 w-full">No active vessel ops</div>
                         </div>
                     </div>
                 </div>

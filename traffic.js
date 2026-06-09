@@ -14,17 +14,49 @@ function analyzeTraffic() {
 
     const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
     
-    // Find required column indices
-    const unitIdx = headers.indexOf('unit');
-    const carrierTypeIdx = headers.indexOf('carrier type');
-    const typeIdx = headers.indexOf('type');
-    const durationIdx = headers.indexOf('duration');
-    const izIdx = headers.indexOf('iz');
-    const tr1Idx = headers.indexOf('tr. 1');
-    const gcIdx = headers.indexOf('gantry crane');
-    const statusIdx = headers.indexOf('status');
-    const currOpsIdx = headers.indexOf('current operation');
-    const carrierColIdx = headers.indexOf('carrier');
+    // Find required column indices with fallback check
+    let unitIdx = headers.indexOf('unit');
+    if (unitIdx === -1) unitIdx = headers.indexOf('container');
+    if (unitIdx === -1) unitIdx = headers.findIndex(h => h.includes('unit no') || h.includes('container no'));
+    if (unitIdx === -1) unitIdx = headers.findIndex(h => h.includes('unit') || h.includes('cntr'));
+
+    let carrierTypeIdx = headers.indexOf('carrier type');
+    if (carrierTypeIdx === -1) carrierTypeIdx = headers.findIndex(h => h.includes('carrier') && h.includes('type'));
+
+    let typeIdx = headers.indexOf('type');
+    if (typeIdx === -1) typeIdx = headers.indexOf('move type');
+    if (typeIdx === -1) typeIdx = headers.findIndex(h => h === 'type' || h === 'move type');
+
+    let durationIdx = headers.indexOf('duration');
+    if (durationIdx === -1) durationIdx = headers.indexOf('trt');
+    if (durationIdx === -1) durationIdx = headers.findIndex(h => h.includes('duration') || h.includes('trt') || h.includes('time'));
+
+    let izIdx = headers.indexOf('iz');
+    if (izIdx === -1) izIdx = headers.indexOf('slot');
+    if (izIdx === -1) izIdx = headers.findIndex(h => h.includes('iz slot') || h === 'iz');
+
+    let tr1Idx = headers.indexOf('tr. 1');
+    if (tr1Idx === -1) tr1Idx = headers.indexOf('tr1');
+    if (tr1Idx === -1) tr1Idx = headers.findIndex(h => h.includes('tr. 1') || h.includes('tr 1'));
+
+    let gcIdx = headers.indexOf('gantry crane');
+    if (gcIdx === -1) gcIdx = headers.findIndex(h => h.includes('gantry') && h.includes('crane'));
+    if (gcIdx === -1) gcIdx = headers.findIndex(h => h.includes('gantry'));
+    if (gcIdx === -1) gcIdx = headers.indexOf('gc');
+    if (gcIdx === -1) gcIdx = headers.indexOf('crane');
+
+    let statusIdx = headers.indexOf('status');
+    if (statusIdx === -1) statusIdx = headers.indexOf('state');
+    if (statusIdx === -1) statusIdx = headers.findIndex(h => h.includes('status') || h.includes('state'));
+
+    let currOpsIdx = headers.indexOf('current operation');
+    if (currOpsIdx === -1) currOpsIdx = headers.findIndex(h => h.includes('current') && h.includes('operation'));
+    if (currOpsIdx === -1) currOpsIdx = headers.findIndex(h => h.includes('curr') && h.includes('operation'));
+    if (currOpsIdx === -1) currOpsIdx = headers.findIndex(h => h.includes('operation') && !h.includes('restow'));
+
+    let carrierColIdx = headers.indexOf('carrier');
+    if (carrierColIdx === -1) carrierColIdx = headers.indexOf('vessel');
+    if (carrierColIdx === -1) carrierColIdx = headers.findIndex(h => h.includes('carrier') || h.includes('vessel'));
 
     if (unitIdx === -1 || carrierTypeIdx === -1 || typeIdx === -1) {
         console.warn("Traffic Data: Missing required columns (Unit, Carrier type, Type)");
@@ -163,31 +195,43 @@ function analyzeTraffic() {
     const vesselOpsEl = document.getElementById('trafficVesselOpsList');
     if (vesselOpsEl) {
         if (Object.keys(vesselOpsMap).length === 0) {
-            vesselOpsEl.innerHTML = `<div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>`;
+            vesselOpsEl.innerHTML = `<div class="text-center text-sky-600/40 text-xs italic py-2 w-full">No active vessel ops</div>`;
         } else {
             let html = '';
             for (const [carrier, ops] of Object.entries(vesselOpsMap)) {
                 if (!carrier) continue;
                 html += `
-                    <div class="mb-2 last:mb-0 border border-sky-100 rounded-lg overflow-hidden bg-white/50">
-                        <div class="bg-sky-100/50 px-2 py-1 border-b border-sky-100 font-bold text-sky-800 text-[11px] uppercase tracking-wider flex items-center gap-1">
+                    <div class="border border-sky-100 rounded-lg overflow-hidden bg-white/50 min-w-[180px] shrink-0">
+                        <div class="bg-sky-100/50 px-2 py-1.5 border-b border-sky-100 font-bold text-sky-800 text-[11px] uppercase tracking-wider flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">directions_boat</span>
-                            ${carrier}
+                            <span class="truncate">${carrier}</span>
                         </div>
                         <div class="p-1.5 space-y-1">
                 `;
                 
                 const sortedOps = Array.from(ops).sort();
                 sortedOps.forEach(opStr => {
-                    const [gc, currOps] = opStr.split('|');
+                    const [gc, rawOps] = opStr.split('|');
+                    let displayOps = 'Active';
                     let opColor = 'bg-slate-100 text-slate-600';
-                    if (currOps.toLowerCase().includes('disch')) opColor = 'bg-emerald-100 text-emerald-700';
-                    else if (currOps.toLowerCase().includes('load')) opColor = 'bg-blue-100 text-blue-700';
+                    
+                    if (rawOps) {
+                        const lower = rawOps.toLowerCase();
+                        if (lower.includes('disch')) {
+                            displayOps = 'Discharge';
+                            opColor = 'bg-emerald-100 text-emerald-700';
+                        } else if (lower.includes('load')) {
+                            displayOps = 'Loading';
+                            opColor = 'bg-blue-100 text-blue-700';
+                        } else {
+                            displayOps = rawOps.charAt(0).toUpperCase() + rawOps.slice(1).toLowerCase();
+                        }
+                    }
                     
                     html += `
                         <div class="flex items-center justify-between text-xs px-1">
                             <span class="font-mono font-bold text-slate-700">${gc}</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold ${opColor}">${currOps || 'Active'}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold ${opColor}">${displayOps}</span>
                         </div>
                     `;
                 });
