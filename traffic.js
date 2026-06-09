@@ -73,6 +73,7 @@ function analyzeTraffic() {
     window.currentCicUnits = [];
     
     let rtgSet = new Set();
+    let pmSet = new Set();
     let vesselOpsMap = {};
 
     for (let i = 1; i < lines.length; i++) {
@@ -86,11 +87,14 @@ function analyzeTraffic() {
         const izStr = izIdx !== -1 ? (row[izIdx] || '').trim() : '-';
         let durationMin = 0;
         
-        // RTG logic
+        // RTG and PM logic
         if (tr1Idx !== -1) {
             const tr1 = (row[tr1Idx] || '').trim();
-            if (tr1.startsWith('6')) {
+            const tr1Upper = tr1.toUpperCase();
+            if (tr1Upper.startsWith('6')) {
                 rtgSet.add(tr1);
+            } else if (tr1Upper.startsWith('PM')) {
+                pmSet.add(tr1);
             }
         }
         
@@ -190,6 +194,7 @@ function analyzeTraffic() {
     safeSetText('trafficTotalCount', totalTrucks);
     safeSetText('trafficTotalTrt', formatTrt(avgTotalTrt));
     safeSetText('trafficActiveRtg', rtgSet.size);
+    safeSetText('trafficActivePm', pmSet.size);
     
     // Render Vessel Ops
     const vesselOpsEl = document.getElementById('trafficVesselOpsList');
@@ -331,6 +336,8 @@ function clearTrafficInput() {
     if (vesselOpsEl) vesselOpsEl.innerHTML = '<div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>';
     
     document.getElementById('trafficActiveRtg').textContent = '0';
+    const activePmEl = document.getElementById('trafficActivePm');
+    if (activePmEl) activePmEl.textContent = '0';
     document.getElementById('trafficCicHandled').textContent = '0';
     window.currentCicUnits = [];
 }
