@@ -95,8 +95,8 @@
                         title="Yard Density"><span class="material-symbols-outlined text-lg">grid_view</span> <span
                             class="sidebar-text whitespace-nowrap">Yard Density</span></button>
                     <button onclick="switchTab('analytics')" id="btn-analytics" class="tab-btn inactive shrink-0"
-                        title="Cluster Spreading"><span class="material-symbols-outlined text-lg">bar_chart</span> <span
-                            class="sidebar-text whitespace-nowrap">Cluster Spreading</span></button>
+                        title="Cluster Spread"><span class="material-symbols-outlined text-lg">bar_chart</span> <span
+                            class="sidebar-text whitespace-nowrap">Cluster Spread</span></button>
                     <button onclick="switchTab('yardmap')" id="btn-yardmap" class="tab-btn inactive shrink-0"
                         title="Yard Map"><span class="material-symbols-outlined text-lg">map</span> <span
                             class="sidebar-text whitespace-nowrap">Yard Map</span></button>
@@ -104,17 +104,20 @@
                         title="Clash Analysis"><span class="material-symbols-outlined text-lg">crisis_alert</span> <span
                             class="sidebar-text whitespace-nowrap">Clash Analysis</span></button>
                     <button onclick="switchTab('empty')" id="btn-empty" class="tab-btn inactive shrink-0"
-                        title="Empty Summary"><span
+                        title="MTY Summary"><span
                             class="material-symbols-outlined text-lg">check_box_outline_blank</span> <span
-                            class="sidebar-text whitespace-nowrap">Empty Summary</span></button>
+                            class="sidebar-text whitespace-nowrap">MTY Summary</span></button>
                     <button onclick="switchTab('projection')" id="btn-projection" class="tab-btn inactive shrink-0"
-                        title="Discharge Projection"><span
-                            class="material-symbols-outlined text-lg">stacked_bar_chart</span> <span
-                            class="sidebar-text whitespace-nowrap">Discharge Projection</span></button>
+                        title="Disch Project"><span class="material-symbols-outlined text-lg">stacked_bar_chart</span>
+                        <span class="sidebar-text whitespace-nowrap">Disch Project</span></button>
                     <button onclick="switchTab('replan')" id="btn-replan"
                         class="tab-btn inactive replan-trigger shrink-0" title="Smart Replan"><span
                             class="material-symbols-outlined text-lg">view_column</span> <span
                             class="sidebar-text whitespace-nowrap">Smart Replan</span></button>
+                    <button onclick="switchTab('traffic')" id="btn-traffic"
+                        class="tab-btn inactive ops-traffic-trigger shrink-0" title="Ops Traffic"><span
+                            class="material-symbols-outlined text-lg">traffic</span> <span
+                            class="sidebar-text whitespace-nowrap">Ops Traffic</span></button>
                 </nav>
 
                 <div class="flex flex-wrap items-center justify-end gap-2 shrink-0">
@@ -1142,6 +1145,184 @@
             </div>
         </div>
 
+        <!-- TAB 8: OPS TRAFFIC -->
+        <div id="tab-traffic" class="hidden animate-fade-in mt-4">
+            <div id="captureAreaTraffic" class="space-y-6">
+                <!-- HERO INPUT -->
+                <div class="glass-panel p-6 rounded-2xl shadow-glass border border-white/40 text-center">
+                    <div class="mb-4 space-y-3">
+                        <span
+                            class="inline-block py-1 px-3 rounded-full bg-orange-100/50 text-orange-700 text-xs font-bold uppercase tracking-wider border border-orange-200/50 shadow-sm">
+                            Ops Traffic Monitoring
+                        </span>
+                        <h1 class="text-2xl font-bold text-slate-800">
+                            Paste Traffic Data
+                        </h1>
+                        <p class="text-slate-500 text-sm">
+                            Copy data from Move list SPACE and Paste here, app will summarize instantly!
+                        </p>
+                    </div>
+
+                    <div class="relative max-w-3xl mx-auto">
+                        <div
+                            class="relative flex items-start rounded-2xl p-3 bg-white/70 shadow-inner border border-slate-200 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100 transition-all">
+                            <span
+                                class="material-symbols-outlined text-slate-400 text-3xl mr-4 mt-2 flex-shrink-0">local_shipping</span>
+                            <textarea id="trafficInput"
+                                class="w-full min-h-[48px] bg-transparent border-none focus:ring-0 p-0 text-sm text-slate-700 placeholder-slate-400 resize-none font-mono leading-5 outline-none"
+                                placeholder="Paste Traffic Data here (Ctrl+V)..." oninput="analyzeTraffic()" rows="2"
+                                spellcheck="false"></textarea>
+                            <div class="ml-2 pl-3 border-l border-slate-200 h-full flex items-start pt-1">
+                                <button onclick="clearTrafficInput()"
+                                    class="p-2 rounded-full text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                                    title="Clear Data">
+                                    <span class="material-symbols-outlined text-xl transition-colors">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OVERALL SUMMARY -->
+                <div class="glass-panel rounded-2xl p-6 shadow-sm border border-amber-200 bg-white mb-6">
+                    <div class="flex flex-col md:flex-row justify-around items-center gap-6 text-center md:text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-amber-100 rounded-2xl text-amber-600">
+                                <span class="material-symbols-outlined text-4xl">local_shipping</span>
+                            </div>
+                            <div>
+                                <h2 class="text-amber-800 font-bold text-sm uppercase tracking-wider mb-1">Total Trucks
+                                    in Yard</h2>
+                                <div class="text-4xl font-black text-amber-600" id="trafficTotalCount">0</div>
+                            </div>
+                        </div>
+                        <div class="h-16 w-px bg-amber-200 hidden md:block"></div>
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-amber-100 rounded-2xl text-amber-600">
+                                <span class="material-symbols-outlined text-4xl">schedule</span>
+                            </div>
+                            <div>
+                                <h2 class="text-amber-800 font-bold text-sm uppercase tracking-wider mb-1">Overall Avg
+                                    TRT</h2>
+                                <div class="text-4xl font-black text-amber-600" id="trafficTotalTrt">0m</div>
+                            </div>
+                        </div>
+                        <div class="h-16 w-px bg-amber-200 hidden md:block"></div>
+                        <div class="flex items-center gap-4">
+                            <div class="p-4 bg-amber-100 rounded-2xl text-amber-600">
+                                <span class="material-symbols-outlined text-4xl">update</span>
+                            </div>
+                            <div>
+                                <h2 class="text-amber-800 font-bold text-sm uppercase tracking-wider mb-1">Last Updated
+                                </h2>
+                                <div class="text-xl font-bold text-amber-700 mt-2" id="trafficLastUpdated">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUMMARY CARDS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch" id="trafficSummaryCards">
+                    <!-- Export Card -->
+                    <div
+                        class="glass-panel rounded-2xl p-6 shadow-sm border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white flex flex-col">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-emerald-700 font-bold text-sm uppercase tracking-wider mb-1">Truck
+                                    Export</h3>
+                                <div class="text-4xl font-black text-emerald-600" id="trafficExportCount">0</div>
+                            </div>
+                            <div class="p-3 bg-emerald-100 rounded-xl text-emerald-600">
+                                <span class="material-symbols-outlined text-2xl">arrow_upward</span>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-emerald-200/60 flex justify-between items-center mb-4">
+                            <span class="text-emerald-700/70 font-semibold text-xs uppercase tracking-wider">Avg
+                                TRT</span>
+                            <span class="font-bold text-emerald-700 text-lg" id="trafficExportTrt">0m</span>
+                        </div>
+                        <div class="bg-emerald-50/50 rounded-xl p-3 border border-emerald-100/50 flex-1 flex flex-col">
+                            <h4
+                                class="text-xs font-bold text-emerald-700/70 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                <span>Top 10 Longest TRT</span>
+                                <span class="material-symbols-outlined text-[14px]">timer</span>
+                            </h4>
+                            <div id="trafficExportList"
+                                class="space-y-1.5 text-sm overflow-y-auto max-h-[300px] custom-scrollbar pr-1">
+                                <div class="text-center text-emerald-600/40 text-xs italic py-2">No data</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Import Card -->
+                    <div
+                        class="glass-panel rounded-2xl p-6 shadow-sm border border-blue-200 bg-gradient-to-br from-blue-50 to-white flex flex-col">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-blue-700 font-bold text-sm uppercase tracking-wider mb-1">Truck Import
+                                </h3>
+                                <div class="text-4xl font-black text-blue-600" id="trafficImportCount">0</div>
+                            </div>
+                            <div class="p-3 bg-blue-100 rounded-xl text-blue-600">
+                                <span class="material-symbols-outlined text-2xl">arrow_downward</span>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-blue-200/60 flex justify-between items-center mb-4">
+                            <span class="text-blue-700/70 font-semibold text-xs uppercase tracking-wider">Avg TRT</span>
+                            <span class="font-bold text-blue-700 text-lg" id="trafficImportTrt">0m</span>
+                        </div>
+                        <div class="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50 flex-1 flex flex-col">
+                            <h4
+                                class="text-xs font-bold text-blue-700/70 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                <span>Top 10 Longest TRT</span>
+                                <span class="material-symbols-outlined text-[14px]">timer</span>
+                            </h4>
+                            <div id="trafficImportList"
+                                class="space-y-1.5 text-sm overflow-y-auto max-h-[300px] custom-scrollbar pr-1">
+                                <div class="text-center text-blue-600/40 text-xs italic py-2">No data</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CIC Card -->
+                    <div
+                        class="glass-panel rounded-2xl p-6 shadow-sm border border-purple-200 bg-gradient-to-br from-purple-50 to-white flex flex-col">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-purple-700 font-bold text-sm uppercase tracking-wider mb-1">CIC</h3>
+                                <div class="text-4xl font-black text-purple-600" id="trafficCicCount">0</div>
+                            </div>
+                            <div class="p-3 bg-purple-100 rounded-xl text-purple-600">
+                                <span class="material-symbols-outlined text-2xl">sync_alt</span>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-purple-200/60 flex justify-between items-center mb-2">
+                            <span class="text-purple-700/70 font-semibold text-xs uppercase tracking-wider">Avg
+                                TRT</span>
+                            <span class="font-bold text-purple-700 text-lg" id="trafficCicTrt">0m</span>
+                        </div>
+                        <div class="pb-4 flex justify-between items-center mb-4 border-b border-purple-200/60">
+                            <span class="text-purple-700/70 font-semibold text-xs uppercase tracking-wider">CIC
+                                Handled</span>
+                            <div class="flex items-baseline gap-1">
+                                <span class="font-bold text-purple-700 text-lg" id="trafficCicHandled">0</span>
+                                <span class="text-xs text-purple-500 font-medium">units</span>
+                            </div>
+                        </div>
+                        <div class="bg-purple-50/50 rounded-xl p-3 border border-purple-100/50 flex-1 flex flex-col">
+                            <h4
+                                class="text-xs font-bold text-purple-700/70 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                <span>Top 10 Longest TRT</span>
+                                <span class="material-symbols-outlined text-[14px]">timer</span>
+                            </h4>
+                            <div id="trafficCicList"
+                                class="space-y-1.5 text-sm overflow-y-auto max-h-[300px] custom-scrollbar pr-1">
+                                <div class="text-center text-purple-600/40 text-xs italic py-2">No data</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- TAB 6: YARD MAP -->
         <div id="tab-yardmap" class="hidden animate-fade-in mt-4">
             <div id="captureAreaYardMap" class="space-y-4">
@@ -1468,7 +1649,8 @@
                             </h2>
                             <div class="flex items-center gap-2">
                                 <span id="replanComparisonBadge"></span>
-                                <span class="text-xs text-slate-400 bg-white/80 px-2 py-1 rounded shadow-sm">Click row to analyze</span>
+                                <span class="text-xs text-slate-400 bg-white/80 px-2 py-1 rounded shadow-sm">Click row
+                                    to analyze</span>
                             </div>
                         </div>
                         <div id="replanPreviewContainer"
@@ -1495,7 +1677,8 @@
                         <div
                             class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 border-b border-slate-100 pb-4 gap-4">
                             <div>
-                                <h2 id="replanSlotHeaderUnit" class="text-xl font-bold text-slate-800 mb-1">Recommended Slots</h2>
+                                <h2 id="replanSlotHeaderUnit" class="text-xl font-bold text-slate-800 mb-1">Recommended
+                                    Slots</h2>
                                 <p class="text-sm text-slate-500">Filtered only available slots from Unit List.</p>
                             </div>
                             <span
@@ -1717,6 +1900,7 @@
     <script src="expectedCluster.js"></script>
     <script src="yp.js"></script>
     <script src="replan.js"></script>
+    <script src="traffic.js"></script>
     <script src="yardmap.js"></script>
     <script src="stowage.js"></script>
     <script src="work_sequence.js"></script>

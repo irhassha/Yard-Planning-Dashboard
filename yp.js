@@ -2702,8 +2702,8 @@ async function sendAiChatMessage(event) {
 // --- UPDATE NAVIGATION FUNCTIONS ---
 
 function switchTab(t) {
-    // Tambahkan 'empty' dan 'replan' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap', 'replan'].forEach(id => {
+    // Tambahkan 'empty', 'replan' dan 'traffic' ke dalam array daftar tab
+    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap', 'replan', 'traffic'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
 
@@ -2764,6 +2764,9 @@ function downloadImage() {
     } else if (!document.getElementById("tab-yardmap")?.classList.contains("hidden")) {
         activeId = "captureAreaYardMap";
         fileName = "Yard_Map";
+    } else if (!document.getElementById("tab-traffic")?.classList.contains("hidden")) {
+        activeId = "tab-traffic";
+        fileName = "Ops_Traffic";
     }
 
     const el = document.getElementById(activeId);
@@ -4505,3 +4508,4 @@ window.addEventListener('scroll', () => {
         }
     }
 });
+

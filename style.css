@@ -346,6 +346,28 @@ details.recommended-panel[open] summary .toggle-icon {
     opacity: 1;
 }
 
+.tab-btn.ops-traffic-trigger {
+    background: linear-gradient(135deg, #ea580c, #f97316) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25) !important;
+}
+
+.tab-btn.ops-traffic-trigger.active {
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.35), 0 8px 20px rgba(249, 115, 22, 0.4) !important;
+    background: linear-gradient(135deg, #c2410c, #ea580c) !important;
+}
+
+.tab-btn.ops-traffic-trigger.inactive {
+    opacity: 0.85;
+}
+
+.tab-btn.ops-traffic-trigger:hover {
+    transform: translateY(-1px);
+    opacity: 1;
+}
+
+
 .ai-chat-window {
     overflow: hidden;
     z-index: 45;
