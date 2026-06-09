@@ -19,6 +19,7 @@ function analyzeTraffic() {
     const carrierTypeIdx = headers.indexOf('carrier type');
     const typeIdx = headers.indexOf('type');
     const durationIdx = headers.indexOf('duration');
+    const izIdx = headers.indexOf('iz');
 
     if (unitIdx === -1 || carrierTypeIdx === -1 || typeIdx === -1) {
         console.warn("Traffic Data: Missing required columns (Unit, Carrier type, Type)");
@@ -42,6 +43,7 @@ function analyzeTraffic() {
         const carrierType = (row[carrierTypeIdx] || '').trim().toUpperCase();
         const type = (row[typeIdx] || '').trim();
         const durationStr = durationIdx !== -1 ? (row[durationIdx] || '').trim() : '0';
+        const izStr = izIdx !== -1 ? (row[izIdx] || '').trim() : '-';
         let durationMin = 0;
         
         if (durationStr) {
@@ -73,18 +75,18 @@ function analyzeTraffic() {
             if (!window.cicHandledUnits.has(unit)) {
                 cicCount++;
                 cicTrt += durationMin;
-                cicItems.push({ unit, durationMin });
+                cicItems.push({ unit, durationMin, iz: izStr });
             }
         } else {
             // 3. Import or Export
             if (type.toLowerCase() === 'in') {
                 exportCount++;
                 exportTrt += durationMin;
-                exportItems.push({ unit, durationMin });
+                exportItems.push({ unit, durationMin, iz: izStr });
             } else if (type.toLowerCase() === 'out') {
                 importCount++;
                 importTrt += durationMin;
-                importItems.push({ unit, durationMin });
+                importItems.push({ unit, durationMin, iz: izStr });
             }
         }
     }
@@ -141,12 +143,18 @@ function analyzeTraffic() {
 
         const top10 = items.slice(0, 10);
         el.innerHTML = top10.map((item, idx) => {
+            const slotHtml = item.iz && item.iz !== '-' 
+                ? `<span class="text-[10px] bg-slate-100 text-slate-500 px-1 py-0.5 rounded ml-1 border border-slate-200">${item.iz}</span>` 
+                : '';
+                
             if (isCic) {
                 return `
                     <label class="flex items-center gap-2 cursor-pointer group py-1 border-b border-${colorClass}-100/30 last:border-0 hover:bg-purple-100/30 rounded px-1 -mx-1 transition-colors">
                         <span class="w-4 font-bold text-${colorClass}-700/50 text-xs">${idx + 1}.</span>
                         <input type="checkbox" class="rounded text-${colorClass}-600 focus:ring-${colorClass}-500 w-4 h-4 cursor-pointer" onchange="toggleCicHandled('${item.unit}', this.checked)">
-                        <span id="cic-label-${item.unit}" class="flex-1 font-mono font-medium text-slate-700 group-hover:text-${colorClass}-700 transition-colors">${item.unit}</span>
+                        <span id="cic-label-${item.unit}" class="flex-1 font-mono font-medium text-slate-700 group-hover:text-${colorClass}-700 transition-colors">
+                            ${item.unit}${slotHtml}
+                        </span>
                         <span id="cic-time-${item.unit}" class="font-bold text-red-500 transition-colors">${formatTrt(item.durationMin)}</span>
                     </label>
                 `;
@@ -154,7 +162,9 @@ function analyzeTraffic() {
                 return `
                     <div class="flex items-center gap-2 py-1 border-b border-${colorClass}-100/30 last:border-0">
                         <span class="w-4 font-bold text-${colorClass}-700/50 text-xs">${idx + 1}.</span>
-                        <span class="flex-1 font-mono font-medium text-slate-700">${item.unit}</span>
+                        <span class="flex-1 font-mono font-medium text-slate-700">
+                            ${item.unit}${slotHtml}
+                        </span>
                         <span class="font-bold text-red-500">${formatTrt(item.durationMin)}</span>
                     </div>
                 `;
