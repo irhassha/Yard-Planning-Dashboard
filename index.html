@@ -1186,10 +1186,16 @@
                 <!-- SUMMARY & VESSEL OPS ROW -->
                 <div class="flex flex-col lg:flex-row gap-6 items-stretch">
                     <!-- OVERALL SUMMARY STATS -->
-                    <div class="glass-panel rounded-2xl p-4 sm:p-6 shadow-sm border border-amber-200 bg-white flex-grow flex-1">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 divide-y divide-amber-100 sm:divide-y-0 sm:divide-x h-full items-center">
+                    <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-sm border border-amber-200 bg-white flex-grow flex-1 flex flex-col justify-between">
+                        <!-- Last Updated (top-left) -->
+                        <div class="text-xs xl:text-sm text-amber-800/60 font-semibold uppercase tracking-wider pb-2 mb-3 border-b border-amber-100 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-base">schedule</span>
+                            <span>Last Updated: <span id="trafficLastUpdated" class="text-amber-700 font-bold">-</span></span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2 sm:gap-4 divide-x divide-amber-100 h-full items-center">
                             <!-- Total Trucks -->
-                            <div class="flex items-center gap-2 xl:gap-4 px-2">
+                            <div class="flex items-center gap-2 xl:gap-4 pr-2">
                                 <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
                                     <span class="material-symbols-outlined text-2xl">local_shipping</span>
                                 </div>
@@ -1200,7 +1206,7 @@
                             </div>
                             
                             <!-- Avg TRT -->
-                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
+                            <div class="flex items-center gap-2 xl:gap-4 px-2 sm:pl-4 xl:pl-6">
                                 <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
                                     <span class="material-symbols-outlined text-2xl">schedule</span>
                                 </div>
@@ -1211,24 +1217,13 @@
                             </div>
                             
                             <!-- RTG Active -->
-                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
+                            <div class="flex items-center gap-2 xl:gap-4 pl-2 sm:pl-4 xl:pl-6">
                                 <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
                                     <span class="material-symbols-outlined text-2xl">settings</span>
                                 </div>
                                 <div>
                                     <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">RTG Active</h2>
                                     <div class="text-2xl xl:text-3xl font-black text-amber-600" id="trafficActiveRtg">0</div>
-                                </div>
-                            </div>
-
-                            <!-- Last Updated -->
-                            <div class="flex items-center gap-2 xl:gap-4 px-2 pt-2 sm:pt-0 sm:pl-4 xl:pl-6">
-                                <div class="p-2 bg-amber-100 rounded-xl text-amber-600 hidden xl:block">
-                                    <span class="material-symbols-outlined text-2xl">update</span>
-                                </div>
-                                <div>
-                                    <h2 class="text-amber-800 font-bold text-[10px] xl:text-[11px] uppercase tracking-wider mb-1">Last Updated</h2>
-                                    <div class="text-xs sm:text-sm xl:text-base font-bold text-amber-700 mt-1" id="trafficLastUpdated">-</div>
                                 </div>
                             </div>
                         </div>
