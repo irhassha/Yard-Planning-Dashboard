@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-11T15:25:35.023Z",
-  "totalScraped": 73,
-  "totalFiltered": 48,
+  "lastUpdated": "2026-06-11T20:04:30.304Z",
+  "totalScraped": 72,
+  "totalFiltered": 49,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "623E",
+      "voyOut": "624N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-06-11 23:00:00",
+      "ata": "2026-06-11 23:58:00",
+      "etd": "2026-06-13 15:00:00",
+      "atd": "",
+      "openStacking": "2026-06-03 01:00:00",
+      "closingDocument": "2026-06-07 20:00:00",
+      "closingPhysic": "2026-06-07 22:00:00"
+    },
     {
       "vessel": "EVER BEFIT",
       "line": "EMA",
@@ -19,21 +34,6 @@
       "closingPhysic": "2026-06-10 12:00:00"
     },
     {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S122",
-      "voyOut": "N122",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-06-10 01:00:00",
-      "ata": "2026-06-10 01:09:49",
-      "etd": "2026-06-11 20:00:00",
-      "atd": "",
-      "openStacking": "2026-06-06 01:00:00",
-      "closingDocument": "2026-06-08 21:59:00",
-      "closingPhysic": "2026-06-08 23:59:00"
-    },
-    {
       "vessel": "MAERSK DAVAO",
       "line": "MCC",
       "voyIn": "614X",
@@ -47,6 +47,36 @@
       "openStacking": "2026-06-01 01:00:00",
       "closingDocument": "2026-06-06 00:00:00",
       "closingPhysic": "2026-06-06 02:00:00"
+    },
+    {
+      "vessel": "EVER ORIENT",
+      "line": "EMC",
+      "voyIn": "0480-110S",
+      "voyOut": "0480-110N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-06-25 13:30:00",
+      "ata": "",
+      "etd": "2026-06-26 11:30:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MSC BERN V",
+      "line": "MSC",
+      "voyIn": "HW623A",
+      "voyOut": "HW623A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-06-25 02:00:00",
+      "ata": "",
+      "etd": "2026-06-26 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BURLY",
@@ -662,21 +692,6 @@
       "openStacking": "2026-06-05 01:00:00",
       "closingDocument": "2026-06-10 05:00:00",
       "closingPhysic": "2026-06-10 07:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "623E",
-      "voyOut": "624N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-11 23:00:00",
-      "ata": "",
-      "etd": "2026-06-13 15:00:00",
-      "atd": "",
-      "openStacking": "2026-06-03 01:00:00",
-      "closingDocument": "2026-06-07 20:00:00",
-      "closingPhysic": "2026-06-07 22:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
