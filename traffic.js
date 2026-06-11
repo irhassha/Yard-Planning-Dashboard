@@ -107,9 +107,11 @@ function analyzeTraffic() {
         // If it's a VS (Vessel) carrier type and status is active (or if status column is missing but gc is present)
         if (carrierType === 'VS' && gc !== '') {
             if (statusIdx === -1 || status.toLowerCase() === 'active') {
-                if (!vesselOpsMap[carrier]) vesselOpsMap[carrier] = new Set();
-                // Store unique combination of GC and operation
-                vesselOpsMap[carrier].add(`${gc}|${currOps}`);
+                if (!vesselOpsMap[carrier]) vesselOpsMap[carrier] = new Map();
+                const existingOps = vesselOpsMap[carrier].get(gc);
+                if (!existingOps || existingOps.trim() === '') {
+                    vesselOpsMap[carrier].set(gc, currOps);
+                }
             }
         }
         
@@ -218,9 +220,8 @@ function analyzeTraffic() {
                         <div class="p-1.5 space-y-1">
                 `;
                 
-                const sortedOps = Array.from(ops).sort();
-                sortedOps.forEach(opStr => {
-                    const [gc, rawOps] = opStr.split('|');
+                const sortedOps = Array.from(ops.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+                sortedOps.forEach(([gc, rawOps]) => {
                     let displayOps = 'Active';
                     let opColor = 'bg-slate-100 text-slate-600';
                     
