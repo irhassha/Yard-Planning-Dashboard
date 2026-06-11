@@ -338,7 +338,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         if (cReplanKey === "conttype") colMap.conttype = idx;
                         if (cReplanKey === "unitheight" || c === "height") colMap.unitheight = idx;
                         if (cReplanKey === "unit") colMap.unit = idx;
-                        if (cReplanKey === "goods") colMap.goods = idx;
+                        if (cReplanKey === "goods" || c.includes("good")) colMap.goods = idx;
                     });
                     break;
                 }
@@ -432,9 +432,9 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
             const elTotalCIC = document.getElementById('trafficTotalCic');
             if (elTotalCIC) {
                 let totalCIC = invData.filter(item => {
-                    let svc = item.service;
-                    let gds = item.goods;
-                    return svc === "CIC" || (svc === "TAMS" && gds === "CIC");
+                    let svc = item.service || "";
+                    let gds = item.goods || "";
+                    return svc.includes("CIC") || (svc.includes("TAMS") && gds.includes("CIC"));
                 }).length;
                 elTotalCIC.textContent = totalCIC;
             }
