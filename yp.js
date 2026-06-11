@@ -301,7 +301,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
 
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1 };
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1 };
 
             for (let i = 0; i < Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -338,6 +338,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         if (cReplanKey === "conttype") colMap.conttype = idx;
                         if (cReplanKey === "unitheight" || c === "height") colMap.unitheight = idx;
                         if (cReplanKey === "unit") colMap.unit = idx;
+                        if (cReplanKey === "goods") colMap.goods = idx;
                     });
                     break;
                 }
@@ -413,7 +414,8 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                     spod: colMap.spod !== -1 ? String(row[colMap.spod] || "").toUpperCase().trim() : "",
                     wtcl: colMap.wtcl !== -1 ? String(row[colMap.wtcl] || "").toUpperCase().trim() : "",
                     conttype: colMap.conttype !== -1 ? String(row[colMap.conttype] || "").toUpperCase().trim() : "",
-                    unitheight: colMap.unitheight !== -1 ? String(row[colMap.unitheight] || "").toUpperCase().trim() : ""
+                    unitheight: colMap.unitheight !== -1 ? String(row[colMap.unitheight] || "").toUpperCase().trim() : "",
+                    goods: colMap.goods !== -1 ? String(row[colMap.goods] || "").toUpperCase().trim() : ""
                 });
             }
 
@@ -425,6 +427,18 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
             console.log('[OOG Debug] Total C08 containers:', invData.filter(it => it.block === 'C08').length);
             console.log('[OOG Debug] C08 with oog=Y:', invData.filter(it => it.block === 'C08' && it.oog === 'Y').length);
             console.log('[OOG Debug] All unique oog values:', [...new Set(invData.map(it => it.oog))]);
+            
+            // Calculate Total CIC for Traffic Tab
+            const elTotalCIC = document.getElementById('trafficTotalCic');
+            if (elTotalCIC) {
+                let totalCIC = invData.filter(item => {
+                    let svc = item.service;
+                    let gds = item.goods;
+                    return svc === "CIC" || (svc === "TAMS" && gds === "CIC");
+                }).length;
+                elTotalCIC.textContent = totalCIC;
+            }
+            
             // AI chat button is always visible in control card.
 
             // Render All Tabs
