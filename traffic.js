@@ -129,8 +129,12 @@ function analyzeTraffic() {
         let isCic = false;
         if (window.invData && window.invData.length > 0) {
             const found = window.invData.find(item => item.unit === unit);
-            if (found && found.service && found.service.toUpperCase().includes('CIC')) {
-                isCic = true;
+            if (found) {
+                let svc = (found.service || "").toUpperCase();
+                let gds = (found.goods || "").toUpperCase();
+                if (svc.includes('CIC') || (svc.includes('TAMS') && gds.includes('CIC'))) {
+                    isCic = true;
+                }
             }
         }
 
