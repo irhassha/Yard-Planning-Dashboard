@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-12T09:49:58.685Z",
+  "lastUpdated": "2026-06-12T14:30:03.695Z",
   "totalScraped": 72,
   "totalFiltered": 47,
   "vessels": [
+    {
+      "vessel": "WAN HAI 373",
+      "line": "WHL",
+      "voyIn": "S026",
+      "voyOut": "N026",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-06-12 18:00:00",
+      "ata": "2026-06-12 17:36:26",
+      "etd": "2026-06-14 11:00:00",
+      "atd": "",
+      "openStacking": "2026-06-07 01:00:00",
+      "closingDocument": "2026-06-11 14:00:00",
+      "closingPhysic": "2026-06-11 16:00:00"
+    },
     {
       "vessel": "MSC BREMERHAVEN V",
       "line": "MSC",
@@ -647,21 +662,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "WAN HAI 373",
-      "line": "WHL",
-      "voyIn": "S026",
-      "voyOut": "N026",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-06-12 18:00:00",
-      "ata": "",
-      "etd": "2026-06-14 11:00:00",
-      "atd": "",
-      "openStacking": "2026-06-07 01:00:00",
-      "closingDocument": "2026-06-11 14:00:00",
-      "closingPhysic": "2026-06-11 16:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
