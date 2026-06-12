@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-12T14:30:03.695Z",
-  "totalScraped": 72,
-  "totalFiltered": 47,
+  "lastUpdated": "2026-06-12T19:48:13.102Z",
+  "totalScraped": 71,
+  "totalFiltered": 48,
   "vessels": [
     {
       "vessel": "WAN HAI 373",
@@ -47,6 +47,21 @@
       "openStacking": "2026-06-03 01:00:00",
       "closingDocument": "2026-06-07 20:00:00",
       "closingPhysic": "2026-06-07 22:00:00"
+    },
+    {
+      "vessel": "EVER ORIENT",
+      "line": "EMC",
+      "voyIn": "0480-110S",
+      "voyOut": "0480-110N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-06-26 04:00:00",
+      "ata": "",
+      "etd": "2026-06-27 05:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "YM CENTENNIAL",
