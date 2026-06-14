@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-14T02:07:16.294Z",
+  "lastUpdated": "2026-06-14T08:57:55.747Z",
   "totalScraped": 68,
-  "totalFiltered": 46,
+  "totalFiltered": 45,
   "vessels": [
     {
       "vessel": "JULIUS-S",
@@ -32,21 +32,6 @@
       "openStacking": "2026-06-07 01:00:00",
       "closingDocument": "2026-06-11 22:01:00",
       "closingPhysic": "2026-06-12 00:01:00"
-    },
-    {
-      "vessel": "WAN HAI 373",
-      "line": "WHL",
-      "voyIn": "S026",
-      "voyOut": "N026",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-06-12 18:00:00",
-      "ata": "2026-06-12 17:36:26",
-      "etd": "2026-06-14 11:00:00",
-      "atd": "",
-      "openStacking": "2026-06-07 01:00:00",
-      "closingDocument": "2026-06-11 14:00:00",
-      "closingPhysic": "2026-06-11 16:00:00"
     },
     {
       "vessel": "STARSHIP VENUS",
@@ -385,28 +370,13 @@
       "voyOut": "0826",
       "service": "TMAS",
       "status": "REGISTER",
-      "etb": "2026-06-20 18:00:00",
+      "etb": "2026-06-21 05:00:00",
       "ata": "",
-      "etd": "2026-06-21 08:00:00",
+      "etd": "2026-06-21 17:30:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "HMM DAVAO",
-      "line": "HMM",
-      "voyIn": "0022S",
-      "voyOut": "0022N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-06-20 14:00:00",
-      "ata": "",
-      "etd": "2026-06-21 19:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-20 05:00:00",
-      "closingPhysic": "2026-06-20 07:00:00"
     },
     {
       "vessel": "MSC PRECISION V",
@@ -424,34 +394,49 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI2",
-      "status": "REGISTER",
-      "etb": "2026-06-19 21:00:00",
-      "ata": "",
-      "etd": "2026-06-20 15:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
       "voyIn": "624S",
       "voyOut": "625W",
       "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-06-18 22:00:00",
+      "etb": "2026-06-19 21:00:00",
       "ata": "",
-      "etd": "2026-06-20 11:00:00",
+      "etd": "2026-06-21 09:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-15 01:00:00",
+      "closingDocument": "2026-06-19 09:00:00",
+      "closingPhysic": "2026-06-19 11:00:00"
+    },
+    {
+      "vessel": "HMM DAVAO",
+      "line": "HMM",
+      "voyIn": "0022S",
+      "voyOut": "0022N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-06-19 20:00:00",
+      "ata": "",
+      "etd": "2026-06-21 02:00:00",
+      "atd": "",
+      "openStacking": "2026-06-15 01:00:00",
+      "closingDocument": "2026-06-20 05:00:00",
+      "closingPhysic": "2026-06-20 07:00:00"
+    },
+    {
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-06-18 22:30:00",
+      "ata": "",
+      "etd": "2026-06-19 17:00:00",
+      "atd": "",
+      "openStacking": "2026-06-15 01:00:00",
+      "closingDocument": "2026-06-19 15:00:00",
+      "closingPhysic": "2026-06-19 17:00:00"
     },
     {
       "vessel": "SITC NANSHA",
@@ -525,8 +510,8 @@
       "etd": "2026-06-18 10:00:00",
       "atd": "",
       "openStacking": "2026-06-09 01:00:00",
-      "closingDocument": "2026-06-13 13:00:00",
-      "closingPhysic": "2026-06-13 15:00:00"
+      "closingDocument": "2026-06-15 13:00:00",
+      "closingPhysic": "2026-06-15 15:00:00"
     },
     {
       "vessel": "AS PENELOPE",
@@ -595,9 +580,9 @@
       "voyOut": "2613N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-06-15 10:00:00",
+      "etb": "2026-06-15 13:00:00",
       "ata": "",
-      "etd": "2026-06-16 14:00:00",
+      "etd": "2026-06-16 15:00:00",
       "atd": "",
       "openStacking": "2026-06-05 01:00:00",
       "closingDocument": "2026-06-08 16:00:00",
