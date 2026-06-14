@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-13T19:02:37.331Z",
+  "lastUpdated": "2026-06-14T02:07:16.294Z",
   "totalScraped": 68,
   "totalFiltered": 46,
   "vessels": [
+    {
+      "vessel": "JULIUS-S",
+      "line": "MCC",
+      "voyIn": "623S",
+      "voyOut": "624W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-06-14 04:00:00",
+      "ata": "2026-06-14 01:44:00",
+      "etd": "2026-06-15 23:00:00",
+      "atd": "",
+      "openStacking": "2026-06-06 01:00:00",
+      "closingDocument": "2026-06-10 19:00:00",
+      "closingPhysic": "2026-06-10 21:00:00"
+    },
     {
       "vessel": "AS PIA",
       "line": "MCC",
@@ -11,7 +26,7 @@
       "service": "IA8",
       "status": "ACTIVE",
       "etb": "2026-06-13 23:00:00",
-      "ata": "2026-06-13 23:11:06",
+      "ata": "2026-06-13 22:00:00",
       "etd": "2026-06-14 15:00:00",
       "atd": "",
       "openStacking": "2026-06-07 01:00:00",
@@ -617,21 +632,6 @@
       "openStacking": "2026-06-07 01:00:00",
       "closingDocument": "2026-06-12 04:00:00",
       "closingPhysic": "2026-06-12 06:00:00"
-    },
-    {
-      "vessel": "JULIUS-S",
-      "line": "MCC",
-      "voyIn": "623S",
-      "voyOut": "624W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-14 04:00:00",
-      "ata": "",
-      "etd": "2026-06-15 23:00:00",
-      "atd": "",
-      "openStacking": "2026-06-06 01:00:00",
-      "closingDocument": "2026-06-10 19:00:00",
-      "closingPhysic": "2026-06-10 21:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
