@@ -1387,37 +1387,6 @@
                     </div>
                 </div>
 
-                <!-- CIC RECAP MODAL -->
-                <div id="cicRecapModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm hidden opacity-0 pointer-events-none transition-opacity duration-200" style="margin: 0; padding: 0;">
-                    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden transform scale-95 transition-all duration-200" id="cicRecapModalInner">
-                        <div class="p-4 bg-purple-50 border-b border-purple-100 flex justify-between items-center">
-                            <h3 class="text-purple-800 font-bold flex items-center gap-2">
-                                <span class="material-symbols-outlined">analytics</span>
-                                Daily CIC Handled
-                            </h3>
-                            <button onclick="closeCicRecapModal()" class="text-purple-400 hover:text-purple-600 transition-colors">
-                                <span class="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-                        <div class="p-5">
-                            <div class="text-center mb-4">
-                                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" id="cicRecapDate">TODAY</div>
-                            </div>
-                            <div class="space-y-3" id="cicRecapContent">
-                                <div class="flex justify-center py-6 text-purple-400">
-                                    <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
-                                </div>
-                            </div>
-                            <div class="mt-5 pt-4 border-t border-slate-100">
-                                <div class="flex justify-between items-center px-2">
-                                    <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total</span>
-                                    <span class="text-2xl font-black text-purple-600" id="cicRecapTotal">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
@@ -1989,6 +1958,37 @@
         class="mt-4 mx-auto max-w-[1600px] text-center text-[12px] text-slate-500 bg-white/40 backdrop-blur rounded-xl py-2">
         © 2025 Yard Planning Dashboard · Internal Use Only · Developed by NPCT1 Planning Team
     </footer>
+
+    <!-- CIC RECAP MODAL -->
+    <div id="cicRecapModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm hidden opacity-0 pointer-events-none transition-opacity duration-200" style="margin: 0; padding: 0;">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden transform scale-95 transition-all duration-200" id="cicRecapModalInner">
+            <div class="p-4 bg-purple-50 border-b border-purple-100 flex justify-between items-center">
+                <h3 class="text-purple-800 font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined">analytics</span>
+                    Daily CIC Handled
+                </h3>
+                <button onclick="closeCicRecapModal()" class="text-purple-400 hover:text-purple-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-5">
+                <div class="text-center mb-4">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" id="cicRecapDate">TODAY</div>
+                </div>
+                <div class="space-y-3" id="cicRecapContent">
+                    <div class="flex justify-center py-6 text-purple-400">
+                        <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
+                    </div>
+                </div>
+                <div class="mt-5 pt-4 border-t border-slate-100">
+                    <div class="flex justify-between items-center px-2">
+                        <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total</span>
+                        <span class="text-2xl font-black text-purple-600" id="cicRecapTotal">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>

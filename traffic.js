@@ -432,7 +432,7 @@ async function showCicRecapModal() {
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     
-    dateEl.innerHTML = `Tanggal Operasional: <span class="text-purple-600">${dateStr}</span><br><span class="text-[9px] text-slate-400 font-medium lowercase tracking-normal">Last Updated: ${timeStr}</span>`;
+    dateEl.innerHTML = `Last updated: <span class="text-purple-600">${dateStr} ${timeStr}</span>`;
     
     content.innerHTML = `
         <div class="flex justify-center py-6 text-purple-400">
