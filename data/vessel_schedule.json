@@ -1,23 +1,8 @@
 {
-  "lastUpdated": "2026-06-14T19:02:38.514Z",
+  "lastUpdated": "2026-06-15T02:11:39.093Z",
   "totalScraped": 68,
-  "totalFiltered": 45,
+  "totalFiltered": 44,
   "vessels": [
-    {
-      "vessel": "HF LUCKY",
-      "line": "SIT",
-      "voyIn": "2609S",
-      "voyOut": "2610N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-06-14 18:00:00",
-      "ata": "2026-06-14 18:00:00",
-      "etd": "2026-06-15 07:00:00",
-      "atd": "",
-      "openStacking": "2026-06-08 16:00:00",
-      "closingDocument": "2026-06-13 04:00:00",
-      "closingPhysic": "2026-06-13 06:00:00"
-    },
     {
       "vessel": "BIG BREEZY",
       "line": "MCC",
@@ -582,7 +567,7 @@
       "status": "REGISTER",
       "etb": "2026-06-15 20:00:00",
       "ata": "",
-      "etd": "2026-06-17 01:00:00",
+      "etd": "2026-06-16 20:00:00",
       "atd": "",
       "openStacking": "2026-06-08 01:00:00",
       "closingDocument": "2026-06-12 21:00:00",
