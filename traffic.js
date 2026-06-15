@@ -1,6 +1,54 @@
 // --- OPS TRAFFIC LOGIC ---
-window.cicHandledUnits = window.cicHandledUnits || new Set();
+const CIC_API_URL = "https://script.google.com/macros/s/AKfycbwPvTYdVht9t6jRZ7_tg8NG58Y6hrBNyqxxemNfdLyvwstnBdWPFGPhp7tQZmqaG-h-/exec";
+window.cicHandledUnits = new Set();
 window.currentCicUnits = [];
+
+function maskContainer(unit) {
+    if (!unit || unit.length < 8) return unit;
+    return unit.substring(0, 3) + 'xxxx' + unit.substring(unit.length - 3);
+}
+
+function getOperationalDetails() {
+    const d = new Date();
+    const hour = d.getHours();
+    const min = d.getMinutes();
+    const timeStr = hour + min / 60;
+    
+    let shift = "";
+    let opDate = new Date(d);
+    
+    if (timeStr >= 7 && timeStr < 15.5) {
+        shift = "Shift 1";
+    } else if (timeStr >= 15.5 && timeStr < 23) {
+        shift = "Shift 2";
+    } else {
+        shift = "Shift 3";
+        if (timeStr < 7) {
+            opDate.setDate(opDate.getDate() - 1);
+        }
+    }
+    const m = opDate.getMonth() + 1;
+    const day = opDate.getDate();
+    const dateString = opDate.getFullYear() + '-' + (m < 10 ? '0'+m : m) + '-' + (day < 10 ? '0'+day : day);
+    
+    return { shift, date: dateString };
+}
+
+async function fetchHandledCICs() {
+    try {
+        const { date } = getOperationalDetails();
+        const res = await fetch(`${CIC_API_URL}?action=get&date=${date}`);
+        const data = await res.json();
+        if (data && data.success) {
+            window.cicHandledUnits = new Set(data.units);
+            analyzeTraffic(); // re-analyze if data is already parsed
+        }
+    } catch (e) {
+        console.error("Failed to fetch handled CICs", e);
+    }
+}
+fetchHandledCICs();
+
 
 function analyzeTraffic() {
     const rawData = document.getElementById('trafficInput').value.trim();
@@ -145,7 +193,7 @@ function analyzeTraffic() {
             window.currentCicUnits.push(unit);
             
             // Only add to active CIC list if not handled yet
-            if (!window.cicHandledUnits.has(unit)) {
+            if (!window.cicHandledUnits.has(maskContainer(unit))) {
                 cicCount++;
                 cicTrt += durationMin;
                 cicItems.push({ unit, durationMin, iz: izStr });
@@ -304,8 +352,6 @@ function analyzeTraffic() {
     renderList(importItems, 'trafficImportList', 'blue');
     renderList(cicItems, 'trafficCicList', 'purple', true);
 
-    updateCicHandledCount();
-    
     // Set Timestamp
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
@@ -343,24 +389,104 @@ function clearTrafficInput() {
     document.getElementById('trafficActiveRtg').textContent = '0';
     const activePmEl = document.getElementById('trafficActivePm');
     if (activePmEl) activePmEl.textContent = '0';
-    document.getElementById('trafficCicHandled').textContent = '0';
     window.currentCicUnits = [];
 }
 
 function toggleCicHandled(unit, checked) {
+    const maskedUnit = maskContainer(unit);
     if (checked) {
-        window.cicHandledUnits.add(unit);
+        window.cicHandledUnits.add(maskedUnit);
     } else {
-        window.cicHandledUnits.delete(unit);
+        window.cicHandledUnits.delete(maskedUnit);
     }
-    updateCicHandledCount();
     
     // Re-render the UI smoothly by re-analyzing the currently pasted text
     // Because checking it should completely remove it from the list and update averages
     analyzeTraffic();
+    
+    // Sync with Google Sheets
+    const { date, shift } = getOperationalDetails();
+    fetch(`${CIC_API_URL}?action=toggle&date=${date}&shift=${encodeURIComponent(shift)}&unit=${encodeURIComponent(maskedUnit)}&checked=${checked}`)
+        .catch(e => console.error("Failed to sync CIC handled", e));
 }
 
-function updateCicHandledCount() {
-    const el = document.getElementById('trafficCicHandled');
-    if (el) el.textContent = window.cicHandledUnits.size;
+async function showCicRecapModal() {
+    const modal = document.getElementById('cicRecapModal');
+    const content = document.getElementById('cicRecapContent');
+    const dateEl = document.getElementById('cicRecapDate');
+    const totalEl = document.getElementById('cicRecapTotal');
+    
+    if (!modal || !content) return;
+    
+    modal.classList.remove('hidden');
+    // small delay for transition
+    setTimeout(() => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        document.getElementById('cicRecapModalInner').classList.remove('scale-95');
+    }, 10);
+    
+    const { date } = getOperationalDetails();
+    
+    const parsedDate = new Date(date);
+    const dateStr = parsedDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    
+    dateEl.innerHTML = `Tanggal Operasional: <span class="text-purple-600">${dateStr}</span><br><span class="text-[9px] text-slate-400 font-medium lowercase tracking-normal">Last Updated: ${timeStr}</span>`;
+    
+    content.innerHTML = `
+        <div class="flex justify-center py-6 text-purple-400">
+            <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
+        </div>
+    `;
+    totalEl.textContent = '-';
+    
+    try {
+        const res = await fetch(`${CIC_API_URL}?action=get&date=${date}`);
+        const data = await res.json();
+        if (data && data.success) {
+            const shifts = data.shifts || {};
+            const s1 = shifts['Shift 1'] || 0;
+            const s2 = shifts['Shift 2'] || 0;
+            const s3 = shifts['Shift 3'] || 0;
+            const total = s1 + s2 + s3;
+            
+            content.innerHTML = `
+                <div class="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="text-sm font-bold text-slate-600">Shift 1 <span class="text-[10px] font-normal text-slate-400 ml-1">(07:00-15:30)</span></span>
+                    <span class="text-lg font-black text-slate-700">${s1}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="text-sm font-bold text-slate-600">Shift 2 <span class="text-[10px] font-normal text-slate-400 ml-1">(15:30-23:00)</span></span>
+                    <span class="text-lg font-black text-slate-700">${s2}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <span class="text-sm font-bold text-slate-600">Shift 3 <span class="text-[10px] font-normal text-slate-400 ml-1">(23:00-07:00)</span></span>
+                    <span class="text-lg font-black text-slate-700">${s3}</span>
+                </div>
+            `;
+            totalEl.textContent = total;
+            
+            // Sync local state as well
+            window.cicHandledUnits = new Set(data.units);
+            analyzeTraffic(); // Update UI if needed
+        } else {
+            content.innerHTML = `<div class="text-center text-red-500 py-4 text-sm font-bold">Failed to load data</div>`;
+        }
+    } catch (e) {
+        console.error(e);
+        content.innerHTML = `<div class="text-center text-red-500 py-4 text-sm font-bold">Connection error</div>`;
+    }
+}
+
+function closeCicRecapModal() {
+    const modal = document.getElementById('cicRecapModal');
+    if (!modal) return;
+    
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    document.getElementById('cicRecapModalInner').classList.add('scale-95');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
 }
