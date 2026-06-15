@@ -1,5 +1,5 @@
 // --- OPS TRAFFIC LOGIC ---
-const CIC_API_URL = "https://script.google.com/macros/s/AKfycbwPvTYdVht9t6jRZ7_tg8NG58Y6hrBNyqxxemNfdLyvwstnBdWPFGPhp7tQZmqaG-h-/exec";
+const CIC_API_URL = "https://script.google.com/macros/s/AKfycbyE_G8kvJV_-kD2B0beSHNWb4M85iDp8GR__XLMEB3o1TjUDS1nEmlbOf1Umj_q8VpR/exec";
 window.cicHandledUnits = new Set();
 window.currentCicUnits = [];
 
@@ -13,10 +13,10 @@ function getOperationalDetails() {
     const hour = d.getHours();
     const min = d.getMinutes();
     const timeStr = hour + min / 60;
-    
+
     let shift = "";
     let opDate = new Date(d);
-    
+
     if (timeStr >= 7 && timeStr < 15.5) {
         shift = "Shift 1";
     } else if (timeStr >= 15.5 && timeStr < 23) {
@@ -29,8 +29,8 @@ function getOperationalDetails() {
     }
     const m = opDate.getMonth() + 1;
     const day = opDate.getDate();
-    const dateString = opDate.getFullYear() + '-' + (m < 10 ? '0'+m : m) + '-' + (day < 10 ? '0'+day : day);
-    
+    const dateString = opDate.getFullYear() + '-' + (m < 10 ? '0' + m : m) + '-' + (day < 10 ? '0' + day : day);
+
     return { shift, date: dateString };
 }
 
@@ -61,7 +61,7 @@ function analyzeTraffic() {
     if (lines.length < 2) return;
 
     const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
-    
+
     // Find required column indices with fallback check
     let unitIdx = headers.indexOf('unit');
     if (unitIdx === -1) unitIdx = headers.indexOf('container');
@@ -119,7 +119,7 @@ function analyzeTraffic() {
     let importItems = [];
     let cicItems = [];
     window.currentCicUnits = [];
-    
+
     let rtgSet = new Set();
     let pmSet = new Set();
     let vesselOpsMap = {};
@@ -134,7 +134,7 @@ function analyzeTraffic() {
         const durationStr = durationIdx !== -1 ? (row[durationIdx] || '').trim() : '0';
         const izStr = izIdx !== -1 ? (row[izIdx] || '').trim() : '-';
         let durationMin = 0;
-        
+
         // RTG and PM logic
         if (tr1Idx !== -1) {
             const tr1 = (row[tr1Idx] || '').trim();
@@ -145,7 +145,7 @@ function analyzeTraffic() {
                 pmSet.add(tr1);
             }
         }
-        
+
         // Vessel Ops logic
         const gc = gcIdx !== -1 ? (row[gcIdx] || '').trim() : '';
         const status = statusIdx !== -1 ? (row[statusIdx] || '').trim() : '';
@@ -162,7 +162,7 @@ function analyzeTraffic() {
                 }
             }
         }
-        
+
         if (durationStr) {
             if (durationStr.includes(':')) {
                 const parts = durationStr.split(':').map(Number);
@@ -191,7 +191,7 @@ function analyzeTraffic() {
         if (isCic) {
             // Track all incoming CIC units
             window.currentCicUnits.push(unit);
-            
+
             // Only add to active CIC list if not handled yet
             if (!window.cicHandledUnits.has(maskContainer(unit))) {
                 cicCount++;
@@ -224,7 +224,7 @@ function analyzeTraffic() {
     const avgExportTrt = exportCount > 0 ? exportTrt / exportCount : 0;
     const avgImportTrt = importCount > 0 ? importTrt / importCount : 0;
     const avgCicTrt = cicCount > 0 ? cicTrt / cicCount : 0;
-    
+
     // Overall TRT should include all active trucks + handled CIC from this batch if desired.
     // For simplicity, overall TRT is based on active Export + Import + Active CIC
     const totalTrucks = exportCount + importCount + cicCount;
@@ -240,7 +240,7 @@ function analyzeTraffic() {
     safeSetText('trafficExportCount', exportCount);
     safeSetText('trafficImportCount', importCount);
     safeSetText('trafficCicCount', cicCount);
-    
+
     safeSetText('trafficExportTrt', formatTrt(avgExportTrt));
     safeSetText('trafficImportTrt', formatTrt(avgImportTrt));
     safeSetText('trafficCicTrt', formatTrt(avgCicTrt));
@@ -249,7 +249,7 @@ function analyzeTraffic() {
     safeSetText('trafficTotalTrt', formatTrt(avgTotalTrt));
     safeSetText('trafficActiveRtg', rtgSet.size);
     safeSetText('trafficActivePm', pmSet.size);
-    
+
     // Render Vessel Ops
     const vesselOpsEl = document.getElementById('trafficVesselOpsList');
     if (vesselOpsEl) {
@@ -267,12 +267,12 @@ function analyzeTraffic() {
                         </div>
                         <div class="p-1.5 space-y-1">
                 `;
-                
+
                 const sortedOps = Array.from(ops.entries()).sort((a, b) => a[0].localeCompare(b[0]));
                 sortedOps.forEach(([gc, rawOps]) => {
                     let displayOps = 'Active';
                     let opColor = 'bg-slate-100 text-slate-600';
-                    
+
                     if (rawOps) {
                         const lower = rawOps.toLowerCase();
                         if (lower.includes('disch')) {
@@ -285,7 +285,7 @@ function analyzeTraffic() {
                             displayOps = rawOps.charAt(0).toUpperCase() + rawOps.slice(1).toLowerCase();
                         }
                     }
-                    
+
                     html += `
                         <div class="flex items-center justify-between text-xs px-1">
                             <span class="font-mono font-bold text-slate-700">${gc}</span>
@@ -293,7 +293,7 @@ function analyzeTraffic() {
                         </div>
                     `;
                 });
-                
+
                 html += `
                         </div>
                     </div>
@@ -302,7 +302,7 @@ function analyzeTraffic() {
             vesselOpsEl.innerHTML = html;
         }
     }
-    
+
     // Sort and render Top 10 lists
     exportItems.sort((a, b) => b.durationMin - a.durationMin);
     importItems.sort((a, b) => b.durationMin - a.durationMin);
@@ -311,7 +311,7 @@ function analyzeTraffic() {
     const renderList = (items, elementId, colorClass, isCic = false) => {
         const el = document.getElementById(elementId);
         if (!el) return;
-        
+
         if (items.length === 0) {
             el.innerHTML = `<div class="text-center text-${colorClass}-600/40 text-xs italic py-2">No data</div>`;
             return;
@@ -319,10 +319,10 @@ function analyzeTraffic() {
 
         const top10 = items.slice(0, 10);
         el.innerHTML = top10.map((item, idx) => {
-            const slotHtml = item.iz && item.iz !== '-' 
-                ? `<span class="text-[10px] bg-slate-100 text-slate-500 px-1 py-0.5 rounded ml-1 border border-slate-200">${item.iz}</span>` 
+            const slotHtml = item.iz && item.iz !== '-'
+                ? `<span class="text-[10px] bg-slate-100 text-slate-500 px-1 py-0.5 rounded ml-1 border border-slate-200">${item.iz}</span>`
                 : '';
-                
+
             if (isCic) {
                 return `
                     <label class="flex items-center gap-2 cursor-pointer group py-1 border-b border-${colorClass}-100/30 last:border-0 hover:bg-purple-100/30 rounded px-1 -mx-1 transition-colors">
@@ -362,30 +362,30 @@ function analyzeTraffic() {
 function clearTrafficInput() {
     const input = document.getElementById('trafficInput');
     if (input) input.value = '';
-    
+
     const ids = ['trafficExportCount', 'trafficImportCount', 'trafficCicCount', 'trafficTotalCount'];
     const trtIds = ['trafficExportTrt', 'trafficImportTrt', 'trafficCicTrt', 'trafficTotalTrt'];
-    
+
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = '0';
     });
-    
+
     trtIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = '0m';
     });
-    
+
     const lastUpdated = document.getElementById('trafficLastUpdated');
     if (lastUpdated) lastUpdated.textContent = '-';
-    
+
     document.getElementById('trafficExportList').innerHTML = '<div class="text-center text-emerald-600/40 text-xs italic py-2">No data</div>';
     document.getElementById('trafficImportList').innerHTML = '<div class="text-center text-blue-600/40 text-xs italic py-2">No data</div>';
     document.getElementById('trafficCicList').innerHTML = '<div class="text-center text-purple-600/40 text-xs italic py-2">No data</div>';
-    
+
     const vesselOpsEl = document.getElementById('trafficVesselOpsList');
     if (vesselOpsEl) vesselOpsEl.innerHTML = '<div class="text-center text-sky-600/40 text-xs italic py-2">No active vessel ops</div>';
-    
+
     document.getElementById('trafficActiveRtg').textContent = '0';
     const activePmEl = document.getElementById('trafficActivePm');
     if (activePmEl) activePmEl.textContent = '0';
@@ -399,11 +399,11 @@ function toggleCicHandled(unit, checked) {
     } else {
         window.cicHandledUnits.delete(maskedUnit);
     }
-    
+
     // Re-render the UI smoothly by re-analyzing the currently pasted text
     // Because checking it should completely remove it from the list and update averages
     analyzeTraffic();
-    
+
     // Sync with Google Sheets
     const { date, shift } = getOperationalDetails();
     fetch(`${CIC_API_URL}?action=toggle&date=${date}&shift=${encodeURIComponent(shift)}&unit=${encodeURIComponent(maskedUnit)}&checked=${checked}`)
@@ -415,32 +415,32 @@ async function showCicRecapModal() {
     const content = document.getElementById('cicRecapContent');
     const dateEl = document.getElementById('cicRecapDate');
     const totalEl = document.getElementById('cicRecapTotal');
-    
+
     if (!modal || !content) return;
-    
+
     modal.classList.remove('hidden');
     // small delay for transition
     setTimeout(() => {
         modal.classList.remove('opacity-0', 'pointer-events-none');
         document.getElementById('cicRecapModalInner').classList.remove('scale-95');
     }, 10);
-    
+
     const { date } = getOperationalDetails();
-    
+
     const parsedDate = new Date(date);
     const dateStr = parsedDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
     const now = new Date();
     const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-    
+
     dateEl.innerHTML = `Last updated: <span class="text-purple-600">${dateStr} ${timeStr}</span>`;
-    
+
     content.innerHTML = `
         <div class="flex justify-center py-6 text-purple-400">
             <span class="material-symbols-outlined animate-spin text-3xl">refresh</span>
         </div>
     `;
     totalEl.textContent = '-';
-    
+
     try {
         const res = await fetch(`${CIC_API_URL}?action=get&date=${date}`);
         const data = await res.json();
@@ -450,7 +450,7 @@ async function showCicRecapModal() {
             const s2 = shifts['Shift 2'] || 0;
             const s3 = shifts['Shift 3'] || 0;
             const total = s1 + s2 + s3;
-            
+
             content.innerHTML = `
                 <div class="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-100">
                     <span class="text-sm font-bold text-slate-600">Shift 1 <span class="text-[10px] font-normal text-slate-400 ml-1">(07:00-15:30)</span></span>
@@ -466,7 +466,7 @@ async function showCicRecapModal() {
                 </div>
             `;
             totalEl.textContent = total;
-            
+
             // Sync local state as well
             window.cicHandledUnits = new Set(data.units);
             analyzeTraffic(); // Update UI if needed
@@ -482,10 +482,10 @@ async function showCicRecapModal() {
 function closeCicRecapModal() {
     const modal = document.getElementById('cicRecapModal');
     if (!modal) return;
-    
+
     modal.classList.add('opacity-0', 'pointer-events-none');
     document.getElementById('cicRecapModalInner').classList.add('scale-95');
-    
+
     setTimeout(() => {
         modal.classList.add('hidden');
     }, 200);
