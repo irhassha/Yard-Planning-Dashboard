@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-06-16T10:47:36.420Z",
+  "lastUpdated": "2026-06-16T16:16:20.707Z",
   "totalScraped": 65,
-  "totalFiltered": 40,
+  "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "624E",
+      "voyOut": "625N",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-06-16 23:00:00",
+      "ata": "2026-06-16 20:16:56",
+      "etd": "2026-06-18 07:00:00",
+      "atd": "",
+      "openStacking": "2026-06-12 01:00:00",
+      "closingDocument": "2026-06-16 03:00:00",
+      "closingPhysic": "2026-06-16 05:00:00"
+    },
+    {
+      "vessel": "MERATUS JAYAWIJAYA",
+      "line": "MCC",
+      "voyIn": "621S",
+      "voyOut": "624N",
+      "service": "IA1",
+      "status": "ACTIVE",
+      "etb": "2026-06-16 20:00:00",
+      "ata": "2026-06-16 17:30:00",
+      "etd": "2026-06-17 22:00:00",
+      "atd": "",
+      "openStacking": "2026-06-10 01:00:00",
+      "closingDocument": "2026-06-14 21:00:00",
+      "closingPhysic": "2026-06-14 23:00:00"
+    },
     {
       "vessel": "HMM CEBU",
       "line": "HMM",
@@ -17,21 +47,6 @@
       "openStacking": "2026-06-08 01:00:00",
       "closingDocument": "2026-06-12 21:00:00",
       "closingPhysic": "2026-06-12 23:00:00"
-    },
-    {
-      "vessel": "SITC LIANYUNGANG",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "JTH",
-      "status": "ACTIVE",
-      "etb": "2026-06-15 17:00:00",
-      "ata": "2026-06-15 15:51:03",
-      "etd": "2026-06-16 21:00:00",
-      "atd": "",
-      "openStacking": "2026-06-09 01:00:00",
-      "closingDocument": "2026-06-12 16:00:00",
-      "closingPhysic": "2026-06-12 18:00:00"
     },
     {
       "vessel": "EVER ORIENT",
@@ -125,7 +140,7 @@
     },
     {
       "vessel": "OEL VARUN",
-      "line": "MAE",
+      "line": "MCC",
       "voyIn": "620X",
       "voyOut": "620X",
       "service": "IA1",
@@ -210,8 +225,8 @@
       "etd": "2026-06-26 01:00:00",
       "atd": "",
       "openStacking": "2026-06-20 01:00:00",
-      "closingDocument": "2026-06-23 10:00:00",
-      "closingPhysic": "2026-06-23 12:00:00"
+      "closingDocument": "2026-06-23 21:00:00",
+      "closingPhysic": "2026-06-23 23:00:00"
     },
     {
       "vessel": "SINAR BANGKA",
@@ -329,9 +344,9 @@
       "ata": "",
       "etd": "2026-06-23 08:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-17 01:00:00",
+      "closingDocument": "2026-06-21 14:00:00",
+      "closingPhysic": "2026-06-21 16:00:00"
     },
     {
       "vessel": "FRASER MAS",
@@ -512,36 +527,6 @@
       "openStacking": "2026-06-14 01:00:00",
       "closingDocument": "2026-06-16 21:59:00",
       "closingPhysic": "2026-06-16 23:59:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "624E",
-      "voyOut": "625N",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-06-16 23:00:00",
-      "ata": "",
-      "etd": "2026-06-18 07:00:00",
-      "atd": "",
-      "openStacking": "2026-06-12 01:00:00",
-      "closingDocument": "2026-06-16 03:00:00",
-      "closingPhysic": "2026-06-16 05:00:00"
-    },
-    {
-      "vessel": "MERATUS JAYAWIJAYA",
-      "line": "MCC",
-      "voyIn": "621S",
-      "voyOut": "624N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-06-16 20:00:00",
-      "ata": "",
-      "etd": "2026-06-17 22:00:00",
-      "atd": "",
-      "openStacking": "2026-06-10 01:00:00",
-      "closingDocument": "2026-06-14 21:00:00",
-      "closingPhysic": "2026-06-14 23:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
