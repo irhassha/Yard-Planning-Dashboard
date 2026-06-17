@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-16T20:33:53.168Z",
+  "lastUpdated": "2026-06-17T02:10:41.500Z",
   "totalScraped": 65,
-  "totalFiltered": 42,
+  "totalFiltered": 41,
   "vessels": [
     {
       "vessel": "AS PENELOPE",
@@ -32,21 +32,6 @@
       "openStacking": "2026-06-10 01:00:00",
       "closingDocument": "2026-06-14 21:00:00",
       "closingPhysic": "2026-06-14 23:00:00"
-    },
-    {
-      "vessel": "HMM CEBU",
-      "line": "HMM",
-      "voyIn": "0027S",
-      "voyOut": "0027N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-06-16 00:00:00",
-      "ata": "2026-06-15 23:30:00",
-      "etd": "2026-06-17 04:00:00",
-      "atd": "",
-      "openStacking": "2026-06-08 01:00:00",
-      "closingDocument": "2026-06-12 21:00:00",
-      "closingPhysic": "2026-06-12 23:00:00"
     },
     {
       "vessel": "EVER OBEY",
