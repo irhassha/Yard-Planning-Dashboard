@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-17T10:20:34.862Z",
+  "lastUpdated": "2026-06-17T14:43:05.633Z",
   "totalScraped": 67,
   "totalFiltered": 43,
   "vessels": [
@@ -314,9 +314,9 @@
       "ata": "",
       "etd": "2026-06-25 10:00:00",
       "atd": "",
-      "openStacking": "2026-06-20 01:00:00",
-      "closingDocument": "2026-06-25 14:00:00",
-      "closingPhysic": "2026-06-25 16:00:00"
+      "openStacking": "2026-06-18 01:00:00",
+      "closingDocument": "2026-06-23 21:59:00",
+      "closingPhysic": "2026-06-23 23:59:00"
     },
     {
       "vessel": "EVER BIRTH",
