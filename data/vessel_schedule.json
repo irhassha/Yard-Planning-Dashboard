@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-18T14:36:58.662Z",
-  "totalScraped": 67,
-  "totalFiltered": 42,
+  "lastUpdated": "2026-06-18T20:03:13.315Z",
+  "totalScraped": 66,
+  "totalFiltered": 43,
   "vessels": [
     {
       "vessel": "INTERASIA ENGAGE",
@@ -19,6 +19,21 @@
       "closingPhysic": "2026-06-15 23:00:00"
     },
     {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2614S",
+      "voyOut": "2615N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-06-18 12:00:00",
+      "ata": "2026-06-18 12:47:00",
+      "etd": "2026-06-19 07:00:00",
+      "atd": "",
+      "openStacking": "2026-06-12 01:00:00",
+      "closingDocument": "2026-06-15 16:00:00",
+      "closingPhysic": "2026-06-15 18:00:00"
+    },
+    {
       "vessel": "ARTOTINA",
       "line": "MCC",
       "voyIn": "622S",
@@ -34,19 +49,19 @@
       "closingPhysic": "2026-06-17 05:00:00"
     },
     {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2614S",
-      "voyOut": "2615N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-06-18 12:00:00",
-      "ata": "2026-06-18 12:47:00",
-      "etd": "2026-06-19 07:00:00",
+      "vessel": "MSC ALYSSA",
+      "line": "MSC",
+      "voyIn": "HW625A",
+      "voyOut": "HW625A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-07-02 22:00:00",
+      "ata": "",
+      "etd": "2026-07-03 22:00:00",
       "atd": "",
-      "openStacking": "2026-06-12 01:00:00",
-      "closingDocument": "2026-06-15 16:00:00",
-      "closingPhysic": "2026-06-15 18:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC DECHENG",
