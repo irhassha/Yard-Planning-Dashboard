@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-19T14:34:17.485Z",
+  "lastUpdated": "2026-06-19T19:20:22.076Z",
   "totalScraped": 65,
-  "totalFiltered": 39,
+  "totalFiltered": 41,
   "vessels": [
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-06-19 20:00:00",
+      "ata": "2026-06-19 21:41:00",
+      "etd": "2026-06-20 16:00:00",
+      "atd": "",
+      "openStacking": "2026-06-16 01:00:00",
+      "closingDocument": "2026-06-19 16:00:00",
+      "closingPhysic": "2026-06-19 18:00:00"
+    },
     {
       "vessel": "MSC PRECISION V",
       "line": "MSC",
@@ -32,6 +47,51 @@
       "openStacking": "2026-06-09 01:00:00",
       "closingDocument": "2026-06-15 21:00:00",
       "closingPhysic": "2026-06-15 23:00:00"
+    },
+    {
+      "vessel": "HMM MOMBASA",
+      "line": "HMM",
+      "voyIn": "0008S",
+      "voyOut": "0008N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-07-03 16:00:00",
+      "ata": "",
+      "etd": "",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MSC ALYSSA",
+      "line": "MSC",
+      "voyIn": "HW625A",
+      "voyOut": "HW625A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-07-03 02:00:00",
+      "ata": "",
+      "etd": "2026-07-04 06:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER BOOMY",
+      "line": "EMA",
+      "voyIn": "1198-091A",
+      "voyOut": "1198-091A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-07-03 02:00:00",
+      "ata": "",
+      "etd": "2026-07-04 06:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "HMM HERITAGE",
@@ -274,21 +334,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "626N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-26 11:00:00",
-      "ata": "",
-      "etd": "2026-06-28 13:00:00",
-      "atd": "",
-      "openStacking": "2026-06-21 01:00:00",
-      "closingDocument": "2026-06-25 11:00:00",
-      "closingPhysic": "2026-06-25 13:00:00"
-    },
-    {
       "vessel": "AS PENELOPE",
       "line": "HLC",
       "voyIn": "625S",
@@ -302,6 +347,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "624S",
+      "voyOut": "626N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-06-26 11:00:00",
+      "ata": "",
+      "etd": "2026-06-28 13:00:00",
+      "atd": "",
+      "openStacking": "2026-06-21 01:00:00",
+      "closingDocument": "2026-06-25 11:00:00",
+      "closingPhysic": "2026-06-25 13:00:00"
     },
     {
       "vessel": "ITAL BONNY",
@@ -544,21 +604,6 @@
       "closingPhysic": "2026-06-17 23:59:00"
     },
     {
-      "vessel": "GREEN PACIFIC",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-06-19 20:00:00",
-      "ata": "",
-      "etd": "2026-06-20 16:00:00",
-      "atd": "",
-      "openStacking": "2026-06-16 01:00:00",
-      "closingDocument": "2026-06-19 16:00:00",
-      "closingPhysic": "2026-06-19 18:00:00"
-    },
-    {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
       "line": "SSD",
       "voyIn": "59 JN",
@@ -568,21 +613,6 @@
       "etb": "2026-06-13 12:00:00",
       "ata": "",
       "etd": "2026-06-13 20:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "JOSEPHINE MAERSK",
-      "line": "MCC",
-      "voyIn": "623N",
-      "voyOut": "624N",
-      "service": "IA4",
-      "status": "REGISTER",
-      "etb": "2026-06-05 20:00:00",
-      "ata": "",
-      "etd": "",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
