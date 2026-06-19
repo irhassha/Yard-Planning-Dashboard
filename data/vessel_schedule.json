@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-19T10:06:50.574Z",
-  "totalScraped": 66,
-  "totalFiltered": 41,
+  "lastUpdated": "2026-06-19T14:34:17.485Z",
+  "totalScraped": 65,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "MSC PRECISION V",
@@ -17,21 +17,6 @@
       "openStacking": "2026-06-13 01:00:00",
       "closingDocument": "2026-06-18 12:00:00",
       "closingPhysic": "2026-06-18 14:00:00"
-    },
-    {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-06-19 07:00:00",
-      "ata": "2026-06-19 01:30:00",
-      "etd": "2026-06-19 18:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-18 16:00:00",
-      "closingPhysic": "2026-06-18 18:00:00"
     },
     {
       "vessel": "INTERASIA ENGAGE",
@@ -115,9 +100,9 @@
       "voyOut": "0481-088N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-06-30 23:00:00",
+      "etb": "2026-06-30 20:00:00",
       "ata": "",
-      "etd": "2026-07-01 21:00:00",
+      "etd": "",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -154,6 +139,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "SITC YUHE",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-06-30 13:00:00",
+      "ata": "",
+      "etd": "2026-07-01 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "SINAR BANGKA",
       "line": "SIT",
       "voyIn": "2616S",
@@ -162,26 +162,11 @@
       "status": "REGISTER",
       "etb": "2026-06-30 00:00:00",
       "ata": "",
-      "etd": "",
+      "etd": "2026-06-30 18:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "SITC YUHE",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-06-29 23:15:00",
-      "ata": "",
-      "etd": "",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-22 01:00:00",
+      "closingDocument": "2026-06-26 13:00:00",
+      "closingPhysic": "2026-06-26 15:00:00"
     },
     {
       "vessel": "SPIL NISAKA",
@@ -299,9 +284,9 @@
       "ata": "",
       "etd": "2026-06-28 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-21 01:00:00",
+      "closingDocument": "2026-06-25 11:00:00",
+      "closingPhysic": "2026-06-25 13:00:00"
     },
     {
       "vessel": "AS PENELOPE",
@@ -449,9 +434,9 @@
       "ata": "",
       "etd": "2026-06-24 04:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-20 01:00:00",
+      "closingDocument": "2026-06-23 10:00:00",
+      "closingPhysic": "2026-06-23 12:00:00"
     },
     {
       "vessel": "YM CENTENNIAL",
@@ -572,21 +557,6 @@
       "openStacking": "2026-06-16 01:00:00",
       "closingDocument": "2026-06-19 16:00:00",
       "closingPhysic": "2026-06-19 18:00:00"
-    },
-    {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1197-112A",
-      "voyOut": "1197-112A",
-      "service": "JPI-A",
-      "status": "REGISTER",
-      "etb": "2026-06-18 13:00:00",
-      "ata": "",
-      "etd": "2026-06-19 18:30:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
