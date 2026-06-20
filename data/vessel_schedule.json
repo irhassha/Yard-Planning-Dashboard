@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-20T08:36:44.456Z",
+  "lastUpdated": "2026-06-20T13:18:30.217Z",
   "totalScraped": 64,
   "totalFiltered": 39,
   "vessels": [
@@ -57,7 +57,7 @@
       "status": "REGISTER",
       "etb": "2026-07-03 16:00:00",
       "ata": "",
-      "etd": "",
+      "etd": "2026-07-04 18:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
