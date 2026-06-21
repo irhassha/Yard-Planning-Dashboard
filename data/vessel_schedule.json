@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-21T02:10:21.341Z",
+  "lastUpdated": "2026-06-21T09:31:02.541Z",
   "totalScraped": 68,
-  "totalFiltered": 42,
+  "totalFiltered": 41,
   "vessels": [
+    {
+      "vessel": "FRASER MAS",
+      "line": "TMAS",
+      "voyIn": "0726",
+      "voyOut": "0826",
+      "service": "TMAS",
+      "status": "ACTIVE",
+      "etb": "2026-06-21 16:00:00",
+      "ata": "2026-06-21 14:22:52",
+      "etd": "2026-06-22 05:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-15 01:00:00",
       "closingDocument": "2026-06-20 05:00:00",
       "closingPhysic": "2026-06-20 07:00:00"
-    },
-    {
-      "vessel": "EVER BUILD",
-      "line": "EMC",
-      "voyIn": "1194-086B",
-      "voyOut": "1194-086B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-06-20 05:00:00",
-      "ata": "2026-06-20 03:34:00",
-      "etd": "2026-06-21 14:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-17 21:59:00",
-      "closingPhysic": "2026-06-17 23:59:00"
     },
     {
       "vessel": "BIG BREEZY",
@@ -602,21 +602,6 @@
       "openStacking": "2026-06-17 01:00:00",
       "closingDocument": "2026-06-21 14:00:00",
       "closingPhysic": "2026-06-21 16:00:00"
-    },
-    {
-      "vessel": "FRASER MAS",
-      "line": "TMAS",
-      "voyIn": "0726",
-      "voyOut": "0826",
-      "service": "TMAS",
-      "status": "REGISTER",
-      "etb": "2026-06-21 16:00:00",
-      "ata": "",
-      "etd": "2026-06-22 05:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
