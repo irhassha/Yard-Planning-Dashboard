@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-21T13:28:43.673Z",
+  "lastUpdated": "2026-06-21T19:08:25.498Z",
   "totalScraped": 68,
-  "totalFiltered": 41,
+  "totalFiltered": 42,
   "vessels": [
     {
       "vessel": "FRASER MAS",
@@ -12,7 +12,7 @@
       "status": "ACTIVE",
       "etb": "2026-06-21 16:00:00",
       "ata": "2026-06-21 13:00:00",
-      "etd": "2026-06-22 05:00:00",
+      "etd": "2026-06-22 10:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -26,7 +26,7 @@
       "service": "IN1",
       "status": "ACTIVE",
       "etb": "2026-06-21 04:00:00",
-      "ata": "2026-06-21 05:28:40",
+      "ata": "2026-06-21 04:14:00",
       "etd": "2026-06-22 18:00:00",
       "atd": "",
       "openStacking": "2026-06-15 01:00:00",
@@ -47,6 +47,21 @@
       "openStacking": "2026-06-15 01:00:00",
       "closingDocument": "2026-06-20 05:00:00",
       "closingPhysic": "2026-06-20 07:00:00"
+    },
+    {
+      "vessel": "SKY PEACE",
+      "line": "MCC",
+      "voyIn": "626S",
+      "voyOut": "627N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-07-05 16:00:00",
+      "ata": "",
+      "etd": "2026-07-06 16:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "BIG BREEZY",
@@ -209,9 +224,9 @@
       "ata": "",
       "etd": "2026-07-02 20:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-24 01:00:00",
+      "closingDocument": "2026-06-28 13:00:00",
+      "closingPhysic": "2026-06-28 15:00:00"
     },
     {
       "vessel": "HF LUCKY",
@@ -449,9 +464,9 @@
       "ata": "",
       "etd": "2026-06-26 14:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-19 01:00:00",
+      "closingDocument": "2026-06-24 10:00:00",
+      "closingPhysic": "2026-06-24 12:00:00"
     },
     {
       "vessel": "EVER BLISS",
@@ -574,6 +589,21 @@
       "closingPhysic": "2026-06-22 06:00:00"
     },
     {
+      "vessel": "JULIUS-S",
+      "line": "MCC",
+      "voyIn": "625E",
+      "voyOut": "625N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-06-22 12:00:00",
+      "ata": "",
+      "etd": "2026-06-23 20:00:00",
+      "atd": "",
+      "openStacking": "2026-06-17 01:00:00",
+      "closingDocument": "2026-06-21 14:00:00",
+      "closingPhysic": "2026-06-21 16:00:00"
+    },
+    {
       "vessel": "MAERSK VARNA",
       "line": "MCC",
       "voyIn": "624S",
@@ -587,21 +617,6 @@
       "openStacking": "2026-06-15 01:00:00",
       "closingDocument": "2026-06-20 04:00:00",
       "closingPhysic": "2026-06-20 06:00:00"
-    },
-    {
-      "vessel": "JULIUS-S",
-      "line": "MCC",
-      "voyIn": "625E",
-      "voyOut": "625N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-06-22 07:00:00",
-      "ata": "",
-      "etd": "2026-06-23 16:00:00",
-      "atd": "",
-      "openStacking": "2026-06-17 01:00:00",
-      "closingDocument": "2026-06-21 14:00:00",
-      "closingPhysic": "2026-06-21 16:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
