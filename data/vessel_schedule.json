@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-20T19:04:36.589Z",
+  "lastUpdated": "2026-06-21T02:10:21.341Z",
   "totalScraped": 68,
   "totalFiltered": 42,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "624S",
+      "voyOut": "625W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-06-21 04:00:00",
+      "ata": "2026-06-21 05:28:40",
+      "etd": "2026-06-22 20:00:00",
+      "atd": "",
+      "openStacking": "2026-06-15 01:00:00",
+      "closingDocument": "2026-06-19 09:00:00",
+      "closingPhysic": "2026-06-19 11:00:00"
+    },
     {
       "vessel": "HMM DAVAO",
       "line": "HMM",
@@ -374,9 +389,9 @@
       "ata": "",
       "etd": "2026-06-28 16:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-21 01:00:00",
+      "closingDocument": "2026-06-26 01:00:00",
+      "closingPhysic": "2026-06-26 03:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -602,21 +617,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "625W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-21 04:00:00",
-      "ata": "",
-      "etd": "2026-06-22 20:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-19 09:00:00",
-      "closingPhysic": "2026-06-19 11:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
