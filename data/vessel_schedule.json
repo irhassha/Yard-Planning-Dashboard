@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-21T19:08:25.498Z",
+  "lastUpdated": "2026-06-22T02:13:57.698Z",
   "totalScraped": 68,
-  "totalFiltered": 42,
+  "totalFiltered": 41,
   "vessels": [
     {
       "vessel": "FRASER MAS",
@@ -32,21 +32,6 @@
       "openStacking": "2026-06-15 01:00:00",
       "closingDocument": "2026-06-19 09:00:00",
       "closingPhysic": "2026-06-19 11:00:00"
-    },
-    {
-      "vessel": "HMM DAVAO",
-      "line": "HMM",
-      "voyIn": "0022S",
-      "voyOut": "0022N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-06-20 22:00:00",
-      "ata": "2026-06-21 00:44:11",
-      "etd": "2026-06-22 05:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-20 05:00:00",
-      "closingPhysic": "2026-06-20 07:00:00"
     },
     {
       "vessel": "SKY PEACE",
@@ -535,7 +520,7 @@
       "voyOut": "2613N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-06-23 18:00:00",
+      "etb": "2026-06-23 22:00:00",
       "ata": "",
       "etd": "2026-06-24 18:00:00",
       "atd": "",
