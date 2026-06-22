@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-22T16:21:14.439Z",
-  "totalScraped": 67,
-  "totalFiltered": 38,
+  "lastUpdated": "2026-06-22T20:28:00.172Z",
+  "totalScraped": 65,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "YM CENTENNIAL",
@@ -47,6 +47,21 @@
       "openStacking": "2026-06-15 01:00:00",
       "closingDocument": "2026-06-20 04:00:00",
       "closingPhysic": "2026-06-20 06:00:00"
+    },
+    {
+      "vessel": "MSC ALYSSA",
+      "line": "MSC",
+      "voyIn": "HW625A",
+      "voyOut": "HW625A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-07-06 22:00:00",
+      "ata": "",
+      "etd": "2026-07-08 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SKY PEACE",
