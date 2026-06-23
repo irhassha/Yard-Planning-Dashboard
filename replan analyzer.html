@@ -495,10 +495,12 @@
                                 <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1 drop-shadow-sm">Recommended Slots</h2>
                                 <p class="text-sm text-slate-500">Grouped by Block • Filtered only the available slot</p>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <span class="px-3 py-1 rounded-full bg-emerald-100/60 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-sm shadow-sm">
-                                    TIER &le; 5
-                                </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Max Tier:</span>
+                                <div class="flex bg-slate-100/50 dark:bg-slate-800/50 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700 backdrop-blur-sm">
+                                    <button id="btn-tier-5" onclick="setMaxTier(5)" class="px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-emerald-700 dark:text-emerald-300">T5</button>
+                                    <button id="btn-tier-6" onclick="setMaxTier(6)" class="px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">T6</button>
+                                </div>
                             </div>
                         </div>
 
@@ -586,6 +588,27 @@
         let activeCarrierBlockFilters = new Set();
         let priorityMode = 'NORMAL';
         let isModalOpen = false;
+        let maxTier = 5;
+
+        function setMaxTier(tier) {
+            maxTier = tier;
+            const btn5 = document.getElementById('btn-tier-5');
+            const btn6 = document.getElementById('btn-tier-6');
+            const activeClass = 'px-3 py-1 rounded-md text-xs font-bold bg-white dark:bg-slate-700 shadow-sm text-emerald-700 dark:text-emerald-300';
+            const inactiveClass = 'px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200';
+
+            if (tier === 5) {
+                if (btn5) btn5.className = activeClass;
+                if (btn6) btn6.className = inactiveClass;
+            } else {
+                if (btn5) btn5.className = inactiveClass;
+                if (btn6) btn6.className = activeClass;
+            }
+
+            if (currentMatches.length > 0) {
+                calculateAvailableSlots();
+            }
+        }
 
 
         function openAnalysisModal() {
@@ -1050,7 +1073,7 @@
                 let maxOccupied = occupiedTiers.length > 0 ? Math.max(...occupiedTiers) : matchingMaxOccupied;
                 let availableTiers = [];
 
-                for (let t = maxOccupied + 1; t <= 5; t++) {
+                for (let t = maxOccupied + 1; t <= maxTier; t++) {
                     let potentialSlot = `${base}-${t}`;
                     if (!usedFullSlots.has(potentialSlot)) {
                         availableTiers.push({ tier: t, raw: potentialSlot });
@@ -1068,7 +1091,7 @@
                 out.innerHTML = `
                     <div class="p-6 bg-yellow-50/50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-900 rounded-xl text-center backdrop-blur-sm">
                         <span class="material-symbols-rounded text-yellow-500 text-3xl mb-2">layers_clear</span>
-                        <p class="text-yellow-700 dark:text-yellow-300 font-medium">All stackable tiers (up to 5) are full or selected.</p>
+                        <p class="text-yellow-700 dark:text-yellow-300 font-medium">All stackable tiers (up to ${maxTier}) are full or selected.</p>
                     </div>`;
                 filterContainer.classList.add('hidden');
                 return;

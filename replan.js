@@ -7,11 +7,32 @@ let currentReplanUnit = "";
 let activeReplanBlockFilter = 'ALL';
 let replanPriorityMode = 'NORMAL';
 let isAnalysisModalOpen = false;
+let maxReplanTier = 5;
 
 // --- MULTI-CONTAINER STATE ---
 let parsedHeadersReplan = [];
 let parsedContainersReplan = [];  // Array of {values, parsed, display}
 let selectedContainerIdxReplan = 0;
+
+function setReplanMaxTier(tier) {
+    maxReplanTier = tier;
+    const btn5 = document.getElementById('btn-tier-5');
+    const btn6 = document.getElementById('btn-tier-6');
+    const activeClass = 'px-3 py-1 rounded-md text-xs font-bold bg-white shadow-sm text-emerald-700';
+    const inactiveClass = 'px-3 py-1 rounded-md text-xs font-bold text-slate-500 hover:text-slate-700';
+
+    if (tier === 5) {
+        if (btn5) btn5.className = activeClass;
+        if (btn6) btn6.className = inactiveClass;
+    } else {
+        if (btn5) btn5.className = inactiveClass;
+        if (btn6) btn6.className = activeClass;
+    }
+
+    if (currentReplanMatches.length > 0) {
+        calculateAvailableSlotsReplan();
+    }
+}
 
 function openAnalysisModal() {
     const modal = document.getElementById('analysisModal');
@@ -361,7 +382,7 @@ function calculateAvailableSlotsReplan() {
 
         let availableTiers = [];
 
-        for (let t = maxOccupied + 1; t <= 5; t++) {
+        for (let t = maxOccupied + 1; t <= maxReplanTier; t++) {
             let potentialSlot = `${base}-${t}`;
             if (!usedFullSlots.has(potentialSlot)) {
                 availableTiers.push({ tier: t, raw: potentialSlot });
@@ -378,7 +399,7 @@ function calculateAvailableSlotsReplan() {
             ${clusterHtml}
             <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
                 <span class="material-symbols-outlined text-yellow-500 text-3xl mb-2">layers_clear</span>
-                <p class="text-yellow-700 font-bold">All stackable tiers (up to 5) are full or selected based on current match criteria.</p>
+                <p class="text-yellow-700 font-bold">All stackable tiers (up to ${maxReplanTier}) are full or selected based on current match criteria.</p>
             </div>`;
         filterContainer.classList.add('hidden');
         return;
