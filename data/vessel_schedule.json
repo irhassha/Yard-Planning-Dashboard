@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-23T14:12:38.681Z",
-  "totalScraped": 65,
-  "totalFiltered": 38,
+  "lastUpdated": "2026-06-23T19:45:50.081Z",
+  "totalScraped": 64,
+  "totalFiltered": 36,
   "vessels": [
+    {
+      "vessel": "SITC BATANGAS",
+      "line": "SIT",
+      "voyIn": "2612S",
+      "voyOut": "2613N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-06-23 23:00:00",
+      "ata": "2026-06-23 22:00:00",
+      "etd": "2026-06-24 21:00:00",
+      "atd": "",
+      "openStacking": "2026-06-19 01:00:00",
+      "closingDocument": "2026-06-22 16:00:00",
+      "closingPhysic": "2026-06-22 18:00:00"
+    },
     {
       "vessel": "EVER OPTIMA",
       "line": "EGH",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-19 01:00:00",
       "closingDocument": "2026-06-22 04:00:00",
       "closingPhysic": "2026-06-22 06:00:00"
-    },
-    {
-      "vessel": "JULIUS-S",
-      "line": "MCC",
-      "voyIn": "625E",
-      "voyOut": "625N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-06-22 12:00:00",
-      "ata": "2026-06-22 12:19:00",
-      "etd": "2026-06-23 21:00:00",
-      "atd": "",
-      "openStacking": "2026-06-17 01:00:00",
-      "closingDocument": "2026-06-21 14:00:00",
-      "closingPhysic": "2026-06-21 16:00:00"
     },
     {
       "vessel": "MSC ALYSSA",
@@ -329,9 +329,9 @@
       "ata": "",
       "etd": "2026-07-01 07:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-25 01:00:00",
+      "closingDocument": "2026-06-29 19:00:00",
+      "closingPhysic": "2026-06-29 21:00:00"
     },
     {
       "vessel": "OEL VARUN",
@@ -370,28 +370,13 @@
       "voyOut": "626N",
       "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-06-28 22:00:00",
+      "etb": "2026-06-28 07:00:00",
       "ata": "",
-      "etd": "2026-06-30 04:00:00",
+      "etd": "2026-06-29 14:00:00",
       "atd": "",
       "openStacking": "2026-06-21 01:00:00",
       "closingDocument": "2026-06-26 01:00:00",
       "closingPhysic": "2026-06-26 03:00:00"
-    },
-    {
-      "vessel": "MERATUS KARIMUN",
-      "line": "MRTS",
-      "voyIn": "BGX003N",
-      "voyOut": "BGX003N",
-      "service": "MERATUS",
-      "status": "REGISTER",
-      "etb": "2026-06-28 07:00:00",
-      "ata": "",
-      "etd": "2026-06-28 20:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "AS PENELOPE",
@@ -542,21 +527,6 @@
       "openStacking": "2026-06-18 01:00:00",
       "closingDocument": "2026-06-23 21:59:00",
       "closingPhysic": "2026-06-23 23:59:00"
-    },
-    {
-      "vessel": "SITC BATANGAS",
-      "line": "SIT",
-      "voyIn": "2612S",
-      "voyOut": "2613N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-06-23 23:00:00",
-      "ata": "",
-      "etd": "2026-06-24 21:00:00",
-      "atd": "",
-      "openStacking": "2026-06-19 01:00:00",
-      "closingDocument": "2026-06-22 16:00:00",
-      "closingPhysic": "2026-06-22 18:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
