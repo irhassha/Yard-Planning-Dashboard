@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-23T01:53:00.302Z",
+  "lastUpdated": "2026-06-23T08:52:20.227Z",
   "totalScraped": 65,
-  "totalFiltered": 39,
+  "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0479-047S",
+      "voyOut": "0479-047N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-06-23 12:00:00",
+      "ata": "2026-06-23 12:56:00",
+      "etd": "2026-06-24 09:00:00",
+      "atd": "",
+      "openStacking": "2026-06-20 01:00:00",
+      "closingDocument": "2026-06-23 10:00:00",
+      "closingPhysic": "2026-06-23 12:00:00"
+    },
     {
       "vessel": "YM CENTENNIAL",
       "line": "YML",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-17 01:00:00",
       "closingDocument": "2026-06-21 14:00:00",
       "closingPhysic": "2026-06-21 16:00:00"
-    },
-    {
-      "vessel": "MAERSK VARNA",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "625N",
-      "service": "I15",
-      "status": "ACTIVE",
-      "etb": "2026-06-22 12:00:00",
-      "ata": "2026-06-22 08:00:00",
-      "etd": "2026-06-23 10:00:00",
-      "atd": "",
-      "openStacking": "2026-06-15 01:00:00",
-      "closingDocument": "2026-06-20 04:00:00",
-      "closingPhysic": "2026-06-20 06:00:00"
     },
     {
       "vessel": "MSC ALYSSA",
@@ -557,21 +557,6 @@
       "openStacking": "2026-06-19 01:00:00",
       "closingDocument": "2026-06-22 16:00:00",
       "closingPhysic": "2026-06-22 18:00:00"
-    },
-    {
-      "vessel": "EVER OPTIMA",
-      "line": "EGH",
-      "voyIn": "0479-047S",
-      "voyOut": "0479-047N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-06-23 12:00:00",
-      "ata": "",
-      "etd": "2026-06-24 09:00:00",
-      "atd": "",
-      "openStacking": "2026-06-20 01:00:00",
-      "closingDocument": "2026-06-23 10:00:00",
-      "closingPhysic": "2026-06-23 12:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
