@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-24T08:48:02.636Z",
+  "lastUpdated": "2026-06-24T13:57:23.175Z",
   "totalScraped": 64,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "EVER BIRTH",
+      "line": "EMA",
+      "voyIn": "1196-108A",
+      "voyOut": "1196-108A",
+      "service": "JPI-A",
+      "status": "ACTIVE",
+      "etb": "2026-06-24 15:00:00",
+      "ata": "2026-06-24 14:28:00",
+      "etd": "2026-06-25 22:00:00",
+      "atd": "",
+      "openStacking": "2026-06-20 01:00:00",
+      "closingDocument": "2026-06-23 21:00:00",
+      "closingPhysic": "2026-06-23 23:00:00"
+    },
     {
       "vessel": "MSC BERN V",
       "line": "MSC",
@@ -17,21 +32,6 @@
       "openStacking": "2026-06-18 01:00:00",
       "closingDocument": "2026-06-23 21:59:00",
       "closingPhysic": "2026-06-23 23:59:00"
-    },
-    {
-      "vessel": "EVER BIRTH",
-      "line": "EMA",
-      "voyIn": "1196-108A",
-      "voyOut": "1196-108A",
-      "service": "JPI-A",
-      "status": "ACTIVE",
-      "etb": "2026-06-24 13:00:00",
-      "ata": "2026-06-24 14:28:00",
-      "etd": "2026-06-25 22:00:00",
-      "atd": "",
-      "openStacking": "2026-06-20 01:00:00",
-      "closingDocument": "2026-06-23 21:00:00",
-      "closingPhysic": "2026-06-23 23:00:00"
     },
     {
       "vessel": "SITC BATANGAS",
@@ -179,9 +179,9 @@
       "ata": "",
       "etd": "2026-07-04 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-27 01:00:00",
+      "closingDocument": "2026-07-02 05:00:00",
+      "closingPhysic": "2026-07-02 07:00:00"
     },
     {
       "vessel": "EVER BOOMY",
@@ -239,9 +239,9 @@
       "ata": "",
       "etd": "2026-07-03 08:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-28 01:00:00",
+      "closingDocument": "2026-07-01 05:00:00",
+      "closingPhysic": "2026-07-01 07:00:00"
     },
     {
       "vessel": "HF LUCKY",
@@ -364,6 +364,21 @@
       "closingPhysic": "2026-06-27 23:59:00"
     },
     {
+      "vessel": "ERASMUS LEO",
+      "line": "MCC",
+      "voyIn": "625S",
+      "voyOut": "626N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-06-28 18:00:00",
+      "ata": "",
+      "etd": "2026-06-30 01:00:00",
+      "atd": "",
+      "openStacking": "2026-06-21 01:00:00",
+      "closingDocument": "2026-06-26 01:00:00",
+      "closingPhysic": "2026-06-26 03:00:00"
+    },
+    {
       "vessel": "EVER ORIENT",
       "line": "EMC",
       "voyIn": "0480-110S",
@@ -392,21 +407,6 @@
       "openStacking": "2026-06-22 01:00:00",
       "closingDocument": "2026-06-26 03:00:00",
       "closingPhysic": "2026-06-26 05:00:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "626N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-27 22:00:00",
-      "ata": "",
-      "etd": "2026-06-30 01:00:00",
-      "atd": "",
-      "openStacking": "2026-06-21 01:00:00",
-      "closingDocument": "2026-06-26 23:00:00",
-      "closingPhysic": "2026-06-27 01:00:00"
     },
     {
       "vessel": "EVER BLISS",
@@ -439,19 +439,19 @@
       "closingPhysic": "2026-06-26 18:00:00"
     },
     {
-      "vessel": "ERASMUS LEO",
+      "vessel": "IRENES RAY",
       "line": "MCC",
-      "voyIn": "625S",
+      "voyIn": "624S",
       "voyOut": "626N",
-      "service": "I15",
+      "service": "IN1",
       "status": "REGISTER",
       "etb": "2026-06-26 13:00:00",
       "ata": "",
-      "etd": "2026-06-27 20:00:00",
+      "etd": "2026-06-28 15:00:00",
       "atd": "",
       "openStacking": "2026-06-21 01:00:00",
-      "closingDocument": "2026-06-26 01:00:00",
-      "closingPhysic": "2026-06-26 03:00:00"
+      "closingDocument": "2026-06-26 06:00:00",
+      "closingPhysic": "2026-06-26 08:00:00"
     },
     {
       "vessel": "MARSA PRIDE",
