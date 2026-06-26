@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-26T13:52:59.807Z",
-  "totalScraped": 62,
+  "lastUpdated": "2026-06-26T19:24:45.325Z",
+  "totalScraped": 61,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "624S",
+      "voyOut": "626N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-06-27 01:00:00",
+      "ata": "2026-06-27 00:56:39",
+      "etd": "2026-06-28 23:00:00",
+      "atd": "",
+      "openStacking": "2026-06-21 01:00:00",
+      "closingDocument": "2026-06-26 06:00:00",
+      "closingPhysic": "2026-06-26 08:00:00"
+    },
     {
       "vessel": "MARSA PRIDE",
       "line": "MCC",
@@ -12,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-06-26 14:00:00",
       "ata": "2026-06-26 14:03:00",
-      "etd": "2026-06-27 08:00:00",
+      "etd": "2026-06-27 10:00:00",
       "atd": "",
       "openStacking": "2026-06-19 01:00:00",
       "closingDocument": "2026-06-24 10:00:00",
@@ -34,19 +49,19 @@
       "closingPhysic": "2026-06-25 15:00:00"
     },
     {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "378N",
-      "voyOut": "378N",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-06-25 01:00:00",
-      "ata": "2026-06-25 00:42:00",
-      "etd": "2026-06-26 20:00:00",
+      "vessel": "SITC SHEKOU",
+      "line": "SIT",
+      "voyIn": "2614S",
+      "voyOut": "2615N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-07-10 16:00:00",
+      "ata": "",
+      "etd": "2026-07-11 18:00:00",
       "atd": "",
-      "openStacking": "2026-06-19 01:00:00",
-      "closingDocument": "2026-06-23 13:00:00",
-      "closingPhysic": "2026-06-23 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHIDAO",
@@ -269,9 +284,9 @@
       "ata": "",
       "etd": "2026-07-03 22:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-27 01:00:00",
+      "closingDocument": "2026-07-01 08:00:00",
+      "closingPhysic": "2026-07-01 10:00:00"
     },
     {
       "vessel": "SPIL NISAKA",
@@ -460,28 +475,13 @@
       "voyOut": "2617N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-06-27 10:00:00",
+      "etb": "2026-06-27 12:00:00",
       "ata": "",
       "etd": "2026-06-28 10:00:00",
       "atd": "",
       "openStacking": "2026-06-23 01:00:00",
       "closingDocument": "2026-06-26 16:00:00",
       "closingPhysic": "2026-06-26 18:00:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "626N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-06-26 22:00:00",
-      "ata": "",
-      "etd": "2026-06-28 23:00:00",
-      "atd": "",
-      "openStacking": "2026-06-21 01:00:00",
-      "closingDocument": "2026-06-26 06:00:00",
-      "closingPhysic": "2026-06-26 08:00:00"
     },
     {
       "vessel": "BG. LL MASSIE - TB. LL MASERATII",
