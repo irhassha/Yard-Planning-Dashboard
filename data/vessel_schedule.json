@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-06-26T08:44:30.248Z",
+  "lastUpdated": "2026-06-26T13:52:59.807Z",
   "totalScraped": 62,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "MARSA PRIDE",
@@ -47,21 +47,6 @@
       "openStacking": "2026-06-19 01:00:00",
       "closingDocument": "2026-06-23 13:00:00",
       "closingPhysic": "2026-06-23 15:00:00"
-    },
-    {
-      "vessel": "MSC BERN V",
-      "line": "MSC",
-      "voyIn": "HW623A",
-      "voyOut": "HW623A",
-      "service": "PERTIWI",
-      "status": "ACTIVE",
-      "etb": "2026-06-24 13:00:00",
-      "ata": "2026-06-24 13:10:00",
-      "etd": "2026-06-26 11:00:00",
-      "atd": "2026-06-26 10:58:00",
-      "openStacking": "2026-06-18 01:00:00",
-      "closingDocument": "2026-06-23 21:59:00",
-      "closingPhysic": "2026-06-23 23:59:00"
     },
     {
       "vessel": "SITC SHIDAO",
@@ -299,9 +284,9 @@
       "ata": "",
       "etd": "2026-07-04 11:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-28 01:00:00",
+      "closingDocument": "2026-07-02 07:00:00",
+      "closingPhysic": "2026-07-02 09:00:00"
     },
     {
       "vessel": "EVER BEFIT",
