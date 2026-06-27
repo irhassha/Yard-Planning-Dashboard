@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-06-27T13:01:15.432Z",
-  "totalScraped": 63,
+  "lastUpdated": "2026-06-27T18:58:16.809Z",
+  "totalScraped": 62,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "EVER BLISS",
+      "line": "EMA",
+      "voyIn": "1195-113B",
+      "voyOut": "1195-113B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-06-27 22:00:00",
+      "ata": "2026-06-27 22:10:00",
+      "etd": "2026-06-29 05:00:00",
+      "atd": "",
+      "openStacking": "2026-06-22 01:00:00",
+      "closingDocument": "2026-06-25 05:00:00",
+      "closingPhysic": "2026-06-25 07:00:00"
+    },
     {
       "vessel": "SITC YUHE",
       "line": "SIT",
@@ -34,19 +49,34 @@
       "closingPhysic": "2026-06-26 08:00:00"
     },
     {
-      "vessel": "ITAL BONNY",
-      "line": "LT",
-      "voyIn": "S102",
-      "voyOut": "N102",
-      "service": "CIM",
+      "vessel": "MSC BERN V",
+      "line": "MSC",
+      "voyIn": "HW623A",
+      "voyOut": "HW623A",
+      "service": "PERTIWI",
       "status": "ACTIVE",
-      "etb": "2026-06-26 11:00:00",
-      "ata": "2026-06-26 10:48:00",
-      "etd": "2026-06-27 20:00:00",
+      "etb": "2026-06-24 13:00:00",
+      "ata": "2026-06-24 13:10:00",
+      "etd": "2026-06-26 11:00:00",
+      "atd": "2026-06-26 10:58:00",
+      "openStacking": "2026-06-18 01:00:00",
+      "closingDocument": "2026-06-23 21:59:00",
+      "closingPhysic": "2026-06-23 23:59:00"
+    },
+    {
+      "vessel": "HMM CEBU",
+      "line": "HMM",
+      "voyIn": "0028S",
+      "voyOut": "0028N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-07-11 09:30:00",
+      "ata": "",
+      "etd": "2026-07-12 07:30:00",
       "atd": "",
-      "openStacking": "2026-06-23 01:00:00",
-      "closingDocument": "2026-06-25 13:00:00",
-      "closingPhysic": "2026-06-25 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHEKOU",
@@ -482,36 +512,6 @@
       "openStacking": "2026-06-22 01:00:00",
       "closingDocument": "2026-06-26 03:00:00",
       "closingPhysic": "2026-06-26 05:00:00"
-    },
-    {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1195-113B",
-      "voyOut": "1195-113B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-06-27 22:00:00",
-      "ata": "",
-      "etd": "2026-06-29 05:00:00",
-      "atd": "",
-      "openStacking": "2026-06-22 01:00:00",
-      "closingDocument": "2026-06-25 05:00:00",
-      "closingPhysic": "2026-06-25 07:00:00"
-    },
-    {
-      "vessel": "BG. LL MASSIE - TB. LL MASERATII",
-      "line": "SSD",
-      "voyIn": "59 JN",
-      "voyOut": "59 JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-06-13 12:00:00",
-      "ata": "",
-      "etd": "2026-06-13 20:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     }
   ]
 }
