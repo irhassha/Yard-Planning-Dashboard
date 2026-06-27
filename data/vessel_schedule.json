@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-27T08:21:16.633Z",
+  "lastUpdated": "2026-06-27T13:01:15.432Z",
   "totalScraped": 63,
   "totalFiltered": 34,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "JTH",
       "status": "ACTIVE",
       "etb": "2026-06-27 12:00:00",
-      "ata": "2026-06-27 13:07:35",
+      "ata": "2026-06-27 11:49:00",
       "etd": "2026-06-28 10:00:00",
       "atd": "",
       "openStacking": "2026-06-23 01:00:00",
@@ -26,7 +26,7 @@
       "service": "IN1",
       "status": "ACTIVE",
       "etb": "2026-06-27 01:00:00",
-      "ata": "2026-06-27 00:56:39",
+      "ata": "2026-06-27 00:59:00",
       "etd": "2026-06-29 07:00:00",
       "atd": "",
       "openStacking": "2026-06-21 01:00:00",
@@ -224,9 +224,9 @@
       "ata": "",
       "etd": "2026-07-05 16:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-29 04:00:00",
+      "closingDocument": "2026-07-04 03:00:00",
+      "closingPhysic": "2026-07-04 05:00:00"
     },
     {
       "vessel": "MARINA ONE",
