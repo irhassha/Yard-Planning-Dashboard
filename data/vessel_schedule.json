@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-06-28T13:06:36.406Z",
-  "totalScraped": 65,
+  "lastUpdated": "2026-06-28T18:57:45.886Z",
+  "totalScraped": 62,
   "totalFiltered": 36,
   "vessels": [
     {
@@ -269,9 +269,9 @@
       "ata": "",
       "etd": "2026-07-06 17:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-06-30 01:00:00",
+      "closingDocument": "2026-07-05 04:00:00",
+      "closingPhysic": "2026-07-05 06:00:00"
     },
     {
       "vessel": "IRENES RAY",
