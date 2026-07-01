@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T09:23:52.031Z",
+  "lastUpdated": "2026-07-01T13:58:43.597Z",
   "totalScraped": 62,
   "totalFiltered": 34,
   "vessels": [
@@ -27,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-07-01 01:00:00",
       "ata": "2026-07-01 00:27:00",
-      "etd": "2026-07-02 05:00:00",
+      "etd": "2026-07-02 10:00:00",
       "atd": "",
       "openStacking": "2026-06-25 01:00:00",
       "closingDocument": "2026-06-27 21:59:00",
@@ -469,6 +469,21 @@
       "closingPhysic": "2026-07-02 23:59:00"
     },
     {
+      "vessel": "EVER BEFIT",
+      "line": "EMA",
+      "voyIn": "1196-080B",
+      "voyOut": "1196-080B",
+      "service": "JPI-B",
+      "status": "REGISTER",
+      "etb": "2026-07-02 12:00:00",
+      "ata": "",
+      "etd": "2026-07-03 11:00:00",
+      "atd": "",
+      "openStacking": "2026-06-28 01:00:00",
+      "closingDocument": "2026-07-01 05:00:00",
+      "closingPhysic": "2026-07-01 07:00:00"
+    },
+    {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
       "voyIn": "626E",
@@ -482,21 +497,6 @@
       "openStacking": "2026-06-28 01:00:00",
       "closingDocument": "2026-07-02 07:00:00",
       "closingPhysic": "2026-07-02 09:00:00"
-    },
-    {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1196-080B",
-      "voyOut": "1196-080B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-07-02 07:00:00",
-      "ata": "",
-      "etd": "2026-07-03 11:00:00",
-      "atd": "",
-      "openStacking": "2026-06-28 01:00:00",
-      "closingDocument": "2026-07-01 05:00:00",
-      "closingPhysic": "2026-07-01 07:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
