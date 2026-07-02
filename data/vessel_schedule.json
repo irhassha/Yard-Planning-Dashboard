@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T19:25:50.674Z",
+  "lastUpdated": "2026-07-02T01:54:58.088Z",
   "totalScraped": 64,
   "totalFiltered": 36,
   "vessels": [
@@ -344,9 +344,9 @@
       "ata": "",
       "etd": "2026-07-08 23:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-02 01:00:00",
+      "closingDocument": "2026-07-07 00:00:00",
+      "closingPhysic": "2026-07-07 02:00:00"
     },
     {
       "vessel": "ITAL BONUS",
