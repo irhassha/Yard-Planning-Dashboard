@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-02T08:36:53.573Z",
-  "totalScraped": 64,
+  "lastUpdated": "2026-07-02T13:23:18.039Z",
+  "totalScraped": 65,
   "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "EVER BEFIT",
+      "line": "EMA",
+      "voyIn": "1196-080B",
+      "voyOut": "1196-080B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-07-02 18:00:00",
+      "ata": "2026-07-02 19:56:12",
+      "etd": "2026-07-03 14:00:00",
+      "atd": "",
+      "openStacking": "2026-06-28 01:00:00",
+      "closingDocument": "2026-07-01 20:45:00",
+      "closingPhysic": "2026-07-01 22:45:00"
+    },
     {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-25 01:00:00",
       "closingDocument": "2026-06-29 19:00:00",
       "closingPhysic": "2026-06-29 21:00:00"
-    },
-    {
-      "vessel": "EVER BURLY",
-      "line": "EMC",
-      "voyIn": "S091",
-      "voyOut": "N091",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-07-01 01:00:00",
-      "ata": "2026-07-01 00:27:00",
-      "etd": "2026-07-02 16:00:00",
-      "atd": "",
-      "openStacking": "2026-06-25 01:00:00",
-      "closingDocument": "2026-06-27 21:59:00",
-      "closingPhysic": "2026-06-27 23:59:00"
     },
     {
       "vessel": "SITC NANSHA",
@@ -223,6 +223,21 @@
       "etb": "2026-07-11 13:00:00",
       "ata": "",
       "etd": "2026-07-12 22:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-07-10 19:00:00",
+      "ata": "",
+      "etd": "2026-07-11 20:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -477,7 +492,7 @@
       "status": "REGISTER",
       "etb": "2026-07-04 01:00:00",
       "ata": "",
-      "etd": "2026-07-04 17:00:00",
+      "etd": "2026-07-04 23:59:00",
       "atd": "",
       "openStacking": "2026-06-27 01:00:00",
       "closingDocument": "2026-07-02 05:00:00",
@@ -512,21 +527,6 @@
       "openStacking": "2026-06-29 18:00:00",
       "closingDocument": "2026-07-02 21:59:00",
       "closingPhysic": "2026-07-02 23:59:00"
-    },
-    {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1196-080B",
-      "voyOut": "1196-080B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-07-02 18:00:00",
-      "ata": "",
-      "etd": "",
-      "atd": "",
-      "openStacking": "2026-06-28 01:00:00",
-      "closingDocument": "2026-07-01 20:45:00",
-      "closingPhysic": "2026-07-01 22:45:00"
     }
   ]
 }
