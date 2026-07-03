@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-02T19:03:42.179Z",
+  "lastUpdated": "2026-07-03T01:24:34.602Z",
   "totalScraped": 63,
-  "totalFiltered": 36,
+  "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "EVER OASIS",
+      "line": "EGH",
+      "voyIn": "0481-088S",
+      "voyOut": "0481-088N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-07-03 08:00:00",
+      "ata": "2026-07-03 07:34:00",
+      "etd": "2026-07-04 05:00:00",
+      "atd": "",
+      "openStacking": "2026-06-29 18:00:00",
+      "closingDocument": "2026-07-02 21:59:00",
+      "closingPhysic": "2026-07-02 23:59:00"
+    },
     {
       "vessel": "EVER BEFIT",
       "line": "EMA",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-28 01:00:00",
       "closingDocument": "2026-07-02 07:00:00",
       "closingPhysic": "2026-07-02 09:00:00"
-    },
-    {
-      "vessel": "JOSEPHINE MAERSK",
-      "line": "MCC",
-      "voyIn": "625S",
-      "voyOut": "626N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-07-01 21:00:00",
-      "ata": "2026-07-01 20:00:00",
-      "etd": "2026-07-03 06:00:00",
-      "atd": "",
-      "openStacking": "2026-06-25 01:00:00",
-      "closingDocument": "2026-06-29 19:00:00",
-      "closingPhysic": "2026-06-29 21:00:00"
     },
     {
       "vessel": "MSC SHAULA",
@@ -527,21 +527,6 @@
       "openStacking": "2026-06-27 01:00:00",
       "closingDocument": "2026-07-03 03:00:00",
       "closingPhysic": "2026-07-03 05:00:00"
-    },
-    {
-      "vessel": "EVER OASIS",
-      "line": "EGH",
-      "voyIn": "0481-088S",
-      "voyOut": "0481-088N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-07-03 08:00:00",
-      "ata": "",
-      "etd": "2026-07-04 05:00:00",
-      "atd": "",
-      "openStacking": "2026-06-29 18:00:00",
-      "closingDocument": "2026-07-02 21:59:00",
-      "closingPhysic": "2026-07-02 23:59:00"
     }
   ]
 }
