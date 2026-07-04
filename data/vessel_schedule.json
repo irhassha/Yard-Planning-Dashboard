@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-04T01:24:43.840Z",
+  "lastUpdated": "2026-07-04T08:16:01.322Z",
   "totalScraped": 62,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "HMM HERITAGE",
@@ -32,21 +32,6 @@
       "openStacking": "2026-07-01 01:00:00",
       "closingDocument": "2026-07-03 21:59:00",
       "closingPhysic": "2026-07-03 23:59:00"
-    },
-    {
-      "vessel": "SPIL NIKEN",
-      "line": "MCC",
-      "voyIn": "624S",
-      "voyOut": "627N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-07-03 16:00:00",
-      "ata": "2026-07-03 18:00:00",
-      "etd": "2026-07-04 15:00:00",
-      "atd": "",
-      "openStacking": "2026-06-27 01:00:00",
-      "closingDocument": "2026-07-03 03:00:00",
-      "closingPhysic": "2026-07-03 05:00:00"
     },
     {
       "vessel": "INTERASIA ENGAGE",
