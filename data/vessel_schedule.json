@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-04T08:16:01.322Z",
+  "lastUpdated": "2026-07-04T12:52:07.371Z",
   "totalScraped": 62,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "626S",
+      "voyOut": "627N",
+      "service": "I15",
+      "status": "ACTIVE",
+      "etb": "2026-07-04 17:00:00",
+      "ata": "2026-07-04 16:47:00",
+      "etd": "2026-07-05 23:00:00",
+      "atd": "",
+      "openStacking": "2026-06-29 04:00:00",
+      "closingDocument": "2026-07-04 03:00:00",
+      "closingPhysic": "2026-07-04 05:00:00"
+    },
     {
       "vessel": "HMM HERITAGE",
       "line": "HMM",
@@ -482,21 +497,6 @@
       "openStacking": "2026-06-30 01:00:00",
       "closingDocument": "2026-07-04 20:00:00",
       "closingPhysic": "2026-07-04 22:00:00"
-    },
-    {
-      "vessel": "BIG BREEZY",
-      "line": "MCC",
-      "voyIn": "626S",
-      "voyOut": "627N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-07-04 17:00:00",
-      "ata": "",
-      "etd": "2026-07-05 23:00:00",
-      "atd": "",
-      "openStacking": "2026-06-29 04:00:00",
-      "closingDocument": "2026-07-04 03:00:00",
-      "closingPhysic": "2026-07-04 05:00:00"
     }
   ]
 }
