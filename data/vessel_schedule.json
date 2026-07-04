@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-04T12:52:07.371Z",
-  "totalScraped": 62,
+  "lastUpdated": "2026-07-04T18:47:58.371Z",
+  "totalScraped": 60,
   "totalFiltered": 33,
   "vessels": [
     {
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-07-04 03:00:00",
       "ata": "2026-07-04 00:51:32",
-      "etd": "2026-07-05 23:00:00",
+      "etd": "2026-07-05 12:00:00",
       "atd": "",
       "openStacking": "2026-07-01 01:00:00",
       "closingDocument": "2026-07-03 21:59:00",
@@ -400,9 +400,9 @@
       "voyOut": "622S",
       "service": "TX4",
       "status": "REGISTER",
-      "etb": "2026-07-07 15:00:00",
+      "etb": "2026-07-07 09:00:00",
       "ata": "",
-      "etd": "2026-07-09 06:00:00",
+      "etd": "2026-07-09 05:00:00",
       "atd": "",
       "openStacking": "2026-07-02 01:00:00",
       "closingDocument": "2026-07-07 00:00:00",
@@ -430,9 +430,9 @@
       "voyOut": "BGX004N",
       "service": "MERATUS",
       "status": "REGISTER",
-      "etb": "2026-07-07 00:00:00",
+      "etb": "2026-07-06 15:00:00",
       "ata": "",
-      "etd": "2026-07-07 13:00:00",
+      "etd": "2026-07-07 04:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -454,21 +454,6 @@
       "closingPhysic": "2026-07-06 06:00:00"
     },
     {
-      "vessel": "EVER OBEY",
-      "line": "EMA",
-      "voyIn": "0482-055S",
-      "voyOut": "0482-055N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-07-06 01:00:00",
-      "ata": "",
-      "etd": "2026-07-06 22:00:00",
-      "atd": "",
-      "openStacking": "2026-07-03 01:00:00",
-      "closingDocument": "2026-07-06 05:00:00",
-      "closingPhysic": "2026-07-06 07:00:00"
-    },
-    {
       "vessel": "SITC DECHENG",
       "line": "SIT",
       "voyIn": "2614S",
@@ -482,6 +467,21 @@
       "openStacking": "2026-06-26 01:00:00",
       "closingDocument": "2026-06-29 16:00:00",
       "closingPhysic": "2026-06-29 18:00:00"
+    },
+    {
+      "vessel": "EVER OBEY",
+      "line": "EMA",
+      "voyIn": "0482-055S",
+      "voyOut": "0482-055N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-07-05 15:00:00",
+      "ata": "",
+      "etd": "2026-07-06 12:00:00",
+      "atd": "",
+      "openStacking": "2026-07-03 01:00:00",
+      "closingDocument": "2026-07-06 05:00:00",
+      "closingPhysic": "2026-07-06 07:00:00"
     },
     {
       "vessel": "SKY PEACE",
