@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-03T18:56:00.200Z",
+  "lastUpdated": "2026-07-04T01:24:43.840Z",
   "totalScraped": 62,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "HMM HERITAGE",
+      "line": "HMM",
+      "voyIn": "0010S",
+      "voyOut": "0010N",
+      "service": "KIS",
+      "status": "ACTIVE",
+      "etb": "2026-07-04 06:00:00",
+      "ata": "2026-07-04 05:04:39",
+      "etd": "2026-07-05 02:00:00",
+      "atd": "",
+      "openStacking": "2026-06-27 01:00:00",
+      "closingDocument": "2026-07-02 05:00:00",
+      "closingPhysic": "2026-07-02 07:00:00"
+    },
     {
       "vessel": "EVER BOOMY",
       "line": "EMA",
@@ -32,21 +47,6 @@
       "openStacking": "2026-06-27 01:00:00",
       "closingDocument": "2026-07-03 03:00:00",
       "closingPhysic": "2026-07-03 05:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "626E",
-      "voyOut": "627N",
-      "service": "IN1",
-      "status": "ACTIVE",
-      "etb": "2026-07-02 12:00:00",
-      "ata": "2026-07-02 13:07:36",
-      "etd": "2026-07-04 04:00:00",
-      "atd": "",
-      "openStacking": "2026-06-28 01:00:00",
-      "closingDocument": "2026-07-02 07:00:00",
-      "closingPhysic": "2026-07-02 09:00:00"
     },
     {
       "vessel": "INTERASIA ENGAGE",
@@ -512,21 +512,6 @@
       "openStacking": "2026-06-29 04:00:00",
       "closingDocument": "2026-07-04 03:00:00",
       "closingPhysic": "2026-07-04 05:00:00"
-    },
-    {
-      "vessel": "HMM HERITAGE",
-      "line": "HMM",
-      "voyIn": "0010S",
-      "voyOut": "0010N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-07-04 06:00:00",
-      "ata": "",
-      "etd": "2026-07-05 02:00:00",
-      "atd": "",
-      "openStacking": "2026-06-27 01:00:00",
-      "closingDocument": "2026-07-02 05:00:00",
-      "closingPhysic": "2026-07-02 07:00:00"
     }
   ]
 }
