@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-05T12:59:44.612Z",
+  "lastUpdated": "2026-07-05T18:54:12.824Z",
   "totalScraped": 64,
-  "totalFiltered": 35,
+  "totalFiltered": 36,
   "vessels": [
     {
       "vessel": "SITC DECHENG",
@@ -34,19 +34,34 @@
       "closingPhysic": "2026-07-04 22:00:00"
     },
     {
-      "vessel": "BIG BREEZY",
+      "vessel": "SPIL NISAKA",
       "line": "MCC",
-      "voyIn": "626S",
-      "voyOut": "627N",
-      "service": "I15",
-      "status": "ACTIVE",
-      "etb": "2026-07-04 17:00:00",
-      "ata": "2026-07-04 16:47:00",
-      "etd": "2026-07-06 00:30:00",
+      "voyIn": "629E",
+      "voyOut": "630N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-07-19 13:00:00",
+      "ata": "",
+      "etd": "2026-07-21 08:00:00",
       "atd": "",
-      "openStacking": "2026-06-29 04:00:00",
-      "closingDocument": "2026-07-04 03:00:00",
-      "closingPhysic": "2026-07-04 05:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "JULIUS-S",
+      "line": "MCC",
+      "voyIn": "628S",
+      "voyOut": "629N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-07-19 07:00:00",
+      "ata": "",
+      "etd": "2026-07-20 18:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ERASMUS LEO",
@@ -409,6 +424,21 @@
       "closingPhysic": "2026-07-09 05:00:00"
     },
     {
+      "vessel": "SEASPAN CALICANTO",
+      "line": "MCC",
+      "voyIn": "625S",
+      "voyOut": "628N",
+      "service": "IA8",
+      "status": "REGISTER",
+      "etb": "2026-07-09 02:00:00",
+      "ata": "",
+      "etd": "",
+      "atd": "",
+      "openStacking": "2026-07-03 01:00:00",
+      "closingDocument": "2026-07-08 08:00:00",
+      "closingPhysic": "2026-07-08 10:00:00"
+    },
+    {
       "vessel": "MSC JERSEY",
       "line": "MSC",
       "voyIn": "HW625A",
@@ -422,21 +452,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "OEL VARUN",
-      "line": "MCC",
-      "voyIn": "621N",
-      "voyOut": "622S",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-07-08 05:00:00",
-      "ata": "",
-      "etd": "2026-07-09 22:00:00",
-      "atd": "",
-      "openStacking": "2026-07-02 01:00:00",
-      "closingDocument": "2026-07-07 00:00:00",
-      "closingPhysic": "2026-07-07 02:00:00"
     },
     {
       "vessel": "ITAL BONUS",
@@ -469,19 +484,19 @@
       "closingPhysic": "2026-07-06 03:00:00"
     },
     {
-      "vessel": "SEASPAN CALICANTO",
+      "vessel": "OEL VARUN",
       "line": "MCC",
-      "voyIn": "625S",
-      "voyOut": "628N",
-      "service": "IA8",
+      "voyIn": "621N",
+      "voyOut": "622S",
+      "service": "TX4",
       "status": "REGISTER",
       "etb": "2026-07-07 07:00:00",
       "ata": "",
-      "etd": "2026-07-08 03:00:00",
+      "etd": "2026-07-08 23:00:00",
       "atd": "",
-      "openStacking": "2026-07-03 01:00:00",
-      "closingDocument": "2026-07-08 08:00:00",
-      "closingPhysic": "2026-07-08 10:00:00"
+      "openStacking": "2026-07-02 01:00:00",
+      "closingDocument": "2026-07-07 00:00:00",
+      "closingPhysic": "2026-07-07 02:00:00"
     },
     {
       "vessel": "MERATUS AMPANA",
