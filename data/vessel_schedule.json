@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-05T08:34:45.208Z",
+  "lastUpdated": "2026-07-05T12:59:44.612Z",
   "totalScraped": 64,
   "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "SITC DECHENG",
+      "line": "SIT",
+      "voyIn": "2614S",
+      "voyOut": "2615N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-07-05 16:00:00",
+      "ata": "2026-07-05 15:45:00",
+      "etd": "2026-07-06 19:00:00",
+      "atd": "",
+      "openStacking": "2026-06-26 01:00:00",
+      "closingDocument": "2026-06-29 16:00:00",
+      "closingPhysic": "2026-06-29 18:00:00"
+    },
     {
       "vessel": "SKY PEACE",
       "line": "MCC",
@@ -512,21 +527,6 @@
       "openStacking": "2026-07-03 01:00:00",
       "closingDocument": "2026-07-06 04:00:00",
       "closingPhysic": "2026-07-06 06:00:00"
-    },
-    {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2614S",
-      "voyOut": "2615N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-07-05 16:00:00",
-      "ata": "",
-      "etd": "2026-07-06 19:00:00",
-      "atd": "",
-      "openStacking": "2026-06-26 01:00:00",
-      "closingDocument": "2026-06-29 16:00:00",
-      "closingPhysic": "2026-06-29 18:00:00"
     }
   ]
 }
