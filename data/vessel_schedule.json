@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-06T14:48:10.563Z",
-  "totalScraped": 65,
-  "totalFiltered": 35,
+  "lastUpdated": "2026-07-06T19:26:00.324Z",
+  "totalScraped": 62,
+  "totalFiltered": 34,
   "vessels": [
     {
       "vessel": "MERATUS AMPANA",
@@ -17,21 +17,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "EVER OBEY",
-      "line": "EMA",
-      "voyIn": "0482-055S",
-      "voyOut": "0482-055N",
-      "service": "CIT",
-      "status": "ACTIVE",
-      "etb": "2026-07-06 10:00:00",
-      "ata": "2026-07-06 09:56:00",
-      "etd": "2026-07-07 05:00:00",
-      "atd": "",
-      "openStacking": "2026-07-03 01:00:00",
-      "closingDocument": "2026-07-06 05:00:00",
-      "closingPhysic": "2026-07-06 07:00:00"
     },
     {
       "vessel": "IRENES RAY",
