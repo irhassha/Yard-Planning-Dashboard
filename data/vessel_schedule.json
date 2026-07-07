@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-06T19:26:00.324Z",
+  "lastUpdated": "2026-07-07T01:31:26.448Z",
   "totalScraped": 62,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "OEL VARUN",
+      "line": "MCC",
+      "voyIn": "621N",
+      "voyOut": "622S",
+      "service": "TX4",
+      "status": "ACTIVE",
+      "etb": "2026-07-07 07:00:00",
+      "ata": "2026-07-07 06:11:43",
+      "etd": "2026-07-08 23:00:00",
+      "atd": "",
+      "openStacking": "2026-07-02 01:00:00",
+      "closingDocument": "2026-07-07 00:00:00",
+      "closingPhysic": "2026-07-07 02:00:00"
+    },
     {
       "vessel": "MERATUS AMPANA",
       "line": "MRTS",
@@ -124,21 +139,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "AS PIA",
-      "line": "MCC",
-      "voyIn": "626S",
-      "voyOut": "629N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-07-17 15:00:00",
-      "ata": "",
-      "etd": "2026-07-18 11:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "AS PENELOPE",
       "line": "HLC",
       "voyIn": "628S",
@@ -148,6 +148,21 @@
       "etb": "2026-07-17 10:00:00",
       "ata": "",
       "etd": "2026-07-19 00:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "AS PIA",
+      "line": "MCC",
+      "voyIn": "626S",
+      "voyOut": "629N",
+      "service": "IA8",
+      "status": "REGISTER",
+      "etb": "2026-07-16 23:00:00",
+      "ata": "",
+      "etd": "2026-07-17 16:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -355,7 +370,7 @@
       "voyOut": "2619N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-07-11 18:00:00",
+      "etb": "2026-07-11 16:00:00",
       "ata": "",
       "etd": "2026-07-12 15:00:00",
       "atd": "",
@@ -497,21 +512,6 @@
       "openStacking": "2026-07-02 01:00:00",
       "closingDocument": "2026-07-06 01:00:00",
       "closingPhysic": "2026-07-06 03:00:00"
-    },
-    {
-      "vessel": "OEL VARUN",
-      "line": "MCC",
-      "voyIn": "621N",
-      "voyOut": "622S",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-07-07 07:00:00",
-      "ata": "",
-      "etd": "2026-07-08 23:00:00",
-      "atd": "",
-      "openStacking": "2026-07-02 01:00:00",
-      "closingDocument": "2026-07-07 00:00:00",
-      "closingPhysic": "2026-07-07 02:00:00"
     }
   ]
 }
