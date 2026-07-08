@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-08T08:02:14.388Z",
+  "lastUpdated": "2026-07-08T13:20:20.794Z",
   "totalScraped": 60,
   "totalFiltered": 31,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "CIM",
       "status": "ACTIVE",
       "etb": "2026-07-08 15:00:00",
-      "ata": "2026-07-08 12:31:40",
+      "ata": "2026-07-08 13:32:00",
       "etd": "2026-07-09 17:00:00",
       "atd": "",
       "openStacking": "2026-07-04 01:00:00",
@@ -26,7 +26,7 @@
       "service": "PERTIWI",
       "status": "ACTIVE",
       "etb": "2026-07-08 14:00:00",
-      "ata": "2026-07-08 12:16:55",
+      "ata": "2026-07-08 12:00:00",
       "etd": "2026-07-09 23:00:00",
       "atd": "",
       "openStacking": "",
@@ -209,9 +209,9 @@
       "ata": "",
       "etd": "2026-07-16 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-10 01:00:00",
+      "closingDocument": "2026-07-15 10:00:00",
+      "closingPhysic": "2026-07-15 12:00:00"
     },
     {
       "vessel": "IRENES RAY",
