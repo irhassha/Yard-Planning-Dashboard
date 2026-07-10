@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-10T01:21:09.630Z",
+  "lastUpdated": "2026-07-10T08:54:17.587Z",
   "totalScraped": 62,
   "totalFiltered": 32,
   "vessels": [
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-07-10 00:00:00",
       "ata": "2026-07-09 22:00:00",
-      "etd": "2026-07-11 10:00:00",
+      "etd": "2026-07-11 05:00:00",
       "atd": "",
       "openStacking": "2026-07-05 01:00:00",
       "closingDocument": "2026-07-09 03:00:00",
@@ -290,7 +290,7 @@
     },
     {
       "vessel": "OEL VARUN",
-      "line": "MAE",
+      "line": "MCC",
       "voyIn": "623N",
       "voyOut": "628N",
       "service": "I15",
@@ -445,9 +445,9 @@
       "voyOut": "1197-081B",
       "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-07-11 12:00:00",
+      "etb": "2026-07-11 07:00:00",
       "ata": "",
-      "etd": "2026-07-12 14:00:00",
+      "etd": "2026-07-12 09:00:00",
       "atd": "",
       "openStacking": "2026-07-08 01:00:00",
       "closingDocument": "2026-07-10 21:59:00",
