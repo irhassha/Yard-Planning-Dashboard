@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-10T13:47:35.661Z",
-  "totalScraped": 61,
-  "totalFiltered": 30,
+  "lastUpdated": "2026-07-10T19:10:49.205Z",
+  "totalScraped": 60,
+  "totalFiltered": 31,
   "vessels": [
     {
       "vessel": "EVER BLINK",
@@ -148,6 +148,21 @@
       "etb": "2026-07-19 12:00:00",
       "ata": "",
       "etd": "2026-07-21 09:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0484-048S",
+      "voyOut": "0484-048N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-07-19 08:00:00",
+      "ata": "",
+      "etd": "2026-07-20 08:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -387,7 +402,7 @@
       "status": "REGISTER",
       "etb": "2026-07-12 16:00:00",
       "ata": "",
-      "etd": "2026-07-14 08:00:00",
+      "etd": "2026-07-14 07:00:00",
       "atd": "",
       "openStacking": "2026-07-07 01:00:00",
       "closingDocument": "2026-07-10 19:00:00",
