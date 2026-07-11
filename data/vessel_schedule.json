@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-11T12:43:34.586Z",
+  "lastUpdated": "2026-07-11T18:39:55.906Z",
   "totalScraped": 63,
-  "totalFiltered": 32,
+  "totalFiltered": 35,
   "vessels": [
     {
       "vessel": "EVER BEAMY",
@@ -47,6 +47,51 @@
       "openStacking": "2026-07-07 12:00:00",
       "closingDocument": "2026-07-10 10:00:00",
       "closingPhysic": "2026-07-10 12:00:00"
+    },
+    {
+      "vessel": "ORNELLA",
+      "line": "MCC",
+      "voyIn": "630N",
+      "voyOut": "631A",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-07-25 23:00:00",
+      "ata": "",
+      "etd": "2026-07-26 23:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "JOSEPHINE MAERSK",
+      "line": "MCC",
+      "voyIn": "629S",
+      "voyOut": "630N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-07-25 23:00:00",
+      "ata": "",
+      "etd": "2026-07-27 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "HMM HERITAGE",
+      "line": "HMM",
+      "voyIn": "0011S",
+      "voyOut": "0011N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-07-25 09:30:00",
+      "ata": "",
+      "etd": "2026-07-26 07:30:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "BIG BREEZY",
