@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-12T12:44:59.276Z",
+  "lastUpdated": "2026-07-12T18:43:23.325Z",
   "totalScraped": 63,
-  "totalFiltered": 32,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "SPIL NISAKA",
@@ -47,6 +47,21 @@
       "openStacking": "2026-07-06 01:00:00",
       "closingDocument": "2026-07-10 05:00:00",
       "closingPhysic": "2026-07-10 07:00:00"
+    },
+    {
+      "vessel": "MSC BREMERHAVEN V",
+      "line": "MSC",
+      "voyIn": "HW628A",
+      "voyOut": "HW628A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-07-26 09:00:00",
+      "ata": "",
+      "etd": "2026-07-27 19:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ORNELLA",
@@ -239,9 +254,9 @@
       "ata": "",
       "etd": "2026-07-20 20:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-14 01:00:00",
+      "closingDocument": "2026-07-17 16:00:00",
+      "closingPhysic": "2026-07-17 18:00:00"
     },
     {
       "vessel": "SEABREEZE",
@@ -340,13 +355,28 @@
       "voyOut": "629W",
       "service": "JKF",
       "status": "REGISTER",
-      "etb": "2026-07-16 16:00:00",
+      "etb": "2026-07-17 02:00:00",
       "ata": "",
-      "etd": "2026-07-18 06:00:00",
+      "etd": "2026-07-18 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-13 01:00:00",
+      "closingDocument": "2026-07-16 23:00:00",
+      "closingPhysic": "2026-07-17 01:00:00"
+    },
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-07-15 18:00:00",
+      "ata": "",
+      "etd": "2026-07-16 16:00:00",
+      "atd": "",
+      "openStacking": "2026-07-10 01:00:00",
+      "closingDocument": "2026-07-13 16:00:00",
+      "closingPhysic": "2026-07-13 18:00:00"
     },
     {
       "vessel": "AS PIA",
@@ -355,28 +385,13 @@
       "voyOut": "629N",
       "service": "IA8",
       "status": "REGISTER",
-      "etb": "2026-07-16 08:00:00",
+      "etb": "2026-07-15 18:00:00",
       "ata": "",
-      "etd": "2026-07-17 02:00:00",
+      "etd": "2026-07-16 12:00:00",
       "atd": "",
       "openStacking": "2026-07-11 01:00:00",
       "closingDocument": "2026-07-15 22:01:00",
       "closingPhysic": "2026-07-16 00:01:00"
-    },
-    {
-      "vessel": "OKEE CORNELIA",
-      "line": "MCC",
-      "voyIn": "627S",
-      "voyOut": "627X",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-07-15 20:00:00",
-      "ata": "",
-      "etd": "2026-07-16 12:00:00",
-      "atd": "",
-      "openStacking": "2026-07-10 01:00:00",
-      "closingDocument": "2026-07-15 10:00:00",
-      "closingPhysic": "2026-07-15 12:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -394,34 +409,34 @@
       "closingPhysic": "2026-07-15 07:00:00"
     },
     {
+      "vessel": "OKEE CORNELIA",
+      "line": "MCC",
+      "voyIn": "627S",
+      "voyOut": "627X",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-07-15 02:00:00",
+      "ata": "",
+      "etd": "2026-07-15 16:00:00",
+      "atd": "",
+      "openStacking": "2026-07-10 01:00:00",
+      "closingDocument": "2026-07-15 10:00:00",
+      "closingPhysic": "2026-07-15 12:00:00"
+    },
+    {
       "vessel": "OEL VARUN",
       "line": "MCC",
       "voyIn": "623N",
       "voyOut": "628N",
       "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-07-15 11:00:00",
+      "etb": "2026-07-15 00:00:00",
       "ata": "",
-      "etd": "2026-07-16 05:00:00",
+      "etd": "2026-07-15 16:00:00",
       "atd": "",
       "openStacking": "2026-07-08 01:00:00",
       "closingDocument": "2026-07-13 13:00:00",
       "closingPhysic": "2026-07-13 15:00:00"
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-07-14 23:00:00",
-      "ata": "",
-      "etd": "2026-07-15 23:00:00",
-      "atd": "",
-      "openStacking": "2026-07-10 01:00:00",
-      "closingDocument": "2026-07-13 16:00:00",
-      "closingPhysic": "2026-07-13 18:00:00"
     },
     {
       "vessel": "EVER BIRTH",
@@ -447,7 +462,7 @@
       "status": "REGISTER",
       "etb": "2026-07-14 00:00:00",
       "ata": "",
-      "etd": "2026-07-15 09:00:00",
+      "etd": "2026-07-14 23:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
