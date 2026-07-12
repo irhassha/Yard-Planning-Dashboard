@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-11T18:39:55.906Z",
+  "lastUpdated": "2026-07-12T01:16:36.988Z",
   "totalScraped": 63,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "SITC SHEKOU",
+      "line": "SIT",
+      "voyIn": "2614S",
+      "voyOut": "2615N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-07-12 07:00:00",
+      "ata": "2026-07-12 06:00:00",
+      "etd": "2026-07-13 04:00:00",
+      "atd": "",
+      "openStacking": "2026-07-06 01:00:00",
+      "closingDocument": "2026-07-10 05:00:00",
+      "closingPhysic": "2026-07-10 07:00:00"
+    },
     {
       "vessel": "EVER BEAMY",
       "line": "EMA",
@@ -27,26 +42,11 @@
       "status": "ACTIVE",
       "etb": "2026-07-11 08:00:00",
       "ata": "2026-07-11 08:05:00",
-      "etd": "2026-07-12 01:00:00",
+      "etd": "2026-07-12 07:00:00",
       "atd": "",
       "openStacking": "2026-07-07 15:30:00",
       "closingDocument": "2026-07-10 16:00:00",
       "closingPhysic": "2026-07-10 18:00:00"
-    },
-    {
-      "vessel": "EVER BLINK",
-      "line": "EMA",
-      "voyIn": "1200-083A",
-      "voyOut": "1200-083A",
-      "service": "JPI-A",
-      "status": "ACTIVE",
-      "etb": "2026-07-10 20:00:00",
-      "ata": "2026-07-10 19:09:00",
-      "etd": "2026-07-12 01:00:00",
-      "atd": "",
-      "openStacking": "2026-07-07 12:00:00",
-      "closingDocument": "2026-07-10 10:00:00",
-      "closingPhysic": "2026-07-10 12:00:00"
     },
     {
       "vessel": "ORNELLA",
@@ -499,28 +499,13 @@
       "closingPhysic": "2026-07-10 21:00:00"
     },
     {
-      "vessel": "SITC SHEKOU",
-      "line": "SIT",
-      "voyIn": "2614S",
-      "voyOut": "2615N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-07-12 03:00:00",
-      "ata": "",
-      "etd": "2026-07-13 04:00:00",
-      "atd": "",
-      "openStacking": "2026-07-06 01:00:00",
-      "closingDocument": "2026-07-10 05:00:00",
-      "closingPhysic": "2026-07-10 07:00:00"
-    },
-    {
       "vessel": "MARINA ONE",
       "line": "HMM",
       "voyIn": "0001S",
       "voyOut": "0001N",
       "service": "KIS",
       "status": "REGISTER",
-      "etb": "2026-07-12 03:00:00",
+      "etb": "2026-07-12 08:00:00",
       "ata": "",
       "etd": "2026-07-13 07:00:00",
       "atd": "",
