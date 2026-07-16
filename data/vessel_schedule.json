@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-15T18:49:27.817Z",
+  "lastUpdated": "2026-07-16T01:13:49.933Z",
   "totalScraped": 66,
   "totalFiltered": 36,
   "vessels": [
@@ -454,6 +454,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "WAN HAI 373",
+      "line": "WHL",
+      "voyIn": "S027",
+      "voyOut": "N027",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-07-19 06:00:00",
+      "ata": "",
+      "etd": "2026-07-20 12:00:00",
+      "atd": "",
+      "openStacking": "2026-07-16 01:00:00",
+      "closingDocument": "2026-07-18 16:00:00",
+      "closingPhysic": "2026-07-18 18:00:00"
+    },
+    {
       "vessel": "SITC YUHE",
       "line": "SIT",
       "voyIn": "2618S",
@@ -469,19 +484,19 @@
       "closingPhysic": "2026-07-17 18:00:00"
     },
     {
-      "vessel": "WAN HAI 373",
-      "line": "WHL",
-      "voyIn": "S027",
-      "voyOut": "N027",
-      "service": "CIM",
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "628S",
+      "voyOut": "629W",
+      "service": "JKF",
       "status": "REGISTER",
-      "etb": "2026-07-18 22:00:00",
+      "etb": "2026-07-18 04:00:00",
       "ata": "",
-      "etd": "2026-07-20 05:00:00",
+      "etd": "2026-07-19 04:00:00",
       "atd": "",
-      "openStacking": "2026-07-16 01:00:00",
-      "closingDocument": "2026-07-18 16:00:00",
-      "closingPhysic": "2026-07-18 18:00:00"
+      "openStacking": "2026-07-13 01:00:00",
+      "closingDocument": "2026-07-17 03:00:00",
+      "closingPhysic": "2026-07-17 05:00:00"
     },
     {
       "vessel": "MSC SHAULA",
@@ -497,21 +512,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "628S",
-      "voyOut": "629W",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-07-17 06:00:00",
-      "ata": "",
-      "etd": "2026-07-18 20:00:00",
-      "atd": "",
-      "openStacking": "2026-07-13 01:00:00",
-      "closingDocument": "2026-07-17 03:00:00",
-      "closingPhysic": "2026-07-17 05:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -535,7 +535,7 @@
       "voyOut": "2617N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-07-16 19:00:00",
+      "etb": "2026-07-16 23:00:00",
       "ata": "",
       "etd": "2026-07-17 22:00:00",
       "atd": "",
