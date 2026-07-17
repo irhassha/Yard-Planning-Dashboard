@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-17T12:54:11.973Z",
-  "totalScraped": 64,
+  "lastUpdated": "2026-07-17T18:46:47.948Z",
+  "totalScraped": 63,
   "totalFiltered": 33,
   "vessels": [
     {
@@ -19,19 +19,19 @@
       "closingPhysic": "2026-07-15 07:00:00"
     },
     {
-      "vessel": "SITC NANSHA",
+      "vessel": "GREEN PACIFIC",
       "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-07-17 01:00:00",
-      "ata": "2026-07-16 01:22:00",
-      "etd": "2026-07-18 02:00:00",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-07-31 16:00:00",
+      "ata": "",
+      "etd": "2026-08-01 16:00:00",
       "atd": "",
-      "openStacking": "2026-07-10 01:00:00",
-      "closingDocument": "2026-07-13 16:00:00",
-      "closingPhysic": "2026-07-13 18:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHIDAO",
