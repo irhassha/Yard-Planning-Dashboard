@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-16T18:51:04.974Z",
+  "lastUpdated": "2026-07-17T01:17:39.055Z",
   "totalScraped": 64,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-07-17 01:00:00",
+      "ata": "2026-07-16 01:22:00",
+      "etd": "2026-07-18 02:00:00",
+      "atd": "",
+      "openStacking": "2026-07-10 01:00:00",
+      "closingDocument": "2026-07-13 16:00:00",
+      "closingPhysic": "2026-07-13 18:00:00"
+    },
     {
       "vessel": "SITC SHIDAO",
       "line": "SIT",
@@ -482,21 +497,6 @@
       "openStacking": "2026-07-11 01:00:00",
       "closingDocument": "2026-07-15 05:00:00",
       "closingPhysic": "2026-07-15 07:00:00"
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-07-17 01:00:00",
-      "ata": "",
-      "etd": "2026-07-18 02:00:00",
-      "atd": "",
-      "openStacking": "2026-07-10 01:00:00",
-      "closingDocument": "2026-07-13 16:00:00",
-      "closingPhysic": "2026-07-13 18:00:00"
     }
   ]
 }
