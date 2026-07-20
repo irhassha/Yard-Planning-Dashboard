@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-19T18:43:30.905Z",
+  "lastUpdated": "2026-07-20T01:18:03.015Z",
   "totalScraped": 64,
-  "totalFiltered": 37,
+  "totalFiltered": 36,
   "vessels": [
+    {
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0484-048S",
+      "voyOut": "0484-048N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-07-20 07:00:00",
+      "ata": "2026-07-20 04:30:00",
+      "etd": "2026-07-20 23:00:00",
+      "atd": "",
+      "openStacking": "2026-07-17 01:00:00",
+      "closingDocument": "2026-07-19 21:59:00",
+      "closingPhysic": "2026-07-19 23:59:00"
+    },
     {
       "vessel": "SITC YUHE",
       "line": "SIT",
@@ -32,21 +47,6 @@
       "openStacking": "2026-07-16 01:00:00",
       "closingDocument": "2026-07-18 16:00:00",
       "closingPhysic": "2026-07-18 18:00:00"
-    },
-    {
-      "vessel": "MSC SHAULA",
-      "line": "MSC",
-      "voyIn": "HW627A",
-      "voyOut": "HW627A",
-      "service": "PERTIWI",
-      "status": "ACTIVE",
-      "etb": "2026-07-18 20:00:00",
-      "ata": "2026-07-18 18:04:48",
-      "etd": "2026-07-20 05:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "IRENES RAY",
@@ -527,21 +527,6 @@
       "openStacking": "2026-07-13 01:00:00",
       "closingDocument": "2026-07-18 10:00:00",
       "closingPhysic": "2026-07-18 12:00:00"
-    },
-    {
-      "vessel": "EVER OPTIMA",
-      "line": "EGH",
-      "voyIn": "0484-048S",
-      "voyOut": "0484-048N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-07-20 07:00:00",
-      "ata": "",
-      "etd": "2026-07-20 23:00:00",
-      "atd": "",
-      "openStacking": "2026-07-17 01:00:00",
-      "closingDocument": "2026-07-19 21:59:00",
-      "closingPhysic": "2026-07-19 23:59:00"
     },
     {
       "vessel": "SEABREEZE",
