@@ -1,8 +1,68 @@
 {
-  "lastUpdated": "2026-07-21T13:07:31.029Z",
-  "totalScraped": 64,
-  "totalFiltered": 34,
+  "lastUpdated": "2026-07-21T18:59:38.928Z",
+  "totalScraped": 65,
+  "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "BG SEJAHTERA",
+      "line": "LKA",
+      "voyIn": "1226B",
+      "voyOut": "1226B",
+      "service": "LKA",
+      "status": "ACTIVE",
+      "etb": "2026-07-21 23:00:00",
+      "ata": "2026-07-21 17:50:00",
+      "etd": "2026-07-22 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-08-04 17:00:00",
+      "ata": "",
+      "etd": "2026-08-05 17:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-08-04 16:00:00",
+      "ata": "",
+      "etd": "2026-08-05 09:45:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC SHEKOU",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-08-04 15:00:00",
+      "ata": "",
+      "etd": "2026-08-05 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "EVER ORIENT",
       "line": "EMC",
@@ -497,21 +557,6 @@
       "openStacking": "2026-07-15 11:20:00",
       "closingDocument": "2026-07-19 13:00:00",
       "closingPhysic": "2026-07-19 15:00:00"
-    },
-    {
-      "vessel": "BG SEJAHTERA",
-      "line": "LKA",
-      "voyIn": "1226B",
-      "voyOut": "1226B",
-      "service": "LKA",
-      "status": "REGISTER",
-      "etb": "2026-07-21 23:00:00",
-      "ata": "",
-      "etd": "2026-07-22 07:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     }
   ]
 }
