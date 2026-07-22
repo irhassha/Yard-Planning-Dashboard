@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-07-22T13:13:24.134Z",
-  "totalScraped": 66,
+  "lastUpdated": "2026-07-22T18:52:14.325Z",
+  "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
     {
@@ -34,19 +34,19 @@
       "closingPhysic": "2026-07-20 17:00:00"
     },
     {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-07-22 05:00:00",
-      "ata": "2026-07-22 04:00:00",
-      "etd": "2026-07-23 01:00:00",
+      "vessel": "SKY PEACE",
+      "line": "MCC",
+      "voyIn": "630S",
+      "voyOut": "631N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-08-05 07:00:00",
+      "ata": "",
+      "etd": "2026-08-06 08:00:00",
       "atd": "",
-      "openStacking": "2026-07-15 11:20:00",
-      "closingDocument": "2026-07-19 13:00:00",
-      "closingPhysic": "2026-07-19 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "STARSHIP VENUS",
