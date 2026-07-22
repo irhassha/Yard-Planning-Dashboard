@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-07-21T18:59:38.928Z",
+  "lastUpdated": "2026-07-22T01:13:36.820Z",
   "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "629E",
+      "voyOut": "630N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-07-22 07:00:00",
+      "ata": "2026-07-22 05:56:00",
+      "etd": "2026-07-23 18:00:00",
+      "atd": "",
+      "openStacking": "2026-07-16 01:00:00",
+      "closingDocument": "2026-07-20 15:00:00",
+      "closingPhysic": "2026-07-20 17:00:00"
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "CMI2",
+      "status": "ACTIVE",
+      "etb": "2026-07-22 05:00:00",
+      "ata": "2026-07-22 04:00:00",
+      "etd": "2026-07-23 01:00:00",
+      "atd": "",
+      "openStacking": "2026-07-15 11:20:00",
+      "closingDocument": "2026-07-19 13:00:00",
+      "closingPhysic": "2026-07-19 15:00:00"
+    },
     {
       "vessel": "BG SEJAHTERA",
       "line": "LKA",
@@ -527,36 +557,6 @@
       "openStacking": "2026-07-17 01:00:00",
       "closingDocument": "2026-07-22 03:00:00",
       "closingPhysic": "2026-07-22 05:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "629E",
-      "voyOut": "630N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-07-22 07:00:00",
-      "ata": "",
-      "etd": "2026-07-23 18:00:00",
-      "atd": "",
-      "openStacking": "2026-07-16 01:00:00",
-      "closingDocument": "2026-07-20 15:00:00",
-      "closingPhysic": "2026-07-20 17:00:00"
-    },
-    {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI2",
-      "status": "REGISTER",
-      "etb": "2026-07-22 05:00:00",
-      "ata": "",
-      "etd": "2026-07-23 01:00:00",
-      "atd": "",
-      "openStacking": "2026-07-15 11:20:00",
-      "closingDocument": "2026-07-19 13:00:00",
-      "closingPhysic": "2026-07-19 15:00:00"
     }
   ]
 }
