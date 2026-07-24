@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-24T08:01:33.662Z",
+  "lastUpdated": "2026-07-24T13:09:47.023Z",
   "totalScraped": 67,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "EVER BLISS",
+      "line": "EMA",
+      "voyIn": "1202-114A",
+      "voyOut": "1202-114A",
+      "service": "JPI-A",
+      "status": "ACTIVE",
+      "etb": "2026-07-24 14:00:00",
+      "ata": "2026-07-24 15:30:00",
+      "etd": "2026-07-25 20:00:00",
+      "atd": "",
+      "openStacking": "2026-07-21 01:00:00",
+      "closingDocument": "2026-07-23 16:00:00",
+      "closingPhysic": "2026-07-23 18:00:00"
+    },
     {
       "vessel": "EVER OASIS",
       "line": "EGH",
@@ -209,9 +224,9 @@
       "ata": "",
       "etd": "2026-08-03 09:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-27 01:00:00",
+      "closingDocument": "2026-08-01 00:00:00",
+      "closingPhysic": "2026-08-01 02:00:00"
     },
     {
       "vessel": "ORNELLA",
@@ -359,9 +374,9 @@
       "ata": "",
       "etd": "2026-07-31 16:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-07-25 01:00:00",
+      "closingDocument": "2026-07-29 00:00:00",
+      "closingPhysic": "2026-07-29 02:00:00"
     },
     {
       "vessel": "MARSA PRIDE",
@@ -542,21 +557,6 @@
       "openStacking": "2026-07-20 01:00:00",
       "closingDocument": "2026-07-25 00:00:00",
       "closingPhysic": "2026-07-25 02:00:00"
-    },
-    {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1202-114A",
-      "voyOut": "1202-114A",
-      "service": "JPI-A",
-      "status": "REGISTER",
-      "etb": "2026-07-24 14:00:00",
-      "ata": "",
-      "etd": "2026-07-25 20:00:00",
-      "atd": "",
-      "openStacking": "2026-07-21 01:00:00",
-      "closingDocument": "2026-07-23 16:00:00",
-      "closingPhysic": "2026-07-23 18:00:00"
     }
   ]
 }
