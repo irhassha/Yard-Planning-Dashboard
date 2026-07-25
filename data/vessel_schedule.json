@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-25T01:17:33.823Z",
+  "lastUpdated": "2026-07-25T07:45:44.231Z",
   "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "629S",
+      "voyOut": "630W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-07-25 15:00:00",
+      "ata": "2026-07-25 14:32:54",
+      "etd": "2026-07-27 05:00:00",
+      "atd": "",
+      "openStacking": "2026-07-21 01:00:00",
+      "closingDocument": "2026-07-25 04:00:00",
+      "closingPhysic": "2026-07-25 06:00:00"
+    },
     {
       "vessel": "BIG BREEZY",
       "line": "MCC",
@@ -469,21 +484,6 @@
       "closingPhysic": "2026-07-25 15:00:00"
     },
     {
-      "vessel": "EVER BOOMY",
-      "line": "EMA",
-      "voyIn": "1199-092B",
-      "voyOut": "1199-092B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-07-27 07:00:00",
-      "ata": "",
-      "etd": "2026-07-28 12:00:00",
-      "atd": "",
-      "openStacking": "2026-07-24 01:00:00",
-      "closingDocument": "2026-07-26 16:00:00",
-      "closingPhysic": "2026-07-26 18:00:00"
-    },
-    {
       "vessel": "AS PENELOPE",
       "line": "HLC",
       "voyIn": "630E",
@@ -497,6 +497,21 @@
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 03:00:00",
       "closingPhysic": "2026-07-27 05:00:00"
+    },
+    {
+      "vessel": "EVER BOOMY",
+      "line": "EMA",
+      "voyIn": "1199-092B",
+      "voyOut": "1199-092B",
+      "service": "JPI-B",
+      "status": "REGISTER",
+      "etb": "2026-07-27 07:00:00",
+      "ata": "",
+      "etd": "2026-07-28 12:00:00",
+      "atd": "",
+      "openStacking": "2026-07-24 01:00:00",
+      "closingDocument": "2026-07-26 16:00:00",
+      "closingPhysic": "2026-07-26 18:00:00"
     },
     {
       "vessel": "SITC LIANYUNGANG",
@@ -542,21 +557,6 @@
       "openStacking": "2026-07-21 01:00:00",
       "closingDocument": "2026-07-24 21:00:00",
       "closingPhysic": "2026-07-24 23:00:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "629S",
-      "voyOut": "630W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-07-25 15:00:00",
-      "ata": "",
-      "etd": "2026-07-27 05:00:00",
-      "atd": "",
-      "openStacking": "2026-07-21 01:00:00",
-      "closingDocument": "2026-07-25 04:00:00",
-      "closingPhysic": "2026-07-25 06:00:00"
     }
   ]
 }
