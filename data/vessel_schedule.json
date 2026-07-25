@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-24T19:06:48.110Z",
+  "lastUpdated": "2026-07-25T01:17:33.823Z",
   "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "629S",
+      "voyOut": "630N",
+      "service": "I15",
+      "status": "ACTIVE",
+      "etb": "2026-07-25 02:00:00",
+      "ata": "2026-07-25 01:48:00",
+      "etd": "2026-07-25 23:00:00",
+      "atd": "",
+      "openStacking": "2026-07-20 01:00:00",
+      "closingDocument": "2026-07-25 00:00:00",
+      "closingPhysic": "2026-07-25 02:00:00"
+    },
     {
       "vessel": "EVER BLISS",
       "line": "EMA",
@@ -542,21 +557,6 @@
       "openStacking": "2026-07-21 01:00:00",
       "closingDocument": "2026-07-25 04:00:00",
       "closingPhysic": "2026-07-25 06:00:00"
-    },
-    {
-      "vessel": "BIG BREEZY",
-      "line": "MCC",
-      "voyIn": "629S",
-      "voyOut": "630N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-07-25 02:00:00",
-      "ata": "",
-      "etd": "2026-07-25 23:00:00",
-      "atd": "",
-      "openStacking": "2026-07-20 01:00:00",
-      "closingDocument": "2026-07-25 00:00:00",
-      "closingPhysic": "2026-07-25 02:00:00"
     }
   ]
 }
