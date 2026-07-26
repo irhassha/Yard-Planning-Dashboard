@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-26T08:00:31.933Z",
+  "lastUpdated": "2026-07-26T12:49:36.956Z",
   "totalScraped": 66,
-  "totalFiltered": 38,
+  "totalFiltered": 37,
   "vessels": [
     {
       "vessel": "JULIUS-S",
@@ -12,26 +12,11 @@
       "status": "ACTIVE",
       "etb": "2026-07-26 01:00:00",
       "ata": "2026-07-26 00:00:00",
-      "etd": "2026-07-27 09:00:00",
+      "etd": "2026-07-27 11:00:00",
       "atd": "",
       "openStacking": "2026-07-21 01:00:00",
       "closingDocument": "2026-07-25 16:00:00",
       "closingPhysic": "2026-07-25 18:00:00"
-    },
-    {
-      "vessel": "HF LUCKY",
-      "line": "SIT",
-      "voyIn": "2613S",
-      "voyOut": "2614N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-07-25 23:00:00",
-      "ata": "2026-07-25 19:00:00",
-      "etd": "2026-07-26 18:00:00",
-      "atd": "",
-      "openStacking": "2026-07-21 01:00:00",
-      "closingDocument": "2026-07-24 21:00:00",
-      "closingPhysic": "2026-07-24 23:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -299,9 +284,9 @@
       "ata": "",
       "etd": "2026-08-03 22:00:00",
       "atd": "",
-      "openStacking": "2026-07-27 01:00:00",
-      "closingDocument": "2026-07-29 16:00:00",
-      "closingPhysic": "2026-07-29 18:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ORNELLA",
@@ -535,7 +520,7 @@
       "voyOut": "1199-092B",
       "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-07-27 11:00:00",
+      "etb": "2026-07-27 13:00:00",
       "ata": "",
       "etd": "2026-07-28 16:00:00",
       "atd": "",
