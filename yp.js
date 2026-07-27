@@ -4523,3 +4523,161 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// --- LONGSTAY MODAL FUNCTIONS ---
+let currentLongstayFilter = 'All';
+let longstayCategories = {};
+
+function parseIndonesianDate(dateStr) {
+    if (!dateStr || dateStr === "UNKNOWN") return null;
+    const parts = String(dateStr).split('/');
+    if (parts.length === 3) {
+        // DD/MM/YYYY
+        return new Date(parts[2], parseInt(parts[1]) - 1, parts[0]);
+    }
+    return new Date(dateStr);
+}
+
+function openLongstayModal() {
+    renderLongstayModal();
+    document.getElementById('longstayModal').classList.remove('hidden');
+    document.getElementById('longstayModal').classList.add('flex');
+}
+
+function closeLongstayModal() {
+    document.getElementById('longstayModal').classList.remove('flex');
+    document.getElementById('longstayModal').classList.add('hidden');
+}
+
+function renderLongstayModal() {
+    if (!window.invData || window.invData.length === 0) {
+        document.getElementById('longstayTableBody').innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-500">Upload Unit List first to generate report.</td></tr>';
+        document.getElementById('longstayCategoryTabs').innerHTML = '';
+        return;
+    }
+
+    const now = new Date();
+    // Reset to start of day for accurate day calculation
+    now.setHours(0, 0, 0, 0);
+
+    const list = [];
+    longstayCategories = {
+        'All': 0,
+        '0-3 Days': 0,
+        '4-7 Days': 0,
+        '8-14 Days': 0,
+        '15-30 Days': 0,
+        '> 30 Days': 0,
+        'Unknown': 0
+    };
+
+    window.invData.forEach(c => {
+        // Only import
+        const move = (c.move || '').toLowerCase();
+        if (move.includes('import') || (!move.includes('export') && !move.includes('disc') && !move.includes('vessel'))) {
+            let daysInYard = -1;
+            let cat = 'Unknown';
+
+            if (c.arrivalDate && c.arrivalDate !== "UNKNOWN") {
+                const arrDate = parseIndonesianDate(c.arrivalDate);
+                if (arrDate && !isNaN(arrDate.getTime())) {
+                    arrDate.setHours(0, 0, 0, 0);
+                    const diffTime = now.getTime() - arrDate.getTime();
+                    daysInYard = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if(daysInYard < 0) daysInYard = 0;
+                }
+            }
+
+            if (daysInYard === -1) {
+                cat = 'Unknown';
+            } else if (daysInYard <= 3) {
+                cat = '0-3 Days';
+            } else if (daysInYard <= 7) {
+                cat = '4-7 Days';
+            } else if (daysInYard <= 14) {
+                cat = '8-14 Days';
+            } else if (daysInYard <= 30) {
+                cat = '15-30 Days';
+            } else {
+                cat = '> 30 Days';
+            }
+
+            longstayCategories[cat]++;
+            longstayCategories['All']++;
+
+            list.push({ ...c, daysInYard, category: cat });
+        }
+    });
+
+    list.sort((a, b) => b.daysInYard - a.daysInYard);
+
+    // Ensure categories are displayed in specific order if they have data
+    const predefinedOrder = ['All', '0-3 Days', '4-7 Days', '8-14 Days', '15-30 Days', '> 30 Days', 'Unknown'];
+    const catsArray = predefinedOrder.filter(k => longstayCategories[k] !== undefined && longstayCategories[k] > 0);
+
+    if (!catsArray.includes(currentLongstayFilter)) {
+        currentLongstayFilter = 'All';
+    }
+
+    let tabsHtml = '';
+    catsArray.forEach(cat => {
+        const count = longstayCategories[cat];
+        const isActive = currentLongstayFilter === cat;
+        const activeClass = isActive 
+            ? 'bg-slate-800 text-white border-slate-800 shadow-md ring-2 ring-slate-800/20' 
+            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300 shadow-sm';
+        tabsHtml += `
+            <button onclick="setLongstayFilter('${cat}')" class="px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${activeClass}">
+                ${cat}
+                <span class="${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'} px-2 py-0.5 rounded-lg text-xs">${count}</span>
+            </button>
+        `;
+    });
+    document.getElementById('longstayCategoryTabs').innerHTML = tabsHtml;
+
+    let rowsHtml = '';
+    const filteredList = currentLongstayFilter === 'All' ? list : list.filter(c => c.category === currentLongstayFilter);
+    
+    if (filteredList.length === 0) {
+        rowsHtml = '<tr><td colspan="7" class="text-center py-8 text-slate-500">No containers in this category.</td></tr>';
+    } else {
+        filteredList.forEach(c => {
+            let dayColor = 'text-green-600 bg-green-50 border-green-200';
+            if (c.daysInYard > 30) dayColor = 'text-red-700 bg-red-50 border-red-200';
+            else if (c.daysInYard > 14) dayColor = 'text-rose-600 bg-rose-50 border-rose-200';
+            else if (c.daysInYard > 7) dayColor = 'text-amber-600 bg-amber-50 border-amber-200';
+            else if (c.daysInYard > 3) dayColor = 'text-blue-600 bg-blue-50 border-blue-200';
+
+            rowsHtml += `
+                <tr class="hover:bg-slate-50 transition-colors group">
+                    <td class="py-3 px-4 border-b border-slate-100 w-32">
+                        <div class="inline-flex items-center justify-center w-full px-3 py-1.5 rounded-lg border font-black text-sm shadow-sm ${dayColor}">
+                            ${c.daysInYard === -1 ? '-' : c.daysInYard + ' <span class="text-[10px] uppercase tracking-wider ml-1 opacity-70">days</span>'}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 font-mono font-bold text-slate-700 border-b border-slate-100">${c.unit || '-'}</td>
+                    <td class="py-3 px-4 text-center border-b border-slate-100">
+                        <span class="inline-flex px-2.5 py-1 bg-slate-100 text-slate-700 font-bold text-xs rounded-md border border-slate-200 shadow-sm">
+                            ${c.block || '-'}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center font-mono text-slate-500 border-b border-slate-100">${c.slot || '-'}</td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.length || '-'}</td>
+                    <td class="py-3 px-4 text-center border-b border-slate-100">
+                        <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${c.loadStatus === 'FULL' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-50 text-slate-500 border border-slate-200'}">
+                            ${c.loadStatus || '-'}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center font-medium text-slate-500 border-b border-slate-100">${c.arrivalDate || '-'}</td>
+                </tr>
+            `;
+        });
+    }
+
+    document.getElementById('longstayTableBody').innerHTML = rowsHtml;
+}
+
+function setLongstayFilter(cat) {
+    currentLongstayFilter = cat;
+    renderLongstayModal();
+}
+

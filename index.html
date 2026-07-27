@@ -60,7 +60,7 @@
             <input type="file" id="fileInv" accept=".csv, .xlsx, .xls" hidden>
             <input type="file" id="scheduleInput" accept=".xlsx, .csv" hidden>
             <header class="flex justify-between items-center mb-12">
-                <div class="flex items-center gap-3 text-white font-bold text-lg md:text-xl">
+                <div class="flex items-center gap-3 text-white font-bold text-lg md:text-xl cursor-pointer" onclick="openLongstayModal()" title="View Longstay Report">
                     <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-xl shadow-lg border border-white/20" />
                     NPCT1
                 </div>
@@ -1988,6 +1988,48 @@
                         <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Total</span>
                         <span class="text-2xl font-black text-purple-600" id="cicRecapTotal">0</span>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Longstay Modal -->
+    <div id="longstayModal" class="fixed inset-0 z-[200] bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden transform transition-all">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-red-500/10 rounded-lg text-red-500">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">Import Longstay Report</h2>
+                </div>
+                <button onclick="closeLongstayModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <!-- Category Tabs -->
+            <div class="px-5 py-4 flex flex-wrap gap-2 border-b border-slate-100 bg-white" id="longstayCategoryTabs">
+                <!-- Tabs will be rendered here -->
+            </div>
+
+            <div class="p-5 overflow-auto bg-slate-50 flex-1">
+                <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-50 text-slate-500 font-medium">
+                            <tr>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Days in Yard</th>
+                                <th class="py-3 px-4 border-b border-slate-200">Unit</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Block</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Slot</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Size</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Load Status</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Arrival Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="longstayTableBody" class="divide-y divide-slate-100">
+                            <!-- Rows will be rendered here -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
