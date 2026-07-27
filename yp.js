@@ -341,8 +341,8 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         if (cReplanKey === "goods" || c.includes("good")) colMap.goods = idx;
                         
                         // Deteksi kolom DG & Reefer
-                        if (c === "dg" || c === "imo" || c.includes("dgindicator") || c.includes("dangerous")) colMap.dg = idx;
-                        if (c === "reefer" || c === "rf" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
+                        if (c === "dg" || c === "imo" || c.includes("imdg") || c.includes("dgindicator") || c.includes("dangerous")) colMap.dg = idx;
+                        if (c === "reefer" || c === "rf" || c === "or" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
                     });
                     break;
                 }
