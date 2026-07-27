@@ -301,7 +301,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
 
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus, dg, reefer ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1, dg: -1, reefer: -1 };
+            let colMap = { block: -1, length: -1, carrier: -1, voyage: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1, dg: -1, reefer: -1 };
 
             for (let i = 0; i < Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -315,7 +315,13 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
 
                         if (c.includes("area") || c.includes("block")) colMap.block = idx;
                         if (cReplanKey === "unitlength" || c.includes("size")) colMap.length = idx;
-                        if (cReplanKey === "carrierout" || c === "carrier" || c === "vessel") colMap.carrier = idx;
+                        if (cReplanKey === "carrierin" || cReplanKey === "carrierout" || c === "carrier" || c === "vessel") {
+                            // Prefer carrierin if available
+                            if (colMap.carrier === -1 || cReplanKey === "carrierin") colMap.carrier = idx;
+                        }
+                        if (cReplanKey === "voyagein" || cReplanKey === "voyageout" || c === "voyage") {
+                            if (colMap.voyage === -1 || cReplanKey === "voyagein") colMap.voyage = idx;
+                        }
                         if (c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if (c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         if (c.includes("row") && c.includes("exe")) colMap.row = idx;
@@ -415,6 +421,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                     row: parsedRow,
                     length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
                     carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
+                    voyage: colMap.voyage !== -1 ? String(row[colMap.voyage] || "").toUpperCase().trim() : "",
                     move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
                     // UPDATE: Simpan Load Status
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
@@ -4679,7 +4686,8 @@ function renderLongstayModal() {
                             ${c.block || '-'}
                         </span>
                     </td>
-                    <td class="py-3 px-4 text-center font-mono text-slate-500 border-b border-slate-100">${c.slot || '-'}</td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.carrier || '-'}</td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.voyage || '-'}</td>
                     <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.length || '-'}</td>
                     <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.conttype || '-'}</td>
                     <td class="py-3 px-4 text-center border-b border-slate-100">
@@ -4719,7 +4727,8 @@ function exportLongstayToExcel() {
         "Category": c.category,
         "Unit": c.unit,
         "Block": c.block,
-        "Slot": c.slot,
+        "Vessel": c.carrier,
+        "Voyage": c.voyage,
         "Size": c.length,
         "Type": c.conttype,
         "Load Status": c.loadStatus,
