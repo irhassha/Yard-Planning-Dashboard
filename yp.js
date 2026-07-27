@@ -340,9 +340,9 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         if (cReplanKey === "unit") colMap.unit = idx;
                         if (cReplanKey === "goods" || c.includes("good")) colMap.goods = idx;
                         
-                        // Deteksi kolom DG & Reefer
-                        if (c === "dg" || c === "imo" || c.includes("imdg") || c.includes("dgindicator") || c.includes("dangerous")) colMap.dg = idx;
-                        if (c === "reefer" || c === "rf" || c === "o/r" || cReplanKey === "or" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
+                        // Deteksi kolom DG & Reefer (exact match only)
+                        if (c === "dg" || cReplanKey === "imdg1" || c === "imdg1" || c === "imdg" || c === "dgindicator") colMap.dg = idx;
+                        if (cReplanKey === "or" || c === "o/r" || c === "reefer" || c === "rf") colMap.reefer = idx;
                     });
                     break;
                 }
