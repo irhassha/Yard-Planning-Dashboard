@@ -301,7 +301,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
 
             let hIdx = -1;
             // UPDATE: Tambahkan loadStatus, dg, reefer ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, voyage: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1, dg: -1, reefer: -1 };
+            let colMap = { block: -1, length: -1, carrier: -1, carrierIn: -1, carrierOut: -1, voyage: -1, voyageIn: -1, voyageOut: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1, dg: -1, reefer: -1 };
 
             for (let i = 0; i < Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -315,13 +315,16 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
 
                         if (c.includes("area") || c.includes("block")) colMap.block = idx;
                         if (cReplanKey === "unitlength" || c.includes("size")) colMap.length = idx;
-                        if (cReplanKey === "carrierin" || cReplanKey === "carrierout" || c === "carrier" || c === "vessel") {
-                            // Prefer carrierin if available
-                            if (colMap.carrier === -1 || cReplanKey === "carrierin") colMap.carrier = idx;
-                        }
-                        if (cReplanKey === "voyagein" || cReplanKey === "voyageout" || c === "voyage") {
-                            if (colMap.voyage === -1 || cReplanKey === "voyagein") colMap.voyage = idx;
-                        }
+                        
+                        // Deteksi Carrier & Voyage secara spesifik
+                        if (cReplanKey === "carrierin") colMap.carrierIn = idx;
+                        if (cReplanKey === "carrierout") colMap.carrierOut = idx;
+                        if (c === "carrier" || c === "vessel") colMap.carrier = idx;
+
+                        if (cReplanKey === "voyagein") colMap.voyageIn = idx;
+                        if (cReplanKey === "voyageout") colMap.voyageOut = idx;
+                        if (c === "voyage") colMap.voyage = idx;
+
                         if (c === "move" || c === "status" || c === "category") colMap.move = idx;
                         if (c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                         if (c.includes("row") && c.includes("exe")) colMap.row = idx;
@@ -415,14 +418,30 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                     parsedRow = parseInt(row[colMap.row]) || 0;
                 }
 
+                let moveStr = colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import";
+                
+                let finalCarrier = "";
+                if (moveStr.includes("import") && colMap.carrierIn !== -1 && row[colMap.carrierIn]) finalCarrier = row[colMap.carrierIn];
+                else if (moveStr.includes("export") && colMap.carrierOut !== -1 && row[colMap.carrierOut]) finalCarrier = row[colMap.carrierOut];
+                else if (colMap.carrier !== -1 && row[colMap.carrier]) finalCarrier = row[colMap.carrier];
+                else if (colMap.carrierOut !== -1 && row[colMap.carrierOut]) finalCarrier = row[colMap.carrierOut];
+                else if (colMap.carrierIn !== -1 && row[colMap.carrierIn]) finalCarrier = row[colMap.carrierIn];
+
+                let finalVoyage = "";
+                if (moveStr.includes("import") && colMap.voyageIn !== -1 && row[colMap.voyageIn]) finalVoyage = row[colMap.voyageIn];
+                else if (moveStr.includes("export") && colMap.voyageOut !== -1 && row[colMap.voyageOut]) finalVoyage = row[colMap.voyageOut];
+                else if (colMap.voyage !== -1 && row[colMap.voyage]) finalVoyage = row[colMap.voyage];
+                else if (colMap.voyageOut !== -1 && row[colMap.voyageOut]) finalVoyage = row[colMap.voyageOut];
+                else if (colMap.voyageIn !== -1 && row[colMap.voyageIn]) finalVoyage = row[colMap.voyageIn];
+
                 invData.push({
                     block: parsedBlock.toUpperCase(),
                     slot: parsedSlotNum,
                     row: parsedRow,
                     length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
-                    carrier: String(row[colMap.carrier] || "").toUpperCase().trim(),
-                    voyage: colMap.voyage !== -1 ? String(row[colMap.voyage] || "").toUpperCase().trim() : "",
-                    move: colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import",
+                    carrier: String(finalCarrier || "").toUpperCase().trim(),
+                    voyage: String(finalVoyage || "").toUpperCase().trim(),
+                    move: moveStr,
                     // UPDATE: Simpan Load Status
                     loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
                     service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
