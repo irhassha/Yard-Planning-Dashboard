@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-27T09:00:30.232Z",
+  "lastUpdated": "2026-07-27T14:02:59.622Z",
   "totalScraped": 61,
-  "totalFiltered": 33,
+  "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "INTERASIA ENGAGE",
+      "line": "IAL",
+      "voyIn": "S042",
+      "voyOut": "N042",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-07-27 19:00:00",
+      "ata": "2026-07-27 19:42:18",
+      "etd": "2026-07-29 07:00:00",
+      "atd": "",
+      "openStacking": "2026-07-20 20:20:00",
+      "closingDocument": "2026-07-25 13:00:00",
+      "closingPhysic": "2026-07-25 15:00:00"
+    },
     {
       "vessel": "EVER BOOMY",
       "line": "EMA",
@@ -32,21 +47,6 @@
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 03:00:00",
       "closingPhysic": "2026-07-27 05:00:00"
-    },
-    {
-      "vessel": "SITC LIANYUNGANG",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "JTH",
-      "status": "ACTIVE",
-      "etb": "2026-07-26 23:00:00",
-      "ata": "2026-07-26 22:00:00",
-      "etd": "2026-07-27 17:00:00",
-      "atd": "",
-      "openStacking": "2026-07-21 01:00:00",
-      "closingDocument": "2026-07-24 16:00:00",
-      "closingPhysic": "2026-07-24 18:00:00"
     },
     {
       "vessel": "MERATUS JAYAWIJAYA",
@@ -304,21 +304,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "ORNELLA",
-      "line": "MCC",
-      "voyIn": "630N",
-      "voyOut": "631A",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-08-02 02:00:00",
-      "ata": "",
-      "etd": "2026-08-02 19:00:00",
-      "atd": "",
-      "openStacking": "2026-07-26 01:00:00",
-      "closingDocument": "2026-07-31 07:00:00",
-      "closingPhysic": "2026-07-31 09:00:00"
-    },
-    {
       "vessel": "MSC BREMERHAVEN V",
       "line": "MSC",
       "voyIn": "HW628A",
@@ -332,6 +317,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "ORNELLA",
+      "line": "MCC",
+      "voyIn": "630N",
+      "voyOut": "631A",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-08-01 18:00:00",
+      "ata": "",
+      "etd": "2026-08-02 10:00:00",
+      "atd": "",
+      "openStacking": "2026-07-26 01:00:00",
+      "closingDocument": "2026-07-31 07:00:00",
+      "closingPhysic": "2026-07-31 09:00:00"
     },
     {
       "vessel": "YM CENTENNIAL",
@@ -370,9 +370,9 @@
       "voyOut": "2617N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-07-31 23:00:00",
+      "etb": "2026-07-31 16:00:00",
       "ata": "",
-      "etd": "2026-08-02 00:00:00",
+      "etd": "2026-08-01 16:00:00",
       "atd": "",
       "openStacking": "2026-07-24 01:00:00",
       "closingDocument": "2026-07-27 16:00:00",
@@ -385,9 +385,9 @@
       "voyOut": "630N",
       "service": "IA1",
       "status": "REGISTER",
-      "etb": "2026-07-31 13:45:00",
+      "etb": "2026-07-31 14:00:00",
       "ata": "",
-      "etd": "",
+      "etd": "2026-08-01 14:00:00",
       "atd": "",
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-29 15:00:00",
@@ -400,9 +400,9 @@
       "voyOut": "0001N",
       "service": "KIS",
       "status": "REGISTER",
-      "etb": "2026-07-30 19:00:00",
+      "etb": "2026-07-30 11:00:00",
       "ata": "",
-      "etd": "2026-07-31 20:00:00",
+      "etd": "2026-07-31 12:00:00",
       "atd": "",
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-29 21:00:00",
@@ -482,21 +482,6 @@
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-28 05:00:00",
       "closingPhysic": "2026-07-28 07:00:00"
-    },
-    {
-      "vessel": "INTERASIA ENGAGE",
-      "line": "IAL",
-      "voyIn": "S042",
-      "voyOut": "N042",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-07-27 19:00:00",
-      "ata": "",
-      "etd": "2026-07-29 07:00:00",
-      "atd": "",
-      "openStacking": "2026-07-20 20:20:00",
-      "closingDocument": "2026-07-25 13:00:00",
-      "closingPhysic": "2026-07-25 15:00:00"
     }
   ]
 }
