@@ -2002,9 +2002,14 @@
                     </div>
                     <h2 class="text-xl font-bold text-slate-800">Import Longstay Report</h2>
                 </div>
-                <button onclick="closeLongstayModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportLongstayToExcel()" class="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-emerald-200 shadow-sm mr-2">
+                        <span class="material-symbols-outlined text-[18px]">download</span> Export Excel
+                    </button>
+                    <button onclick="closeLongstayModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
             </div>
             
             <!-- Category Tabs -->
@@ -2022,7 +2027,10 @@
                                 <th class="py-3 px-4 border-b border-slate-200 text-center">Block</th>
                                 <th class="py-3 px-4 border-b border-slate-200 text-center">Slot</th>
                                 <th class="py-3 px-4 border-b border-slate-200 text-center">Size</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Type</th>
                                 <th class="py-3 px-4 border-b border-slate-200 text-center">Load Status</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">DG</th>
+                                <th class="py-3 px-4 border-b border-slate-200 text-center">Reefer</th>
                                 <th class="py-3 px-4 border-b border-slate-200 text-center">Arrival Date</th>
                             </tr>
                         </thead>

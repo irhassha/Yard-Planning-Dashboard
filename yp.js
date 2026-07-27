@@ -300,8 +300,8 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
             const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "" });
 
             let hIdx = -1;
-            // UPDATE: Tambahkan loadStatus ke colMap
-            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1 };
+            // UPDATE: Tambahkan loadStatus, dg, reefer ke colMap
+            let colMap = { block: -1, length: -1, carrier: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, line: -1, arrivalDate: -1, oog: -1, spod: -1, wtcl: -1, conttype: -1, unitheight: -1, unit: -1, goods: -1, dg: -1, reefer: -1 };
 
             for (let i = 0; i < Math.min(json.length, 30); i++) {
                 let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -339,6 +339,10 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         if (cReplanKey === "unitheight" || c === "height") colMap.unitheight = idx;
                         if (cReplanKey === "unit") colMap.unit = idx;
                         if (cReplanKey === "goods" || c.includes("good")) colMap.goods = idx;
+                        
+                        // Deteksi kolom DG & Reefer
+                        if (c === "dg" || c === "imo" || c.includes("dgindicator") || c.includes("dangerous")) colMap.dg = idx;
+                        if (c === "reefer" || c === "rf" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
                     });
                     break;
                 }
@@ -415,7 +419,9 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                     wtcl: colMap.wtcl !== -1 ? String(row[colMap.wtcl] || "").toUpperCase().trim() : "",
                     conttype: colMap.conttype !== -1 ? String(row[colMap.conttype] || "").toUpperCase().trim() : "",
                     unitheight: colMap.unitheight !== -1 ? String(row[colMap.unitheight] || "").toUpperCase().trim() : "",
-                    goods: colMap.goods !== -1 ? String(row[colMap.goods] || "").toUpperCase().trim() : ""
+                    goods: colMap.goods !== -1 ? String(row[colMap.goods] || "").toUpperCase().trim() : "",
+                    dg: colMap.dg !== -1 ? String(row[colMap.dg] || "").toUpperCase().trim() : "",
+                    reefer: colMap.reefer !== -1 ? String(row[colMap.reefer] || "").toUpperCase().trim() : ""
                 });
             }
 
@@ -4636,6 +4642,7 @@ function renderLongstayModal() {
 
     let rowsHtml = '';
     const filteredList = currentLongstayFilter === 'All' ? list : list.filter(c => c.category === currentLongstayFilter);
+    window.currentLongstayList = filteredList; // Expose for Excel Export
     
     if (filteredList.length === 0) {
         rowsHtml = '<tr><td colspan="7" class="text-center py-8 text-slate-500">No containers in this category.</td></tr>';
@@ -4662,11 +4669,14 @@ function renderLongstayModal() {
                     </td>
                     <td class="py-3 px-4 text-center font-mono text-slate-500 border-b border-slate-100">${c.slot || '-'}</td>
                     <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.length || '-'}</td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.conttype || '-'}</td>
                     <td class="py-3 px-4 text-center border-b border-slate-100">
                         <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${c.loadStatus === 'FULL' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-50 text-slate-500 border border-slate-200'}">
                             ${c.loadStatus || '-'}
                         </span>
                     </td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.dg || '-'}</td>
+                    <td class="py-3 px-4 text-center text-slate-500 border-b border-slate-100">${c.reefer || '-'}</td>
                     <td class="py-3 px-4 text-center font-medium text-slate-500 border-b border-slate-100">${c.arrivalDate || '-'}</td>
                 </tr>
             `;
@@ -4679,5 +4689,36 @@ function renderLongstayModal() {
 function setLongstayFilter(cat) {
     currentLongstayFilter = cat;
     renderLongstayModal();
+}
+
+function exportLongstayToExcel() {
+    if (!window.currentLongstayList || window.currentLongstayList.length === 0) {
+        alert("No data to export.");
+        return;
+    }
+    
+    if (typeof XLSX === 'undefined') {
+        alert("XLSX library not found. Cannot export.");
+        return;
+    }
+
+    const exportData = window.currentLongstayList.map(c => ({
+        "Days in Yard": c.daysInYard,
+        "Category": c.category,
+        "Unit": c.unit,
+        "Block": c.block,
+        "Slot": c.slot,
+        "Size": c.length,
+        "Type": c.conttype,
+        "Load Status": c.loadStatus,
+        "DG Indicator": c.dg,
+        "Reefer": c.reefer,
+        "Arrival Date": c.arrivalDate
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Longstay Report");
+    XLSX.writeFile(wb, "Import_Longstay_Report.xlsx");
 }
 
