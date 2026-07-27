@@ -348,6 +348,18 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                 }
             }
 
+            // DEBUG: Log detected DG/Reefer columns
+            console.log('[DG/Reefer Debug] colMap.dg:', colMap.dg, 'colMap.reefer:', colMap.reefer);
+            if (hIdx !== -1) {
+                json[hIdx].forEach((cell, idx) => {
+                    let c = cleanStr(cell).replace(/[\s_]+/g, "");
+                    let cReplanKey = String(cell || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+                    if (idx >= json[hIdx].length - 5) {
+                        console.log(`[DG/Reefer Debug] Col ${idx}: raw="${cell}", cleaned="${c}", replanKey="${cReplanKey}"`);
+                    }
+                });
+            }
+
             if (hIdx === -1 || colMap.carrier === -1) throw new Error("Format kolom tidak dikenali.");
             console.log('[ColMap Debug] Detected columns:', JSON.stringify(colMap), 'Header row:', hIdx);
 
