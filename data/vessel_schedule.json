@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-07-27T14:02:59.622Z",
-  "totalScraped": 61,
-  "totalFiltered": 32,
+  "lastUpdated": "2026-07-27T19:05:18.487Z",
+  "totalScraped": 60,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "INTERASIA ENGAGE",
@@ -11,7 +11,7 @@
       "service": "KCI",
       "status": "ACTIVE",
       "etb": "2026-07-27 19:00:00",
-      "ata": "2026-07-27 19:42:18",
+      "ata": "2026-07-27 18:20:00",
       "etd": "2026-07-29 07:00:00",
       "atd": "",
       "openStacking": "2026-07-20 20:20:00",
@@ -47,6 +47,21 @@
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 03:00:00",
       "closingPhysic": "2026-07-27 05:00:00"
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-08-10 23:00:00",
+      "ata": "",
+      "etd": "",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MERATUS JAYAWIJAYA",
@@ -162,7 +177,7 @@
       "status": "REGISTER",
       "etb": "2026-08-06 16:00:00",
       "ata": "",
-      "etd": "",
+      "etd": "2026-08-07 15:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
