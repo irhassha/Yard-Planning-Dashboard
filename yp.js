@@ -342,7 +342,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
                         
                         // Deteksi kolom DG & Reefer
                         if (c === "dg" || c === "imo" || c.includes("imdg") || c.includes("dgindicator") || c.includes("dangerous")) colMap.dg = idx;
-                        if (c === "reefer" || c === "rf" || c === "or" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
+                        if (c === "reefer" || c === "rf" || c === "o/r" || cReplanKey === "or" || c.includes("temperature") || c.includes("temp") || c.includes("rfr")) colMap.reefer = idx;
                     });
                     break;
                 }
