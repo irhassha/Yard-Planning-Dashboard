@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-07-28T19:00:36.795Z",
-  "totalScraped": 61,
+  "lastUpdated": "2026-07-29T01:15:14.173Z",
+  "totalScraped": 62,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "BG LL 2515 - TB LL DJU MING",
+      "line": "SSD",
+      "voyIn": "115JN",
+      "voyOut": "115JN",
+      "service": "SSD TRANS",
+      "status": "ACTIVE",
+      "etb": "2026-07-29 12:00:00",
+      "ata": "2026-07-29 07:45:03",
+      "etd": "2026-07-29 20:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MARSA PRIDE",
+      "line": "MCC",
+      "voyIn": "628S",
+      "voyOut": "631N",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-07-29 12:00:00",
+      "ata": "2026-07-29 07:29:26",
+      "etd": "2026-07-30 06:00:00",
+      "atd": "",
+      "openStacking": "2026-07-24 01:00:00",
+      "closingDocument": "2026-07-29 09:00:00",
+      "closingPhysic": "2026-07-29 11:00:00"
+    },
     {
       "vessel": "ITAL BONNY",
       "line": "LT",
@@ -17,21 +47,6 @@
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-28 05:00:00",
       "closingPhysic": "2026-07-28 07:00:00"
-    },
-    {
-      "vessel": "INTERASIA ENGAGE",
-      "line": "IAL",
-      "voyIn": "S042",
-      "voyOut": "N042",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-07-27 19:00:00",
-      "ata": "2026-07-27 18:20:00",
-      "etd": "2026-07-29 10:00:00",
-      "atd": "",
-      "openStacking": "2026-07-20 20:20:00",
-      "closingDocument": "2026-07-25 13:00:00",
-      "closingPhysic": "2026-07-25 15:00:00"
     },
     {
       "vessel": "HF LUCKY",
@@ -178,6 +193,21 @@
       "etb": "2026-08-06 13:00:00",
       "ata": "",
       "etd": "2026-08-07 16:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER BURLY",
+      "line": "EMC",
+      "voyIn": "S092",
+      "voyOut": "N092",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-08-06 13:00:00",
+      "ata": "",
+      "etd": "2026-08-07 13:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -482,36 +512,6 @@
       "openStacking": "2026-07-27 01:00:00",
       "closingDocument": "2026-07-29 16:00:00",
       "closingPhysic": "2026-07-29 18:00:00"
-    },
-    {
-      "vessel": "BG LL 2515 - TB LL DJU MING",
-      "line": "SSD",
-      "voyIn": "115JN",
-      "voyOut": "115JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-07-29 12:00:00",
-      "ata": "",
-      "etd": "2026-07-29 20:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "MARSA PRIDE",
-      "line": "MCC",
-      "voyIn": "628S",
-      "voyOut": "631N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-07-29 12:00:00",
-      "ata": "",
-      "etd": "2026-07-30 06:00:00",
-      "atd": "",
-      "openStacking": "2026-07-24 01:00:00",
-      "closingDocument": "2026-07-29 09:00:00",
-      "closingPhysic": "2026-07-29 11:00:00"
     }
   ]
 }
