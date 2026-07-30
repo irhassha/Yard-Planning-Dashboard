@@ -286,15 +286,25 @@ function calculateAvailableSlotsReplan() {
     let clusterHtml = "";
     if (activeClusterBlocks.length > 0) {
         const totalUnits = activeClusterBlocks.reduce((sum, b) => sum + (clusterBlockCounts[b] || 0), 0);
+        const getCountStyle = (count) => {
+            if (count > 200) return 'bg-red-600 text-white border-red-700';
+            if (count > 100) return 'bg-amber-400 text-slate-900 border-amber-500';
+            return 'bg-blue-100 text-blue-700 border-blue-200';
+        };
+        const getTotalStyle = (count) => {
+            if (count > 200) return 'bg-red-600 text-white border-red-700';
+            if (count > 100) return 'bg-amber-400 text-slate-900 border-amber-500';
+            return 'bg-blue-100 text-blue-700 border-blue-200';
+        };
         clusterHtml = `
             <div class="mb-4 p-3 bg-blue-50/50 border border-blue-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-2">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-blue-500 text-[18px]">group_work</span>
                     <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Active Cluster <span class="text-blue-600">(${(tgt.carr || 'N/A').toUpperCase()} - ${(tgt.svc || 'N/A').toUpperCase()})</span>:</span>
-                    <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">${totalUnits} units</span>
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${getTotalStyle(totalUnits)}">${totalUnits} units</span>
                 </div>
                 <div class="flex flex-wrap gap-1">
-                    ${activeClusterBlocks.map(b => `<span class="px-2 py-0.5 bg-white border border-blue-200 text-blue-700 text-[10px] font-black rounded shadow-sm">${b} <span class="text-blue-400 font-bold">(${clusterBlockCounts[b] || 0})</span></span>`).join('')}
+                    ${activeClusterBlocks.map(b => { const cnt = clusterBlockCounts[b] || 0; const style = getCountStyle(cnt); return `<span class="px-2 py-0.5 text-[10px] font-black rounded shadow-sm border ${style}">${b} (${cnt})</span>`; }).join('')}
                 </div>
             </div>
         `;
