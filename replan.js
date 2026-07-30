@@ -258,9 +258,11 @@ function calculateAvailableSlotsReplan() {
     const tgt = window.currentReplanTarget || {};
     let tgtGreyOutBlocks = [];
     if (window.activeGreyOutBlocksMap && tgt && tgt.carr) {
-        const targetSearch = `${tgt.carr}||${tgt.svc}`.toLowerCase();
+        const targetSearch = `${tgt.carr}||${tgt.svc}`;
         for (const [key, blocks] of Object.entries(window.activeGreyOutBlocksMap)) {
-            if (key.toLowerCase() === targetSearch) {
+            const parts = key.split('||');
+            const normKey = `${normalizeReplan(parts[0])}||${normalizeReplan(parts[1] || '')}`;
+            if (normKey === targetSearch) {
                 tgtGreyOutBlocks = blocks;
                 break;
             }
@@ -400,8 +402,7 @@ function calculateAvailableSlotsReplan() {
     const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
     const hideGreyOut = document.getElementById('toggleGreyOutBlocks')?.checked !== false; // Default true (hidden) if element not found
-    const mapKey = currentReplanMatches.length > 0 ? `${currentReplanMatches[0].carrier}||${(currentReplanMatches[0].service || "").toUpperCase()}` : "";
-    const greyOutBlocks = (window.activeGreyOutBlocksMap && window.activeGreyOutBlocksMap[mapKey]) || [];
+    const greyOutBlocks = tgtGreyOutBlocks;
 
     Object.keys(stackInfo).forEach(base => {
         let parts = base.split('-');
