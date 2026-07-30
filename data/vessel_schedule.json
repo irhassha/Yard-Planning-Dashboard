@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-07-30T13:19:09.681Z",
-  "totalScraped": 60,
-  "totalFiltered": 31,
+  "lastUpdated": "2026-07-30T19:04:27.462Z",
+  "totalScraped": 61,
+  "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "630S",
+      "voyOut": "631W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-07-30 21:00:00",
+      "ata": "2026-07-30 19:21:00",
+      "etd": "2026-08-01 09:00:00",
+      "atd": "",
+      "openStacking": "2026-07-25 01:00:00",
+      "closingDocument": "2026-07-29 10:00:00",
+      "closingPhysic": "2026-07-29 12:00:00"
+    },
     {
       "vessel": "EVER BUILD",
       "line": "EMC",
@@ -32,6 +47,21 @@
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-29 21:00:00",
       "closingPhysic": "2026-07-29 23:00:00"
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-08-13 13:00:00",
+      "ata": "",
+      "etd": "2026-08-14 13:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC NANSHA",
@@ -452,21 +482,6 @@
       "openStacking": "2026-07-24 01:00:00",
       "closingDocument": "2026-07-28 13:00:00",
       "closingPhysic": "2026-07-28 15:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "630S",
-      "voyOut": "631W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-07-30 21:00:00",
-      "ata": "",
-      "etd": "2026-08-01 09:00:00",
-      "atd": "",
-      "openStacking": "2026-07-25 01:00:00",
-      "closingDocument": "2026-07-29 10:00:00",
-      "closingPhysic": "2026-07-29 12:00:00"
     }
   ]
 }
