@@ -345,6 +345,42 @@ function calculateAvailableSlotsReplan() {
         }
     });
 
+    // --- EMPTY ROW DETECTION ---
+    // Collect all unique BLOCK-SLOT (without row) from matching containers
+    // and determine existing row ranges per BLOCK-SLOT from ALL inventory data
+    let matchingSlots = new Set(); // Set of "BLOCK-SLOTNUM" strings
+    currentReplanMatches.forEach(m => {
+        let fullSlotRaw = (m._raw_slot || "").trim();
+        if (fullSlotRaw.includes('-')) {
+            let p = fullSlotRaw.split('-');
+            if (p.length >= 3) {
+                let blockSlot = p[0] + '-' + p[1]; // e.g. "C03-12"
+                matchingSlots.add(blockSlot);
+            }
+        }
+    });
+
+    // Build a map of BLOCK-SLOT => Set of occupied rows (from ALL containers)
+    let slotRowMap = {}; // "BLOCK-SLOTNUM" => Set of row numbers that have at least tier 1
+    let slotMaxRow = {}; // "BLOCK-SLOTNUM" => max row number observed
+    db.forEach(m => {
+        let fullSlotRaw = (m._raw_slot || "").trim();
+        if (fullSlotRaw.includes('-')) {
+            let p = fullSlotRaw.split('-');
+            if (p.length >= 4) {
+                let blockSlot = p[0] + '-' + p[1];
+                let rowNum = parseInt(p[2]);
+                if (!isNaN(rowNum) && rowNum > 0) {
+                    if (!slotRowMap[blockSlot]) slotRowMap[blockSlot] = new Set();
+                    slotRowMap[blockSlot].add(rowNum);
+                    if (!slotMaxRow[blockSlot] || rowNum > slotMaxRow[blockSlot]) {
+                        slotMaxRow[blockSlot] = rowNum;
+                    }
+                }
+            }
+        }
+    });
+
     let stacks = [];
     const usedFullSlots = new Set(selectedFullSlotsHistory.map(h => h.fullSlot.trim()));
 
@@ -390,7 +426,51 @@ function calculateAvailableSlotsReplan() {
         }
 
         if (availableTiers.length > 0) {
-            stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: maxOccupied });
+            stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: maxOccupied, isEmpty: false });
+        }
+    });
+
+    // --- ADD EMPTY ROW RECOMMENDATIONS ---
+    // For each matching BLOCK-SLOT, find rows that are completely empty (no container at all)
+    matchingSlots.forEach(blockSlot => {
+        let parts = blockSlot.split('-');
+        let blockId = parts[0];
+
+        // Filter out greyed blocks
+        if (hideGreyOut && greyOutBlocks.includes(blockId)) return;
+
+        // Skip special blocks
+        if (['C01', 'C02', 'D01'].includes(blockId)) return;
+
+        let occupiedRows = slotRowMap[blockSlot] || new Set();
+        let maxRowInSlot = slotMaxRow[blockSlot] || 6; // default to 6 rows if unknown
+        // Ensure we check at least up to 6 rows (standard yard layout)
+        maxRowInSlot = Math.max(maxRowInSlot, 6);
+
+        for (let row = 1; row <= maxRowInSlot; row++) {
+            if (occupiedRows.has(row)) continue; // Row has containers, skip
+
+            let paddedRow = String(row).padStart(2, '0');
+            let base = `${blockSlot}-${paddedRow}`;
+
+            // Check this base isn't already in stacks (shouldn't be, since it's empty)
+            if (stacks.some(s => s.base === base)) continue;
+
+            // Also check if allStackInfo has any tier for this base (handles un-padded row numbers)
+            let baseAlt = `${blockSlot}-${row}`;
+            if (allStackInfo[base] || allStackInfo[baseAlt]) continue;
+
+            let availableTiers = [];
+            for (let t = 1; t <= maxReplanTier; t++) {
+                let potentialSlot = `${base}-${t}`;
+                if (!usedFullSlots.has(potentialSlot)) {
+                    availableTiers.push({ tier: t, raw: potentialSlot });
+                }
+            }
+
+            if (availableTiers.length > 0) {
+                stacks.push({ base: base, block: blockId, tiers: availableTiers, occupied: 0, isEmpty: true });
+            }
         }
     });
 
@@ -420,18 +500,42 @@ function calculateAvailableSlotsReplan() {
     let html = "";
 
     displayBlocks.forEach(blockName => {
-        const blockStacks = stacks.filter(s => s.block === blockName).sort((a,b) => a.base.localeCompare(b.base));
+        const blockStacks = stacks.filter(s => s.block === blockName).sort((a,b) => {
+            // Sort: non-empty first, then empty rows, then alphabetical within each group
+            if (a.isEmpty !== b.isEmpty) return a.isEmpty ? 1 : -1;
+            return a.base.localeCompare(b.base);
+        });
         if (blockStacks.length === 0) return;
+
+        const emptyCount = blockStacks.filter(s => s.isEmpty).length;
+        const normalCount = blockStacks.length - emptyCount;
 
         html += `
             <div class="animate-fade-in relative">
                 <div class="flex items-center gap-2 mb-3 mt-4 border-b border-slate-100 pb-2">
                     <span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span>
                     <h3 class="text-sm font-black text-slate-700 uppercase tracking-widest">Block ${blockName}</h3>
-                    <span class="text-[10px] uppercase font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 ml-2">${blockStacks.length} Stacks</span>
+                    <span class="text-[10px] uppercase font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 ml-2">${normalCount} Stacks</span>
+                    ${emptyCount > 0 ? `<span class="text-[10px] uppercase font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-200">${emptyCount} Empty Row${emptyCount > 1 ? 's' : ''}</span>` : ''}
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                    ${blockStacks.map(stack => `
+                    ${blockStacks.map(stack => {
+                        if (stack.isEmpty) {
+                            // Empty row card - green accent
+                            return `
+                        <div class="bg-emerald-50/40 border border-emerald-200 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl text-emerald-400">add_circle</span></div>
+                            <div class="flex justify-between items-start z-10">
+                                <span class="text-xs font-black text-slate-700 tracking-tight font-mono">${stack.base}</span>
+                                <span class="text-[9px] text-emerald-700 font-bold bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">EMPTY ROW</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1.5 z-10 mt-2">
+                                ${stack.tiers.map(t => `<button onclick="selectSlotReplan('${t.raw}')" class="flex-1 min-w-[32px] py-1 flex items-center justify-center bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-200 hover:border-emerald-500 text-[10px] font-black rounded transition-all active:scale-95">T${t.tier}</button>`).join('')}
+                            </div>
+                        </div>`;
+                        } else {
+                            // Normal stack card - blue accent
+                            return `
                         <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
                             <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl">inventory_2</span></div>
                             <div class="flex justify-between items-start z-10">
@@ -441,8 +545,9 @@ function calculateAvailableSlotsReplan() {
                             <div class="flex flex-wrap gap-1.5 z-10 mt-2">
                                 ${stack.tiers.map(t => `<button onclick="selectSlotReplan('${t.raw}')" class="flex-1 min-w-[32px] py-1 flex items-center justify-center bg-blue-50 hover:bg-blue-500 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-500 text-[10px] font-black rounded transition-all active:scale-95">T${t.tier}</button>`).join('')}
                             </div>
-                        </div>
-                    `).join('')}
+                        </div>`;
+                        }
+                    }).join('')}
                 </div>
             </div>`;
     });

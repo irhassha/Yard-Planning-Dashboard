@@ -584,7 +584,7 @@ function highlightYardCarrier(carrier) {
         if (!hasSelection) {
             el.style.opacity = '1';
             el.style.filter = '';
-        } else if (yardActiveHighlight.has(el.dataset.carrier)) {
+        } else if (yardActiveHighlight.has(el.dataset.carrier) && el.classList.contains('ym-exp')) {
             el.style.opacity = '1';
             el.style.filter = '';
         } else {
