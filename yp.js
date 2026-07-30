@@ -1888,6 +1888,7 @@ window.showAllAnomalies = function () {
     const excludedBlocks = new Set(['C01', 'D01', 'C02', 'BR9', 'RC9', 'OOG']);
 
     window.invData.forEach(it => {
+        if (!it.move.includes('export')) return;
         if (it.block && excludedBlocks.has(it.block.toUpperCase())) return;
         const r = parseInt(it.row);
         const s = parseInt(it.slot);
