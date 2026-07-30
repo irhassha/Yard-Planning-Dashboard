@@ -268,28 +268,33 @@ function calculateAvailableSlotsReplan() {
     }
 
     let activeClusterBlocks = [];
+    let clusterBlockCounts = {}; // block => unit count
     if (tgt && tgt.carr && window.invData) {
-        let allVesselBlocks = new Set();
+        let vesselBlockMap = {}; // block => count
         (window.invData || []).forEach(it => {
             if (!it.move.includes('export')) return;
             if (normalizeReplan(it.carrier) === tgt.carr &&
                 normalizeReplan(it.service) === tgt.svc) {
-                allVesselBlocks.add((it.block || '').toUpperCase());
+                const blk = (it.block || '').toUpperCase();
+                if (blk) vesselBlockMap[blk] = (vesselBlockMap[blk] || 0) + 1;
             }
         });
-        activeClusterBlocks = Array.from(allVesselBlocks).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && (!hideGreyOutForCluster || !tgtGreyOutBlocks.includes(b))).sort();
+        activeClusterBlocks = Object.keys(vesselBlockMap).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && (!hideGreyOutForCluster || !tgtGreyOutBlocks.includes(b))).sort();
+        clusterBlockCounts = vesselBlockMap;
     }
 
     let clusterHtml = "";
     if (activeClusterBlocks.length > 0) {
+        const totalUnits = activeClusterBlocks.reduce((sum, b) => sum + (clusterBlockCounts[b] || 0), 0);
         clusterHtml = `
             <div class="mb-4 p-3 bg-blue-50/50 border border-blue-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-2">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-blue-500 text-[18px]">group_work</span>
                     <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Active Cluster <span class="text-blue-600">(${(tgt.carr || 'N/A').toUpperCase()} - ${(tgt.svc || 'N/A').toUpperCase()})</span>:</span>
+                    <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">${totalUnits} units</span>
                 </div>
                 <div class="flex flex-wrap gap-1">
-                    ${activeClusterBlocks.map(b => `<span class="px-2 py-0.5 bg-white border border-blue-200 text-blue-700 text-[10px] font-black rounded shadow-sm">${b}</span>`).join('')}
+                    ${activeClusterBlocks.map(b => `<span class="px-2 py-0.5 bg-white border border-blue-200 text-blue-700 text-[10px] font-black rounded shadow-sm">${b} <span class="text-blue-400 font-bold">(${clusterBlockCounts[b] || 0})</span></span>`).join('')}
                 </div>
             </div>
         `;
