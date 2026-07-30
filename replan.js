@@ -281,7 +281,7 @@ function calculateAvailableSlotsReplan() {
                 if (blk) vesselBlockMap[blk] = (vesselBlockMap[blk] || 0) + 1;
             }
         });
-        activeClusterBlocks = Object.keys(vesselBlockMap).filter(b => b && b !== 'C01' && b !== 'C02' && b !== 'BR9' && b !== 'RC9' && !b.startsWith('E') && (!hideGreyOutForCluster || !tgtGreyOutBlocks.includes(b))).sort();
+        activeClusterBlocks = Object.keys(vesselBlockMap).filter(b => b && !['C01', 'C02', 'D01', 'BR9', 'RC9', 'OOG', 'N'].includes(b) && !b.startsWith('E') && (!hideGreyOutForCluster || !tgtGreyOutBlocks.includes(b))).sort();
         clusterBlockCounts = vesselBlockMap;
     }
 
