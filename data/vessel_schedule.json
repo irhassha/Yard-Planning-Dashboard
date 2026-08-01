@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-01T01:22:08.183Z",
+  "lastUpdated": "2026-08-01T07:55:13.937Z",
   "totalScraped": 63,
-  "totalFiltered": 34,
+  "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-08-01 14:00:00",
+      "ata": "2026-08-01 11:38:35",
+      "etd": "2026-08-02 13:00:00",
+      "atd": "",
+      "openStacking": "2026-07-28 01:00:00",
+      "closingDocument": "2026-07-31 16:00:00",
+      "closingPhysic": "2026-07-31 18:00:00"
+    },
     {
       "vessel": "JOSEPHINE MAERSK",
       "line": "MCC",
@@ -12,41 +27,11 @@
       "status": "ACTIVE",
       "etb": "2026-08-01 04:00:00",
       "ata": "2026-08-01 02:12:00",
-      "etd": "2026-08-02 04:00:00",
+      "etd": "2026-08-02 01:00:00",
       "atd": "",
       "openStacking": "2026-07-25 01:00:00",
       "closingDocument": "2026-07-29 15:00:00",
       "closingPhysic": "2026-07-29 17:00:00"
-    },
-    {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-07-31 13:00:00",
-      "ata": "2026-07-31 12:30:00",
-      "etd": "2026-08-01 11:00:00",
-      "atd": "",
-      "openStacking": "2026-07-24 01:00:00",
-      "closingDocument": "2026-07-28 13:00:00",
-      "closingPhysic": "2026-07-28 15:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "630S",
-      "voyOut": "631W",
-      "service": "IN1",
-      "status": "ACTIVE",
-      "etb": "2026-07-30 21:00:00",
-      "ata": "2026-07-30 19:21:00",
-      "etd": "2026-08-01 14:00:00",
-      "atd": "",
-      "openStacking": "2026-07-25 01:00:00",
-      "closingDocument": "2026-07-29 10:00:00",
-      "closingPhysic": "2026-07-29 12:00:00"
     },
     {
       "vessel": "MSC PRECISION V",
@@ -475,7 +460,7 @@
       "voyOut": "069N",
       "service": "CIM",
       "status": "REGISTER",
-      "etb": "2026-08-02 06:00:00",
+      "etb": "2026-08-02 03:00:00",
       "ata": "",
       "etd": "2026-08-03 09:00:00",
       "atd": "",
@@ -497,21 +482,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "GREEN PACIFIC",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-08-01 14:00:00",
-      "ata": "",
-      "etd": "2026-08-02 13:00:00",
-      "atd": "",
-      "openStacking": "2026-07-28 01:00:00",
-      "closingDocument": "2026-07-31 16:00:00",
-      "closingPhysic": "2026-07-31 18:00:00"
     }
   ]
 }
