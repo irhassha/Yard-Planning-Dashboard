@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-02T07:57:28.870Z",
+  "lastUpdated": "2026-08-02T12:47:36.366Z",
   "totalScraped": 64,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC DECHENG",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-08-02 15:00:00",
+      "ata": "2026-08-02 15:01:14",
+      "etd": "2026-08-03 17:00:00",
+      "atd": "",
+      "openStacking": "2026-07-24 01:00:00",
+      "closingDocument": "2026-07-27 16:00:00",
+      "closingPhysic": "2026-07-27 18:00:00"
+    },
     {
       "vessel": "YM CENTENNIAL",
       "line": "YML",
@@ -12,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-08-02 03:00:00",
       "ata": "2026-08-02 02:11:00",
-      "etd": "2026-08-03 09:00:00",
+      "etd": "2026-08-03 03:00:00",
       "atd": "",
       "openStacking": "2026-07-29 01:00:00",
       "closingDocument": "2026-07-31 15:00:00",
@@ -400,28 +415,13 @@
       "voyOut": "0011N",
       "service": "KIS",
       "status": "REGISTER",
-      "etb": "2026-08-04 18:00:00",
+      "etb": "2026-08-04 13:00:00",
       "ata": "",
-      "etd": "2026-08-05 16:00:00",
+      "etd": "2026-08-05 13:00:00",
       "atd": "",
       "openStacking": "2026-07-28 01:00:00",
       "closingDocument": "2026-08-01 21:00:00",
       "closingPhysic": "2026-08-01 23:00:00"
-    },
-    {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "379S",
-      "voyOut": "379N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-08-03 21:00:00",
-      "ata": "",
-      "etd": "2026-08-05 06:00:00",
-      "atd": "",
-      "openStacking": "2026-07-01 17:15:00",
-      "closingDocument": "2026-07-01 15:35:00",
-      "closingPhysic": "2026-07-01 17:35:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -430,7 +430,7 @@
       "voyOut": "632N",
       "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-08-03 18:00:00",
+      "etb": "2026-08-03 20:00:00",
       "ata": "",
       "etd": "2026-08-05 20:00:00",
       "atd": "",
@@ -439,15 +439,30 @@
       "closingPhysic": "2026-08-03 10:00:00"
     },
     {
+      "vessel": "AS CASPRIA",
+      "line": "GSL",
+      "voyIn": "379N",
+      "voyOut": "379N",
+      "service": "KCI",
+      "status": "REGISTER",
+      "etb": "2026-08-03 19:00:00",
+      "ata": "",
+      "etd": "2026-08-05 06:00:00",
+      "atd": "",
+      "openStacking": "2026-07-23 01:00:00",
+      "closingDocument": "2026-07-27 13:00:00",
+      "closingPhysic": "2026-07-27 15:00:00"
+    },
+    {
       "vessel": "EVER BLINK",
       "line": "EMA",
       "voyIn": "1200-083B",
       "voyOut": "1200-083B",
       "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-08-03 11:00:00",
+      "etb": "2026-08-03 07:00:00",
       "ata": "",
-      "etd": "2026-08-04 16:00:00",
+      "etd": "2026-08-04 10:00:00",
       "atd": "",
       "openStacking": "2026-07-30 01:00:00",
       "closingDocument": "2026-08-02 13:00:00",
@@ -482,21 +497,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-08-02 15:00:00",
-      "ata": "",
-      "etd": "2026-08-03 19:00:00",
-      "atd": "",
-      "openStacking": "2026-07-24 01:00:00",
-      "closingDocument": "2026-07-27 16:00:00",
-      "closingPhysic": "2026-07-27 18:00:00"
     }
   ]
 }
