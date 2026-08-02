@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-02T01:19:50.068Z",
+  "lastUpdated": "2026-08-02T07:57:28.870Z",
   "totalScraped": 64,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "YM CENTENNIAL",
@@ -32,21 +32,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "GREEN PACIFIC",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "JTH",
-      "status": "ACTIVE",
-      "etb": "2026-08-01 14:00:00",
-      "ata": "2026-08-01 12:03:00",
-      "etd": "2026-08-02 10:00:00",
-      "atd": "",
-      "openStacking": "2026-07-28 01:00:00",
-      "closingDocument": "2026-07-31 16:00:00",
-      "closingPhysic": "2026-07-31 18:00:00"
     },
     {
       "vessel": "SEABREEZE",
