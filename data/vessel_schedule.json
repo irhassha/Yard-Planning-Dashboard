@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-01T18:46:11.579Z",
+  "lastUpdated": "2026-08-02T01:19:50.068Z",
   "totalScraped": 64,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "YM CENTENNIAL",
+      "line": "YML",
+      "voyIn": "069S",
+      "voyOut": "069N",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-08-02 03:00:00",
+      "ata": "2026-08-02 02:11:00",
+      "etd": "2026-08-03 09:00:00",
+      "atd": "",
+      "openStacking": "2026-07-29 01:00:00",
+      "closingDocument": "2026-07-31 15:00:00",
+      "closingPhysic": "2026-07-31 17:00:00"
+    },
     {
       "vessel": "MSC BREMERHAVEN V",
       "line": "MSC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-07-28 01:00:00",
       "closingDocument": "2026-07-31 16:00:00",
       "closingPhysic": "2026-07-31 18:00:00"
-    },
-    {
-      "vessel": "JOSEPHINE MAERSK",
-      "line": "MCC",
-      "voyIn": "629S",
-      "voyOut": "630N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-08-01 04:00:00",
-      "ata": "2026-08-01 02:33:00",
-      "etd": "2026-08-02 01:00:00",
-      "atd": "",
-      "openStacking": "2026-07-25 01:00:00",
-      "closingDocument": "2026-07-29 15:00:00",
-      "closingPhysic": "2026-07-29 17:00:00"
     },
     {
       "vessel": "SEABREEZE",
@@ -512,21 +512,6 @@
       "openStacking": "2026-07-24 01:00:00",
       "closingDocument": "2026-07-27 16:00:00",
       "closingPhysic": "2026-07-27 18:00:00"
-    },
-    {
-      "vessel": "YM CENTENNIAL",
-      "line": "YML",
-      "voyIn": "069S",
-      "voyOut": "069N",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-08-02 03:00:00",
-      "ata": "",
-      "etd": "2026-08-03 09:00:00",
-      "atd": "",
-      "openStacking": "2026-07-29 01:00:00",
-      "closingDocument": "2026-07-31 15:00:00",
-      "closingPhysic": "2026-07-31 17:00:00"
     }
   ]
 }
