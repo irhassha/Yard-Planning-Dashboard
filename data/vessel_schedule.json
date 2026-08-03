@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-02T18:46:32.444Z",
+  "lastUpdated": "2026-08-03T01:20:15.068Z",
   "totalScraped": 64,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "EVER BLINK",
+      "line": "EMA",
+      "voyIn": "1200-083B",
+      "voyOut": "1200-083B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-08-03 07:00:00",
+      "ata": "2026-08-03 03:25:00",
+      "etd": "2026-08-04 11:00:00",
+      "atd": "",
+      "openStacking": "2026-07-30 01:00:00",
+      "closingDocument": "2026-08-02 13:00:00",
+      "closingPhysic": "2026-08-02 15:00:00"
+    },
     {
       "vessel": "ORNELLA",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-07-24 01:00:00",
       "closingDocument": "2026-07-27 16:00:00",
       "closingPhysic": "2026-07-27 18:00:00"
-    },
-    {
-      "vessel": "YM CENTENNIAL",
-      "line": "YML",
-      "voyIn": "069S",
-      "voyOut": "069N",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-08-02 03:00:00",
-      "ata": "2026-08-02 02:11:00",
-      "etd": "2026-08-03 03:00:00",
-      "atd": "",
-      "openStacking": "2026-07-29 01:00:00",
-      "closingDocument": "2026-07-31 15:00:00",
-      "closingPhysic": "2026-07-31 17:00:00"
     },
     {
       "vessel": "MSC KOREA III",
@@ -482,21 +482,6 @@
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 13:00:00",
       "closingPhysic": "2026-07-27 15:00:00"
-    },
-    {
-      "vessel": "EVER BLINK",
-      "line": "EMA",
-      "voyIn": "1200-083B",
-      "voyOut": "1200-083B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-08-03 07:00:00",
-      "ata": "",
-      "etd": "2026-08-04 11:00:00",
-      "atd": "",
-      "openStacking": "2026-07-30 01:00:00",
-      "closingDocument": "2026-08-02 13:00:00",
-      "closingPhysic": "2026-08-02 15:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
