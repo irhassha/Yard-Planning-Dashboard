@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-04T08:11:48.375Z",
+  "lastUpdated": "2026-08-04T13:29:14.985Z",
   "totalScraped": 62,
   "totalFiltered": 30,
   "vessels": [
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-08-03 17:00:00",
       "ata": "2026-08-03 16:20:00",
-      "etd": "2026-08-05 05:00:00",
+      "etd": "2026-08-05 06:00:00",
       "atd": "",
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 13:00:00",
@@ -385,7 +385,7 @@
       "voyOut": "2606N",
       "service": "KCI",
       "status": "REGISTER",
-      "etb": "2026-08-06 20:00:00",
+      "etb": "2026-08-06 23:00:00",
       "ata": "",
       "etd": "2026-08-08 01:00:00",
       "atd": "",
@@ -409,6 +409,21 @@
       "closingPhysic": "2026-08-04 23:00:00"
     },
     {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "631S",
+      "voyOut": "632W",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-08-05 12:00:00",
+      "ata": "",
+      "etd": "2026-08-06 21:00:00",
+      "atd": "",
+      "openStacking": "2026-08-01 01:00:00",
+      "closingDocument": "2026-08-05 03:00:00",
+      "closingPhysic": "2026-08-05 05:00:00"
+    },
+    {
       "vessel": "MSC TAMARA IV",
       "line": "MSC",
       "voyIn": "HW629A",
@@ -422,21 +437,6 @@
       "openStacking": "2026-07-31 01:00:00",
       "closingDocument": "2026-08-05 10:00:00",
       "closingPhysic": "2026-08-05 12:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "631S",
-      "voyOut": "632W",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-08-05 08:00:00",
-      "ata": "",
-      "etd": "2026-08-06 18:00:00",
-      "atd": "",
-      "openStacking": "2026-08-01 01:00:00",
-      "closingDocument": "2026-08-05 03:00:00",
-      "closingPhysic": "2026-08-05 05:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
