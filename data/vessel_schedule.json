@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-04T01:12:11.927Z",
+  "lastUpdated": "2026-08-04T08:11:48.375Z",
   "totalScraped": 62,
   "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "HMM HERITAGE",
+      "line": "HMM",
+      "voyIn": "0011S",
+      "voyOut": "0011N",
+      "service": "KIS",
+      "status": "ACTIVE",
+      "etb": "2026-08-04 11:00:00",
+      "ata": "2026-08-04 10:30:00",
+      "etd": "2026-08-05 04:00:00",
+      "atd": "",
+      "openStacking": "2026-07-28 01:00:00",
+      "closingDocument": "2026-08-01 21:00:00",
+      "closingPhysic": "2026-08-01 23:00:00"
+    },
     {
       "vessel": "IRENES RAY",
       "line": "MCC",
@@ -27,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-08-03 17:00:00",
       "ata": "2026-08-03 16:20:00",
-      "etd": "2026-08-05 02:00:00",
+      "etd": "2026-08-05 05:00:00",
       "atd": "",
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 13:00:00",
@@ -132,7 +147,7 @@
       "status": "REGISTER",
       "etb": "2026-08-14 08:45:00",
       "ata": "",
-      "etd": "2026-08-15 01:00:00",
+      "etd": "2026-08-15 10:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -184,21 +199,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "MARINA ONE",
-      "line": "HMM",
-      "voyIn": "0002S",
-      "voyOut": "0002N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-08-11 22:00:00",
-      "ata": "",
-      "etd": "2026-08-12 22:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER OBEY",
       "line": "EMA",
       "voyIn": "0487-056S",
@@ -212,6 +212,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "MARINA ONE",
+      "line": "HMM",
+      "voyIn": "0002S",
+      "voyOut": "0002N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-08-11 13:00:00",
+      "ata": "",
+      "etd": "2026-08-12 14:00:00",
+      "atd": "",
+      "openStacking": "2026-08-06 01:00:00",
+      "closingDocument": "2026-08-10 21:00:00",
+      "closingPhysic": "2026-08-10 23:00:00"
     },
     {
       "vessel": "MERATUS JAYAWIJAYA",
@@ -244,21 +259,6 @@
       "closingPhysic": "2026-08-03 18:00:00"
     },
     {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "632E",
-      "voyOut": "633N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-08-10 03:00:00",
-      "ata": "",
-      "etd": "2026-08-11 19:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER ORIENT",
       "line": "EMC",
       "voyIn": "0485-111S",
@@ -272,6 +272,21 @@
       "openStacking": "2026-08-06 01:00:00",
       "closingDocument": "2026-08-08 16:00:00",
       "closingPhysic": "2026-08-08 18:00:00"
+    },
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "632E",
+      "voyOut": "633N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-08-09 18:00:00",
+      "ata": "",
+      "etd": "2026-08-11 10:00:00",
+      "atd": "",
+      "openStacking": "2026-08-05 01:00:00",
+      "closingDocument": "2026-08-09 03:00:00",
+      "closingPhysic": "2026-08-09 05:00:00"
     },
     {
       "vessel": "EVER BURLY",
@@ -340,7 +355,7 @@
       "voyOut": "632N",
       "service": "IA8",
       "status": "REGISTER",
-      "etb": "2026-08-07 15:00:00",
+      "etb": "2026-08-07 14:00:00",
       "ata": "",
       "etd": "2026-08-08 13:00:00",
       "atd": "",
@@ -415,28 +430,13 @@
       "voyOut": "632W",
       "service": "JKF",
       "status": "REGISTER",
-      "etb": "2026-08-05 04:00:00",
+      "etb": "2026-08-05 08:00:00",
       "ata": "",
       "etd": "2026-08-06 18:00:00",
       "atd": "",
       "openStacking": "2026-08-01 01:00:00",
       "closingDocument": "2026-08-05 03:00:00",
       "closingPhysic": "2026-08-05 05:00:00"
-    },
-    {
-      "vessel": "HMM HERITAGE",
-      "line": "HMM",
-      "voyIn": "0011S",
-      "voyOut": "0011N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-08-04 11:00:00",
-      "ata": "",
-      "etd": "2026-08-05 04:00:00",
-      "atd": "",
-      "openStacking": "2026-07-28 01:00:00",
-      "closingDocument": "2026-08-01 21:00:00",
-      "closingPhysic": "2026-08-01 23:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
