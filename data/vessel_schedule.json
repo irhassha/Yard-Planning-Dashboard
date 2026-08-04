@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-03T19:12:32.146Z",
+  "lastUpdated": "2026-08-04T01:12:11.927Z",
   "totalScraped": 62,
-  "totalFiltered": 31,
+  "totalFiltered": 30,
   "vessels": [
     {
       "vessel": "IRENES RAY",
@@ -32,21 +32,6 @@
       "openStacking": "2026-07-23 01:00:00",
       "closingDocument": "2026-07-27 13:00:00",
       "closingPhysic": "2026-07-27 15:00:00"
-    },
-    {
-      "vessel": "EVER BLINK",
-      "line": "EMA",
-      "voyIn": "1200-083B",
-      "voyOut": "1200-083B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-08-03 07:00:00",
-      "ata": "2026-08-03 03:25:00",
-      "etd": "2026-08-04 07:00:00",
-      "atd": "",
-      "openStacking": "2026-07-30 01:00:00",
-      "closingDocument": "2026-08-02 13:00:00",
-      "closingPhysic": "2026-08-02 15:00:00"
     },
     {
       "vessel": "MSC KOREA III",
@@ -417,7 +402,7 @@
       "status": "REGISTER",
       "etb": "2026-08-05 09:00:00",
       "ata": "",
-      "etd": "2026-08-07 13:00:00",
+      "etd": "2026-08-07 11:00:00",
       "atd": "",
       "openStacking": "2026-07-31 01:00:00",
       "closingDocument": "2026-08-05 10:00:00",
