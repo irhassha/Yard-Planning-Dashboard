@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-05T13:27:55.566Z",
-  "totalScraped": 63,
+  "lastUpdated": "2026-08-05T19:07:29.834Z",
+  "totalScraped": 60,
   "totalFiltered": 31,
   "vessels": [
     {
@@ -92,6 +92,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "MARINA ONE",
+      "line": "HMM",
+      "voyIn": "0002S",
+      "voyOut": "0002N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-08-18 02:00:00",
+      "ata": "",
+      "etd": "2026-08-19 06:00:00",
+      "atd": "",
+      "openStacking": "2026-08-08 01:00:00",
+      "closingDocument": "2026-08-12 21:00:00",
+      "closingPhysic": "2026-08-12 23:00:00"
     },
     {
       "vessel": "MSC KOREA III",
@@ -229,21 +244,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "ERASMUS LEO",
-      "line": "MCC",
-      "voyIn": "631S",
-      "voyOut": "632N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-08-12 16:00:00",
-      "ata": "",
-      "etd": "2026-08-13 18:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER OBEY",
       "line": "EMA",
       "voyIn": "0487-056S",
@@ -259,6 +259,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "ERASMUS LEO",
+      "line": "MCC",
+      "voyIn": "631S",
+      "voyOut": "632N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-08-11 18:00:00",
+      "ata": "",
+      "etd": "2026-08-12 20:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "MERATUS JAYAWIJAYA",
       "line": "MCC",
       "voyIn": "631S",
@@ -268,21 +283,6 @@
       "etb": "2026-08-11 16:00:00",
       "ata": "",
       "etd": "2026-08-12 17:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "MARINA ONE",
-      "line": "HMM",
-      "voyIn": "0002S",
-      "voyOut": "0002N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-08-11 13:00:00",
-      "ata": "",
-      "etd": "2026-08-12 14:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
