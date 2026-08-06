@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-08-06T13:26:03.582Z",
-  "totalScraped": 67,
+  "lastUpdated": "2026-08-06T22:37:52.599Z",
+  "totalScraped": 66,
   "totalFiltered": 37,
   "vessels": [
     {
@@ -34,19 +34,19 @@
       "closingPhysic": "2026-08-05 12:00:00"
     },
     {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "631S",
-      "voyOut": "632W",
-      "service": "JKF",
-      "status": "ACTIVE",
-      "etb": "2026-08-05 14:00:00",
-      "ata": "2026-08-05 14:22:00",
-      "etd": "2026-08-07 04:00:00",
+      "vessel": "MSC MANU IV",
+      "line": "MSC",
+      "voyIn": "632A",
+      "voyOut": "634R",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-08-20 22:00:00",
+      "ata": "",
+      "etd": "2026-08-21 12:00:00",
       "atd": "",
-      "openStacking": "2026-08-01 01:00:00",
-      "closingDocument": "2026-08-05 03:00:00",
-      "closingPhysic": "2026-08-05 05:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BUILD",
@@ -284,9 +284,9 @@
       "ata": "",
       "etd": "2026-08-14 19:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-08 01:00:00",
+      "closingDocument": "2026-08-12 13:00:00",
+      "closingPhysic": "2026-08-12 15:00:00"
     },
     {
       "vessel": "ITAL BONUS",
