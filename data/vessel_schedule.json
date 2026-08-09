@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-09T06:33:09.181Z",
+  "lastUpdated": "2026-08-09T12:20:33.859Z",
   "totalScraped": 66,
-  "totalFiltered": 37,
+  "totalFiltered": 36,
   "vessels": [
     {
       "vessel": "SITC YUHE",
@@ -11,8 +11,8 @@
       "service": "JTH",
       "status": "ACTIVE",
       "etb": "2026-08-09 12:00:00",
-      "ata": "2026-08-09 10:05:34",
-      "etd": "2026-08-10 10:00:00",
+      "ata": "2026-08-09 09:15:00",
+      "etd": "2026-08-10 05:00:00",
       "atd": "",
       "openStacking": "2026-08-04 01:00:00",
       "closingDocument": "2026-08-07 16:00:00",
@@ -32,21 +32,6 @@
       "openStacking": "2026-08-05 01:00:00",
       "closingDocument": "2026-08-08 05:00:00",
       "closingPhysic": "2026-08-08 07:00:00"
-    },
-    {
-      "vessel": "OEL VARUN",
-      "line": "MCC",
-      "voyIn": "630S",
-      "voyOut": "631N",
-      "service": "I15",
-      "status": "ACTIVE",
-      "etb": "2026-08-08 02:00:00",
-      "ata": "2026-08-08 00:11:00",
-      "etd": "2026-08-09 14:00:00",
-      "atd": "",
-      "openStacking": "2026-07-27 01:00:00",
-      "closingDocument": "2026-08-01 00:00:00",
-      "closingPhysic": "2026-08-01 02:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
@@ -520,9 +505,9 @@
       "voyOut": "0485-111N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-08-10 12:00:00",
+      "etb": "2026-08-10 11:00:00",
       "ata": "",
-      "etd": "2026-08-11 08:00:00",
+      "etd": "2026-08-11 05:00:00",
       "atd": "",
       "openStacking": "2026-08-06 01:00:00",
       "closingDocument": "2026-08-08 16:00:00",
