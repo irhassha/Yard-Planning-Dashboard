@@ -1,37 +1,22 @@
 {
-  "lastUpdated": "2026-08-09T18:19:35.795Z",
+  "lastUpdated": "2026-08-10T00:41:13.633Z",
   "totalScraped": 66,
-  "totalFiltered": 38,
+  "totalFiltered": 36,
   "vessels": [
     {
-      "vessel": "SITC YUHE",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "JTH",
+      "vessel": "EVER BURLY",
+      "line": "EMC",
+      "voyIn": "S092",
+      "voyOut": "N092",
+      "service": "CIM",
       "status": "ACTIVE",
-      "etb": "2026-08-09 12:00:00",
-      "ata": "2026-08-09 09:15:00",
-      "etd": "2026-08-10 03:00:00",
+      "etb": "2026-08-10 08:00:00",
+      "ata": "2026-08-10 07:30:42",
+      "etd": "2026-08-11 14:00:00",
       "atd": "",
-      "openStacking": "2026-08-04 01:00:00",
-      "closingDocument": "2026-08-07 16:00:00",
-      "closingPhysic": "2026-08-07 18:00:00"
-    },
-    {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1203-081A",
-      "voyOut": "1203-081A",
-      "service": "JPI-A",
-      "status": "ACTIVE",
-      "etb": "2026-08-08 23:00:00",
-      "ata": "2026-08-08 22:59:00",
-      "etd": "2026-08-10 00:00:00",
-      "atd": "",
-      "openStacking": "2026-08-05 01:00:00",
-      "closingDocument": "2026-08-08 05:00:00",
-      "closingPhysic": "2026-08-08 07:00:00"
+      "openStacking": "2026-08-06 01:00:00",
+      "closingDocument": "2026-08-08 14:00:00",
+      "closingPhysic": "2026-08-08 16:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -542,21 +527,6 @@
       "openStacking": "2026-08-06 01:00:00",
       "closingDocument": "2026-08-08 16:00:00",
       "closingPhysic": "2026-08-08 18:00:00"
-    },
-    {
-      "vessel": "EVER BURLY",
-      "line": "EMC",
-      "voyIn": "S092",
-      "voyOut": "N092",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-08-10 08:00:00",
-      "ata": "",
-      "etd": "2026-08-11 14:00:00",
-      "atd": "",
-      "openStacking": "2026-08-06 01:00:00",
-      "closingDocument": "2026-08-08 14:00:00",
-      "closingPhysic": "2026-08-08 16:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
