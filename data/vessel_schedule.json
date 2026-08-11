@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-11T06:40:45.774Z",
-  "totalScraped": 67,
-  "totalFiltered": 38,
+  "lastUpdated": "2026-08-11T12:33:31.490Z",
+  "totalScraped": 68,
+  "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "SITC SHEKOU",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-08-11 17:00:00",
+      "ata": "2026-08-11 12:39:00",
+      "etd": "2026-08-12 20:00:00",
+      "atd": "",
+      "openStacking": "2026-07-31 01:00:00",
+      "closingDocument": "2026-08-03 16:00:00",
+      "closingPhysic": "2026-08-03 18:00:00"
+    },
     {
       "vessel": "EVER OBEY",
       "line": "EMA",
@@ -70,7 +85,7 @@
       "voyOut": "634N",
       "service": "IA1",
       "status": "REGISTER",
-      "etb": "2026-08-22 23:00:00",
+      "etb": "2026-08-23 01:00:00",
       "ata": "",
       "etd": "2026-08-24 10:00:00",
       "atd": "",
@@ -94,15 +109,15 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "EVER OASIS",
-      "line": "EGH",
-      "voyIn": "0488-090S",
-      "voyOut": "0488-090N",
-      "service": "CIT",
+      "vessel": "SITC BATANGAS",
+      "line": "SIT",
+      "voyIn": "2616S",
+      "voyOut": "2617N",
+      "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-08-21 22:00:00",
+      "etb": "2026-08-22 01:00:00",
       "ata": "",
-      "etd": "2026-08-22 20:00:00",
+      "etd": "2026-08-23 02:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -115,9 +130,24 @@
       "voyOut": "2623N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-08-21 18:00:00",
+      "etb": "2026-08-22 01:00:00",
       "ata": "",
-      "etd": "2026-08-22 18:00:00",
+      "etd": "",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER OASIS",
+      "line": "EGH",
+      "voyIn": "0488-090S",
+      "voyOut": "0488-090N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-08-21 22:00:00",
+      "ata": "",
+      "etd": "2026-08-22 20:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -164,9 +194,9 @@
       "ata": "",
       "etd": "2026-08-21 20:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-17 01:00:00",
+      "closingDocument": "2026-08-20 09:00:00",
+      "closingPhysic": "2026-08-20 11:00:00"
     },
     {
       "vessel": "OEL VARUN",
@@ -269,9 +299,9 @@
       "ata": "",
       "etd": "2026-08-19 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-15 01:00:00",
+      "closingDocument": "2026-08-18 01:00:00",
+      "closingPhysic": "2026-08-18 03:00:00"
     },
     {
       "vessel": "HMM CEBU",
@@ -304,6 +334,21 @@
       "closingPhysic": "2026-08-17 15:00:00"
     },
     {
+      "vessel": "TB.LL DODI-BG.LL 2528",
+      "line": "SSD",
+      "voyIn": "41JN",
+      "voyOut": "41JN",
+      "service": "SSD TRANS",
+      "status": "REGISTER",
+      "etb": "2026-08-17 08:00:00",
+      "ata": "",
+      "etd": "2026-08-17 16:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "AS PENELOPE",
       "line": "HLC",
       "voyIn": "633E",
@@ -317,21 +362,6 @@
       "openStacking": "2026-08-13 01:00:00",
       "closingDocument": "2026-08-17 03:00:00",
       "closingPhysic": "2026-08-17 05:00:00"
-    },
-    {
-      "vessel": "TB.LL DODI-BG.LL 2528",
-      "line": "SSD",
-      "voyIn": "41JN",
-      "voyOut": "41JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-08-17 06:00:00",
-      "ata": "",
-      "etd": "2026-08-17 14:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "MSC KOREA III",
@@ -409,6 +439,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "EVER BEAMY",
+      "line": "EMA",
+      "voyIn": "1204-082A",
+      "voyOut": "1204-082A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-08-14 21:00:00",
+      "ata": "",
+      "etd": "2026-08-15 23:00:00",
+      "atd": "",
+      "openStacking": "2026-08-10 01:00:00",
+      "closingDocument": "2026-08-13 05:00:00",
+      "closingPhysic": "2026-08-13 07:00:00"
+    },
+    {
       "vessel": "SITC LIANYUNGANG",
       "line": "SIT",
       "voyIn": "2622S",
@@ -454,21 +499,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S124",
-      "voyOut": "N124",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-08-14 08:00:00",
-      "ata": "",
-      "etd": "2026-08-15 14:00:00",
-      "atd": "",
-      "openStacking": "2026-08-10 01:00:00",
-      "closingDocument": "2026-08-13 05:00:00",
-      "closingPhysic": "2026-08-13 07:00:00"
-    },
-    {
       "vessel": "IRENES RAY",
       "line": "MCC",
       "voyIn": "632S",
@@ -484,6 +514,21 @@
       "closingPhysic": "2026-08-12 14:00:00"
     },
     {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S124",
+      "voyOut": "N124",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-08-13 12:00:00",
+      "ata": "",
+      "etd": "2026-08-14 19:00:00",
+      "atd": "",
+      "openStacking": "2026-08-10 01:00:00",
+      "closingDocument": "2026-08-13 05:00:00",
+      "closingPhysic": "2026-08-13 07:00:00"
+    },
+    {
       "vessel": "SINAR BANGKA",
       "line": "SIT",
       "voyIn": "2620S",
@@ -497,21 +542,6 @@
       "openStacking": "2026-08-08 01:00:00",
       "closingDocument": "2026-08-12 13:00:00",
       "closingPhysic": "2026-08-12 15:00:00"
-    },
-    {
-      "vessel": "EVER BEAMY",
-      "line": "EMA",
-      "voyIn": "1204-082A",
-      "voyOut": "1204-082A",
-      "service": "JPI-A",
-      "status": "REGISTER",
-      "etb": "2026-08-13 03:00:00",
-      "ata": "",
-      "etd": "2026-08-14 06:00:00",
-      "atd": "",
-      "openStacking": "2026-08-10 01:00:00",
-      "closingDocument": "2026-08-13 05:00:00",
-      "closingPhysic": "2026-08-13 07:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
@@ -542,21 +572,6 @@
       "openStacking": "2026-08-07 10:00:00",
       "closingDocument": "2026-08-12 03:00:00",
       "closingPhysic": "2026-08-12 05:00:00"
-    },
-    {
-      "vessel": "SITC SHEKOU",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-08-11 17:00:00",
-      "ata": "",
-      "etd": "2026-08-12 20:00:00",
-      "atd": "",
-      "openStacking": "2026-07-31 01:00:00",
-      "closingDocument": "2026-08-03 16:00:00",
-      "closingPhysic": "2026-08-03 18:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
