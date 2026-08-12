@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-12T12:36:19.962Z",
-  "totalScraped": 69,
+  "lastUpdated": "2026-08-12T18:42:21.277Z",
+  "totalScraped": 68,
   "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "TB AQUARIUS - BG PSB 2510",
+      "line": "PUL",
+      "voyIn": "008E",
+      "voyOut": "008E",
+      "service": "SIS",
+      "status": "ACTIVE",
+      "etb": "2026-08-12 22:00:00",
+      "ata": "2026-08-12 21:30:00",
+      "etd": "2026-08-13 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "SEASPAN CALICANTO",
       "line": "MCC",
@@ -19,19 +34,19 @@
       "closingPhysic": "2026-08-12 05:00:00"
     },
     {
-      "vessel": "SITC SHEKOU",
-      "line": "SIT",
-      "voyIn": "2616S",
-      "voyOut": "2617N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-08-11 17:00:00",
-      "ata": "2026-08-11 12:39:00",
-      "etd": "2026-08-12 17:00:00",
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "634S",
+      "voyOut": "635W",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-08-26 08:00:00",
+      "ata": "",
+      "etd": "2026-08-28 09:00:00",
       "atd": "",
-      "openStacking": "2026-07-31 01:00:00",
-      "closingDocument": "2026-08-03 16:00:00",
-      "closingPhysic": "2026-08-03 18:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC DECHENG",
@@ -439,6 +454,21 @@
       "closingPhysic": "2026-08-14 18:00:00"
     },
     {
+      "vessel": "SITC LIANYUNGANG",
+      "line": "SIT",
+      "voyIn": "2622S",
+      "voyOut": "2623N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-08-14 23:59:00",
+      "ata": "",
+      "etd": "2026-08-15 19:00:00",
+      "atd": "",
+      "openStacking": "2026-08-11 01:00:00",
+      "closingDocument": "2026-08-14 16:00:00",
+      "closingPhysic": "2026-08-14 18:00:00"
+    },
+    {
       "vessel": "MSC PRECISION V",
       "line": "MSC",
       "voyIn": "HW630A",
@@ -467,21 +497,6 @@
       "openStacking": "2026-08-10 01:00:00",
       "closingDocument": "2026-08-13 05:00:00",
       "closingPhysic": "2026-08-13 07:00:00"
-    },
-    {
-      "vessel": "SITC LIANYUNGANG",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-08-14 20:00:00",
-      "ata": "",
-      "etd": "2026-08-15 19:00:00",
-      "atd": "",
-      "openStacking": "2026-08-11 01:00:00",
-      "closingDocument": "2026-08-14 16:00:00",
-      "closingPhysic": "2026-08-14 18:00:00"
     },
     {
       "vessel": "TB SD DIAMOND-BG SGKV",
@@ -557,21 +572,6 @@
       "openStacking": "2026-08-08 01:00:00",
       "closingDocument": "2026-08-12 13:00:00",
       "closingPhysic": "2026-08-12 15:00:00"
-    },
-    {
-      "vessel": "TB AQUARIUS - BG PSB 2510",
-      "line": "PUL",
-      "voyIn": "008E",
-      "voyOut": "008E",
-      "service": "SIS",
-      "status": "REGISTER",
-      "etb": "2026-08-12 22:00:00",
-      "ata": "",
-      "etd": "2026-08-13 07:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
