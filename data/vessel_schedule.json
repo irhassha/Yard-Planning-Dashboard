@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-12T07:01:23.752Z",
+  "lastUpdated": "2026-08-12T12:36:19.962Z",
   "totalScraped": 69,
   "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "SEASPAN CALICANTO",
+      "line": "MCC",
+      "voyIn": "630S",
+      "voyOut": "633N",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-08-12 15:00:00",
+      "ata": "2026-08-12 13:49:00",
+      "etd": "2026-08-13 05:00:00",
+      "atd": "",
+      "openStacking": "2026-08-07 10:00:00",
+      "closingDocument": "2026-08-12 03:00:00",
+      "closingPhysic": "2026-08-12 05:00:00"
+    },
     {
       "vessel": "SITC SHEKOU",
       "line": "SIT",
@@ -505,7 +520,7 @@
       "voyOut": "633W",
       "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-08-13 16:00:00",
+      "etb": "2026-08-13 18:00:00",
       "ata": "",
       "etd": "2026-08-15 19:00:00",
       "atd": "",
@@ -557,21 +572,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "SEASPAN CALICANTO",
-      "line": "MCC",
-      "voyIn": "630S",
-      "voyOut": "633N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-08-12 15:00:00",
-      "ata": "",
-      "etd": "2026-08-13 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-07 10:00:00",
-      "closingDocument": "2026-08-12 03:00:00",
-      "closingPhysic": "2026-08-12 05:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
