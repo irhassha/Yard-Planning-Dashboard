@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-13T12:37:18.461Z",
-  "totalScraped": 69,
-  "totalFiltered": 38,
+  "lastUpdated": "2026-08-13T18:43:22.074Z",
+  "totalScraped": 68,
+  "totalFiltered": 40,
   "vessels": [
     {
       "vessel": "IRENES RAY",
@@ -11,7 +11,7 @@
       "service": "IN1",
       "status": "ACTIVE",
       "etb": "2026-08-13 18:00:00",
-      "ata": "2026-08-13 18:14:41",
+      "ata": "2026-08-13 17:15:00",
       "etd": "2026-08-15 19:00:00",
       "atd": "",
       "openStacking": "2026-08-08 01:00:00",
@@ -34,19 +34,49 @@
       "closingPhysic": "2026-08-13 07:00:00"
     },
     {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-08-13 12:00:00",
-      "ata": "2026-08-13 11:28:00",
-      "etd": "2026-08-14 07:00:00",
+      "vessel": "MSC SHAULA",
+      "line": "MSC",
+      "voyIn": "HW633A",
+      "voyOut": "HW635R",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-08-27 22:00:00",
+      "ata": "",
+      "etd": "2026-08-28 12:00:00",
       "atd": "",
-      "openStacking": "2026-08-08 01:00:00",
-      "closingDocument": "2026-08-12 13:00:00",
-      "closingPhysic": "2026-08-12 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MSC MANU IV",
+      "line": "MSC",
+      "voyIn": "HW633A",
+      "voyOut": "HW633A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-08-27 22:00:00",
+      "ata": "",
+      "etd": "2026-08-28 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "INTERASIA ENGAGE",
+      "line": "IAL",
+      "voyIn": "S043",
+      "voyOut": "N043",
+      "service": "KCI",
+      "status": "REGISTER",
+      "etb": "2026-08-27 17:00:00",
+      "ata": "",
+      "etd": "2026-08-29 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "AS PENELOPE",
@@ -514,21 +544,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "BG. SINDO GARUDA KENCANA / TB. SD DIAMOND",
-      "line": "SSD",
-      "voyIn": "345JN",
-      "voyOut": "345JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-08-14 16:00:00",
-      "ata": "",
-      "etd": "2026-08-14 21:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER BEAMY",
       "line": "EMA",
       "voyIn": "1204-082A",
@@ -542,6 +557,21 @@
       "openStacking": "2026-08-10 01:00:00",
       "closingDocument": "2026-08-13 05:00:00",
       "closingPhysic": "2026-08-13 07:00:00"
+    },
+    {
+      "vessel": "BG. SINDO GARUDA KENCANA / TB. SD DIAMOND",
+      "line": "SSD",
+      "voyIn": "345JN",
+      "voyOut": "345JN",
+      "service": "SSD TRANS",
+      "status": "REGISTER",
+      "etb": "2026-08-14 16:00:00",
+      "ata": "",
+      "etd": "2026-08-14 21:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MSC JERSEY",
