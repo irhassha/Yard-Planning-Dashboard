@@ -1,38 +1,8 @@
 {
-  "lastUpdated": "2026-08-12T18:42:21.277Z",
+  "lastUpdated": "2026-08-13T00:48:52.797Z",
   "totalScraped": 68,
-  "totalFiltered": 39,
+  "totalFiltered": 37,
   "vessels": [
-    {
-      "vessel": "TB AQUARIUS - BG PSB 2510",
-      "line": "PUL",
-      "voyIn": "008E",
-      "voyOut": "008E",
-      "service": "SIS",
-      "status": "ACTIVE",
-      "etb": "2026-08-12 22:00:00",
-      "ata": "2026-08-12 21:30:00",
-      "etd": "2026-08-13 07:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "SEASPAN CALICANTO",
-      "line": "MCC",
-      "voyIn": "630S",
-      "voyOut": "633N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-08-12 15:00:00",
-      "ata": "2026-08-12 13:49:00",
-      "etd": "2026-08-13 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-07 10:00:00",
-      "closingDocument": "2026-08-12 03:00:00",
-      "closingPhysic": "2026-08-12 05:00:00"
-    },
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
