@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-08-13T00:48:52.797Z",
+  "lastUpdated": "2026-08-13T07:05:14.895Z",
   "totalScraped": 68,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S124",
+      "voyOut": "N124",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-08-13 12:00:00",
+      "ata": "2026-08-13 11:09:00",
+      "etd": "2026-08-14 11:00:00",
+      "atd": "",
+      "openStacking": "2026-08-10 01:00:00",
+      "closingDocument": "2026-08-13 05:00:00",
+      "closingPhysic": "2026-08-13 07:00:00"
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI2",
+      "status": "ACTIVE",
+      "etb": "2026-08-13 12:00:00",
+      "ata": "2026-08-13 11:28:00",
+      "etd": "2026-08-14 07:00:00",
+      "atd": "",
+      "openStacking": "2026-08-08 01:00:00",
+      "closingDocument": "2026-08-12 13:00:00",
+      "closingPhysic": "2026-08-12 15:00:00"
+    },
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
@@ -104,9 +134,9 @@
       "ata": "",
       "etd": "2026-08-23 18:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-17 01:00:00",
+      "closingDocument": "2026-08-21 16:00:00",
+      "closingPhysic": "2026-08-21 18:00:00"
     },
     {
       "vessel": "HMM HERITAGE",
@@ -194,9 +224,9 @@
       "ata": "",
       "etd": "2026-08-21 15:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-15 01:00:00",
+      "closingDocument": "2026-08-20 07:00:00",
+      "closingPhysic": "2026-08-20 09:00:00"
     },
     {
       "vessel": "SPIL NISAKA",
@@ -325,9 +355,9 @@
       "voyOut": "2623N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-08-17 21:00:00",
+      "etb": "2026-08-17 20:00:00",
       "ata": "",
-      "etd": "2026-08-18 21:00:00",
+      "etd": "2026-08-18 18:00:00",
       "atd": "",
       "openStacking": "2026-08-12 01:00:00",
       "closingDocument": "2026-08-16 13:00:00",
@@ -454,34 +484,34 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "BG. SINDO GARUDA KENCANA / TB. SD DIAMOND",
+      "line": "SSD",
+      "voyIn": "345JN",
+      "voyOut": "345JN",
+      "service": "SSD TRANS",
+      "status": "REGISTER",
+      "etb": "2026-08-14 16:00:00",
+      "ata": "",
+      "etd": "2026-08-14 21:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER BEAMY",
       "line": "EMA",
       "voyIn": "1204-082A",
       "voyOut": "1204-082A",
       "service": "JPI-A",
       "status": "REGISTER",
-      "etb": "2026-08-14 21:00:00",
+      "etb": "2026-08-14 16:00:00",
       "ata": "",
-      "etd": "2026-08-16 03:00:00",
+      "etd": "2026-08-15 20:00:00",
       "atd": "",
       "openStacking": "2026-08-10 01:00:00",
       "closingDocument": "2026-08-13 05:00:00",
       "closingPhysic": "2026-08-13 07:00:00"
-    },
-    {
-      "vessel": "TB SD DIAMOND-BG SGKV",
-      "line": "SSD",
-      "voyIn": "345JN",
-      "voyOut": "345JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-08-14 09:00:00",
-      "ata": "",
-      "etd": "2026-08-14 18:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "MSC JERSEY",
@@ -512,36 +542,6 @@
       "openStacking": "2026-08-08 01:00:00",
       "closingDocument": "2026-08-12 12:00:00",
       "closingPhysic": "2026-08-12 14:00:00"
-    },
-    {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S124",
-      "voyOut": "N124",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-08-13 12:00:00",
-      "ata": "",
-      "etd": "2026-08-14 11:00:00",
-      "atd": "",
-      "openStacking": "2026-08-10 01:00:00",
-      "closingDocument": "2026-08-13 05:00:00",
-      "closingPhysic": "2026-08-13 07:00:00"
-    },
-    {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI2",
-      "status": "REGISTER",
-      "etb": "2026-08-13 12:00:00",
-      "ata": "",
-      "etd": "2026-08-14 07:00:00",
-      "atd": "",
-      "openStacking": "2026-08-08 01:00:00",
-      "closingDocument": "2026-08-12 13:00:00",
-      "closingPhysic": "2026-08-12 15:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
