@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-16T06:16:54.574Z",
+  "lastUpdated": "2026-08-16T12:11:48.658Z",
   "totalScraped": 71,
   "totalFiltered": 42,
   "vessels": [
@@ -364,34 +364,34 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "EVER BUILD",
-      "line": "EMC",
-      "voyIn": "1202-088B",
-      "voyOut": "1202-088B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-08-22 11:00:00",
-      "ata": "",
-      "etd": "2026-08-23 16:00:00",
-      "atd": "",
-      "openStacking": "2026-08-17 01:00:00",
-      "closingDocument": "2026-08-20 09:00:00",
-      "closingPhysic": "2026-08-20 11:00:00"
-    },
-    {
       "vessel": "SITC SHIDAO",
       "line": "SIT",
       "voyIn": "2622S",
       "voyOut": "2623N",
       "service": "CMI2",
       "status": "REGISTER",
-      "etb": "2026-08-22 07:00:00",
+      "etb": "2026-08-22 11:00:00",
       "ata": "",
-      "etd": "2026-08-23 01:00:00",
+      "etd": "2026-08-23 06:00:00",
       "atd": "",
       "openStacking": "2026-08-18 01:00:00",
       "closingDocument": "2026-08-21 16:00:00",
       "closingPhysic": "2026-08-21 18:00:00"
+    },
+    {
+      "vessel": "EVER BUILD",
+      "line": "EMC",
+      "voyIn": "1202-088B",
+      "voyOut": "1202-088B",
+      "service": "JPI-B",
+      "status": "REGISTER",
+      "etb": "2026-08-21 21:00:00",
+      "ata": "",
+      "etd": "2026-08-23 01:00:00",
+      "atd": "",
+      "openStacking": "2026-08-17 01:00:00",
+      "closingDocument": "2026-08-20 09:00:00",
+      "closingPhysic": "2026-08-20 11:00:00"
     },
     {
       "vessel": "EVER OASIS",
@@ -514,6 +514,21 @@
       "closingPhysic": "2026-08-15 23:00:00"
     },
     {
+      "vessel": "TB.LL DODI-BG.LL 2528",
+      "line": "SSD",
+      "voyIn": "41JN",
+      "voyOut": "41JN",
+      "service": "SSD TRANS",
+      "status": "REGISTER",
+      "etb": "2026-08-18 18:00:00",
+      "ata": "",
+      "etd": "2026-08-19 02:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER BLISS",
       "line": "EMA",
       "voyIn": "1201-115B",
@@ -565,28 +580,13 @@
       "voyOut": "2623N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-08-17 19:00:00",
+      "etb": "2026-08-17 18:00:00",
       "ata": "",
-      "etd": "2026-08-18 17:00:00",
+      "etd": "2026-08-18 07:00:00",
       "atd": "",
       "openStacking": "2026-08-12 01:00:00",
       "closingDocument": "2026-08-16 13:00:00",
       "closingPhysic": "2026-08-16 15:00:00"
-    },
-    {
-      "vessel": "TB.LL DODI-BG.LL 2528",
-      "line": "SSD",
-      "voyIn": "41JN",
-      "voyOut": "41JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-08-17 07:00:00",
-      "ata": "",
-      "etd": "2026-08-17 16:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "AS PENELOPE",
