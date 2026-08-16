@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-16T00:27:23.369Z",
+  "lastUpdated": "2026-08-16T06:16:54.574Z",
   "totalScraped": 71,
   "totalFiltered": 42,
   "vessels": [
+    {
+      "vessel": "MSC KIM",
+      "line": "MSC",
+      "voyIn": "XI633A",
+      "voyOut": "XI634A",
+      "service": "PERTIWI",
+      "status": "ACTIVE",
+      "etb": "2026-08-16 08:00:00",
+      "ata": "2026-08-16 07:26:59",
+      "etd": "2026-08-18 09:00:00",
+      "atd": "",
+      "openStacking": "2026-08-12 01:00:00",
+      "closingDocument": "2026-08-15 22:00:00",
+      "closingPhysic": "2026-08-16 00:00:00"
+    },
     {
       "vessel": "ERASMUS LEO",
       "line": "MCC",
@@ -319,19 +334,19 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI2",
+      "vessel": "OKEE CORNELIA",
+      "line": "MCC",
+      "voyIn": "633S",
+      "voyOut": "634N",
+      "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-08-23 12:00:00",
+      "etb": "2026-08-23 03:00:00",
       "ata": "",
       "etd": "2026-08-24 07:00:00",
       "atd": "",
-      "openStacking": "2026-08-18 01:00:00",
-      "closingDocument": "2026-08-21 16:00:00",
-      "closingPhysic": "2026-08-21 18:00:00"
+      "openStacking": "2026-08-16 01:00:00",
+      "closingDocument": "2026-08-21 13:00:00",
+      "closingPhysic": "2026-08-21 15:00:00"
     },
     {
       "vessel": "JOSEPHINE MAERSK",
@@ -364,19 +379,19 @@
       "closingPhysic": "2026-08-20 11:00:00"
     },
     {
-      "vessel": "OKEE CORNELIA",
-      "line": "MCC",
-      "voyIn": "633S",
-      "voyOut": "634N",
-      "service": "I15",
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2622S",
+      "voyOut": "2623N",
+      "service": "CMI2",
       "status": "REGISTER",
-      "etb": "2026-08-21 21:00:00",
+      "etb": "2026-08-22 07:00:00",
       "ata": "",
-      "etd": "2026-08-23 10:00:00",
+      "etd": "2026-08-23 01:00:00",
       "atd": "",
-      "openStacking": "2026-08-16 01:00:00",
-      "closingDocument": "2026-08-21 13:00:00",
-      "closingPhysic": "2026-08-21 15:00:00"
+      "openStacking": "2026-08-18 01:00:00",
+      "closingDocument": "2026-08-21 16:00:00",
+      "closingPhysic": "2026-08-21 18:00:00"
     },
     {
       "vessel": "EVER OASIS",
@@ -602,21 +617,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "MSC KIM",
-      "line": "MSC",
-      "voyIn": "XI633A",
-      "voyOut": "XI634A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-08-16 08:00:00",
-      "ata": "",
-      "etd": "2026-08-18 09:00:00",
-      "atd": "",
-      "openStacking": "2026-08-12 01:00:00",
-      "closingDocument": "2026-08-15 22:00:00",
-      "closingPhysic": "2026-08-16 00:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
