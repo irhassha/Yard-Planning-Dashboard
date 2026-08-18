@@ -1,22 +1,22 @@
 {
-  "lastUpdated": "2026-08-18T12:17:33.672Z",
-  "totalScraped": 62,
-  "totalFiltered": 35,
+  "lastUpdated": "2026-08-18T18:16:52.387Z",
+  "totalScraped": 61,
+  "totalFiltered": 34,
   "vessels": [
     {
-      "vessel": "TB.LL DODI-BG.LL 2528",
-      "line": "SSD",
-      "voyIn": "41JN",
-      "voyOut": "41JN",
-      "service": "SSD TRANS",
+      "vessel": "MARINA ONE",
+      "line": "HMM",
+      "voyIn": "0002S",
+      "voyOut": "0002N",
+      "service": "KIS",
       "status": "ACTIVE",
-      "etb": "2026-08-18 16:00:00",
-      "ata": "2026-08-18 14:00:00",
-      "etd": "2026-08-19 00:00:00",
+      "etb": "2026-08-19 04:00:00",
+      "ata": "2026-08-18 23:54:37",
+      "etd": "2026-08-20 04:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-11 01:00:00",
+      "closingDocument": "2026-08-15 21:00:00",
+      "closingPhysic": "2026-08-15 23:00:00"
     },
     {
       "vessel": "EVER BLISS",
@@ -512,21 +512,6 @@
       "openStacking": "2026-08-09 01:00:00",
       "closingDocument": "2026-08-14 16:00:00",
       "closingPhysic": "2026-08-14 18:00:00"
-    },
-    {
-      "vessel": "MARINA ONE",
-      "line": "HMM",
-      "voyIn": "0002S",
-      "voyOut": "0002N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-08-19 04:00:00",
-      "ata": "",
-      "etd": "2026-08-20 04:00:00",
-      "atd": "",
-      "openStacking": "2026-08-11 01:00:00",
-      "closingDocument": "2026-08-15 21:00:00",
-      "closingPhysic": "2026-08-15 23:00:00"
     }
   ]
 }
