@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-20T18:18:21.542Z",
+  "lastUpdated": "2026-08-21T00:28:44.958Z",
   "totalScraped": 65,
   "totalFiltered": 36,
   "vessels": [
@@ -12,7 +12,7 @@
       "status": "ACTIVE",
       "etb": "2026-08-20 23:00:00",
       "ata": "2026-08-20 23:10:38",
-      "etd": "2026-08-21 19:00:00",
+      "etd": "2026-08-21 22:00:00",
       "atd": "",
       "openStacking": "2026-08-14 11:00:00",
       "closingDocument": "2026-08-19 09:00:00",
@@ -484,34 +484,34 @@
       "closingPhysic": "2026-08-21 18:00:00"
     },
     {
-      "vessel": "OEL VARUN",
-      "line": "MCC",
-      "voyIn": "633S",
-      "voyOut": "634N",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-08-22 01:00:00",
-      "ata": "",
-      "etd": "2026-08-22 21:00:00",
-      "atd": "",
-      "openStacking": "2026-08-15 01:00:00",
-      "closingDocument": "2026-08-20 07:00:00",
-      "closingPhysic": "2026-08-20 09:00:00"
-    },
-    {
       "vessel": "EVER BUILD",
       "line": "EMC",
       "voyIn": "1202-088B",
       "voyOut": "1202-088B",
       "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-08-21 22:00:00",
+      "etb": "2026-08-22 01:00:00",
       "ata": "",
-      "etd": "2026-08-22 21:00:00",
+      "etd": "2026-08-22 22:00:00",
       "atd": "",
       "openStacking": "2026-08-17 01:00:00",
       "closingDocument": "2026-08-20 09:00:00",
       "closingPhysic": "2026-08-20 11:00:00"
+    },
+    {
+      "vessel": "OEL VARUN",
+      "line": "MCC",
+      "voyIn": "633S",
+      "voyOut": "634N",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-08-22 00:00:00",
+      "ata": "",
+      "etd": "2026-08-22 21:00:00",
+      "atd": "",
+      "openStacking": "2026-08-15 01:00:00",
+      "closingDocument": "2026-08-20 07:00:00",
+      "closingPhysic": "2026-08-20 09:00:00"
     },
     {
       "vessel": "EVER OASIS",
