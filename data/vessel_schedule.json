@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-21T06:21:20.966Z",
-  "totalScraped": 69,
-  "totalFiltered": 39,
+  "lastUpdated": "2026-08-21T12:18:36.400Z",
+  "totalScraped": 70,
+  "totalFiltered": 40,
   "vessels": [
+    {
+      "vessel": "EVER OASIS",
+      "line": "EGH",
+      "voyIn": "0488-090S",
+      "voyOut": "0488-090N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-08-21 19:00:00",
+      "ata": "2026-08-21 18:56:15",
+      "etd": "2026-08-22 08:00:00",
+      "atd": "",
+      "openStacking": "2026-08-18 01:00:00",
+      "closingDocument": "2026-08-20 21:59:00",
+      "closingPhysic": "2026-08-20 23:59:00"
+    },
     {
       "vessel": "AS PIA",
       "line": "MCC",
@@ -214,21 +229,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "HF LUCKY",
-      "line": "SIT",
-      "voyIn": "2617S",
-      "voyOut": "2619N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-08-28 23:00:00",
-      "ata": "",
-      "etd": "2026-08-29 20:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "SEABREEZE",
       "line": "HMM",
       "voyIn": "0002S",
@@ -238,6 +238,21 @@
       "etb": "2026-08-28 23:00:00",
       "ata": "",
       "etd": "2026-08-29 23:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "HF LUCKY",
+      "line": "SIT",
+      "voyIn": "2617S",
+      "voyOut": "2619N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-08-28 23:00:00",
+      "ata": "",
+      "etd": "2026-08-29 20:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -314,9 +329,9 @@
       "ata": "",
       "etd": "2026-08-28 10:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-24 01:00:00",
+      "closingDocument": "2026-08-27 05:00:00",
+      "closingPhysic": "2026-08-27 07:00:00"
     },
     {
       "vessel": "INTERASIA ENGAGE",
@@ -529,6 +544,21 @@
       "closingPhysic": "2026-08-21 18:00:00"
     },
     {
+      "vessel": "JML ABADI",
+      "line": "JML",
+      "voyIn": "363P",
+      "voyOut": "364J",
+      "service": "JML TRANS",
+      "status": "REGISTER",
+      "etb": "2026-08-22 10:00:00",
+      "ata": "",
+      "etd": "2026-08-22 14:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER BUILD",
       "line": "EMC",
       "voyIn": "1202-088B",
@@ -557,21 +587,6 @@
       "openStacking": "2026-08-15 01:00:00",
       "closingDocument": "2026-08-20 07:00:00",
       "closingPhysic": "2026-08-20 09:00:00"
-    },
-    {
-      "vessel": "EVER OASIS",
-      "line": "EGH",
-      "voyIn": "0488-090S",
-      "voyOut": "0488-090N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-08-21 19:00:00",
-      "ata": "",
-      "etd": "2026-08-22 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-18 01:00:00",
-      "closingDocument": "2026-08-20 21:59:00",
-      "closingPhysic": "2026-08-20 23:59:00"
     },
     {
       "vessel": "BG SEJAHTERA",
