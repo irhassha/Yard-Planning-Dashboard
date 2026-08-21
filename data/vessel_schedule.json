@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-21T12:18:36.400Z",
-  "totalScraped": 70,
-  "totalFiltered": 40,
+  "lastUpdated": "2026-08-21T18:17:20.589Z",
+  "totalScraped": 68,
+  "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "OEL VARUN",
+      "line": "MCC",
+      "voyIn": "633S",
+      "voyOut": "634N",
+      "service": "TX4",
+      "status": "ACTIVE",
+      "etb": "2026-08-22 01:00:00",
+      "ata": "2026-08-22 00:21:22",
+      "etd": "2026-08-22 22:00:00",
+      "atd": "",
+      "openStacking": "2026-08-15 01:00:00",
+      "closingDocument": "2026-08-20 07:00:00",
+      "closingPhysic": "2026-08-20 09:00:00"
+    },
     {
       "vessel": "EVER OASIS",
       "line": "EGH",
@@ -11,7 +26,7 @@
       "service": "CIT",
       "status": "ACTIVE",
       "etb": "2026-08-21 19:00:00",
-      "ata": "2026-08-21 18:56:15",
+      "ata": "2026-08-21 19:02:00",
       "etd": "2026-08-22 08:00:00",
       "atd": "",
       "openStacking": "2026-08-18 01:00:00",
@@ -32,21 +47,6 @@
       "openStacking": "2026-08-14 11:00:00",
       "closingDocument": "2026-08-19 09:00:00",
       "closingPhysic": "2026-08-19 11:00:00"
-    },
-    {
-      "vessel": "MERATUS JAYAWIJAYA",
-      "line": "MCC",
-      "voyIn": "631S",
-      "voyOut": "632N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-08-20 19:00:00",
-      "ata": "2026-08-20 17:09:00",
-      "etd": "2026-08-21 22:00:00",
-      "atd": "",
-      "openStacking": "2026-08-16 01:00:00",
-      "closingDocument": "2026-08-20 20:00:00",
-      "closingPhysic": "2026-08-20 22:00:00"
     },
     {
       "vessel": "ITAL BONNY",
@@ -321,7 +321,7 @@
     {
       "vessel": "EVER OPTIMA",
       "line": "EGH",
-      "voyIn": "0489-049N",
+      "voyIn": "0489-049S",
       "voyOut": "0489-049N",
       "service": "CIT",
       "status": "REGISTER",
@@ -572,21 +572,6 @@
       "openStacking": "2026-08-17 01:00:00",
       "closingDocument": "2026-08-20 09:00:00",
       "closingPhysic": "2026-08-20 11:00:00"
-    },
-    {
-      "vessel": "OEL VARUN",
-      "line": "MCC",
-      "voyIn": "633S",
-      "voyOut": "634N",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-08-22 01:00:00",
-      "ata": "",
-      "etd": "2026-08-22 22:00:00",
-      "atd": "",
-      "openStacking": "2026-08-15 01:00:00",
-      "closingDocument": "2026-08-20 07:00:00",
-      "closingPhysic": "2026-08-20 09:00:00"
     },
     {
       "vessel": "BG SEJAHTERA",
