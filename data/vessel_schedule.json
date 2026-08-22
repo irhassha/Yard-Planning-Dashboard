@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-21T18:17:20.589Z",
+  "lastUpdated": "2026-08-22T00:26:16.182Z",
   "totalScraped": 68,
-  "totalFiltered": 39,
+  "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "EVER BUILD",
+      "line": "EMC",
+      "voyIn": "1202-088B",
+      "voyOut": "1202-088B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-08-22 01:00:00",
+      "ata": "2026-08-22 01:32:22",
+      "etd": "2026-08-22 22:00:00",
+      "atd": "",
+      "openStacking": "2026-08-17 01:00:00",
+      "closingDocument": "2026-08-20 09:00:00",
+      "closingPhysic": "2026-08-20 11:00:00"
+    },
     {
       "vessel": "OEL VARUN",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-08-18 01:00:00",
       "closingDocument": "2026-08-20 21:59:00",
       "closingPhysic": "2026-08-20 23:59:00"
-    },
-    {
-      "vessel": "AS PIA",
-      "line": "MCC",
-      "voyIn": "631S",
-      "voyOut": "634N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-08-20 23:00:00",
-      "ata": "2026-08-20 23:10:38",
-      "etd": "2026-08-21 22:00:00",
-      "atd": "",
-      "openStacking": "2026-08-14 11:00:00",
-      "closingDocument": "2026-08-19 09:00:00",
-      "closingPhysic": "2026-08-19 11:00:00"
     },
     {
       "vessel": "ITAL BONNY",
@@ -557,21 +557,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "EVER BUILD",
-      "line": "EMC",
-      "voyIn": "1202-088B",
-      "voyOut": "1202-088B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-08-22 01:00:00",
-      "ata": "",
-      "etd": "2026-08-22 22:00:00",
-      "atd": "",
-      "openStacking": "2026-08-17 01:00:00",
-      "closingDocument": "2026-08-20 09:00:00",
-      "closingPhysic": "2026-08-20 11:00:00"
     },
     {
       "vessel": "BG SEJAHTERA",
