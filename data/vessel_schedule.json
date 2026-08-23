@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-23T12:12:13.884Z",
-  "totalScraped": 69,
-  "totalFiltered": 37,
+  "lastUpdated": "2026-08-23T18:09:48.606Z",
+  "totalScraped": 70,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "IRENES RAY",
@@ -34,19 +34,34 @@
       "closingPhysic": "2026-08-21 15:00:00"
     },
     {
-      "vessel": "EVER BIRTH",
-      "line": "EMA",
-      "voyIn": "1205-110A",
-      "voyOut": "1205-110A",
-      "service": "JPI-A",
-      "status": "ACTIVE",
-      "etb": "2026-08-23 03:00:00",
-      "ata": "2026-08-23 02:51:00",
-      "etd": "2026-08-24 01:00:00",
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "635S",
+      "voyOut": "636N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-09-06 17:00:00",
+      "ata": "",
+      "etd": "2026-09-08 01:00:00",
       "atd": "",
-      "openStacking": "2026-08-19 01:00:00",
-      "closingDocument": "2026-08-21 21:59:00",
-      "closingPhysic": "2026-08-21 23:59:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "636E",
+      "voyOut": "637N",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-09-06 15:00:00",
+      "ata": "",
+      "etd": "2026-09-08 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER ORIENT",
