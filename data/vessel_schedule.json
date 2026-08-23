@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-23T06:18:09.644Z",
+  "lastUpdated": "2026-08-23T12:12:13.884Z",
   "totalScraped": 69,
-  "totalFiltered": 38,
+  "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "634E",
+      "voyOut": "635N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-08-23 18:00:00",
+      "ata": "2026-08-23 15:14:10",
+      "etd": "2026-08-25 21:00:00",
+      "atd": "",
+      "openStacking": "2026-08-19 01:00:00",
+      "closingDocument": "2026-08-23 03:00:00",
+      "closingPhysic": "2026-08-23 05:00:00"
+    },
     {
       "vessel": "OKEE CORNELIA",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-08-19 01:00:00",
       "closingDocument": "2026-08-21 21:59:00",
       "closingPhysic": "2026-08-21 23:59:00"
-    },
-    {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-08-22 17:00:00",
-      "ata": "2026-08-22 18:12:00",
-      "etd": "2026-08-23 15:00:00",
-      "atd": "",
-      "openStacking": "2026-08-18 01:00:00",
-      "closingDocument": "2026-08-21 16:00:00",
-      "closingPhysic": "2026-08-21 18:00:00"
     },
     {
       "vessel": "EVER ORIENT",
@@ -224,9 +224,9 @@
       "ata": "",
       "etd": "2026-09-01 10:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-25 15:00:00",
+      "closingDocument": "2026-08-30 02:00:00",
+      "closingPhysic": "2026-08-30 04:00:00"
     },
     {
       "vessel": "SPIL NISAKA",
@@ -542,21 +542,6 @@
       "openStacking": "2026-08-21 01:00:00",
       "closingDocument": "2026-08-23 21:59:00",
       "closingPhysic": "2026-08-23 23:59:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "634E",
-      "voyOut": "635N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-08-23 18:00:00",
-      "ata": "",
-      "etd": "2026-08-25 21:00:00",
-      "atd": "",
-      "openStacking": "2026-08-19 01:00:00",
-      "closingDocument": "2026-08-23 03:00:00",
-      "closingPhysic": "2026-08-23 05:00:00"
     },
     {
       "vessel": "BG SEJAHTERA",
