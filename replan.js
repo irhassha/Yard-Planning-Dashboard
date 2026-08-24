@@ -14,6 +14,105 @@ let parsedHeadersReplan = [];
 let parsedContainersReplan = [];  // Array of {values, parsed, display}
 let selectedContainerIdxReplan = 0;
 
+// --- CLASH ANALYSIS ---
+/**
+ * Analyze potential clashes for a given slot.
+ * A clash occurs when another vessel has containers in the same block,
+ * within 5 slots distance, AND has overlapping ETA-ETD schedule.
+ *
+ * @param {string} blockId - Block name (e.g. 'C03')
+ * @param {number} slotNum - Slot number of the recommended slot
+ * @param {string} targetCarrier - Carrier name of the container being replanned
+ * @param {string} targetService - Service name of the container being replanned
+ * @returns {Array} Array of clash objects: { vessel, distance, eta, etd }
+ */
+function analyzeSlotClash(blockId, slotNum, targetCarrier, targetService) {
+    const schedule = window.scheduleData || [];
+    const db = window.invData || [];
+    if (!schedule.length || !db.length || !targetCarrier) return [];
+
+    // 1. Find the schedule entry for the TARGET carrier
+    const normTarget = targetCarrier.toUpperCase().trim();
+    const targetSchedule = schedule.find(s => {
+        const sv = s.carrier.toUpperCase().trim();
+        return sv === normTarget || sv.includes(normTarget) || normTarget.includes(sv);
+    });
+    if (!targetSchedule) return []; // No schedule found for target carrier
+
+    // 2. Find all OTHER carriers in the same block (excluding target carrier)
+    let otherCarriersInBlock = {}; // carrier => { slots: Set, minSlot, maxSlot }
+    db.forEach(item => {
+        if ((item.block || '').toUpperCase() !== blockId.toUpperCase()) return;
+        const itemCarrier = (item.carrier || '').toUpperCase().trim();
+        if (!itemCarrier || itemCarrier === normTarget) return;
+        // Also skip if same service+carrier combo
+        const itemService = (item.service || '').toUpperCase().trim();
+        if (itemCarrier === normTarget) return;
+
+        const itemSlot = parseInt(item.slot);
+        if (isNaN(itemSlot) || itemSlot <= 0) return;
+
+        if (!otherCarriersInBlock[itemCarrier]) {
+            otherCarriersInBlock[itemCarrier] = { slots: new Set(), service: itemService };
+        }
+        otherCarriersInBlock[itemCarrier].slots.add(itemSlot);
+    });
+
+    // 3. For each other carrier, check schedule overlap AND slot distance
+    const clashes = [];
+    const SLOT_GAP_THRESHOLD = 5;
+
+    for (const [otherCarrier, data] of Object.entries(otherCarriersInBlock)) {
+        // Find schedule for this other carrier
+        const otherSchedule = schedule.find(s => {
+            const sv = s.carrier.toUpperCase().trim();
+            return sv === otherCarrier || sv.includes(otherCarrier) || otherCarrier.includes(sv);
+        });
+        if (!otherSchedule) continue;
+
+        // Check ETA-ETD overlap
+        const overlap = targetSchedule.eta < otherSchedule.etd && targetSchedule.etd > otherSchedule.eta;
+        if (!overlap) continue;
+
+        // Calculate minimum slot distance from recommended slot to any of this carrier's slots
+        let minDist = Infinity;
+        let closestSlot = null;
+        data.slots.forEach(s => {
+            const dist = Math.abs(slotNum - s);
+            if (dist < minDist) {
+                minDist = dist;
+                closestSlot = s;
+            }
+        });
+
+        if (minDist <= SLOT_GAP_THRESHOLD) {
+            // Format dates for display
+            const fmtDate = (d) => {
+                if (!d) return '?';
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+            };
+            const fmtDateTime = (d) => {
+                if (!d) return '?';
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            };
+            clashes.push({
+                vessel: otherCarrier,
+                distance: minDist,
+                closestSlot: closestSlot,
+                eta: fmtDateTime(otherSchedule.eta),
+                etd: fmtDateTime(otherSchedule.etd),
+                etaShort: fmtDate(otherSchedule.eta),
+                etdShort: fmtDate(otherSchedule.etd),
+                containerCount: data.slots.size
+            });
+        }
+    }
+
+    // Sort by distance (closest first)
+    clashes.sort((a, b) => a.distance - b.distance);
+    return clashes;
+}
+
 function setReplanMaxTier(tier) {
     maxReplanTier = tier;
     const btn5 = document.getElementById('btn-tier-5');
@@ -490,6 +589,16 @@ function calculateAvailableSlotsReplan() {
         }
     });
 
+    // --- CLASH ANALYSIS ---
+    // Analyze potential clashes for each recommended stack
+    const targetCarrierForClash = (tgt.carr || '').toUpperCase().trim();
+    const targetServiceForClash = (tgt.svc || '').toUpperCase().trim();
+    stacks.forEach(stack => {
+        const parts = stack.base.split('-');
+        const slotNum = parts.length >= 2 ? parseInt(parts[1]) : 0;
+        stack.clashInfo = analyzeSlotClash(stack.block, slotNum, targetCarrierForClash, targetServiceForClash);
+    });
+
     if (stacks.length === 0) {
         out.innerHTML = `
             ${clusterHtml}
@@ -536,28 +645,59 @@ function calculateAvailableSlotsReplan() {
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     ${blockStacks.map(stack => {
+                        const hasClash = stack.clashInfo && stack.clashInfo.length > 0;
+                        const clashBadgeHtml = hasClash ? `
+                            <div class="flex items-center gap-1 mt-1 z-10">
+                                <span class="material-symbols-outlined text-amber-500 text-[14px]">warning</span>
+                                <span class="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">CLASH</span>
+                            </div>` : '';
+                        const clashDetailHtml = hasClash ? `
+                            <div class="z-10 mt-1 space-y-1">
+                                ${stack.clashInfo.map(c => `
+                                    <div class="bg-amber-50/80 border border-amber-200/60 rounded-lg px-2 py-1.5 text-[9px] leading-tight">
+                                        <div class="flex items-center gap-1 mb-0.5">
+                                            <span class="material-symbols-outlined text-amber-500 text-[12px]">directions_boat</span>
+                                            <span class="font-black text-amber-800 truncate" title="${c.vessel}">${c.vessel}</span>
+                                            <span class="text-amber-600 font-bold ml-auto whitespace-nowrap">${c.distance} slot${c.distance !== 1 ? 's' : ''}</span>
+                                        </div>
+                                        <div class="text-amber-600 font-mono pl-4">${c.etaShort} → ${c.etdShort} <span class="text-amber-400">(${c.containerCount} units)</span></div>
+                                    </div>
+                                `).join('')}
+                            </div>` : '';
+
                         if (stack.isEmpty) {
-                            // Empty row card - green accent
+                            // Empty row card - green accent, or amber if clash
+                            const borderClass = hasClash ? 'border-amber-300 bg-amber-50/30' : 'border-emerald-200 bg-emerald-50/40';
                             return `
-                        <div class="bg-emerald-50/40 border border-emerald-200 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl text-emerald-400">add_circle</span></div>
+                        <div class="${borderClass} rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl ${hasClash ? 'text-amber-400' : 'text-emerald-400'}">add_circle</span></div>
                             <div class="flex justify-between items-start z-10">
                                 <span class="text-xs font-black text-slate-700 tracking-tight font-mono">${stack.base}</span>
-                                <span class="text-[9px] text-emerald-700 font-bold bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">EMPTY ROW</span>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <span class="text-[9px] text-emerald-700 font-bold bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">EMPTY ROW</span>
+                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded"><span class="material-symbols-outlined text-[11px]">warning</span>CLASH</span>' : ''}
+                                </div>
                             </div>
+                            ${clashDetailHtml}
                             <div class="flex flex-wrap gap-1.5 z-10 mt-2">
                                 ${stack.tiers.map(t => `<button onclick="selectSlotReplan('${t.raw}')" class="flex-1 min-w-[32px] py-1 flex items-center justify-center bg-emerald-50 hover:bg-emerald-500 text-emerald-600 hover:text-white border border-emerald-200 hover:border-emerald-500 text-[10px] font-black rounded transition-all active:scale-95">T${t.tier}</button>`).join('')}
                             </div>
                         </div>`;
                         } else {
-                            // Normal stack card - blue accent
+                            // Normal stack card - blue accent, or amber border if clash
+                            const borderClass = hasClash ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200 bg-white';
+                            const iconClass = hasClash ? 'text-amber-300' : '';
                             return `
-                        <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl">inventory_2</span></div>
+                        <div class="${borderClass} rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
+                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl ${iconClass}">inventory_2</span></div>
                             <div class="flex justify-between items-start z-10">
                                 <span class="text-xs font-black text-slate-700 tracking-tight font-mono">${stack.base}</span>
-                                <span class="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">Top: <span class="text-slate-800">${stack.occupied}</span></span>
+                                <div class="flex flex-col items-end gap-0.5">
+                                    <span class="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">Top: <span class="text-slate-800">${stack.occupied}</span></span>
+                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded"><span class="material-symbols-outlined text-[11px]">warning</span>CLASH</span>' : ''}
+                                </div>
                             </div>
+                            ${clashDetailHtml}
                             <div class="flex flex-wrap gap-1.5 z-10 mt-2">
                                 ${stack.tiers.map(t => `<button onclick="selectSlotReplan('${t.raw}')" class="flex-1 min-w-[32px] py-1 flex items-center justify-center bg-blue-50 hover:bg-blue-500 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-500 text-[10px] font-black rounded transition-all active:scale-95">T${t.tier}</button>`).join('')}
                             </div>
