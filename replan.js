@@ -646,36 +646,31 @@ function calculateAvailableSlotsReplan() {
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     ${blockStacks.map(stack => {
                         const hasClash = stack.clashInfo && stack.clashInfo.length > 0;
-                        const clashBadgeHtml = hasClash ? `
-                            <div class="flex items-center gap-1 mt-1 z-10">
-                                <span class="material-symbols-outlined text-amber-500 text-[14px]">warning</span>
-                                <span class="text-[9px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded">CLASH</span>
-                            </div>` : '';
                         const clashDetailHtml = hasClash ? `
                             <div class="z-10 mt-1 space-y-1">
                                 ${stack.clashInfo.map(c => `
-                                    <div class="bg-amber-50/80 border border-amber-200/60 rounded-lg px-2 py-1.5 text-[9px] leading-tight">
+                                    <div class="bg-red-50 border border-red-200 rounded-lg px-2 py-1.5 text-[9px] leading-tight">
                                         <div class="flex items-center gap-1 mb-0.5">
-                                            <span class="material-symbols-outlined text-amber-500 text-[12px]">directions_boat</span>
-                                            <span class="font-black text-amber-800 truncate" title="${c.vessel}">${c.vessel}</span>
-                                            <span class="text-amber-600 font-bold ml-auto whitespace-nowrap">${c.distance} slot${c.distance !== 1 ? 's' : ''}</span>
+                                            <span class="material-symbols-outlined text-red-500 text-[12px]">directions_boat</span>
+                                            <span class="font-black text-red-800 truncate" title="${c.vessel}">${c.vessel}</span>
+                                            <span class="text-red-600 font-bold ml-auto whitespace-nowrap">${c.distance} slot${c.distance !== 1 ? 's' : ''}</span>
                                         </div>
-                                        <div class="text-amber-600 font-mono pl-4">${c.etaShort} → ${c.etdShort} <span class="text-amber-400">(${c.containerCount} units)</span></div>
+                                        <div class="text-red-600 font-mono pl-4">${c.etaShort} → ${c.etdShort} <span class="text-red-400">(${c.containerCount} units)</span></div>
                                     </div>
                                 `).join('')}
                             </div>` : '';
 
                         if (stack.isEmpty) {
-                            // Empty row card - green accent, or amber if clash
-                            const borderClass = hasClash ? 'border-amber-300 bg-amber-50/30' : 'border-emerald-200 bg-emerald-50/40';
+                            // Empty row card - green accent, or red if clash
+                            const borderClass = hasClash ? 'border-red-300 bg-red-50/25' : 'border-emerald-200 bg-emerald-50/40';
                             return `
                         <div class="${borderClass} rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
-                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl ${hasClash ? 'text-amber-400' : 'text-emerald-400'}">add_circle</span></div>
+                            <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl ${hasClash ? 'text-red-400' : 'text-emerald-400'}">add_circle</span></div>
                             <div class="flex justify-between items-start z-10">
                                 <span class="text-xs font-black text-slate-700 tracking-tight font-mono">${stack.base}</span>
                                 <div class="flex flex-col items-end gap-0.5">
                                     <span class="text-[9px] text-emerald-700 font-bold bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded">EMPTY ROW</span>
-                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded"><span class="material-symbols-outlined text-[11px]">warning</span>CLASH</span>' : ''}
+                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-black text-red-700 bg-red-100 border border-red-300 px-1.5 py-0.5 rounded shadow-sm"><span class="material-symbols-outlined text-[11px] text-red-600 font-bold">warning</span>CLASH</span>' : ''}
                                 </div>
                             </div>
                             ${clashDetailHtml}
@@ -684,9 +679,9 @@ function calculateAvailableSlotsReplan() {
                             </div>
                         </div>`;
                         } else {
-                            // Normal stack card - blue accent, or amber border if clash
-                            const borderClass = hasClash ? 'border-amber-300 bg-amber-50/20' : 'border-slate-200 bg-white';
-                            const iconClass = hasClash ? 'text-amber-300' : '';
+                            // Normal stack card - blue accent, or red border if clash
+                            const borderClass = hasClash ? 'border-red-300 bg-red-50/15' : 'border-slate-200 bg-white';
+                            const iconClass = hasClash ? 'text-red-300' : '';
                             return `
                         <div class="${borderClass} rounded-xl p-3 flex flex-col gap-2 relative overflow-hidden group hover:shadow-md transition-shadow">
                             <div class="absolute top-0 right-0 p-1 opacity-5 group-hover:opacity-10 transition-opacity"><span class="material-symbols-outlined text-4xl ${iconClass}">inventory_2</span></div>
@@ -694,7 +689,7 @@ function calculateAvailableSlotsReplan() {
                                 <span class="text-xs font-black text-slate-700 tracking-tight font-mono">${stack.base}</span>
                                 <div class="flex flex-col items-end gap-0.5">
                                     <span class="text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded">Top: <span class="text-slate-800">${stack.occupied}</span></span>
-                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-1.5 py-0.5 rounded"><span class="material-symbols-outlined text-[11px]">warning</span>CLASH</span>' : ''}
+                                    ${hasClash ? '<span class="flex items-center gap-0.5 text-[9px] font-black text-red-700 bg-red-100 border border-red-300 px-1.5 py-0.5 rounded shadow-sm"><span class="material-symbols-outlined text-[11px] text-red-600 font-bold">warning</span>CLASH</span>' : ''}
                                 </div>
                             </div>
                             ${clashDetailHtml}
