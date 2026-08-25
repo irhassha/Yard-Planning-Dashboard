@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-24T18:19:43.459Z",
+  "lastUpdated": "2026-08-25T00:27:02.778Z",
   "totalScraped": 70,
-  "totalFiltered": 40,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "SITC YUHE",
@@ -32,21 +32,6 @@
       "openStacking": "2026-08-21 01:00:00",
       "closingDocument": "2026-08-23 21:59:00",
       "closingPhysic": "2026-08-23 23:59:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "634E",
-      "voyOut": "635N",
-      "service": "IN1",
-      "status": "ACTIVE",
-      "etb": "2026-08-23 18:00:00",
-      "ata": "2026-08-23 15:14:10",
-      "etd": "2026-08-25 03:30:00",
-      "atd": "",
-      "openStacking": "2026-08-19 01:00:00",
-      "closingDocument": "2026-08-23 03:00:00",
-      "closingPhysic": "2026-08-23 05:00:00"
     },
     {
       "vessel": "EVER BLINK",
