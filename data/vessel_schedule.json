@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-08-26T00:27:57.365Z",
+  "lastUpdated": "2026-08-26T06:23:25.462Z",
   "totalScraped": 72,
   "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "634S",
+      "voyOut": "635W",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-08-26 10:00:00",
+      "ata": "2026-08-26 09:25:00",
+      "etd": "2026-08-27 13:00:00",
+      "atd": "",
+      "openStacking": "2026-08-22 01:00:00",
+      "closingDocument": "2026-08-26 03:00:00",
+      "closingPhysic": "2026-08-26 05:00:00"
+    },
     {
       "vessel": "GREEN PACIFIC",
       "line": "SIT",
@@ -79,6 +94,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "EVER ORIENT",
+      "line": "EMC",
+      "voyIn": "0491-112S",
+      "voyOut": "0491-112N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-09-06 20:00:00",
+      "ata": "",
+      "etd": "2026-09-07 14:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "BIG BREEZY",
       "line": "MCC",
       "voyIn": "635S",
@@ -109,21 +139,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SEABREEZE",
-      "line": "HMM",
-      "voyIn": "0002S",
-      "voyOut": "0002N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-09-06 01:00:00",
-      "ata": "",
-      "etd": "2026-09-07 02:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER BEAMY",
       "line": "EMA",
       "voyIn": "1204-082B",
@@ -139,13 +154,13 @@
       "closingPhysic": "2026-09-01 23:59:00"
     },
     {
-      "vessel": "EVER ORIENT",
-      "line": "EMC",
-      "voyIn": "0491-112S",
-      "voyOut": "0491-112N",
-      "service": "CIT",
+      "vessel": "SEABREEZE",
+      "line": "HMM",
+      "voyIn": "0002S",
+      "voyOut": "0002N",
+      "service": "KIS",
       "status": "REGISTER",
-      "etb": "2026-09-05 17:00:00",
+      "etb": "2026-09-05 16:00:00",
       "ata": "",
       "etd": "2026-09-06 17:00:00",
       "atd": "",
@@ -175,13 +190,13 @@
       "voyOut": "2607N",
       "service": "KCI",
       "status": "REGISTER",
-      "etb": "2026-09-04 17:00:00",
+      "etb": "2026-09-04 10:00:00",
       "ata": "",
-      "etd": "2026-09-05 23:00:00",
+      "etd": "2026-09-05 13:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-29 01:00:00",
+      "closingDocument": "2026-09-02 13:00:00",
+      "closingPhysic": "2026-09-02 15:00:00"
     },
     {
       "vessel": "YM CENTENNIAL",
@@ -214,19 +229,19 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "380N",
-      "voyOut": "380N",
-      "service": "KCI",
+      "vessel": "SITC DECHENG",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-09-03 07:00:00",
+      "etb": "2026-09-03 05:00:00",
       "ata": "",
-      "etd": "2026-09-04 12:00:00",
+      "etd": "2026-09-04 07:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-28 01:00:00",
+      "closingDocument": "2026-09-01 13:00:00",
+      "closingPhysic": "2026-09-01 15:00:00"
     },
     {
       "vessel": "MARSA PRIDE",
@@ -235,7 +250,7 @@
       "voyOut": "636N",
       "service": "IA8",
       "status": "REGISTER",
-      "etb": "2026-09-02 19:00:00",
+      "etb": "2026-09-02 21:00:00",
       "ata": "",
       "etd": "2026-09-03 17:00:00",
       "atd": "",
@@ -259,21 +274,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-09-02 00:00:00",
-      "ata": "",
-      "etd": "2026-09-03 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-28 01:00:00",
-      "closingDocument": "2026-09-01 13:00:00",
-      "closingPhysic": "2026-09-01 15:00:00"
-    },
-    {
       "vessel": "OEL VARUN",
       "line": "MCC",
       "voyIn": "635N",
@@ -287,6 +287,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "AS CASPRIA",
+      "line": "GSL",
+      "voyIn": "380N",
+      "voyOut": "380N",
+      "service": "KCI",
+      "status": "REGISTER",
+      "etb": "2026-09-01 23:00:00",
+      "ata": "",
+      "etd": "2026-09-03 03:00:00",
+      "atd": "",
+      "openStacking": "2026-08-27 01:00:00",
+      "closingDocument": "2026-09-01 11:00:00",
+      "closingPhysic": "2026-09-01 13:00:00"
     },
     {
       "vessel": "SINAR BANGKA",
@@ -402,7 +417,7 @@
       "status": "REGISTER",
       "etb": "2026-08-29 00:00:00",
       "ata": "",
-      "etd": "2026-08-30 05:00:00",
+      "etd": "2026-08-30 03:00:00",
       "atd": "",
       "openStacking": "2026-08-17 01:00:00",
       "closingDocument": "2026-08-21 16:00:00",
@@ -462,7 +477,7 @@
       "status": "REGISTER",
       "etb": "2026-08-27 23:00:00",
       "ata": "",
-      "etd": "2026-08-28 21:00:00",
+      "etd": "2026-08-28 16:00:00",
       "atd": "",
       "openStacking": "2026-08-24 01:00:00",
       "closingDocument": "2026-08-27 05:00:00",
@@ -507,7 +522,7 @@
       "status": "REGISTER",
       "etb": "2026-08-27 13:00:00",
       "ata": "",
-      "etd": "2026-08-28 22:00:00",
+      "etd": "2026-08-28 21:00:00",
       "atd": "",
       "openStacking": "2026-08-22 01:00:00",
       "closingDocument": "2026-08-26 13:00:00",
@@ -557,21 +572,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "634S",
-      "voyOut": "635W",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-08-26 10:00:00",
-      "ata": "",
-      "etd": "2026-08-27 21:00:00",
-      "atd": "",
-      "openStacking": "2026-08-22 01:00:00",
-      "closingDocument": "2026-08-26 03:00:00",
-      "closingPhysic": "2026-08-26 05:00:00"
     },
     {
       "vessel": "BG SEJAHTERA",
