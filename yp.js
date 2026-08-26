@@ -1581,7 +1581,7 @@ function renderClusterSpreading() {
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-hour w-[1%] whitespace-nowrap">HOUR</th>
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-carrier w-[1%] whitespace-nowrap">Carrier</th>
                         <th rowspan="4" class="px-2 py-2 border-r border-slate-300 text-center align-middle col-service w-[1%] whitespace-nowrap">Svc</th>
-                        <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50">BLOCK UTILIZATION (X/Y/Z)</th>
+                        <th colspan="${colspan}" class="px-6 py-1 border-b border-slate-300 text-center font-black tracking-widest bg-slate-200/50 cursor-pointer hover:bg-slate-300/50 transition-colors" onclick="openBatchAnalysisModal()" title="Batch Analysis">BLOCK UTILIZATION (X/Y/Z)</th>
                         <th colspan="2" class="px-2 py-1 border-b border-l border-slate-300 text-center align-middle bg-slate-50 font-black text-[9px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="4" class="px-2 py-2 text-center border-l border-slate-300 align-middle col-units font-black cursor-pointer hover:bg-slate-200 transition-colors" onclick="showAllAnomalies()" title="Anomalies Check">TOTAL<br>UNITS</th>
                     </tr>
@@ -1611,7 +1611,7 @@ function renderClusterSpreading() {
                         <th rowspan="3" class="px-2 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">HOUR</th>
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">Carrier</th>
                         <th rowspan="3" class="px-4 py-2 border-r border-slate-200 text-center align-middle bg-slate-50 w-[1%] whitespace-nowrap">Service</th>
-                        <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700">BLOCKS (Total Units)</th>
+                        <th colspan="${sortedBlocks.length}" class="px-6 py-2 border-b border-slate-200 text-center bg-slate-100/30 uppercase font-black tracking-widest text-slate-700 cursor-pointer hover:bg-slate-200/60 transition-colors" onclick="openBatchAnalysisModal()" title="Batch Analysis">BLOCKS (Total Units)</th>
                         <th colspan="2" class="px-4 py-2 border-b border-l border-slate-200 text-center align-middle bg-slate-50 font-black text-[10px] tracking-wider cursor-pointer hover:bg-slate-200 transition-colors" onclick="openReservationCheckerModal()" title="Reservation Checker">CLUSTER</th>
                         <th rowspan="3" class="px-4 py-2 text-center border-l border-slate-200 align-middle bg-slate-50 font-black cursor-pointer hover:bg-slate-200 transition-colors" onclick="showAllAnomalies()" title="Anomalies Check">TOTAL<br>UNITS</th>
                     </tr>
@@ -1901,11 +1901,13 @@ window.showAllAnomalies = function () {
 
     const mixVesselRows = [];
     const mixSpodRows = [];
+    const mixWcRows = [];
 
     Object.keys(rowItems).forEach(rowKey => {
         const items = rowItems[rowKey];
         const uniqueVessels = new Set();
         const uniqueSpods = new Set();
+        const uniqueWcs = new Set();
 
         items.forEach(it => {
             const c = String(it.carrier || '').trim().toUpperCase();
@@ -1916,6 +1918,10 @@ window.showAllAnomalies = function () {
             if (sp && sp !== '0' && sp !== 'NIL' && sp !== '-' && sp !== '') {
                 uniqueSpods.add(sp);
             }
+            const wc = String(it.wtcl || '').trim().toUpperCase();
+            if (wc && wc !== '0' && wc !== 'NIL' && wc !== '-' && wc !== '') {
+                uniqueWcs.add(wc);
+            }
         });
 
         if (uniqueVessels.size >= 2) {
@@ -1924,10 +1930,49 @@ window.showAllAnomalies = function () {
         if (uniqueSpods.size >= 2) {
             mixSpodRows.push({ rowKey, spods: Array.from(uniqueSpods) });
         }
+        if (uniqueWcs.size >= 2) {
+            mixWcRows.push({ rowKey, wcs: Array.from(uniqueWcs) });
+        }
     });
 
-    // Generate HTML
-    let html = '';
+    // Summary Cards at Top
+    let html = `
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <div class="bg-white border border-red-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center border border-red-100">
+                        <span class="material-symbols-outlined text-xl">directions_boat</span>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix Vessel</div>
+                        <div class="text-xl font-black text-red-600">${mixVesselRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-orange-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
+                        <span class="material-symbols-outlined text-xl">location_on</span>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix SPOD</div>
+                        <div class="text-xl font-black text-orange-600">${mixSpodRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white border border-purple-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
+                        <span class="material-symbols-outlined text-xl">scale</span>
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix WC</div>
+                        <div class="text-xl font-black text-purple-600">${mixWcRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
     const renderTable = (title, icon, colorClass, bgClass, borderClass, anomalies, typeLabel, detailLabel) => {
         if (anomalies.length === 0) {
@@ -1948,7 +1993,11 @@ window.showAllAnomalies = function () {
         // Sort by rowKey
         anomalies.sort((a, b) => a.rowKey.localeCompare(b.rowKey));
         anomalies.forEach(anomaly => {
-            const details = anomaly.vessels ? anomaly.vessels.join(', ') : anomaly.spods.join(', ');
+            let details = '';
+            if (anomaly.vessels) details = anomaly.vessels.join(', ');
+            else if (anomaly.spods) details = anomaly.spods.join(', ');
+            else if (anomaly.wcs) details = anomaly.wcs.join(', ');
+
             tableRows += `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-4 py-2 font-bold text-slate-700 border-r border-slate-100 whitespace-nowrap">${anomaly.rowKey}</td>
@@ -1986,11 +2035,386 @@ window.showAllAnomalies = function () {
 
     html += renderTable('MIX VESSEL Anomalies', 'directions_boat', 'text-red-600', 'bg-red-50', 'border-red-200', mixVesselRows, 'MIX VESSEL', 'Vessels');
     html += renderTable('MIX SPOD Anomalies', 'location_on', 'text-orange-600', 'bg-orange-50', 'border-orange-200', mixSpodRows, 'MIX SPOD', 'SPODs');
+    html += renderTable('MIX WC Anomalies', 'scale', 'text-purple-600', 'bg-purple-50', 'border-purple-200', mixWcRows, 'MIX WC', 'Weight Classes');
 
     body.innerHTML = html;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 };
+
+// --- BATCH MULTI-FILE ANALYSIS ---
+let _batchFiles = [];
+
+window.openBatchAnalysisModal = function () {
+    const modal = document.getElementById('batchAnalysisModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    // Reset state
+    _batchFiles = [];
+    document.getElementById('batchFileInput').value = '';
+    document.getElementById('batchFileList').classList.add('hidden');
+    document.getElementById('batchFileListContent').innerHTML = '';
+    document.getElementById('batchAnalyzeBtn').classList.add('hidden');
+    document.getElementById('batchProgressSection').classList.add('hidden');
+    document.getElementById('batchResultsSection').classList.add('hidden');
+    document.getElementById('batchResultsSection').innerHTML = '';
+};
+
+window.closeBatchAnalysisModal = function () {
+    const modal = document.getElementById('batchAnalysisModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+};
+
+window.handleBatchFileSelect = function (files) {
+    if (!files || files.length === 0) return;
+    _batchFiles = Array.from(files);
+    const listEl = document.getElementById('batchFileList');
+    const contentEl = document.getElementById('batchFileListContent');
+    let chips = _batchFiles.map((f, i) =>
+        `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold">
+            <span class="material-symbols-outlined text-[14px]">description</span>${f.name}
+        </span>`
+    ).join('');
+    contentEl.innerHTML = chips;
+    listEl.classList.remove('hidden');
+    document.getElementById('batchAnalyzeBtn').classList.remove('hidden');
+    document.getElementById('batchResultsSection').classList.add('hidden');
+    document.getElementById('batchProgressSection').classList.add('hidden');
+};
+
+// Parse a single Excel file into invData-like array
+function _batchParseFile(arrayBuffer) {
+    const wb = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
+    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "" });
+
+    let hIdx = -1;
+    let colMap = { block: -1, length: -1, carrier: -1, carrierIn: -1, carrierOut: -1, move: -1, slot: -1, row: -1, service: -1, spod: -1, wtcl: -1, oog: -1 };
+
+    for (let i = 0; i < Math.min(json.length, 30); i++) {
+        let rStr = json[i].map(c => cleanStr(c)).join(" ");
+        if ((rStr.includes("area") || rStr.includes("block") || rStr.includes("slot")) &&
+            (rStr.includes("vessel") || rStr.includes("carrier") || rStr.includes("line"))) {
+            hIdx = i;
+            json[i].forEach((cell, idx) => {
+                let c = cleanStr(cell).replace(/[\s_]+/g, "");
+                let cKey = String(cell || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+                if (c.includes("area") || c.includes("block")) colMap.block = idx;
+                if (cKey === "unitlength" || c.includes("size")) colMap.length = idx;
+                if (cKey === "carrierin") colMap.carrierIn = idx;
+                if (cKey === "carrierout") colMap.carrierOut = idx;
+                if (c === "carrier" || c === "vessel") colMap.carrier = idx;
+                if (c === "move" || c === "status" || c === "category") colMap.move = idx;
+                if (c.includes("slot") && c.includes("exe")) colMap.slot = idx;
+                if (c.includes("row") && c.includes("exe")) colMap.row = idx;
+                if (cKey === "serviceout" || c.includes("service")) colMap.service = idx;
+                if (cKey === "spod") colMap.spod = idx;
+                if (cKey === "wtcl") colMap.wtcl = idx;
+                if (cKey === "oog" || c === "o/g") colMap.oog = idx;
+            });
+            break;
+        }
+    }
+
+    if (hIdx === -1 || colMap.carrier === -1) return null;
+
+    const data = [];
+    for (let i = hIdx + 1; i < json.length; i++) {
+        let row = json[i];
+        if (!row[colMap.block] && !row[colMap.slot]) continue;
+
+        let slotStr = colMap.slot !== -1 ? String(row[colMap.slot] || "") : "";
+        let parsedBlock = "N", parsedSlotNum = 0, parsedRow = 0;
+
+        if (slotStr.includes('-')) {
+            let parts = slotStr.split('-');
+            parsedBlock = parts[0].trim();
+            if (parts.length >= 2) parsedSlotNum = parseInt(parts[1]) || 0;
+            if (parts.length >= 3) parsedRow = parseInt(parts[2]) || 0;
+        } else if (colMap.block !== -1 && row[colMap.block]) {
+            parsedBlock = String(row[colMap.block]).trim();
+            if (colMap.slot !== -1) parsedSlotNum = parseInt(row[colMap.slot]) || 0;
+        }
+        if (parsedRow === 0 && colMap.row !== -1 && row[colMap.row]) {
+            parsedRow = parseInt(row[colMap.row]) || 0;
+        }
+
+        let moveStr = colMap.move !== -1 ? String(row[colMap.move] || "").toLowerCase() : "import";
+        let finalCarrier = "";
+        if (moveStr.includes("import") && colMap.carrierIn !== -1 && row[colMap.carrierIn]) finalCarrier = row[colMap.carrierIn];
+        else if (moveStr.includes("export") && colMap.carrierOut !== -1 && row[colMap.carrierOut]) finalCarrier = row[colMap.carrierOut];
+        else if (colMap.carrier !== -1 && row[colMap.carrier]) finalCarrier = row[colMap.carrier];
+        else if (colMap.carrierOut !== -1 && row[colMap.carrierOut]) finalCarrier = row[colMap.carrierOut];
+        else if (colMap.carrierIn !== -1 && row[colMap.carrierIn]) finalCarrier = row[colMap.carrierIn];
+
+        data.push({
+            block: parsedBlock.toUpperCase(),
+            slot: parsedSlotNum,
+            row: parsedRow,
+            length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
+            carrier: String(finalCarrier || "").toUpperCase().trim(),
+            move: moveStr,
+            service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
+            spod: colMap.spod !== -1 ? String(row[colMap.spod] || "").toUpperCase().trim() : "",
+            wtcl: colMap.wtcl !== -1 ? String(row[colMap.wtcl] || "").toUpperCase().trim() : "",
+            oog: colMap.oog !== -1 ? String(row[colMap.oog] || "").toUpperCase().trim() : "N"
+        });
+    }
+    return data;
+}
+
+// Compute YOR from invData array
+function _batchComputeYOR(data) {
+    let cap = JSON.parse(JSON.stringify(DEFAULT_CAPACITY));
+    let yardMap = {};
+    Object.keys(cap).forEach(b => yardMap[b] = { impT: 0, expT: 0 });
+
+    // OOG adjustment for C08
+    const c08OogSlots = new Set();
+    data.forEach(it => {
+        if (it.block === 'C08' && it.oog === 'Y' && it.slot > 0) c08OogSlots.add(it.slot);
+    });
+    cap['C08'].slots = 45 - c08OogSlots.size;
+    cap['C08'].cap = Math.round(cap['C08'].slots * cap['C08'].tier * 6);
+    cap['OOG'].slots = 25 + c08OogSlots.size;
+    cap['OOG'].cap = Math.round(cap['OOG'].slots * cap['OOG'].tier * 6);
+
+    data.forEach(it => {
+        if (!yardMap[it.block]) return;
+        let teus = it.length.startsWith('20') ? 1 : (it.length.startsWith('45') ? 2.25 : 2);
+        if (it.move.includes('import') || it.move.includes('disc') || it.move.includes('vessel')) {
+            yardMap[it.block].impT += teus;
+        } else {
+            yardMap[it.block].expT += teus;
+        }
+    });
+
+    // Import tier adjustment
+    Object.keys(yardMap).forEach(b => {
+        let d = yardMap[b];
+        let totT = d.impT + d.expT;
+        if (totT > 0 && !EXCLUDED_BLOCKS_YARD.includes(b)) {
+            let iPct = (d.impT / totT) * 100;
+            if (iPct > 50) {
+                cap[b].tier = 4.5;
+                cap[b].cap = Math.round(cap[b].slots * cap[b].tier * 6);
+            }
+        }
+    });
+
+    let s = { impC: 0, expC: 0, impS: 0, expS: 0 };
+    Object.keys(yardMap).forEach(b => {
+        if (EXCLUDED_BLOCKS_YARD.includes(b)) return;
+        let d = yardMap[b];
+        let totT = d.impT + d.expT;
+        if (totT > 0) {
+            s.impC += cap[b].cap * (d.impT / totT);
+            s.expC += cap[b].cap * (d.expT / totT);
+        } else {
+            EXPORT_DEFAULTS.includes(b) ? s.expC += cap[b].cap : s.impC += cap[b].cap;
+        }
+        s.impS += d.impT;
+        s.expS += d.expT;
+    });
+
+    let totalS = s.impS + s.expS, totalC = s.impC + s.expC;
+    return {
+        yorImp: s.impC > 0 ? Math.round(s.impS / s.impC * 100) : 0,
+        yorExp: s.expC > 0 ? Math.round(s.expS / s.expC * 100) : 0,
+        yorTotal: totalC > 0 ? Math.round(totalS / totalC * 100) : 0,
+        totalUnits: data.length,
+        impUnits: data.filter(d => d.move.includes('import') || d.move.includes('disc') || d.move.includes('vessel')).length,
+        expUnits: data.filter(d => !d.move.includes('import') && !d.move.includes('disc') && !d.move.includes('vessel')).length
+    };
+}
+
+// Compute anomalies from invData array
+function _batchComputeAnomalies(data) {
+    const rowItems = {};
+    const excludedBlocks = new Set(['C01', 'D01', 'C02', 'BR9', 'RC9', 'OOG']);
+
+    data.forEach(it => {
+        if (!it.move.includes('export')) return;
+        if (it.block && excludedBlocks.has(it.block.toUpperCase())) return;
+        const r = parseInt(it.row);
+        const sl = parseInt(it.slot);
+        if (it.block && !isNaN(sl) && !isNaN(r) && r > 0) {
+            const rowKey = `${it.block}-${String(sl).padStart(2, '0')}-${String(r).padStart(2, '0')}`;
+            if (!rowItems[rowKey]) rowItems[rowKey] = [];
+            rowItems[rowKey].push(it);
+        }
+    });
+
+    let mixVessel = 0, mixSpod = 0, mixWc = 0;
+    Object.values(rowItems).forEach(items => {
+        const uV = new Set(), uS = new Set(), uW = new Set();
+        items.forEach(it => {
+            const c = String(it.carrier || '').trim().toUpperCase();
+            if (c && c !== '0' && c !== 'NIL' && c !== '-') uV.add(c);
+            const sp = String(it.spod || '').trim().toUpperCase();
+            if (sp && sp !== '0' && sp !== 'NIL' && sp !== '-' && sp !== '') uS.add(sp);
+            const wc = String(it.wtcl || '').trim().toUpperCase();
+            if (wc && wc !== '0' && wc !== 'NIL' && wc !== '-' && wc !== '') uW.add(wc);
+        });
+        if (uV.size >= 2) mixVessel++;
+        if (uS.size >= 2) mixSpod++;
+        if (uW.size >= 2) mixWc++;
+    });
+
+    return { mixVessel, mixSpod, mixWc };
+}
+
+window.runBatchAnalysis = async function () {
+    if (!_batchFiles.length) return;
+
+    // Show progress, hide button
+    document.getElementById('batchAnalyzeBtn').classList.add('hidden');
+    document.getElementById('batchProgressSection').classList.remove('hidden');
+    document.getElementById('batchResultsSection').classList.add('hidden');
+
+    const total = _batchFiles.length;
+    const results = [];
+
+    const updateProgress = (current, fileName) => {
+        const pct = Math.round((current / total) * 100);
+        document.getElementById('batchProgressBar').style.width = pct + '%';
+        document.getElementById('batchProgressText').innerText = `${current} / ${total} files (${pct}%)`;
+        document.getElementById('batchProgressFile').innerText = current < total ? `Processing: ${fileName}` : 'Complete!';
+    };
+
+    for (let i = 0; i < total; i++) {
+        const file = _batchFiles[i];
+        updateProgress(i, file.name);
+
+        // Yield to UI for progress update
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const data = _batchParseFile(arrayBuffer);
+            if (!data) {
+                results.push({ name: file.name, error: 'Format tidak dikenali' });
+                continue;
+            }
+            const yor = _batchComputeYOR(data);
+            const anomalies = _batchComputeAnomalies(data);
+            results.push({ name: file.name, yor, anomalies, error: null });
+        } catch (err) {
+            results.push({ name: file.name, error: err.message });
+        }
+    }
+    updateProgress(total, '');
+
+    // Render results
+    _batchRenderResults(results);
+};
+
+function _batchRenderResults(results) {
+    const section = document.getElementById('batchResultsSection');
+    const valid = results.filter(r => !r.error);
+
+    // Averages
+    const avgImp = valid.length ? Math.round(valid.reduce((s, r) => s + r.yor.yorImp, 0) / valid.length) : 0;
+    const avgExp = valid.length ? Math.round(valid.reduce((s, r) => s + r.yor.yorExp, 0) / valid.length) : 0;
+    const avgTot = valid.length ? Math.round(valid.reduce((s, r) => s + r.yor.yorTotal, 0) / valid.length) : 0;
+    const totalMV = valid.reduce((s, r) => s + r.anomalies.mixVessel, 0);
+    const totalMS = valid.reduce((s, r) => s + r.anomalies.mixSpod, 0);
+    const totalMW = valid.reduce((s, r) => s + r.anomalies.mixWc, 0);
+
+    const yorColor = (v) => v > 80 ? 'text-red-600' : (v >= 65 ? 'text-amber-600' : 'text-emerald-600');
+    const yorBg = (v) => v > 80 ? 'bg-red-50 border-red-200' : (v >= 65 ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200');
+
+    let html = `
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="bg-white border ${yorBg(avgImp)} rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">AVG YOR Import</div>
+                <div class="text-2xl font-black ${yorColor(avgImp)}">${avgImp}%</div>
+            </div>
+            <div class="bg-white border ${yorBg(avgExp)} rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">AVG YOR Export</div>
+                <div class="text-2xl font-black ${yorColor(avgExp)}">${avgExp}%</div>
+            </div>
+            <div class="bg-white border ${yorBg(avgTot)} rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">AVG YOR Overall</div>
+                <div class="text-2xl font-black ${yorColor(avgTot)}">${avgTot}%</div>
+            </div>
+            <div class="bg-white border border-red-200 rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Mix Vessel</div>
+                <div class="text-2xl font-black text-red-600">${totalMV}</div>
+            </div>
+            <div class="bg-white border border-orange-200 rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Mix SPOD</div>
+                <div class="text-2xl font-black text-orange-600">${totalMS}</div>
+            </div>
+            <div class="bg-white border border-purple-200 rounded-xl p-3 text-center shadow-sm">
+                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Mix WC</div>
+                <div class="text-2xl font-black text-purple-600">${totalMW}</div>
+            </div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <div class="overflow-x-auto bg-white">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 text-[11px] uppercase text-slate-500 font-bold border-b border-slate-200">
+                        <tr>
+                            <th class="px-4 py-3 border-r border-slate-100">#</th>
+                            <th class="px-4 py-3 border-r border-slate-100">File Name</th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">Units</th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">YOR Imp</th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">YOR Exp</th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">YOR Overall</th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">
+                                <span class="flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[14px] text-red-500">directions_boat</span>MV</span>
+                            </th>
+                            <th class="px-4 py-3 border-r border-slate-100 text-center">
+                                <span class="flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[14px] text-orange-500">location_on</span>MS</span>
+                            </th>
+                            <th class="px-4 py-3 text-center">
+                                <span class="flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[14px] text-purple-500">scale</span>MW</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs">
+    `;
+
+    results.forEach((r, idx) => {
+        if (r.error) {
+            html += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-slate-400 border-r border-slate-100">${idx + 1}</td>
+                    <td class="px-4 py-2.5 font-bold text-slate-700 border-r border-slate-100">${r.name}</td>
+                    <td colspan="7" class="px-4 py-2.5 text-center text-red-500 font-bold italic">\u26A0 ${r.error}</td>
+                </tr>`;
+        } else {
+            html += `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-2.5 font-bold text-slate-400 border-r border-slate-100">${idx + 1}</td>
+                    <td class="px-4 py-2.5 font-bold text-slate-700 border-r border-slate-100 max-w-[200px] truncate" title="${r.name}">${r.name}</td>
+                    <td class="px-4 py-2.5 text-center font-mono border-r border-slate-100">${r.yor.totalUnits.toLocaleString()}</td>
+                    <td class="px-4 py-2.5 text-center font-black border-r border-slate-100 ${yorColor(r.yor.yorImp)}">${r.yor.yorImp}%</td>
+                    <td class="px-4 py-2.5 text-center font-black border-r border-slate-100 ${yorColor(r.yor.yorExp)}">${r.yor.yorExp}%</td>
+                    <td class="px-4 py-2.5 text-center font-black border-r border-slate-100 ${yorColor(r.yor.yorTotal)}">${r.yor.yorTotal}%</td>
+                    <td class="px-4 py-2.5 text-center font-bold border-r border-slate-100 ${r.anomalies.mixVessel > 0 ? 'text-red-600' : 'text-slate-400'}">${r.anomalies.mixVessel}</td>
+                    <td class="px-4 py-2.5 text-center font-bold border-r border-slate-100 ${r.anomalies.mixSpod > 0 ? 'text-orange-600' : 'text-slate-400'}">${r.anomalies.mixSpod}</td>
+                    <td class="px-4 py-2.5 text-center font-bold ${r.anomalies.mixWc > 0 ? 'text-purple-600' : 'text-slate-400'}">${r.anomalies.mixWc}</td>
+                </tr>`;
+        }
+    });
+
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    section.innerHTML = html;
+    section.classList.remove('hidden');
+    document.getElementById('batchProgressSection').classList.add('hidden');
+    document.getElementById('batchAnalyzeBtn').classList.remove('hidden');
+}
 
 // --- TAB 3: CLASH ANALYSIS (Sandboxed Logic Integrated) ---
 function toggleCongestion() {
