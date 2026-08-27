@@ -3185,8 +3185,8 @@ async function sendAiChatMessage(event) {
 // --- UPDATE NAVIGATION FUNCTIONS ---
 
 function switchTab(t) {
-    // Tambahkan 'empty', 'replan' dan 'traffic' ke dalam array daftar tab
-    ['overview', 'analytics', 'clash', 'empty', 'projection', 'yardmap', 'replan', 'traffic'].forEach(id => {
+    if (t === 'empty') t = 'analytics';
+    ['overview', 'analytics', 'clash', 'projection', 'yardmap', 'replan', 'traffic'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
 
@@ -3233,14 +3233,11 @@ function downloadImage() {
     let fileName = "Overview";
 
     if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
-        activeId = "clusterSpreadingContainer";
-        fileName = "Cluster_Spreading";
+        activeId = "captureAreaAnalytics";
+        fileName = "Cluster_Spreading_and_MTY";
     } else if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
         activeId = "captureAreaClash";
         fileName = "Clash";
-    } else if (!document.getElementById("tab-empty")?.classList.contains("hidden")) {
-        activeId = "captureAreaEmpty";
-        fileName = "Empty_Summary";
     } else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
         activeId = "captureAreaProjection";
         fileName = "Discharge_Projection";
@@ -3580,7 +3577,7 @@ async function generatePDFReport(sectionNotes = {}) {
         await captureAndAppend('captureAreaYorCards', 'Yard Block Density Summary', 1, 'overview');
         await captureAndAppend('npct1SchedulePanel', 'Summary Vessel Schedule', 2, 'overview');
         await captureAndAppend('clusterSpreadingContainer', 'Cluster Spreading by Block', 3, 'overview');
-        await captureAndAppend('captureAreaEmpty', 'Empty Container Summary', 4, 'empty');
+        await captureAndAppend('captureAreaEmpty', 'Empty Container Summary', 4, 'analytics');
         await captureAndAppend('captureAreaProjection', 'Balance Space Projection (Fixed Import)', 5, 'projection', 'Fixed Import');
         await captureAndAppend('captureAreaDensityDetail', 'Yard Block Density Detail per Block', 6, null, null, true);
 
