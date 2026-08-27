@@ -532,9 +532,9 @@ body.ai-chat-sidebar-open {
     padding: 16px;
     min-width: fit-content;
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.15);
-    /* For Zoom feature */
+    /* For Zoom feature and GPU composite layer promotion for smooth scrolling */
     transform-origin: top left;
-    transition: transform 0.2s ease;
+    transform: translateZ(0);
 }
 
 /* Hide Text Feature */
@@ -1031,12 +1031,7 @@ body.ai-chat-sidebar-open {
     border-radius: 6px;
     font-size: 10px;
     font-weight: 700;
-    animation: ytPulse 1.5s ease-in-out infinite;
-}
-
-@keyframes ytPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-    50% { box-shadow: 0 0 0 4px rgba(79, 70, 229, 0); }
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
 }
 
 .yt-mode-close {
@@ -1077,14 +1072,15 @@ body.ai-chat-sidebar-open {
 .yt-range-start {
     outline: 2px solid #4f46e5 !important;
     outline-offset: -1px;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.35) !important;
     animation: ytRangeGlow 1s ease-in-out infinite alternate;
     z-index: 5;
+    will-change: opacity;
 }
 
 @keyframes ytRangeGlow {
-    from { box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
-    to { box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.35); }
+    from { opacity: 0.7; }
+    to { opacity: 1; }
 }
 
 /* Clickable empty slot in reservation mode */
@@ -1198,29 +1194,13 @@ body.ai-chat-sidebar-open {
     overflow: visible !important;
 }
 
-/* Target vessel slot in clash: Red Outline & Glow */
+/* Target vessel slot in clash: Red Outline & Glow (Static, GPU friendly) */
 .yt-clash-slot {
     outline: 2px solid #ef4444 !important;
     outline-offset: -1px;
-    box-shadow: 0 0 10px rgba(239, 68, 68, 0.85), inset 0 0 6px rgba(239, 68, 68, 0.35) !important;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.85), inset 0 0 4px rgba(239, 68, 68, 0.35) !important;
     z-index: 25 !important;
     overflow: visible !important;
-    animation: ytSlotRedPulse 0.8s infinite alternate ease-in-out !important;
-}
-
-.ym-slot:has(.yt-clash-triangle) {
-    overflow: visible !important;
-}
-
-@keyframes ytSlotRedPulse {
-    0% {
-        outline-color: #dc2626;
-        box-shadow: 0 0 4px rgba(220, 38, 38, 0.5);
-    }
-    100% {
-        outline-color: #f87171;
-        box-shadow: 0 0 14px rgba(239, 68, 68, 1), 0 0 0 1px #ef4444;
-    }
 }
 
 /* Impacted/Conflicting vessel slot: faded (0.6) so it is clear without distracting from the selected vessel */
@@ -1228,10 +1208,10 @@ body.ai-chat-sidebar-open {
     opacity: 0.6 !important;
     outline: 1.5px dashed #ef4444 !important;
     outline-offset: -1px;
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.45) !important;
+    box-shadow: 0 0 4px rgba(239, 68, 68, 0.4) !important;
     z-index: 18 !important;
     overflow: visible !important;
-    transition: opacity 0.2s ease, filter 0.2s ease;
+    transition: opacity 0.15s ease;
 }
 
 .yt-slot-conflicting:hover {
@@ -1244,10 +1224,10 @@ body.ai-chat-sidebar-open {
     opacity: 0.65 !important;
     outline: 1.5px solid #0284c7 !important;
     outline-offset: -1px;
-    box-shadow: 0 0 6px rgba(2, 132, 199, 0.4) !important;
+    box-shadow: 0 0 4px rgba(2, 132, 199, 0.35) !important;
     z-index: 15 !important;
     overflow: visible !important;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s ease;
 }
 
 .yt-slot-op-berthed:hover {
@@ -1258,21 +1238,21 @@ body.ai-chat-sidebar-open {
     opacity: 0.65 !important;
     outline: 1.5px solid #f59e0b !important;
     outline-offset: -1px;
-    box-shadow: 0 0 6px rgba(245, 158, 11, 0.4) !important;
+    box-shadow: 0 0 4px rgba(245, 158, 11, 0.35) !important;
     z-index: 15 !important;
     overflow: visible !important;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s ease;
 }
 
 .yt-slot-op-upcoming:hover {
     opacity: 0.95 !important;
 }
 
-/* Red Warning Symbol Triangle */
+/* Red Warning Symbol Triangle - 100% GPU-accelerated (Zero CPU repaints) */
 .yt-clash-triangle {
     display: inline-block !important;
     position: absolute;
-    top: -11px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 13px;
@@ -1284,27 +1264,19 @@ body.ai-chat-sidebar-open {
     text-shadow: 
         0 0 2px #fff,
         0 0 4px #000,
-        0 0 8px #ef4444,
-        0 0 14px #dc2626;
-    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9));
+        0 0 6px #ef4444;
     animation: ytRedWarningBlink 0.8s infinite alternate ease-in-out !important;
+    will-change: opacity, transform;
 }
 
 @keyframes ytRedWarningBlink {
     0% {
-        opacity: 0.4;
+        opacity: 0.35;
         transform: translateX(-50%) scale(0.85);
-        filter: drop-shadow(0 0 1px #000);
-    }
-    50% {
-        opacity: 0.85;
-        transform: translateX(-50%) scale(1.15);
-        filter: drop-shadow(0 0 6px #ef4444) drop-shadow(0 0 10px #dc2626);
     }
     100% {
         opacity: 1;
-        transform: translateX(-50%) scale(1.4);
-        filter: drop-shadow(0 0 10px #f87171) drop-shadow(0 0 16px #dc2626) drop-shadow(0 1px 2px #000);
+        transform: translateX(-50%) scale(1.3);
     }
 }
 
