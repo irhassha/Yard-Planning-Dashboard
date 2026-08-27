@@ -490,6 +490,7 @@ document.getElementById('fileInv').addEventListener('change', function (e) {
             renderClusterSpreading();
             renderEmptySummary(); // FUNGSI BARU DIPANGGIL DISINI
             if (typeof renderYardMap === 'function') renderYardMap();
+            if (typeof renderYardTemplateTab === 'function') renderYardTemplateTab();
             const projectionBody = document.getElementById('projectionBody');
             if (projectionBody) projectionBody.innerHTML = '<tr><td colspan="10" class="px-4 py-6 text-center text-slate-400 italic">Upload Preplan to generate projection.</td></tr>';
 
@@ -776,6 +777,7 @@ function loadNPCT1Schedule() {
         })
         .then(data => {
             npct1ScheduleData = data.vessels || [];
+            window.npct1ScheduleData = npct1ScheduleData;
             // Update last updated timestamp
             const el = document.getElementById('npct1LastUpdated');
             if (el && data.lastUpdated) {
@@ -787,6 +789,7 @@ function loadNPCT1Schedule() {
                 el.innerHTML = `<span class="material-symbols-outlined text-[14px] align-middle mr-1">schedule</span> Updated: ${dd}/${mm} ${hh}:${mi}`;
             }
             renderNPCT1Schedule();
+            if (typeof renderYardTemplateTab === 'function') renderYardTemplateTab();
         })
         .catch(err => {
             console.warn('NPCT1 Schedule load failed:', err.message);
@@ -3186,7 +3189,7 @@ async function sendAiChatMessage(event) {
 
 function switchTab(t) {
     if (t === 'empty') t = 'analytics';
-    ['overview', 'analytics', 'clash', 'projection', 'yardmap', 'replan', 'traffic'].forEach(id => {
+    ['overview', 'analytics', 'clash', 'projection', 'yardmap', 'replan', 'template', 'traffic'].forEach(id => {
         const tabEl = document.getElementById('tab-' + id);
         const btnEl = document.getElementById('btn-' + id);
 
@@ -3208,6 +3211,14 @@ function switchTab(t) {
         // Initialize block selection for projection tab
         if (t === 'projection') {
             setTimeout(initializeBlockSelection, 100);
+        }
+        // Initialize yard map tab
+        if (t === 'yardmap' && typeof renderYardMap === 'function') {
+            setTimeout(renderYardMap, 100);
+        }
+        // Initialize yard template tab
+        if (t === 'template' && typeof renderYardTemplateTab === 'function') {
+            setTimeout(renderYardTemplateTab, 100);
         }
     }
 }
@@ -3244,6 +3255,9 @@ function downloadImage() {
     } else if (!document.getElementById("tab-yardmap")?.classList.contains("hidden")) {
         activeId = "captureAreaYardMap";
         fileName = "Yard_Map";
+    } else if (!document.getElementById("tab-template")?.classList.contains("hidden")) {
+        activeId = "captureAreaTemplate";
+        fileName = "Yard_Template";
     } else if (!document.getElementById("tab-traffic")?.classList.contains("hidden")) {
         activeId = "tab-traffic";
         fileName = "Ops_Traffic";

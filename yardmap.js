@@ -34,7 +34,7 @@ function toggleYardRowMode() {
 }
 
 function zoomYardMap(delta) {
-    const yardEl = document.querySelector('.ym-yard');
+    const yardEl = document.querySelector('#yardMapContent .ym-yard');
     if (!yardEl) return;
 
     if (delta === 0) {
@@ -52,7 +52,7 @@ function zoomYardMap(delta) {
 }
 
 function applyYardMapZoom() {
-    const yardEl = document.querySelector('.ym-yard');
+    const yardEl = document.querySelector('#yardMapContent .ym-yard');
     if (yardEl && yardMapZoom !== null) {
         yardEl.style.zoom = yardMapZoom;
     }
@@ -60,8 +60,8 @@ function applyYardMapZoom() {
 
 function fitYardMapToScreen() {
     const contentBox = document.getElementById('yardMapContent');
-    const yardEl = document.querySelector('.ym-yard');
-    const grid = document.querySelector('.ym-sections-grid');
+    const yardEl = contentBox?.querySelector('.ym-yard');
+    const grid = contentBox?.querySelector('.ym-sections-grid');
     if (contentBox && grid && yardEl) {
         yardEl.style.zoom = 1; // Temporarily reset to measure width
         // Small delay to allow reflow, or direct measurement
@@ -80,7 +80,7 @@ function fitYardMapToScreen() {
 
 function toggleYardText() {
     yardTextHidden = !yardTextHidden;
-    const yardEl = document.querySelector('.ym-yard');
+    const yardEl = document.querySelector('#yardMapContent .ym-yard');
     const btn = document.getElementById('yardTextToggleBtn');
 
     if (yardEl) {
@@ -561,7 +561,7 @@ function renderYardMap() {
     fitYardMapToScreen();
 
     if (yardTextHidden) {
-        document.querySelector('.ym-yard').classList.add('ym-text-hidden');
+        document.querySelector('#yardMapContent .ym-yard')?.classList.add('ym-text-hidden');
     }
 }
 
@@ -579,36 +579,42 @@ function highlightYardCarrier(carrier) {
     }
 
     const hasSelection = yardActiveHighlight.size > 0;
+    const content = document.getElementById('yardMapContent');
+    const legend = document.getElementById('yardMapLegend');
 
-    document.querySelectorAll('.ym-slot[data-carrier]').forEach(el => {
-        if (!hasSelection) {
-            el.style.opacity = '1';
-            el.style.filter = '';
-        } else if (yardActiveHighlight.has(el.dataset.carrier) && el.classList.contains('ym-exp')) {
-            el.style.opacity = '1';
-            el.style.filter = '';
-        } else {
-            el.style.opacity = '0.1';
-            el.style.filter = 'grayscale(1)';
-        }
-    });
+    if (content) {
+        content.querySelectorAll('.ym-slot[data-carrier]').forEach(el => {
+            if (!hasSelection) {
+                el.style.opacity = '1';
+                el.style.filter = '';
+            } else if (yardActiveHighlight.has(el.dataset.carrier) && el.classList.contains('ym-exp')) {
+                el.style.opacity = '1';
+                el.style.filter = '';
+            } else {
+                el.style.opacity = '0.1';
+                el.style.filter = 'grayscale(1)';
+            }
+        });
 
-    document.querySelectorAll('.ym-empty').forEach(el => {
-        el.style.opacity = hasSelection ? '0.25' : '1';
-    });
+        content.querySelectorAll('.ym-empty').forEach(el => {
+            el.style.opacity = hasSelection ? '0.25' : '1';
+        });
+    }
 
-    document.querySelectorAll('.ym-legend-chip').forEach(el => {
-        const c = el.dataset.carrier;
-        if (!c) {
-            // "All" chip
-            if (!hasSelection) el.classList.add('ym-legend-active');
-            else el.classList.remove('ym-legend-active');
-        } else if (yardActiveHighlight.has(c)) {
-            el.classList.add('ym-legend-active');
-        } else {
-            el.classList.remove('ym-legend-active');
-        }
-    });
+    if (legend) {
+        legend.querySelectorAll('.ym-legend-chip').forEach(el => {
+            const c = el.dataset.carrier;
+            if (!c) {
+                // "All" chip
+                if (!hasSelection) el.classList.add('ym-legend-active');
+                else el.classList.remove('ym-legend-active');
+            } else if (yardActiveHighlight.has(c)) {
+                el.classList.add('ym-legend-active');
+            } else {
+                el.classList.remove('ym-legend-active');
+            }
+        });
+    }
 }
 
 // ── Container Highlight (for Stowage View) ──────────────────────────
@@ -623,24 +629,27 @@ function highlightYardContainers(containerIds) {
     }
 
     const hasSelection = yardActiveContainerHighlight.size > 0;
+    const content = document.getElementById('yardMapContent');
 
-    document.querySelectorAll('.ym-slot[data-unit]').forEach(el => {
-        const unit = (el.dataset.unit || '').toUpperCase();
-        if (!hasSelection) {
-            el.style.opacity = '1';
-            el.style.filter = '';
-        } else if (unit && yardActiveContainerHighlight.has(unit)) {
-            el.style.opacity = '1';
-            el.style.filter = '';
-        } else {
-            el.style.opacity = '0.1';
-            el.style.filter = 'grayscale(1)';
-        }
-    });
+    if (content) {
+        content.querySelectorAll('.ym-slot[data-unit]').forEach(el => {
+            const unit = (el.dataset.unit || '').toUpperCase();
+            if (!hasSelection) {
+                el.style.opacity = '1';
+                el.style.filter = '';
+            } else if (unit && yardActiveContainerHighlight.has(unit)) {
+                el.style.opacity = '1';
+                el.style.filter = '';
+            } else {
+                el.style.opacity = '0.1';
+                el.style.filter = 'grayscale(1)';
+            }
+        });
 
-    document.querySelectorAll('.ym-empty').forEach(el => {
-        el.style.opacity = hasSelection ? '0.25' : '1';
-    });
+        content.querySelectorAll('.ym-empty').forEach(el => {
+            el.style.opacity = hasSelection ? '0.25' : '1';
+        });
+    }
 }
 
 // ── Yard Slot Click → Open Drawer ───────────────────────────────────
