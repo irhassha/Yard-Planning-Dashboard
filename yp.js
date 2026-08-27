@@ -3499,6 +3499,7 @@ async function generatePDFReport(sectionNotes = {}) {
                     onclone: (clonedDoc) => {
                         const clonedRoot = clonedDoc.getElementById(elementId);
                         if (clonedRoot) {
+                            clonedRoot.querySelectorAll('details').forEach(d => d.open = true);
                             clonedRoot.querySelectorAll('.overflow-x-auto, .overflow-y-auto').forEach(div => {
                                 div.style.overflow = 'visible';
                                 div.style.width = 'auto';
