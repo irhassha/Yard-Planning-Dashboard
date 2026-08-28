@@ -1145,6 +1145,12 @@ function ytEnterFullscreen() {
     card.classList.add('yt-fullscreen');
     document.body.classList.add('yt-fullscreen-active');
 
+    // Default ON for Show Text in Fullscreen Mode
+    ytSetShowText(true);
+
+    // Initialize mouse scroll wheel zoom listener
+    ytInitFullscreenWheelZoom();
+
     const btn = document.getElementById('ytFullscreenBtn');
     if (btn) {
         btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen_exit</span> Exit Fullscreen (Esc)`;
@@ -1617,6 +1623,25 @@ function ytExportReservationExcel() {
 }
 
 // ── Zoom / Text Toggle ───────────────────────────────────────────────
+let ytZoomToastTimer = null;
+
+function ytShowZoomToast(zoomVal) {
+    let toast = document.getElementById('ytZoomToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ytZoomToast';
+        toast.className = 'fixed bottom-6 right-6 z-[100000] px-3.5 py-1.5 rounded-xl bg-slate-900/90 text-white text-xs font-mono font-bold shadow-2xl border border-white/20 backdrop-blur-md transition-opacity duration-300 pointer-events-none flex items-center gap-1.5';
+        document.body.appendChild(toast);
+    }
+    const pct = Math.round(zoomVal * 100);
+    toast.innerHTML = `<span class="material-symbols-outlined text-[15px] text-sky-400">zoom_in</span> Zoom: ${pct}%`;
+    toast.style.opacity = '1';
+
+    clearTimeout(ytZoomToastTimer);
+    ytZoomToastTimer = setTimeout(() => {
+        if (toast) toast.style.opacity = '0';
+    }, 900);
+}
 
 function ytZoom(delta) {
     const yardEl = document.querySelector('#ytYardContent .ym-yard');
@@ -1629,10 +1654,34 @@ function ytZoom(delta) {
             ytTemplateZoom = parseFloat(getComputedStyle(yardEl).zoom) || 1.0;
         }
         ytTemplateZoom += delta;
-        if (ytTemplateZoom < 0.3) ytTemplateZoom = 0.3;
-        if (ytTemplateZoom > 2.0) ytTemplateZoom = 2.0;
+        if (ytTemplateZoom < 0.25) ytTemplateZoom = 0.25;
+        if (ytTemplateZoom > 2.5) ytTemplateZoom = 2.5;
+        ytTemplateZoom = Math.round(ytTemplateZoom * 100) / 100;
         yardEl.style.zoom = ytTemplateZoom;
     }
+
+    if (ytIsFullscreen && ytTemplateZoom) {
+        ytShowZoomToast(ytTemplateZoom);
+    }
+}
+
+let ytWheelZoomInitialized = false;
+
+function ytInitFullscreenWheelZoom() {
+    if (ytWheelZoomInitialized) return;
+    const yardContent = document.getElementById('ytYardContent');
+    if (!yardContent) return;
+
+    yardContent.addEventListener('wheel', function (e) {
+        if (!ytIsFullscreen) return;
+
+        // In fullscreen mode, mouse wheel scrolls perform zoom in/out
+        e.preventDefault();
+        const step = e.deltaY < 0 ? 0.08 : -0.08;
+        ytZoom(step);
+    }, { passive: false });
+
+    ytWheelZoomInitialized = true;
 }
 
 function ytFitToScreen() {
@@ -1653,8 +1702,8 @@ function ytFitToScreen() {
     }
 }
 
-function ytToggleText() {
-    ytTemplateTextHidden = !ytTemplateTextHidden;
+function ytSetShowText(show) {
+    ytTemplateTextHidden = !show;
     const yardEl = document.querySelector('#ytYardContent .ym-yard');
     const btn = document.getElementById('ytTextToggleBtn');
 
@@ -1667,6 +1716,10 @@ function ytToggleText() {
             if (btn) btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">visibility_off</span> Hide Text';
         }
     }
+}
+
+function ytToggleText() {
+    ytSetShowText(ytTemplateTextHidden);
 }
 
 // ── Available Capacity Summary ───────────────────────────────────────
