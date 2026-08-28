@@ -743,7 +743,7 @@ function renderYardTemplate() {
 
                         if (targetClash) cls += ' yt-clash-slot';
 
-                        html += `<div class="${cls}" style="${style}" title="Slot ${item.s}${isReserved ? ' [PLAN RESERVED]' : (ytSelectedVessel ? ' [Click to reserve]' : '')}${clashTitle}" data-block="${bn}" data-slot="${item.s}" ${extraAttr} onclick="ytSlotClick('${bn}', ${item.s})">${clashTriangle}</div>`;
+                        html += `<div class="${cls}" style="${style}" title="Slot ${item.s}${isReserved ? ' [PLAN RESERVED]' : (ytSelectedVessel ? ' [Drag or click to reserve]' : '')}${clashTitle}" data-block="${bn}" data-slot="${item.s}" ${extraAttr} onmousedown="ytSlotMouseDown(event, '${bn}', ${item.s})" onmouseenter="ytSlotMouseEnter('${bn}', ${item.s})" onmouseup="ytSlotMouseUp(event, '${bn}', ${item.s})" onclick="ytSlotClick('${bn}', ${item.s})">${clashTriangle}</div>`;
                     } else if (item.t === '4') {
                         const tc = yardContrastText(item.c);
                         const isMatch = isVesselContainerMatch(item.cr, item.ex);
@@ -917,7 +917,7 @@ function renderActiveVesselTable() {
             return `${dd}/${mm} <span class="text-slate-400">${hh}:${mi}</span>`;
         };
 
-        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')">
+        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
             <td class="px-2 py-2 text-center text-slate-400 font-mono text-[10px]">${i + 1}</td>
             <td class="px-3 py-2">
                 <div class="flex items-center gap-2">
@@ -1007,7 +1007,7 @@ function renderUpcomingOpenStackVessels() {
         const mins = totalMins % 60;
         const countdownBadge = `<span class="inline-block px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 font-mono text-[9px] font-bold border border-amber-300 ml-1">in ${hrs > 0 ? hrs + 'h ' : ''}${mins}m</span>`;
 
-        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')">
+        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
             <td class="px-2 py-2 text-center text-slate-400 font-mono text-[10px]">${i + 1}</td>
             <td class="px-3 py-2">
                 <div class="flex items-center gap-2">
@@ -1117,33 +1117,211 @@ function ytSelectVessel(key, vesselName, service, carrier) {
     ytScrollToReservationView();
 }
 
+// ── Fullscreen Reservation Mode ──────────────────────────────────────
+let ytIsFullscreen = false;
+
+function ytEnterFullscreen() {
+    const card = document.getElementById('ytVisualCard');
+    if (!card) return;
+    ytIsFullscreen = true;
+    card.classList.add('yt-fullscreen');
+    document.body.classList.add('yt-fullscreen-active');
+    const btn = document.getElementById('ytFullscreenBtn');
+    if (btn) {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen_exit</span> Exit Fullscreen (Esc)`;
+        btn.style.color = '#f43f5e';
+        btn.style.borderColor = '#fda4af';
+    }
+    if (document.fullscreenEnabled && !document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    }
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+}
+
+function ytExitFullscreen() {
+    const card = document.getElementById('ytVisualCard');
+    if (!card) return;
+    ytIsFullscreen = false;
+    card.classList.remove('yt-fullscreen');
+    document.body.classList.remove('yt-fullscreen-active');
+    const btn = document.getElementById('ytFullscreenBtn');
+    if (btn) {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen</span> Fullscreen`;
+        btn.style.color = '#0284c7';
+        btn.style.borderColor = '#bae6fd';
+    }
+    if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+    }
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+}
+
+function ytToggleFullscreen() {
+    if (ytIsFullscreen) {
+        ytExitFullscreen();
+    } else {
+        ytEnterFullscreen();
+    }
+}
+
+function ytSelectVesselFullscreen(key, vesselName, service, carrier) {
+    ytSelectVessel(key, vesselName, service, carrier);
+    ytEnterFullscreen();
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && ytIsFullscreen) {
+        ytExitFullscreen();
+    }
+});
+
+document.addEventListener('fullscreenchange', function () {
+    if (!document.fullscreenElement && ytIsFullscreen) {
+        ytExitFullscreen();
+    }
+});
+
 function ytClearVesselSelection() {
     ytSelectedVessel = null;
     ytRangeStart = null;
     renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
     renderYardTemplate();
     renderYardTemplateClashes();
 }
 
-function ytSlotClick(block, slot) {
-    if (!ytSelectedVessel) return;
+// ── Slot Availability & Drag-to-Select State ─────────────────────────
+let ytIsDragging = false;
+let ytDragStart = null;    // { block: 'A01', slot: 5 }
+let ytDragCurrent = null;  // { block: 'A01', slot: 12 }
+let ytHasDragged = false;
+let ytLastDragMouseUpTime = 0;
 
+function ytIsSlotAvailable(block, slot) {
+    if (!block || !slot) return false;
     // Check if slot is already reserved
-    const blockReserved = {};
-    Object.entries(ytReservations).forEach(([vk, resList]) => {
-        resList.forEach(res => {
-            if (res.block !== block) return;
-            for (let s = res.slotStart; s <= res.slotEnd; s++) {
-                blockReserved[s] = vk;
+    for (const resList of Object.values(ytReservations)) {
+        for (const res of resList) {
+            if (res.block === block && slot >= res.slotStart && slot <= res.slotEnd) {
+                return false;
             }
-        });
-    });
-    if (blockReserved[slot]) return;
-
+        }
+    }
     // Check if slot is occupied by existing container
     const inv = window.invData || [];
     const isOccupied = inv.some(it => (it.block || '').toUpperCase() === block && parseInt(it.slot) === slot);
-    if (isOccupied) return;
+    if (isOccupied) return false;
+
+    return true;
+}
+
+function ytValidateRange(block, slotStart, slotEnd) {
+    const minS = Math.min(slotStart, slotEnd);
+    const maxS = Math.max(slotStart, slotEnd);
+    for (let s = minS; s <= maxS; s++) {
+        if (!ytIsSlotAvailable(block, s)) return false;
+    }
+    return true;
+}
+
+function ytSlotMouseDown(e, block, slot) {
+    if (!ytSelectedVessel) return;
+    if (e.button !== 0) return; // Only left mouse button
+    if (!ytIsSlotAvailable(block, slot)) return;
+
+    e.preventDefault(); // Prevent text/box selection during drag
+    ytIsDragging = true;
+    ytHasDragged = false;
+    ytDragStart = { block, slot };
+    ytDragCurrent = { block, slot };
+
+    const yardEl = document.querySelector('.ym-yard');
+    if (yardEl) yardEl.classList.add('yt-dragging');
+
+    ytUpdateDragPreview();
+}
+
+function ytSlotMouseEnter(block, slot) {
+    if (!ytIsDragging || !ytDragStart) return;
+    if (ytDragStart.block !== block) return; // Keep drag within same block
+
+    ytDragCurrent = { block, slot };
+    if (ytDragCurrent.slot !== ytDragStart.slot) {
+        ytHasDragged = true;
+    }
+    ytUpdateDragPreview();
+}
+
+function ytUpdateDragPreview() {
+    if (!ytDragStart || !ytDragCurrent) return;
+
+    const blk = ytDragStart.block;
+    // Remove preview classes from all slots in this block
+    const allBlockSlots = document.querySelectorAll(`[data-block="${blk}"][data-slot]`);
+    allBlockSlots.forEach(el => el.classList.remove('yt-drag-preview', 'yt-drag-invalid'));
+
+    const minS = Math.min(ytDragStart.slot, ytDragCurrent.slot);
+    const maxS = Math.max(ytDragStart.slot, ytDragCurrent.slot);
+    const isValid = ytValidateRange(blk, minS, maxS);
+    const previewClass = isValid ? 'yt-drag-preview' : 'yt-drag-invalid';
+
+    for (let s = minS; s <= maxS; s++) {
+        const el = document.querySelector(`[data-block="${blk}"][data-slot="${s}"]`);
+        if (el) el.classList.add(previewClass);
+    }
+}
+
+function ytClearDragPreview() {
+    const previews = document.querySelectorAll('.yt-drag-preview, .yt-drag-invalid');
+    previews.forEach(el => el.classList.remove('yt-drag-preview', 'yt-drag-invalid'));
+    const yardEl = document.querySelector('.ym-yard');
+    if (yardEl) yardEl.classList.remove('yt-dragging');
+}
+
+function ytSlotMouseUp(e, block, slot) {
+    if (!ytIsDragging || !ytDragStart) return;
+
+    const blk = ytDragStart.block;
+    const endSlot = (block === blk) ? slot : (ytDragCurrent ? ytDragCurrent.slot : ytDragStart.slot);
+    const slotStart = Math.min(ytDragStart.slot, endSlot);
+    const slotEnd = Math.max(ytDragStart.slot, endSlot);
+    const wasDragged = ytHasDragged || (slotStart !== slotEnd);
+
+    ytClearDragPreview();
+    ytIsDragging = false;
+    ytDragStart = null;
+    ytDragCurrent = null;
+    ytLastDragMouseUpTime = Date.now();
+
+    if (wasDragged) {
+        // Direct drag release -> commit reservation!
+        if (ytValidateRange(blk, slotStart, slotEnd)) {
+            ytAddReservation(ytSelectedVessel.key, blk, slotStart, slotEnd);
+            ytRangeStart = null;
+            renderYardTemplate();
+            renderActiveVesselTable();
+            renderUpcomingOpenStackVessels();
+            renderReservationSummary();
+            renderYardTemplateClashes();
+        } else {
+            alert('Range contains occupied or already reserved slots! Please select a completely empty range.');
+        }
+    }
+}
+
+// Global safety mouseup listener
+window.addEventListener('mouseup', function (e) {
+    if (ytIsDragging) {
+        const currentB = ytDragCurrent ? ytDragCurrent.block : null;
+        const currentS = ytDragCurrent ? ytDragCurrent.slot : null;
+        ytSlotMouseUp(e, currentB, currentS);
+    }
+});
+
+function ytSlotClick(block, slot) {
+    if (Date.now() - ytLastDragMouseUpTime < 150) return;
+    if (!ytSelectedVessel) return;
+    if (!ytIsSlotAvailable(block, slot)) return;
 
     if (!ytRangeStart) {
         // First click: select range start
@@ -1161,15 +1339,7 @@ function ytSlotClick(block, slot) {
         const slotStart = Math.min(ytRangeStart.slot, slot);
         const slotEnd = Math.max(ytRangeStart.slot, slot);
 
-        // Validate: no occupied or already-reserved slots in the selected range
-        let valid = true;
-        for (let s = slotStart; s <= slotEnd; s++) {
-            if (blockReserved[s]) { valid = false; break; }
-            const occ = inv.some(it => (it.block || '').toUpperCase() === block && parseInt(it.slot) === s);
-            if (occ) { valid = false; break; }
-        }
-
-        if (!valid) {
+        if (!ytValidateRange(block, slotStart, slotEnd)) {
             alert('Range contains occupied or already reserved slots! Please select a completely empty range.');
             ytRangeStart = null;
             renderYardTemplate();
@@ -1181,6 +1351,7 @@ function ytSlotClick(block, slot) {
         ytRangeStart = null;
         renderYardTemplate();
         renderActiveVesselTable();
+        renderUpcomingOpenStackVessels();
         renderReservationSummary();
         renderYardTemplateClashes();
     }

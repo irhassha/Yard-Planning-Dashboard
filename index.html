@@ -1335,7 +1335,7 @@
                 </div>
 
                 <!-- PANEL 2: YARD TEMPLATE VISUAL -->
-                <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40">
+                <div id="ytVisualCard" class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 transition-all duration-300">
                     <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
                         <div class="flex items-center gap-3">
                             <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-600">
@@ -1343,10 +1343,13 @@
                             </div>
                             <div>
                                 <h2 class="text-xl font-semibold text-slate-800">Yard Template</h2>
-                                <p class="text-xs text-slate-500">Existing containers + reservation plan overlay · Select vessel above, then click empty slots to reserve</p>
+                                <p class="text-xs text-slate-500">Existing containers + reservation plan overlay · Click & drag empty slots to reserve · Double-click vessel for Fullscreen</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap justify-end">
+                            <button onclick="ytToggleFullscreen()" id="ytFullscreenBtn" class="secondary-pill text-xs font-semibold" style="color:#0284c7;border-color:#bae6fd;" title="Toggle Fullscreen Mode (or double-click any vessel in schedule table)">
+                                <span class="material-symbols-outlined text-[16px]">fullscreen</span> Fullscreen
+                            </button>
                             <button onclick="ytExportReservationExcel()" class="secondary-pill text-xs" style="color:#059669;border-color:#a7f3d0;" title="Export Yard Template Plan to Excel">
                                 <span class="material-symbols-outlined text-[16px]">file_download</span> Export Plan (Excel)
                             </button>
