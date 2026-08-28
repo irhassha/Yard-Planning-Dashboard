@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-28T01:48:25.786Z",
+  "lastUpdated": "2026-08-28T08:07:16.101Z",
   "totalScraped": 70,
   "totalFiltered": 38,
   "vessels": [
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-08-27 13:00:00",
       "ata": "2026-08-27 13:27:25",
-      "etd": "2026-08-28 21:00:00",
+      "etd": "2026-08-28 15:00:00",
       "atd": "",
       "openStacking": "2026-08-22 01:00:00",
       "closingDocument": "2026-08-26 13:00:00",
@@ -199,30 +199,30 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SKY PEACE",
-      "line": "MCC",
-      "voyIn": "634S",
-      "voyOut": "635N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-09-06 18:00:00",
-      "ata": "",
-      "etd": "2026-09-07 18:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "SEABREEZE",
       "line": "HMM",
       "voyIn": "0002S",
       "voyOut": "0002N",
       "service": "KIS",
       "status": "REGISTER",
+      "etb": "2026-09-06 20:00:00",
+      "ata": "",
+      "etd": "2026-09-07 21:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SKY PEACE",
+      "line": "MCC",
+      "voyIn": "634S",
+      "voyOut": "635N",
+      "service": "IA1",
+      "status": "REGISTER",
       "etb": "2026-09-06 15:00:00",
       "ata": "",
-      "etd": "2026-09-07 16:00:00",
+      "etd": "2026-09-07 15:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -244,19 +244,19 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "EVER BEAMY",
-      "line": "EMA",
-      "voyIn": "1204-082B",
-      "voyOut": "1204-082B",
-      "service": "JPI-B",
+      "vessel": "AS CASPRIA",
+      "line": "GSL",
+      "voyIn": "380N",
+      "voyOut": "380N",
+      "service": "KCI",
       "status": "REGISTER",
       "etb": "2026-09-05 15:00:00",
       "ata": "",
-      "etd": "2026-09-06 16:00:00",
+      "etd": "2026-09-06 18:00:00",
       "atd": "",
-      "openStacking": "2026-08-30 01:00:00",
-      "closingDocument": "2026-09-01 21:59:00",
-      "closingPhysic": "2026-09-01 23:59:00"
+      "openStacking": "2026-08-27 01:00:00",
+      "closingDocument": "2026-09-01 11:00:00",
+      "closingPhysic": "2026-09-01 13:00:00"
     },
     {
       "vessel": "SITC LIANYUNGANG",
@@ -274,19 +274,19 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "EVER BOOMY",
+      "vessel": "EVER BEAMY",
       "line": "EMA",
-      "voyIn": "1206-093A",
-      "voyOut": "1206-093A",
-      "service": "JPI-A",
+      "voyIn": "1204-082B",
+      "voyOut": "1204-082B",
+      "service": "JPI-B",
       "status": "REGISTER",
       "etb": "2026-09-05 09:00:00",
       "ata": "",
-      "etd": "2026-09-06 13:00:00",
+      "etd": "",
       "atd": "",
       "openStacking": "2026-08-30 01:00:00",
-      "closingDocument": "2026-09-01 16:00:00",
-      "closingPhysic": "2026-09-01 18:00:00"
+      "closingDocument": "2026-09-01 21:59:00",
+      "closingPhysic": "2026-09-01 23:59:00"
     },
     {
       "vessel": "STARSHIP VENUS",
@@ -359,9 +359,9 @@
       "ata": "",
       "etd": "2026-09-04 02:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-08-31 01:00:00",
+      "closingDocument": "2026-09-02 10:00:00",
+      "closingPhysic": "2026-09-02 12:00:00"
     },
     {
       "vessel": "MARSA PRIDE",
@@ -379,6 +379,21 @@
       "closingPhysic": "2026-09-02 12:00:00"
     },
     {
+      "vessel": "EVER BOOMY",
+      "line": "EMA",
+      "voyIn": "1206-093A",
+      "voyOut": "1206-093A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-09-02 05:00:00",
+      "ata": "",
+      "etd": "2026-09-03 04:00:00",
+      "atd": "",
+      "openStacking": "2026-08-30 01:00:00",
+      "closingDocument": "2026-09-01 16:00:00",
+      "closingPhysic": "2026-09-01 18:00:00"
+    },
+    {
       "vessel": "OEL VARUN",
       "line": "MCC",
       "voyIn": "635N",
@@ -394,30 +409,15 @@
       "closingPhysic": "2026-09-01 15:00:00"
     },
     {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "380N",
-      "voyOut": "380N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-09-01 23:00:00",
-      "ata": "",
-      "etd": "2026-09-03 03:00:00",
-      "atd": "",
-      "openStacking": "2026-08-27 01:00:00",
-      "closingDocument": "2026-09-01 11:00:00",
-      "closingPhysic": "2026-09-01 13:00:00"
-    },
-    {
       "vessel": "JOSEPHINE MAERSK",
       "line": "MCC",
       "voyIn": "633S",
       "voyOut": "634N",
       "service": "IA1",
       "status": "REGISTER",
-      "etb": "2026-08-31 13:00:00",
+      "etb": "2026-08-31 16:00:00",
       "ata": "",
-      "etd": "2026-09-01 23:59:00",
+      "etd": "",
       "atd": "",
       "openStacking": "2026-08-25 15:00:00",
       "closingDocument": "2026-08-30 02:00:00",
