@@ -16,6 +16,34 @@ let ytTemplateTextHidden = true;
 let ytShowBerthed = false;
 let ytShowUpcoming = false;
 
+// ── Persistence (localStorage) ───────────────────────────────────────
+const YT_STORAGE_KEY = 'npct1_yard_template_reservations_v1';
+
+function ytSaveReservationsToStorage() {
+    try {
+        localStorage.setItem(YT_STORAGE_KEY, JSON.stringify(ytReservations));
+    } catch (e) {
+        console.warn('Failed to save yard reservations to localStorage:', e);
+    }
+}
+
+function ytLoadReservationsFromStorage() {
+    try {
+        const saved = localStorage.getItem(YT_STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                ytReservations = parsed;
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to load yard reservations from localStorage:', e);
+    }
+}
+
+// Initial restore on file evaluation
+ytLoadReservationsFromStorage();
+
 // Blocks excluded from clash analysis: C01, C02, BR9, RC9, D01, OOG
 function isYardClashIgnoredBlock(blockName) {
     if (!blockName) return true;
@@ -26,6 +54,17 @@ function isYardClashIgnoredBlock(blockName) {
     if (b === 'D01' || b === 'D1') return true;
     if (b.startsWith('OOG') || b === 'OOG') return true;
     return false;
+}
+
+function formatClashTime(dt) {
+    if (!dt) return '';
+    const d = new Date(dt);
+    if (isNaN(d)) return '';
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    return `${day}/${month} ${hours}:${mins}`;
 }
 
 // ── Vessel Matching & Active Open Stack ──────────────────────────────
@@ -104,7 +143,11 @@ function getActiveOpenStackVessels() {
         const svEtb = sv.etb ? new Date(sv.etb) : null;
         let matchedCarrier = null;
 
-        // Step A: Check callListSchedule for matching service and ETB proximity (±2 days)
+        let liveEtb = svEtb;
+        let liveEtd = sv.etd ? new Date(sv.etd) : null;
+
+        // Step A: Check callListSchedule for matching service and ETB proximity (±2.5 days)
+        // Opsi A: Prioritize uploaded Call List ETA/ETD if available
         if (svEtb && !isNaN(svEtb) && callListByService[svService]) {
             let bestDiff = Infinity;
             callListByService[svService].forEach(cl => {
@@ -113,6 +156,8 @@ function getActiveOpenStackVessels() {
                     if (diffDays <= 2.5 && diffDays < bestDiff) {
                         bestDiff = diffDays;
                         matchedCarrier = cl.carrier;
+                        liveEtb = new Date(cl.eta);
+                        if (cl.etd) liveEtd = new Date(cl.etd);
                     }
                 }
             });
@@ -153,8 +198,8 @@ function getActiveOpenStackVessels() {
             service: svService,
             vesselName: sv.vessel,
             line: sv.line || '',
-            etb: sv.etb,
-            etd: sv.etd,
+            etb: liveEtb,
+            etd: liveEtd,
             openStacking: sv.openStacking,
             closingPhysic: sv.closingPhysic,
             closingDocument: sv.closingDocument || '',
@@ -581,14 +626,28 @@ function renderYardTemplate() {
 
     // Mode indicator banner
     if (ytSelectedVessel) {
-        html += `<div class="yt-mode-bar">
-            <span class="material-symbols-outlined text-[18px]">edit_note</span>
-            <span>Reservation Mode: <strong>${ytSelectedVessel.vesselName}</strong> (${ytSelectedVessel.service})</span>
-            <span class="yt-mode-hint">Showing only this vessel's containers · Click two empty slots in the same block to reserve</span>
-            ${ytRangeStart ? `<span class="yt-range-indicator"><span class="material-symbols-outlined text-[14px]">radio_button_checked</span> Start: ${ytRangeStart.block}-${ytRangeStart.slot} (click end slot)</span>` : ''}
-            <button onclick="ytClearVesselSelection()" class="yt-mode-close" title="Exit reservation mode">
-                <span class="material-symbols-outlined text-[16px]">close</span>
-            </button>
+        const rec = ytFindBestBlockRecommendation(ytSelectedVessel.key);
+        html += `<div class="yt-mode-bar flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                <span>Reservation Mode: <strong>${ytSelectedVessel.vesselName}</strong> (${ytSelectedVessel.service})</span>
+            </div>
+            ${rec ? `
+                <div class="yt-recommendation-pill" title="Safest continuous empty slots with zero clashes">
+                    <span class="material-symbols-outlined text-[15px] text-amber-500">lightbulb</span>
+                    <span>Best Block: <strong>${rec.block}</strong> (Slots ${rec.slotStart}–${rec.slotEnd} · ${rec.length} free · 0 clash)</span>
+                    <button onclick="ytApplyRecommendation('${ytSelectedVessel.key}', '${rec.block}', ${rec.slotStart}, ${rec.slotEnd}); event.stopPropagation();" 
+                        class="yt-quick-apply-btn" title="Click to immediately reserve these slots">
+                        Quick Apply
+                    </button>
+                </div>
+            ` : ''}
+            <div class="flex items-center gap-2">
+                ${ytRangeStart ? `<span class="yt-range-indicator"><span class="material-symbols-outlined text-[14px]">radio_button_checked</span> Start: ${ytRangeStart.block}-${ytRangeStart.slot}</span>` : `<span class="yt-mode-hint">Click two empty slots in the same block to reserve</span>`}
+                <button onclick="ytClearVesselSelection()" class="yt-mode-close" title="Exit reservation mode">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                </button>
+            </div>
         </div>`;
     }
 
@@ -638,12 +697,16 @@ function renderYardTemplate() {
                     let clashTitle = '';
 
                     if (targetClash) {
-                        const vsDesc = targetClash.targetVessel ? `${targetClash.targetVessel} vs ${targetClash.otherVessel}` : `vs ${targetClash.otherVessel}`;
+                        const oEtb = targetClash.otherETB ? ` (ETB: ${formatClashTime(targetClash.otherETB)})` : '';
+                        const otherDesc = `${targetClash.otherVessel}${oEtb}`;
+                        const vsDesc = targetClash.targetVessel ? `${targetClash.targetVessel} vs ${otherDesc}` : `vs ${otherDesc}`;
                         clashTriangle = `<span class="yt-clash-triangle" title="⚠️ POTENTIAL CLASH: Proximity ${targetClash.distance} slot(s) [${vsDesc}] (Slot ${targetClash.otherSlot}) · Overlap: ${targetClash.overlapHrs}h">▲</span>`;
                         clashTitle = ` [⚠️ POTENTIAL CLASH: ${targetClash.distance}s ${vsDesc} (Slot ${targetClash.otherSlot})]`;
                     } else if (otherClash) {
-                        clashTriangle = `<span class="yt-clash-triangle" title="⚠️ IMPACTED CONFLICT: Proximity ${otherClash.distance} slot(s) from ${otherClash.targetVessel} (Slot ${otherClash.targetSlot}) · Overlap: ${otherClash.overlapHrs}h">▲</span>`;
-                        clashTitle = ` [⚠️ IMPACTED CONFLICT: ${otherClash.distance}s from ${otherClash.targetVessel} (Slot ${otherClash.targetSlot})]`;
+                        const oEtb = otherClash.otherETB ? ` (ETB: ${formatClashTime(otherClash.otherETB)})` : '';
+                        const otherDesc = `${otherClash.otherVessel}${oEtb}`;
+                        clashTriangle = `<span class="yt-clash-triangle" title="⚠️ IMPACTED CONFLICT: ${otherDesc} (Slot ${otherClash.slot}) · Proximity ${otherClash.distance} slot(s) from ${otherClash.targetVessel} (Slot ${otherClash.targetSlot}) · Overlap: ${otherClash.overlapHrs}h">▲</span>`;
+                        clashTitle = ` [⚠️ IMPACTED CONFLICT: ${otherDesc} · ${otherClash.distance}s from ${otherClash.targetVessel} (Slot ${otherClash.targetSlot})]`;
                     }
 
                     if (item.t === 'e') {
@@ -1126,12 +1189,14 @@ function ytSlotClick(block, slot) {
 function ytAddReservation(vesselKey, block, slotStart, slotEnd) {
     if (!ytReservations[vesselKey]) ytReservations[vesselKey] = [];
     ytReservations[vesselKey].push({ block, slotStart, slotEnd });
+    ytSaveReservationsToStorage();
 }
 
 function ytRemoveReservation(vesselKey, index) {
     if (!ytReservations[vesselKey]) return;
     ytReservations[vesselKey].splice(index, 1);
     if (ytReservations[vesselKey].length === 0) delete ytReservations[vesselKey];
+    ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
     renderReservationSummary();
@@ -1141,6 +1206,7 @@ function ytRemoveReservation(vesselKey, index) {
 function ytClearVesselReservations(vesselKey) {
     if (!confirm(`Clear all reservations for this vessel?`)) return;
     delete ytReservations[vesselKey];
+    ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
     renderReservationSummary();
@@ -1150,10 +1216,195 @@ function ytClearVesselReservations(vesselKey) {
 function ytClearAllReservations() {
     if (!confirm('Clear ALL reservations?')) return;
     ytReservations = {};
+    ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
     renderReservationSummary();
     renderYardTemplateClashes();
+}
+
+// ── Smart Slot Recommendation (Auto-Suggest Best Blocks) ────────────
+
+function ytFindBestBlockRecommendation(vesselKey) {
+    if (!vesselKey) return null;
+
+    const exportBlocks = ['A01', 'A02', 'A03', 'A04', 'A05', 'B01', 'B02', 'B03', 'B04', 'B05', 'C03', 'C04'];
+    const inv = window.invData || [];
+    const blockMap = {};
+    inv.forEach(c => {
+        if (!blockMap[c.block]) blockMap[c.block] = [];
+        blockMap[c.block].push(c);
+    });
+
+    const CAP = (typeof activeCapacity !== 'undefined' && activeCapacity) ? activeCapacity : DEFAULT_CAPACITY;
+    const clashData = getYardTemplateClashMap();
+    const targetClashMap = clashData.target || {};
+
+    const reservedSlots = {};
+    Object.keys(ytReservations).forEach(vk => {
+        (ytReservations[vk] || []).forEach(r => {
+            if (!reservedSlots[r.block]) reservedSlots[r.block] = {};
+            for (let s = r.slotStart; s <= r.slotEnd; s++) {
+                reservedSlots[r.block][s] = vk;
+            }
+        });
+    });
+
+    let bestRun = null;
+    let highestScore = -Infinity;
+
+    exportBlocks.forEach(bn => {
+        if (isYardClashIgnoredBlock(bn)) return;
+        const ms = (CAP[bn] || {}).slots || 37;
+        const ctrs = blockMap[bn] || [];
+        const items = buildYardSlotItems(ctrs, ms, bn);
+        const blockReserved = reservedSlots[bn] || {};
+
+        let currentRun = null;
+        const runs = [];
+
+        items.forEach(item => {
+            const isEmpty = item.t === 'e' && !blockReserved[item.s];
+            if (isEmpty) {
+                if (!currentRun) {
+                    currentRun = { block: bn, slotStart: item.s, slotEnd: item.s, count: 1, clashes: 0 };
+                } else {
+                    currentRun.slotEnd = item.s;
+                    currentRun.count++;
+                }
+                if (targetClashMap[bn] && targetClashMap[bn][item.s]) {
+                    currentRun.clashes++;
+                }
+            } else {
+                if (currentRun) {
+                    runs.push(currentRun);
+                    currentRun = null;
+                }
+            }
+        });
+        if (currentRun) runs.push(currentRun);
+
+        runs.forEach(r => {
+            if (r.count < 3) return;
+            const score = (r.count * 10) - (r.clashes * 180);
+            if (score > highestScore) {
+                highestScore = score;
+                bestRun = r;
+            }
+        });
+    });
+
+    return bestRun ? {
+        block: bestRun.block,
+        slotStart: bestRun.slotStart,
+        slotEnd: bestRun.slotEnd,
+        length: bestRun.count,
+        clashes: bestRun.clashes
+    } : null;
+}
+
+function ytApplyRecommendation(vesselKey, block, slotStart, slotEnd) {
+    ytAddReservation(vesselKey, block, slotStart, slotEnd);
+    ytRangeStart = null;
+    renderYardTemplate();
+    renderActiveVesselTable();
+    renderReservationSummary();
+    renderYardTemplateClashes();
+}
+
+// ── Export Yard Template Plan (Excel) ────────────────────────────────
+
+function ytExportReservationExcel() {
+    if (typeof XLSX === 'undefined') {
+        alert('SheetJS (XLSX) library is not available. Please ensure network connection.');
+        return;
+    }
+
+    const vesselKeys = Object.keys(ytReservations || {});
+    if (vesselKeys.length === 0) {
+        alert('No reservations found to export. Please select a vessel and reserve slots first.');
+        return;
+    }
+
+    const allVessels = [...(ytVesselScheduleMap || []), ...getUpcomingOpenStackVessels(), ...getActiveOpenStackVessels()];
+    const vesselDict = {};
+    allVessels.forEach(v => { if (v && v.key) vesselDict[v.key] = v; });
+
+    const formatDtExport = (raw) => {
+        if (!raw) return '-';
+        const d = new Date(raw);
+        if (isNaN(d)) return String(raw);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+    };
+
+    const rows = [];
+    let no = 1;
+
+    vesselKeys.forEach(vKey => {
+        const resList = ytReservations[vKey] || [];
+        const vInfo = vesselDict[vKey] || {};
+        const vName = vInfo.vesselName || vKey.split('||')[0];
+        const service = vInfo.service || vKey.split('||')[1] || '-';
+        const carrier = vInfo.invCarrier || '-';
+        const etbStr = formatDtExport(vInfo.etb);
+        const openStr = formatDtExport(vInfo.openStacking);
+        const closeStr = formatDtExport(vInfo.closingPhysic);
+
+        resList.forEach(r => {
+            const slotCount = (r.slotEnd - r.slotStart + 1);
+            const estTEU = slotCount * 30;
+            rows.push({
+                'No': no++,
+                'Vessel Name': vName,
+                'Service': service,
+                'Carrier': carrier,
+                'ETB': etbStr,
+                'Open Stacking': openStr,
+                'Closing Physic': closeStr,
+                'Block': r.block,
+                'Slot Range': `${r.block}: ${r.slotStart}-${r.slotEnd}`,
+                'Total Slots': slotCount,
+                'Est Capacity (TEU)': estTEU,
+                'Status': 'PLANNED'
+            });
+        });
+    });
+
+    if (rows.length === 0) {
+        alert('No reservation details found.');
+        return;
+    }
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [
+        { wch: 5 },  // No
+        { wch: 24 }, // Vessel Name
+        { wch: 10 }, // Service
+        { wch: 10 }, // Carrier
+        { wch: 18 }, // ETB
+        { wch: 18 }, // Open Stacking
+        { wch: 18 }, // Closing Physic
+        { wch: 8 },  // Block
+        { wch: 18 }, // Slot Range
+        { wch: 12 }, // Total Slots
+        { wch: 18 }, // Est Capacity (TEU)
+        { wch: 12 }  // Status
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Yard Template Plan');
+
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+    const filename = `NPCT1_Yard_Template_Plan_${dateStr}.xlsx`;
+
+    XLSX.writeFile(wb, filename);
 }
 
 // ── Zoom / Text Toggle ───────────────────────────────────────────────
@@ -1280,12 +1531,32 @@ function getYardTemplateClashMap() {
         let targetETB = null;
         let targetETD = null;
 
-        const matchedEntry = ytVesselScheduleMap.find(v => v.key === targetVessel.key);
-        if (matchedEntry && matchedEntry.etb) {
-            targetETB = new Date(matchedEntry.etb);
-            targetETD = matchedEntry.etd ? new Date(matchedEntry.etd) : null;
+        // Opsi A: Check uploaded Call List FIRST (live operational priority)
+        if (callList && callList.length) {
+            const foundCL = callList.find(s => {
+                const cName = (s.carrier || '').toUpperCase().trim();
+                const sName = (s.service || '').toUpperCase().trim();
+                const tCarrier = (targetVessel.carrier || '').toUpperCase().trim();
+                const tService = (targetVessel.service || '').toUpperCase().trim();
+                const tName = (targetVessel.vesselName || '').toUpperCase().trim();
+                return (cName === tCarrier || isVesselCodeMatch(tName, cName)) && (!tService || !sName || sName === tService);
+            });
+            if (foundCL && (foundCL.eta || foundCL.etb)) {
+                targetETB = new Date(foundCL.eta || foundCL.etb);
+                targetETD = foundCL.etd ? new Date(foundCL.etd) : null;
+            }
         }
 
+        // Fallback to matchedEntry from active table
+        if (!targetETB || isNaN(targetETB)) {
+            const matchedEntry = ytVesselScheduleMap.find(v => v.key === targetVessel.key);
+            if (matchedEntry && matchedEntry.etb) {
+                targetETB = new Date(matchedEntry.etb);
+                targetETD = matchedEntry.etd ? new Date(matchedEntry.etd) : null;
+            }
+        }
+
+        // Fallback to scheduleList (vessel_schedule.json)
         if (!targetETB || isNaN(targetETB)) {
             const foundS = scheduleList.find(s => s.vessel === targetVessel.vesselName || s.service === targetVessel.service);
             if (foundS && foundS.etb) {
@@ -1294,52 +1565,16 @@ function getYardTemplateClashMap() {
             }
         }
 
-        if (!targetETB || isNaN(targetETB)) {
-            const foundCL = callList.find(s => s.carrier === targetVessel.carrier || s.service === targetVessel.service);
-            if (foundCL && (foundCL.eta || foundCL.etb)) {
-                targetETB = new Date(foundCL.eta || foundCL.etb);
-                targetETD = foundCL.etd ? new Date(foundCL.etd) : null;
-            }
-        }
-
         if (!targetETB || isNaN(targetETB)) return { target: {}, other: {}, isGlobal: false };
         if (!targetETD || isNaN(targetETD)) targetETD = new Date(targetETB.getTime() + 24 * 3600 * 1000);
 
-        // Find concurrently berthing vessels
+        // Find concurrently berthing vessels (Opsi A: Uploaded Call List prioritized)
         const overlappingVessels = [];
         const seenVessels = new Set();
         seenVessels.add(targetVessel.vesselName.toUpperCase().trim());
+        if (targetVessel.carrier) seenVessels.add(targetVessel.carrier.toUpperCase().trim());
 
-        scheduleList.forEach(sv => {
-            const vName = (sv.vessel || '').toUpperCase().trim();
-            if (!vName || seenVessels.has(vName)) return;
-
-            const oETB = sv.etb ? new Date(sv.etb) : null;
-            let oETD = sv.etd ? new Date(sv.etd) : null;
-            if (!oETB || isNaN(oETB)) return;
-            if (!oETD || isNaN(oETD)) oETD = new Date(oETB.getTime() + 24 * 3600 * 1000);
-
-            if (targetETB < oETD && targetETD > oETB) {
-                seenVessels.add(vName);
-                const ovStart = new Date(Math.max(targetETB.getTime(), oETB.getTime()));
-                const ovEnd = new Date(Math.min(targetETD.getTime(), oETD.getTime()));
-                const overlapHrs = Math.max(0, Math.round((ovEnd - ovStart) / 3600000));
-                const invCarrier = matchVesselToCarrierCode(sv.vessel, sv.service, oETB, sv.line);
-
-                overlappingVessels.push({
-                    vesselName: sv.vessel,
-                    service: (sv.service || '').toUpperCase().trim(),
-                    line: (sv.line || '').toUpperCase().trim(),
-                    invCarrier: invCarrier,
-                    key: `${sv.vessel}||${sv.service || ''}`,
-                    etb: oETB,
-                    etd: oETD,
-                    overlapHrs,
-                    color: getYardColor(invCarrier || sv.line || sv.vessel)
-                });
-            }
-        });
-
+        // 1. Process uploaded Call List FIRST (live schedule priority)
         callList.forEach(cl => {
             const cName = (cl.carrier || '').toUpperCase().trim();
             if (!cName || seenVessels.has(cName)) return;
@@ -1370,6 +1605,49 @@ function getYardTemplateClashMap() {
             }
         });
 
+        // 2. Process vessel_schedule.json (fallback for any vessel not in callList)
+        scheduleList.forEach(sv => {
+            const vName = (sv.vessel || '').toUpperCase().trim();
+            if (!vName || seenVessels.has(vName)) return;
+
+            let oETB = sv.etb ? new Date(sv.etb) : null;
+            let oETD = sv.etd ? new Date(sv.etd) : null;
+
+            // Check if callList has an updated ETA for this vessel/service
+            const matchedCL = callList.find(cl => {
+                const clCarrier = (cl.carrier || '').toUpperCase().trim();
+                const clService = (cl.service || '').toUpperCase().trim();
+                return (isVesselCodeMatch(vName, clCarrier) || clCarrier === vName) && (!clService || clService === (sv.service || '').toUpperCase().trim());
+            });
+            if (matchedCL && (matchedCL.eta || matchedCL.etb)) {
+                oETB = new Date(matchedCL.eta || matchedCL.etb);
+                if (matchedCL.etd) oETD = new Date(matchedCL.etd);
+            }
+
+            if (!oETB || isNaN(oETB)) return;
+            if (!oETD || isNaN(oETD)) oETD = new Date(oETB.getTime() + 24 * 3600 * 1000);
+
+            if (targetETB < oETD && targetETD > oETB) {
+                seenVessels.add(vName);
+                const ovStart = new Date(Math.max(targetETB.getTime(), oETB.getTime()));
+                const ovEnd = new Date(Math.min(targetETD.getTime(), oETD.getTime()));
+                const overlapHrs = Math.max(0, Math.round((ovEnd - ovStart) / 3600000));
+                const invCarrier = matchVesselToCarrierCode(sv.vessel, sv.service, oETB, sv.line);
+
+                overlappingVessels.push({
+                    vesselName: sv.vessel,
+                    service: (sv.service || '').toUpperCase().trim(),
+                    line: (sv.line || '').toUpperCase().trim(),
+                    invCarrier: invCarrier,
+                    key: `${sv.vessel}||${sv.service || ''}`,
+                    etb: oETB,
+                    etd: oETD,
+                    overlapHrs,
+                    color: getYardColor(invCarrier || sv.line || sv.vessel)
+                });
+            }
+        });
+
         if (!overlappingVessels.length) return { target: {}, other: {}, isGlobal: false };
 
         const targetSlotsByBlock = getVesselExportSlots(
@@ -1391,7 +1669,9 @@ function getYardTemplateClashMap() {
                         vesselName: ov.vesselName,
                         service: ov.service,
                         color: ov.color,
-                        overlapHrs: ov.overlapHrs
+                        overlapHrs: ov.overlapHrs,
+                        etb: ov.etb,
+                        etd: ov.etd
                     });
                 });
             });
@@ -1419,7 +1699,9 @@ function getYardTemplateClashMap() {
                                 otherService: oSlot.service,
                                 otherColor: oSlot.color,
                                 otherSlot: oSlot.slot,
-                                overlapHrs: oSlot.overlapHrs
+                                overlapHrs: oSlot.overlapHrs,
+                                otherETB: oSlot.etb,
+                                otherETD: oSlot.etd
                             };
                         }
 
@@ -1431,7 +1713,9 @@ function getYardTemplateClashMap() {
                             targetVessel: targetVessel.vesselName,
                             targetSlot: tSlot,
                             otherVessel: oSlot.vesselName,
-                            overlapHrs: oSlot.overlapHrs
+                            overlapHrs: oSlot.overlapHrs,
+                            otherETB: oSlot.etb,
+                            otherETD: oSlot.etd
                         });
                     }
                 });
@@ -1468,29 +1752,7 @@ function getYardTemplateClashMap() {
     const allVessels = [];
     const seenGlobalVessels = new Set();
 
-    scheduleList.forEach(sv => {
-        const vName = (sv.vessel || '').toUpperCase().trim();
-        if (!vName || seenGlobalVessels.has(vName)) return;
-
-        const etb = sv.etb ? new Date(sv.etb) : null;
-        let etd = sv.etd ? new Date(sv.etd) : null;
-        if (!etb || isNaN(etb)) return;
-        if (!etd || isNaN(etd)) etd = new Date(etb.getTime() + 24 * 3600 * 1000);
-
-        seenGlobalVessels.add(vName);
-        const invCarrier = matchVesselToCarrierCode(sv.vessel, sv.service, etb, sv.line);
-        allVessels.push({
-            vesselName: sv.vessel,
-            service: (sv.service || '').toUpperCase().trim(),
-            line: (sv.line || '').toUpperCase().trim(),
-            invCarrier: invCarrier,
-            key: `${sv.vessel}||${sv.service || ''}`,
-            etb: etb,
-            etd: etd,
-            color: getYardColor(invCarrier || sv.line || sv.vessel)
-        });
-    });
-
+    // 1. Process uploaded Call List FIRST (live priority)
     callList.forEach(cl => {
         const cName = (cl.carrier || '').toUpperCase().trim();
         if (!cName || seenGlobalVessels.has(cName)) return;
@@ -1510,6 +1772,42 @@ function getYardTemplateClashMap() {
             etb: etb,
             etd: etd,
             color: getYardColor(cl.carrier)
+        });
+    });
+
+    // 2. Process vessel_schedule.json (fallback for vessels not in Call List)
+    scheduleList.forEach(sv => {
+        const vName = (sv.vessel || '').toUpperCase().trim();
+        if (!vName || seenGlobalVessels.has(vName)) return;
+
+        let etb = sv.etb ? new Date(sv.etb) : null;
+        let etd = sv.etd ? new Date(sv.etd) : null;
+
+        // Check if Call List has an updated ETA for this vessel
+        const matchedCL = callList.find(cl => {
+            const clCarrier = (cl.carrier || '').toUpperCase().trim();
+            const clService = (cl.service || '').toUpperCase().trim();
+            return (isVesselCodeMatch(vName, clCarrier) || clCarrier === vName) && (!clService || clService === (sv.service || '').toUpperCase().trim());
+        });
+        if (matchedCL && (matchedCL.eta || matchedCL.etb)) {
+            etb = new Date(matchedCL.eta || matchedCL.etb);
+            if (matchedCL.etd) etd = new Date(matchedCL.etd);
+        }
+
+        if (!etb || isNaN(etb)) return;
+        if (!etd || isNaN(etd)) etd = new Date(etb.getTime() + 24 * 3600 * 1000);
+
+        seenGlobalVessels.add(vName);
+        const invCarrier = matchVesselToCarrierCode(sv.vessel, sv.service, etb, sv.line);
+        allVessels.push({
+            vesselName: sv.vessel,
+            service: (sv.service || '').toUpperCase().trim(),
+            line: (sv.line || '').toUpperCase().trim(),
+            invCarrier: invCarrier,
+            key: `${sv.vessel}||${sv.service || ''}`,
+            etb: etb,
+            etd: etd,
+            color: getYardColor(invCarrier || sv.line || sv.vessel)
         });
     });
 
@@ -1621,13 +1919,25 @@ function renderYardTemplateClashes() {
     const chipsHtml = blockList.map(blk => {
         const list = blockClashSummaries[blk];
         const minDist = Math.min(...list.map(x => x.distance));
-        const otherVessels = Array.from(new Set(list.map(x => x.otherVessel))).join(', ');
-        return `<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-xs font-semibold bg-white border border-amber-300 shadow-sm text-slate-700 hover:border-red-400 transition-colors">
+        
+        // Group by otherVessel to show vessel name + its ETB
+        const vesselInfos = [];
+        const seenV = new Set();
+        list.forEach(x => {
+            if (!seenV.has(x.otherVessel)) {
+                seenV.add(x.otherVessel);
+                const etbStr = formatClashTime(x.otherETB);
+                vesselInfos.push(etbStr ? `${x.otherVessel} (ETB: ${etbStr})` : x.otherVessel);
+            }
+        });
+        const otherDesc = vesselInfos.join(', ');
+
+        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-white border border-amber-300 shadow-sm text-slate-700 hover:border-red-400 transition-colors">
             <span class="text-red-600 font-black text-[11px]">▲</span>
             <strong class="font-bold text-slate-900">${blk}</strong>
             <span class="text-slate-300">|</span>
-            <span class="text-slate-600">vs <strong>${otherVessels}</strong></span>
-            <span class="text-[10px] font-mono px-1 rounded bg-amber-100 text-amber-900 font-bold">gap: ${minDist}s</span>
+            <span class="text-slate-700">vs <strong>${otherDesc}</strong></span>
+            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-bold">gap: ${minDist}s</span>
         </span>`;
     }).join(' ');
 

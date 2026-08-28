@@ -183,6 +183,7 @@ document.getElementById('scheduleInput').addEventListener('change', function (e)
             renderEmptySummary();
             if (typeof processClashAnalysis === 'function') processClashAnalysis();
         }
+        if (typeof renderYardTemplateTab === 'function') renderYardTemplateTab();
     });
 });
 
