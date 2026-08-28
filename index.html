@@ -605,17 +605,101 @@
                                 </tbody>
                             </table>
                         </div>
-                    </details>
-
-                    <div
-                        class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
-                            <div class="flex items-center gap-1.5"><span
-                                    class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
+                        <div
+                            class="px-4 py-2.5 bg-slate-50/50 border-t border-slate-200/50 flex flex-wrap items-center justify-between gap-3 text-[10px] text-slate-500">
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center gap-1.5"><span
+                                        class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Active</div>
+                                <div class="flex items-center gap-1.5"><span
+                                        class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Registered</div>
+                            </div>
+                            <div class="text-slate-400 italic">Data auto-refreshes every 6 hours</div>
                         </div>
-                        <div class="text-slate-400 italic">Data auto-refreshes every 6 hours</div>
+                    </details>
+                </div>
+
+                <!-- Yard Anomalies Check Summary Banner -->
+                <div id="yardAnomaliesSummaryCard"
+                    class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 transition-all duration-300">
+                    <div class="p-4 border-b border-red-100/70 bg-red-50/40 flex flex-col md:flex-row md:items-center md:justify-between gap-3 cursor-pointer hover:bg-red-50/70 transition-colors"
+                        onclick="showAllAnomalies()">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-red-100 rounded-lg text-red-600">
+                                <span class="material-symbols-outlined text-2xl">warning</span>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-red-800 flex items-center gap-2">
+                                    Yard Anomalies Check
+                                </h2>
+                                <p class="text-xs text-red-600 font-medium">MIX VESSEL, MIX SPOD &amp; MIX WC Detection per Row</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="event.stopPropagation(); showAllAnomalies();"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-red-200 text-xs font-bold text-red-700 shadow-sm hover:bg-red-50 hover:border-red-300 transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                                <span>Pop-up Detail</span>
+                                <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                            <!-- Mix Vessel Card -->
+                            <div onclick="showAllAnomalies('vessel')"
+                                class="group bg-white hover:bg-red-50/30 border border-red-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:shadow-md hover:border-red-300 transition-all cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center border border-red-100 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">directions_boat</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix Vessel</div>
+                                        <div class="text-xl font-black text-red-600 flex items-baseline gap-1">
+                                            <span id="anomaliesMixVesselCount">0</span>
+                                            <span class="text-xs font-normal text-slate-400">rows</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300 group-hover:text-red-500 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+                            </div>
+
+                            <!-- Mix SPOD Card -->
+                            <div onclick="showAllAnomalies('spod')"
+                                class="group bg-white hover:bg-orange-50/30 border border-orange-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:shadow-md hover:border-orange-300 transition-all cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">location_on</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix SPOD</div>
+                                        <div class="text-xl font-black text-orange-600 flex items-baseline gap-1">
+                                            <span id="anomaliesMixSpodCount">0</span>
+                                            <span class="text-xs font-normal text-slate-400">rows</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300 group-hover:text-orange-500 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+                            </div>
+
+                            <!-- Mix WC Card -->
+                            <div onclick="showAllAnomalies('wc')"
+                                class="group bg-white hover:bg-purple-50/30 border border-purple-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:shadow-md hover:border-purple-300 transition-all cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 group-hover:scale-105 transition-transform">
+                                        <span class="material-symbols-outlined text-xl">scale</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mix WC</div>
+                                        <div class="text-xl font-black text-purple-600 flex items-baseline gap-1">
+                                            <span id="anomaliesMixWcCount">0</span>
+                                            <span class="text-xs font-normal text-slate-400">rows</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300 group-hover:text-purple-500 group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -785,7 +869,7 @@
                     </div>
 
                     <!-- IMPORT EMPTY SUMMARY (Collapsible, Default Closed) -->
-                    <details class="glass-panel rounded-2xl shadow-glass border border-white/40 overflow-hidden group transition-all">
+                    <details id="emptyImportSummaryDetails" class="glass-panel rounded-2xl shadow-glass border border-white/40 overflow-hidden group transition-all">
                         <summary class="p-4 bg-white/20 hover:bg-white/40 transition-colors flex items-center justify-between cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
                             <div class="flex items-center gap-3">
                                 <div class="p-2 bg-amber-500/10 rounded-lg text-amber-600">
@@ -1837,6 +1921,7 @@
 
         <!-- Anomalies Modal -->
         <div id="anomaliesModal"
+            onclick="if (event.target === this) closeAnomaliesModal()"
             class="fixed inset-0 z-[200] hidden items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
             <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
                 <div class="flex items-center justify-between px-5 py-4 border-b bg-red-50/80">
@@ -1847,7 +1932,7 @@
                         </h4>
                         <p class="text-xs text-red-600 mt-1 font-medium">MIX VESSEL, MIX SPOD & MIX WC Detection per Row</p>
                     </div>
-                    <button onclick="document.getElementById('anomaliesModal').classList.add('hidden')"
+                    <button onclick="closeAnomaliesModal()"
                         class="h-8 w-8 rounded-full bg-white hover:bg-red-50 border border-slate-200 text-slate-400 hover:text-red-500 transition-colors flex items-center justify-center shadow-sm">
                         <span class="material-symbols-outlined text-xl">close</span>
                     </button>

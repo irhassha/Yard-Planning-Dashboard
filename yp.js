@@ -1451,6 +1451,9 @@ function renderBerthGantt() {
 }
 window.renderBerthGantt = renderBerthGantt;
 function renderClusterSpreading() {
+    if (typeof window.renderYardAnomaliesSummary === 'function') {
+        window.renderYardAnomaliesSummary();
+    }
     const body = document.getElementById('clusterBody');
     const showAll = document.getElementById('toggleSmallCarriers').checked;
     const showXYZ = document.getElementById('toggleDetailedCluster')?.checked || false;
@@ -1881,18 +1884,16 @@ window.showVesselSummary = function (key) {
     modal.classList.add('flex');
 };
 
-window.showAllAnomalies = function () {
-    if (!window.invData || window.invData.length === 0) return;
+window.calculateYardAnomalies = function () {
+    if (!window.invData || window.invData.length === 0) {
+        return { mixVesselRows: [], mixSpodRows: [], mixWcRows: [] };
+    }
 
-    const modal = document.getElementById('anomaliesModal');
-    const body = document.getElementById('anomaliesModalBody');
-
-    // Group ALL inventory by row
     const rowItems = {};
     const excludedBlocks = new Set(['C01', 'D01', 'C02', 'BR9', 'RC9', 'OOG']);
 
     window.invData.forEach(it => {
-        if (!it.move.includes('export')) return;
+        if (!it.move || !it.move.includes('export')) return;
         if (it.block && excludedBlocks.has(it.block.toUpperCase())) return;
         const r = parseInt(it.row);
         const s = parseInt(it.slot);
@@ -1939,10 +1940,43 @@ window.showAllAnomalies = function () {
         }
     });
 
-    // Summary Cards at Top
+    return { mixVesselRows, mixSpodRows, mixWcRows };
+};
+
+window.renderYardAnomaliesSummary = function () {
+    const { mixVesselRows, mixSpodRows, mixWcRows } = window.calculateYardAnomalies();
+
+    const countVesselEl = document.getElementById('anomaliesMixVesselCount');
+    const countSpodEl = document.getElementById('anomaliesMixSpodCount');
+    const countWcEl = document.getElementById('anomaliesMixWcCount');
+
+    if (countVesselEl) countVesselEl.textContent = mixVesselRows.length;
+    if (countSpodEl) countSpodEl.textContent = mixSpodRows.length;
+    if (countWcEl) countWcEl.textContent = mixWcRows.length;
+};
+
+window.closeAnomaliesModal = function () {
+    const modal = document.getElementById('anomaliesModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+};
+
+window.showAllAnomalies = function (focusType = null) {
+    if (!window.invData || window.invData.length === 0) return;
+
+    const modal = document.getElementById('anomaliesModal');
+    const body = document.getElementById('anomaliesModalBody');
+
+    const { mixVesselRows, mixSpodRows, mixWcRows } = window.calculateYardAnomalies();
+    window.renderYardAnomaliesSummary();
+
+    // Summary Cards at Top of modal
     let html = `
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
-            <div class="bg-white border border-red-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+            <div onclick="document.getElementById('anomaly-section-mix-vessel')?.scrollIntoView({ behavior: 'smooth' })"
+                class="bg-white border border-red-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-red-400 hover:shadow transition-all cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center border border-red-100">
                         <span class="material-symbols-outlined text-xl">directions_boat</span>
@@ -1952,8 +1986,10 @@ window.showAllAnomalies = function () {
                         <div class="text-xl font-black text-red-600">${mixVesselRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
                     </div>
                 </div>
+                <span class="material-symbols-outlined text-slate-300 text-base">arrow_downward</span>
             </div>
-            <div class="bg-white border border-orange-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+            <div onclick="document.getElementById('anomaly-section-mix-spod')?.scrollIntoView({ behavior: 'smooth' })"
+                class="bg-white border border-orange-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-orange-400 hover:shadow transition-all cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center border border-orange-100">
                         <span class="material-symbols-outlined text-xl">location_on</span>
@@ -1963,8 +1999,10 @@ window.showAllAnomalies = function () {
                         <div class="text-xl font-black text-orange-600">${mixSpodRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
                     </div>
                 </div>
+                <span class="material-symbols-outlined text-slate-300 text-base">arrow_downward</span>
             </div>
-            <div class="bg-white border border-purple-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm">
+            <div onclick="document.getElementById('anomaly-section-mix-wc')?.scrollIntoView({ behavior: 'smooth' })"
+                class="bg-white border border-purple-200 rounded-xl p-3.5 flex items-center justify-between shadow-sm hover:border-purple-400 hover:shadow transition-all cursor-pointer">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
                         <span class="material-symbols-outlined text-xl">scale</span>
@@ -1974,14 +2012,16 @@ window.showAllAnomalies = function () {
                         <div class="text-xl font-black text-purple-600">${mixWcRows.length} <span class="text-xs font-normal text-slate-400">rows</span></div>
                     </div>
                 </div>
+                <span class="material-symbols-outlined text-slate-300 text-base">arrow_downward</span>
             </div>
         </div>
     `;
 
     const renderTable = (title, icon, colorClass, bgClass, borderClass, anomalies, typeLabel, detailLabel) => {
+        const sectionId = `anomaly-section-${typeLabel.toLowerCase().replace(/\s+/g, '-')}`;
         if (anomalies.length === 0) {
             return `
-                    <div class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <div id="${sectionId}" class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                         <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px] ${colorClass}">${icon}</span>
                             <h5 class="font-bold text-sm text-slate-700">${title}</h5>
@@ -2014,7 +2054,7 @@ window.showAllAnomalies = function () {
         });
 
         return `
-                <div class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                <div id="${sectionId}" class="mb-6 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                     <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
                         <span class="material-symbols-outlined text-[18px] ${colorClass}">${icon}</span>
                         <h5 class="font-bold text-sm text-slate-700">${title} <span class="ml-2 text-xs font-normal text-slate-500 bg-white px-2 py-0.5 rounded-full border border-slate-200">${anomalies.length} found</span></h5>
@@ -2044,7 +2084,25 @@ window.showAllAnomalies = function () {
     body.innerHTML = html;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+
+    if (focusType) {
+        setTimeout(() => {
+            const target = document.getElementById(`anomaly-section-mix-${focusType}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 100);
+    } else {
+        body.scrollTop = 0;
+    }
 };
+
+// Close modal on Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        window.closeAnomaliesModal();
+    }
+});
 
 // --- BATCH MULTI-FILE ANALYSIS ---
 let _batchFiles = [];
@@ -3221,6 +3279,10 @@ function switchTab(t) {
         if (t === 'template' && typeof renderYardTemplateTab === 'function') {
             setTimeout(renderYardTemplateTab, 100);
         }
+        // Refresh anomalies summary on analytics tab
+        if (t === 'analytics' && typeof window.renderYardAnomaliesSummary === 'function') {
+            window.renderYardAnomaliesSummary();
+        }
     }
 }
 
@@ -3270,7 +3332,7 @@ function downloadImage() {
     // TEMPORARY MODE SWITCH FOR CLUSTER SPREADING
     const detailedToggle = document.getElementById('toggleDetailedCluster');
     let wasDetailed = false;
-    if (activeId === "captureArea" && detailedToggle && detailedToggle.checked) {
+    if ((activeId === "captureArea" || activeId === "captureAreaAnalytics") && detailedToggle && detailedToggle.checked) {
         wasDetailed = true;
         detailedToggle.checked = false;
         renderClusterSpreading();
@@ -3292,6 +3354,37 @@ function downloadImage() {
                     clonedRoot.style.margin = '0';
                     clonedRoot.style.fontSize = '10px';
 
+                    // Ensure for Cluster Spread tab (captureAreaAnalytics), vessel schedule table is fully closed
+                    if (activeId === "captureAreaAnalytics") {
+                        const schedDetails = clonedRoot.querySelector('#npct1ScheduleDetails');
+                        if (schedDetails) {
+                            schedDetails.removeAttribute('open');
+                            schedDetails.open = false;
+                        }
+                        const recPanel = clonedRoot.querySelector('.recommended-panel');
+                        if (recPanel) recPanel.style.display = 'none';
+                    }
+
+                    // Ensure Import Empty Summary is ALWAYS open in save image
+                    const impEmptyDetails = clonedRoot.querySelector('#emptyImportSummaryDetails') || clonedRoot.querySelector('#emptyImportSummary')?.closest('details');
+                    if (impEmptyDetails) {
+                        impEmptyDetails.setAttribute('open', '');
+                        impEmptyDetails.open = true;
+                        const toggleTxt = impEmptyDetails.querySelector('summary span.text-xs');
+                        if (toggleTxt) toggleTxt.textContent = 'Hide Details';
+                    }
+
+                    // Remove non-summary children for all closed details so html2canvas doesn't leak or overflow them
+                    clonedRoot.querySelectorAll('details').forEach(d => {
+                        if (!d.open) {
+                            Array.from(d.children).forEach(child => {
+                                if (child.tagName.toLowerCase() !== 'summary') {
+                                    child.remove();
+                                }
+                            });
+                        }
+                    });
+
                     clonedRoot.querySelectorAll('table').forEach(tbl => {
                         tbl.style.width = '100%';
                         tbl.style.tableLayout = 'auto';
@@ -3306,12 +3399,6 @@ function downloadImage() {
                     clonedRoot.querySelectorAll('.sticky, thead').forEach(node => {
                         node.style.position = 'static';
                     });
-
-                    // Hide the vessel spreading panel during capture for Analytics tab
-                    if (activeId === "captureAreaAnalytics") {
-                        const recPanel = clonedRoot.querySelector('.recommended-panel');
-                        if (recPanel) recPanel.style.display = 'none';
-                    }
 
                     clonedRoot.querySelectorAll('th, td').forEach(cell => {
                         cell.style.padding = '2px 4px';
