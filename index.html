@@ -454,6 +454,7 @@
         <!-- TAB 2: ANALYTICS (Carrier Spreading) -->
         <div id="tab-analytics" class="hidden animate-fade-in mt-4">
             <div id="captureAreaAnalytics" class="space-y-4">
+                <div id="captureAreaClusterSpreading" class="space-y-4">
 
                 <!-- NPCT1 Vessel Schedule -->
                 <div class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40"
@@ -769,6 +770,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
 
                 <!-- MTY Summary -->
@@ -2364,6 +2366,88 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SAVE IMAGE CLUSTER SPREADING & MTY -->
+    <div id="saveClusterImageModal" class="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 animate-scale-up">
+            <!-- Header -->
+            <div class="p-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-white/10 rounded-2xl backdrop-blur-md">
+                        <span class="material-symbols-outlined text-2xl">image</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black tracking-tight">Save Image / Export</h3>
+                        <p class="text-xs text-blue-100">Pilih bagian yang ingin diunduh untuk dibagikan</p>
+                    </div>
+                </div>
+                <button onclick="closeSaveClusterImageModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            <!-- Body Options -->
+            <div class="p-6 space-y-3 bg-slate-50/50">
+                <!-- Option 1: Cluster Spreading -->
+                <div onclick="executeClusterImageDownload('cluster')" class="group p-4 bg-white hover:bg-blue-50/50 rounded-2xl border border-slate-200/80 hover:border-blue-300 shadow-sm hover:shadow transition-all cursor-pointer flex items-center justify-between">
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2.5 bg-blue-100 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                            <span class="material-symbols-outlined text-2xl">bar_chart</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-slate-800 group-hover:text-blue-700">Cluster Spreading</h4>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-600 border border-blue-200">PNG Ringan</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Vessel Schedule, Anomalies Check &amp; Tabel Cluster by Block</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all text-xl ml-2">download</span>
+                </div>
+
+                <!-- Option 2: Empty Summary -->
+                <div onclick="executeClusterImageDownload('empty')" class="group p-4 bg-white hover:bg-emerald-50/50 rounded-2xl border border-slate-200/80 hover:border-emerald-300 shadow-sm hover:shadow transition-all cursor-pointer flex items-center justify-between">
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2.5 bg-emerald-100 text-emerald-600 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0">
+                            <span class="material-symbols-outlined text-2xl">output</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-slate-800 group-hover:text-emerald-700">Empty Summary (MTY)</h4>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-600 border border-emerald-200">Lanskap Jernih</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Export Empty &amp; Import Empty Summary Breakdown</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all text-xl ml-2">download</span>
+                </div>
+
+                <!-- Option 3: Download Both -->
+                <div onclick="executeClusterImageDownload('both')" class="group p-4 bg-gradient-to-r from-indigo-50/80 to-blue-50/80 hover:from-indigo-100/80 hover:to-blue-100/80 rounded-2xl border border-indigo-200 shadow-sm hover:shadow transition-all cursor-pointer flex items-center justify-between">
+                    <div class="flex items-start gap-3.5">
+                        <div class="p-2.5 bg-indigo-600 text-white rounded-xl shadow-sm shrink-0">
+                            <span class="material-symbols-outlined text-2xl">collections</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-indigo-950">Download Keduanya (2 File)</h4>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-700 border border-indigo-200">Rekomendasi WA</span>
+                            </div>
+                            <p class="text-xs text-indigo-700/80 mt-0.5">Unduh file Cluster Spreading dan Empty Summary secara terpisah agar tidak pecah di WhatsApp</p>
+                        </div>
+                    </div>
+                    <span class="material-symbols-outlined text-indigo-600 group-hover:translate-x-0.5 transition-all text-xl ml-2">download_for_offline</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-3.5 bg-white border-t border-slate-100 flex items-center justify-end">
+                <button onclick="closeSaveClusterImageModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors">
+                    Tutup
+                </button>
             </div>
         </div>
     </div>

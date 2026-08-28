@@ -3302,14 +3302,146 @@ function clearCache() {
     if (confirm("Clear data?")) { location.reload(); }
 }
 
+function openSaveClusterImageModal() {
+    const modal = document.getElementById('saveClusterImageModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeSaveClusterImageModal() {
+    const modal = document.getElementById('saveClusterImageModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
+async function executeClusterImageDownload(type) {
+    closeSaveClusterImageModal();
+
+    const detailedToggle = document.getElementById('toggleDetailedCluster');
+    let wasDetailed = false;
+    if (detailedToggle && detailedToggle.checked) {
+        wasDetailed = true;
+        detailedToggle.checked = false;
+        renderClusterSpreading();
+    }
+
+    const captureTarget = (targetId, fileNameSuffix) => {
+        const el = document.getElementById(targetId);
+        if (!el) return Promise.reject(new Error(`Element ${targetId} not found`));
+
+        const scrollW = el.scrollWidth;
+        const fontReady = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+
+        return fontReady.then(() => {
+            return html2canvas(el, {
+                scale: 1.8,
+                windowWidth: scrollW + 100,
+                backgroundColor: "#ffffff",
+                onclone: (clonedDoc) => {
+                    const clonedRoot = clonedDoc.getElementById(targetId);
+                    if (clonedRoot) {
+                        clonedRoot.style.width = scrollW + 'px';
+                        clonedRoot.style.maxWidth = 'none';
+                        clonedRoot.style.padding = '12px';
+                        clonedRoot.style.margin = '0';
+                        clonedRoot.style.fontSize = '10.5px';
+
+                        // Ensure Vessel schedule table details is fully closed
+                        const schedDetails = clonedRoot.querySelector('#npct1ScheduleDetails');
+                        if (schedDetails) {
+                            schedDetails.removeAttribute('open');
+                            schedDetails.open = false;
+                        }
+                        const recPanel = clonedRoot.querySelector('.recommended-panel');
+                        if (recPanel) recPanel.style.display = 'none';
+
+                        // Ensure Import Empty Summary is ALWAYS open in save image
+                        const impEmptyDetails = clonedRoot.querySelector('#emptyImportSummaryDetails') || clonedRoot.querySelector('#emptyImportSummary')?.closest('details');
+                        if (impEmptyDetails) {
+                            impEmptyDetails.setAttribute('open', '');
+                            impEmptyDetails.open = true;
+                            const toggleTxt = impEmptyDetails.querySelector('summary span.text-xs');
+                            if (toggleTxt) toggleTxt.textContent = 'Hide Details';
+                        }
+
+                        // Remove non-summary children for all closed details so html2canvas doesn't leak or overflow them
+                        clonedRoot.querySelectorAll('details').forEach(d => {
+                            if (!d.open) {
+                                Array.from(d.children).forEach(child => {
+                                    if (child.tagName.toLowerCase() !== 'summary') {
+                                        child.remove();
+                                    }
+                                });
+                            }
+                        });
+
+                        clonedRoot.querySelectorAll('table').forEach(tbl => {
+                            tbl.style.width = '100%';
+                            tbl.style.tableLayout = 'auto';
+                        });
+
+                        clonedRoot.querySelectorAll('.overflow-x-auto, .overflow-y-auto').forEach(div => {
+                            div.style.overflow = 'visible';
+                            div.style.width = 'auto';
+                            div.style.maxWidth = 'none';
+                        });
+
+                        clonedRoot.querySelectorAll('.sticky, thead').forEach(node => {
+                            node.style.position = 'static';
+                        });
+
+                        clonedRoot.querySelectorAll('th, td').forEach(cell => {
+                            cell.style.padding = '3px 5px';
+                        });
+                    }
+                }
+            });
+        }).then(canvas => {
+            const now = new Date();
+            const ts = now.getFullYear() + ("0" + (now.getMonth() + 1)).slice(-2) + ("0" + now.getDate()).slice(-2) + "_" + ("0" + now.getHours()).slice(-2) + ("0" + now.getMinutes()).slice(-2);
+
+            let l = document.createElement('a');
+            l.download = `NPCT1_Yard_${fileNameSuffix}_${ts}.png`;
+            l.href = canvas.toDataURL("image/png");
+            l.click();
+        });
+    };
+
+    try {
+        if (type === 'cluster') {
+            await captureTarget('captureAreaClusterSpreading', 'Cluster_Spreading');
+        } else if (type === 'empty') {
+            await captureTarget('captureAreaEmpty', 'Empty_Summary');
+        } else if (type === 'both') {
+            await captureTarget('captureAreaClusterSpreading', 'Cluster_Spreading');
+            await new Promise(r => setTimeout(r, 600));
+            await captureTarget('captureAreaEmpty', 'Empty_Summary');
+        }
+    } catch (err) {
+        console.error("Capture failed:", err);
+        alert("Gagal menyimpan gambar. Silakan coba kembali.");
+    } finally {
+        if (wasDetailed) {
+            detailedToggle.checked = true;
+            renderClusterSpreading();
+        }
+    }
+}
+
 function downloadImage() {
+    if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
+        openSaveClusterImageModal();
+        return;
+    }
+
     let activeId = "captureArea";
     let fileName = "Overview";
 
-    if (!document.getElementById("tab-analytics")?.classList.contains("hidden")) {
-        activeId = "captureAreaAnalytics";
-        fileName = "Cluster_Spreading_and_MTY";
-    } else if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
+    if (!document.getElementById("tab-clash")?.classList.contains("hidden")) {
         activeId = "captureAreaClash";
         fileName = "Clash";
     } else if (!document.getElementById("tab-projection")?.classList.contains("hidden")) {
@@ -3329,15 +3461,6 @@ function downloadImage() {
     const el = document.getElementById(activeId);
     if (!el) return alert("Capture area not found");
 
-    // TEMPORARY MODE SWITCH FOR CLUSTER SPREADING
-    const detailedToggle = document.getElementById('toggleDetailedCluster');
-    let wasDetailed = false;
-    if ((activeId === "captureArea" || activeId === "captureAreaAnalytics") && detailedToggle && detailedToggle.checked) {
-        wasDetailed = true;
-        detailedToggle.checked = false;
-        renderClusterSpreading();
-    }
-
     // Prepare capture that adjusts cloned DOM to preserve table layout
     const capture = () => {
         const scrollW = el.scrollWidth;
@@ -3353,37 +3476,6 @@ function downloadImage() {
                     clonedRoot.style.padding = '10px';
                     clonedRoot.style.margin = '0';
                     clonedRoot.style.fontSize = '10px';
-
-                    // Ensure for Cluster Spread tab (captureAreaAnalytics), vessel schedule table is fully closed
-                    if (activeId === "captureAreaAnalytics") {
-                        const schedDetails = clonedRoot.querySelector('#npct1ScheduleDetails');
-                        if (schedDetails) {
-                            schedDetails.removeAttribute('open');
-                            schedDetails.open = false;
-                        }
-                        const recPanel = clonedRoot.querySelector('.recommended-panel');
-                        if (recPanel) recPanel.style.display = 'none';
-                    }
-
-                    // Ensure Import Empty Summary is ALWAYS open in save image
-                    const impEmptyDetails = clonedRoot.querySelector('#emptyImportSummaryDetails') || clonedRoot.querySelector('#emptyImportSummary')?.closest('details');
-                    if (impEmptyDetails) {
-                        impEmptyDetails.setAttribute('open', '');
-                        impEmptyDetails.open = true;
-                        const toggleTxt = impEmptyDetails.querySelector('summary span.text-xs');
-                        if (toggleTxt) toggleTxt.textContent = 'Hide Details';
-                    }
-
-                    // Remove non-summary children for all closed details so html2canvas doesn't leak or overflow them
-                    clonedRoot.querySelectorAll('details').forEach(d => {
-                        if (!d.open) {
-                            Array.from(d.children).forEach(child => {
-                                if (child.tagName.toLowerCase() !== 'summary') {
-                                    child.remove();
-                                }
-                            });
-                        }
-                    });
 
                     clonedRoot.querySelectorAll('table').forEach(tbl => {
                         tbl.style.width = '100%';
@@ -3419,18 +3511,8 @@ function downloadImage() {
             l.download = `NPCT1_Yard_${fileName}_${ts}.jpg`;
             l.href = c.toDataURL("image/jpeg", 0.9);
             l.click();
-
-            // RESTORE MODE
-            if (wasDetailed) {
-                detailedToggle.checked = true;
-                renderClusterSpreading();
-            }
         }).catch(err => {
             console.error("Capture failed:", err);
-            if (wasDetailed) {
-                detailedToggle.checked = true;
-                renderClusterSpreading();
-            }
             alert("Gagal menyimpan gambar. Silakan coba kembali.");
         });
     };
