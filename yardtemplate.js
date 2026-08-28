@@ -917,7 +917,7 @@ function renderActiveVesselTable() {
             return `${dd}/${mm} <span class="text-slate-400">${hh}:${mi}</span>`;
         };
 
-        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
+        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytHandleVesselRowClick('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
             <td class="px-2 py-2 text-center text-slate-400 font-mono text-[10px]">${i + 1}</td>
             <td class="px-3 py-2">
                 <div class="flex items-center gap-2">
@@ -1007,7 +1007,7 @@ function renderUpcomingOpenStackVessels() {
         const mins = totalMins % 60;
         const countdownBadge = `<span class="inline-block px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-900 font-mono text-[9px] font-bold border border-amber-300 ml-1">in ${hrs > 0 ? hrs + 'h ' : ''}${mins}m</span>`;
 
-        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
+        return `<tr class="yt-vessel-row ${isSelected ? 'yt-vessel-selected' : ''} hover:bg-indigo-50/40 transition-colors cursor-pointer" onclick="ytHandleVesselRowClick('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" ondblclick="ytSelectVesselFullscreen('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" title="Click to select · Double-click for Fullscreen Mode">
             <td class="px-2 py-2 text-center text-slate-400 font-mono text-[10px]">${i + 1}</td>
             <td class="px-3 py-2">
                 <div class="flex items-center gap-2">
@@ -1119,6 +1119,24 @@ function ytSelectVessel(key, vesselName, service, carrier) {
 
 // ── Fullscreen Reservation Mode ──────────────────────────────────────
 let ytIsFullscreen = false;
+let ytLastVesselClickTime = 0;
+let ytLastVesselClickKey = null;
+
+function ytHandleVesselRowClick(key, vesselName, service, carrier) {
+    const now = Date.now();
+    if (ytLastVesselClickKey === key && (now - ytLastVesselClickTime) < 450) {
+        // Double click detected!
+        ytLastVesselClickTime = 0;
+        ytLastVesselClickKey = null;
+        ytSelectVesselFullscreen(key, vesselName, service, carrier);
+        return;
+    }
+    ytLastVesselClickTime = now;
+    ytLastVesselClickKey = key;
+
+    // Single click
+    ytSelectVessel(key, vesselName, service, carrier);
+}
 
 function ytEnterFullscreen() {
     const card = document.getElementById('ytVisualCard');
@@ -1126,15 +1144,25 @@ function ytEnterFullscreen() {
     ytIsFullscreen = true;
     card.classList.add('yt-fullscreen');
     document.body.classList.add('yt-fullscreen-active');
+
     const btn = document.getElementById('ytFullscreenBtn');
     if (btn) {
         btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen_exit</span> Exit Fullscreen (Esc)`;
         btn.style.color = '#f43f5e';
         btn.style.borderColor = '#fda4af';
     }
-    if (document.fullscreenEnabled && !document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+
+    // REAL NATIVE OS FULLSCREEN (Browser Fullscreen)
+    const elem = card;
+    const reqFs = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.mozRequestFullScreen || elem.msRequestFullscreen;
+    if (reqFs) {
+        reqFs.call(elem).catch((err) => {
+            console.warn('elem.requestFullscreen failed, trying documentElement:', err);
+            const docFs = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+            if (docFs) docFs.call(document.documentElement).catch(() => {});
+        });
     }
+
     setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
 }
 
@@ -1144,15 +1172,19 @@ function ytExitFullscreen() {
     ytIsFullscreen = false;
     card.classList.remove('yt-fullscreen');
     document.body.classList.remove('yt-fullscreen-active');
+
     const btn = document.getElementById('ytFullscreenBtn');
     if (btn) {
         btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen</span> Fullscreen`;
         btn.style.color = '#0284c7';
         btn.style.borderColor = '#bae6fd';
     }
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+
+    const exitFs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        exitFs.call(document).catch(() => {});
     }
+
     setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
 }
 
@@ -1175,11 +1207,17 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-document.addEventListener('fullscreenchange', function () {
-    if (!document.fullscreenElement && ytIsFullscreen) {
+function ytOnFullscreenChange() {
+    const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    if (!isNativeFs && ytIsFullscreen) {
         ytExitFullscreen();
     }
-});
+}
+
+document.addEventListener('fullscreenchange', ytOnFullscreenChange);
+document.addEventListener('webkitfullscreenchange', ytOnFullscreenChange);
+document.addEventListener('mozfullscreenchange', ytOnFullscreenChange);
+document.addEventListener('MSFullscreenChange', ytOnFullscreenChange);
 
 function ytClearVesselSelection() {
     ytSelectedVessel = null;
