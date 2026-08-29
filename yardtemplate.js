@@ -1191,7 +1191,14 @@ function ytExitFullscreen() {
         exitFs.call(document).catch(() => {});
     }
 
-    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+    // Reset template zoom and show text back to compact normal view
+    ytSetShowText(false);
+    ytTemplateZoom = null;
+
+    setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        ytFitToScreen();
+    }, 120);
 }
 
 function ytToggleFullscreen() {
@@ -1698,9 +1705,19 @@ function ytFitToScreen() {
             ytTemplateZoom = availableWidth / naturalWidth;
             if (ytTemplateZoom > 1) ytTemplateZoom = 1;
             yardEl.style.zoom = ytTemplateZoom;
+        } else {
+            ytTemplateZoom = 1;
+            yardEl.style.zoom = 1;
         }
     }
 }
+
+// Prevent accidental browser-level page zoom when user scrolls with Ctrl key
+window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
 
 function ytSetShowText(show) {
     ytTemplateTextHidden = !show;

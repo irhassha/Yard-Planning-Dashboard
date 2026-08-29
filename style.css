@@ -1343,9 +1343,7 @@ body.yt-fullscreen-active #stickyTabContainer {
     display: none !important;
 }
 
-#ytVisualCard.yt-fullscreen,
-#ytVisualCard:fullscreen,
-#ytVisualCard:-webkit-full-screen {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) {
     position: fixed !important;
     inset: 0 !important;
     z-index: 99999 !important;
@@ -1364,37 +1362,27 @@ body.yt-fullscreen-active #stickyTabContainer {
     border: none !important;
 }
 
-#ytVisualCard.yt-fullscreen .p-4.border-b,
-#ytVisualCard:fullscreen .p-4.border-b,
-#ytVisualCard:-webkit-full-screen .p-4.border-b {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) .p-4.border-b {
     background: #1e293b !important;
     border-color: #334155 !important;
     padding: 0.75rem 1.25rem !important;
 }
 
-#ytVisualCard.yt-fullscreen h2,
-#ytVisualCard:fullscreen h2,
-#ytVisualCard:-webkit-full-screen h2 {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) h2 {
     color: #f8fafc !important;
 }
 
-#ytVisualCard.yt-fullscreen p,
-#ytVisualCard:fullscreen p,
-#ytVisualCard:-webkit-full-screen p {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) p {
     color: #94a3b8 !important;
 }
 
-#ytVisualCard.yt-fullscreen #ytYardLegend,
-#ytVisualCard:fullscreen #ytYardLegend,
-#ytVisualCard:-webkit-full-screen #ytYardLegend {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytYardLegend {
     background: #1e293b !important;
     border-color: #334155 !important;
     padding: 0.5rem 1rem !important;
 }
 
-#ytVisualCard.yt-fullscreen #ytYardContent,
-#ytVisualCard:fullscreen #ytYardContent,
-#ytVisualCard:-webkit-full-screen #ytYardContent {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytYardContent {
     flex: 1 1 auto !important;
     height: 100% !important;
     overflow: auto !important;
@@ -1402,23 +1390,17 @@ body.yt-fullscreen-active #stickyTabContainer {
     padding: 1.25rem !important;
 }
 
-#ytVisualCard.yt-fullscreen .ym-block,
-#ytVisualCard:fullscreen .ym-block,
-#ytVisualCard:-webkit-full-screen .ym-block {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) .ym-block {
     background: #1e293b !important;
     border-color: #334155 !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4) !important;
 }
 
-#ytVisualCard.yt-fullscreen .ym-block-name,
-#ytVisualCard:fullscreen .ym-block-name,
-#ytVisualCard:-webkit-full-screen .ym-block-name {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) .ym-block-name {
     color: #cbd5e1 !important;
 }
 
-#ytVisualCard.yt-fullscreen .yt-mode-bar,
-#ytVisualCard:fullscreen .yt-mode-bar,
-#ytVisualCard:-webkit-full-screen .yt-mode-bar {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) .yt-mode-bar {
     background: #1e293b !important;
     border-color: #475569 !important;
     color: #f1f5f9 !important;
