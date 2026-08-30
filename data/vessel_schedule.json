@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-08-30T15:31:17.489Z",
-  "totalScraped": 71,
-  "totalFiltered": 36,
+  "lastUpdated": "2026-08-30T20:08:16.011Z",
+  "totalScraped": 70,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "MAERSK VIGO",
@@ -47,6 +47,36 @@
       "openStacking": "2026-08-26 01:00:00",
       "closingDocument": "2026-08-30 03:00:00",
       "closingPhysic": "2026-08-30 05:00:00"
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "637E",
+      "voyOut": "638N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-09-13 13:00:00",
+      "ata": "",
+      "etd": "2026-09-15 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MERATUS JAYAWIJAYA",
+      "line": "MCC",
+      "voyIn": "635S",
+      "voyOut": "636N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-09-13 12:00:00",
+      "ata": "",
+      "etd": "2026-09-14 14:30:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER ORIENT",
