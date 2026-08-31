@@ -1923,8 +1923,14 @@ window.calculateYardAnomalies = function () {
             if (sp && sp !== '0' && sp !== 'NIL' && sp !== '-' && sp !== '') {
                 uniqueSpods.add(sp);
             }
-            const wc = String(it.wtcl || '').trim().toUpperCase();
+            let wc = String(it.wtcl || '').trim().toUpperCase();
             if (wc && wc !== '0' && wc !== 'NIL' && wc !== '-' && wc !== '') {
+                const ls = String(it.loadStatus || '').toUpperCase();
+                const isMT = ls.includes('EMPTY') || ls === 'MT' || ls.startsWith('MT');
+                const pWc = parseInt(wc);
+                if (isMT && (pWc === 1 || pWc === 99)) {
+                    wc = '1';
+                }
                 uniqueWcs.add(wc);
             }
         });
@@ -2151,7 +2157,7 @@ function _batchParseFile(arrayBuffer) {
     const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: "" });
 
     let hIdx = -1;
-    let colMap = { block: -1, length: -1, carrier: -1, carrierIn: -1, carrierOut: -1, move: -1, slot: -1, row: -1, service: -1, spod: -1, wtcl: -1, oog: -1 };
+    let colMap = { block: -1, length: -1, carrier: -1, carrierIn: -1, carrierOut: -1, move: -1, slot: -1, row: -1, loadStatus: -1, service: -1, spod: -1, wtcl: -1, oog: -1 };
 
     for (let i = 0; i < Math.min(json.length, 30); i++) {
         let rStr = json[i].map(c => cleanStr(c)).join(" ");
@@ -2169,6 +2175,7 @@ function _batchParseFile(arrayBuffer) {
                 if (c === "move" || c === "status" || c === "category") colMap.move = idx;
                 if (c.includes("slot") && c.includes("exe")) colMap.slot = idx;
                 if (c.includes("row") && c.includes("exe")) colMap.row = idx;
+                if (c.includes("load") && c.includes("status")) colMap.loadStatus = idx;
                 if (cKey === "serviceout" || c.includes("service")) colMap.service = idx;
                 if (cKey === "spod") colMap.spod = idx;
                 if (cKey === "wtcl") colMap.wtcl = idx;
@@ -2216,6 +2223,7 @@ function _batchParseFile(arrayBuffer) {
             length: colMap.length !== -1 ? String(row[colMap.length] || "") : "20",
             carrier: String(finalCarrier || "").toUpperCase().trim(),
             move: moveStr,
+            loadStatus: colMap.loadStatus !== -1 ? String(row[colMap.loadStatus] || "").toUpperCase() : "FULL",
             service: colMap.service !== -1 ? String(row[colMap.service] || "").toUpperCase().trim() : "",
             spod: colMap.spod !== -1 ? String(row[colMap.spod] || "").toUpperCase().trim() : "",
             wtcl: colMap.wtcl !== -1 ? String(row[colMap.wtcl] || "").toUpperCase().trim() : "",
@@ -2315,8 +2323,16 @@ function _batchComputeAnomalies(data) {
             if (c && c !== '0' && c !== 'NIL' && c !== '-') uV.add(c);
             const sp = String(it.spod || '').trim().toUpperCase();
             if (sp && sp !== '0' && sp !== 'NIL' && sp !== '-' && sp !== '') uS.add(sp);
-            const wc = String(it.wtcl || '').trim().toUpperCase();
-            if (wc && wc !== '0' && wc !== 'NIL' && wc !== '-' && wc !== '') uW.add(wc);
+            let wc = String(it.wtcl || '').trim().toUpperCase();
+            if (wc && wc !== '0' && wc !== 'NIL' && wc !== '-' && wc !== '') {
+                const ls = String(it.loadStatus || '').toUpperCase();
+                const isMT = ls.includes('EMPTY') || ls === 'MT' || ls.startsWith('MT');
+                const pWc = parseInt(wc);
+                if (isMT && (pWc === 1 || pWc === 99)) {
+                    wc = '1';
+                }
+                uW.add(wc);
+            }
         });
         if (uV.size >= 2) mixVessel++;
         if (uS.size >= 2) mixSpod++;
