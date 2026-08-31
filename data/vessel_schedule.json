@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-08-30T20:08:16.011Z",
+  "lastUpdated": "2026-08-31T01:44:31.613Z",
   "totalScraped": 70,
   "totalFiltered": 38,
   "vessels": [
@@ -400,7 +400,7 @@
       "voyOut": "070N",
       "service": "CIM",
       "status": "REGISTER",
-      "etb": "2026-09-03 22:00:00",
+      "etb": "2026-09-03 21:00:00",
       "ata": "",
       "etd": "2026-09-05 02:00:00",
       "atd": "",
@@ -417,7 +417,7 @@
       "status": "REGISTER",
       "etb": "2026-09-03 09:00:00",
       "ata": "",
-      "etd": "2026-09-04 11:00:00",
+      "etd": "2026-09-04 13:00:00",
       "atd": "",
       "openStacking": "2026-08-30 01:00:00",
       "closingDocument": "2026-09-01 21:59:00",
