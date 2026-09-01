@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-01T15:36:33.910Z",
+  "lastUpdated": "2026-09-01T20:11:36.832Z",
   "totalScraped": 71,
-  "totalFiltered": 35,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "OEL VARUN",
@@ -11,12 +11,57 @@
       "service": "TX4",
       "status": "ACTIVE",
       "etb": "2026-09-01 22:00:00",
-      "ata": "2026-09-01 22:06:52",
+      "ata": "2026-09-01 21:25:00",
       "etd": "2026-09-02 20:00:00",
       "atd": "",
       "openStacking": "2026-08-27 01:00:00",
       "closingDocument": "2026-09-01 13:00:00",
       "closingPhysic": "2026-09-01 15:00:00"
+    },
+    {
+      "vessel": "EVER OBEY",
+      "line": "EMA",
+      "voyIn": "0492-057S",
+      "voyOut": "0492-057N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-09-15 19:00:00",
+      "ata": "",
+      "etd": "2026-09-16 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC YUHE",
+      "line": "SIT",
+      "voyIn": "2624S",
+      "voyOut": "2625N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-09-15 15:00:00",
+      "ata": "",
+      "etd": "2026-09-16 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-09-15 10:00:00",
+      "ata": "",
+      "etd": "2026-09-16 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "TS NAGOYA",
