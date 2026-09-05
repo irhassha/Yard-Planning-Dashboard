@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-05T14:02:18.954Z",
-  "totalScraped": 69,
+  "lastUpdated": "2026-09-05T19:36:27.718Z",
+  "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
+    {
+      "vessel": "STARSHIP VENUS",
+      "line": "NSS",
+      "voyIn": "2607S",
+      "voyOut": "2607N",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-09-05 23:00:00",
+      "ata": "2026-09-05 22:26:54",
+      "etd": "2026-09-07 03:00:00",
+      "atd": "",
+      "openStacking": "2026-08-29 01:00:00",
+      "closingDocument": "2026-09-03 21:00:00",
+      "closingPhysic": "2026-09-03 23:00:00"
+    },
     {
       "vessel": "SINAR BANGKA",
       "line": "SIT",
@@ -512,21 +527,6 @@
       "openStacking": "2026-08-28 01:00:00",
       "closingDocument": "2026-09-01 13:00:00",
       "closingPhysic": "2026-09-01 15:00:00"
-    },
-    {
-      "vessel": "STARSHIP VENUS",
-      "line": "NSS",
-      "voyIn": "2607S",
-      "voyOut": "2607N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-09-05 23:00:00",
-      "ata": "",
-      "etd": "2026-09-07 03:00:00",
-      "atd": "",
-      "openStacking": "2026-08-29 01:00:00",
-      "closingDocument": "2026-09-03 21:00:00",
-      "closingPhysic": "2026-09-03 23:00:00"
     },
     {
       "vessel": "MARINA ONE",
