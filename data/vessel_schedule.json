@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-05T09:30:22.092Z",
+  "lastUpdated": "2026-09-05T14:02:18.954Z",
   "totalScraped": 69,
-  "totalFiltered": 38,
+  "totalFiltered": 37,
   "vessels": [
     {
       "vessel": "SINAR BANGKA",
@@ -32,21 +32,6 @@
       "openStacking": "2026-08-27 01:00:00",
       "closingDocument": "2026-09-01 11:00:00",
       "closingPhysic": "2026-09-01 13:00:00"
-    },
-    {
-      "vessel": "MARSA PRIDE",
-      "line": "MCC",
-      "voyIn": "633S",
-      "voyOut": "636N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-09-04 22:00:00",
-      "ata": "2026-09-04 20:00:00",
-      "etd": "2026-09-05 17:00:00",
-      "atd": "",
-      "openStacking": "2026-08-28 01:00:00",
-      "closingDocument": "2026-09-03 21:59:00",
-      "closingPhysic": "2026-09-03 23:59:00"
     },
     {
       "vessel": "EVER BEFIT",
