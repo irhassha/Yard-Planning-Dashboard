@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-05T19:36:27.718Z",
+  "lastUpdated": "2026-09-06T01:24:25.740Z",
   "totalScraped": 65,
-  "totalFiltered": 37,
+  "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "SITC DECHENG",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-09-06 03:00:00",
+      "ata": "2026-09-06 02:00:00",
+      "etd": "2026-09-07 05:00:00",
+      "atd": "",
+      "openStacking": "2026-08-28 01:00:00",
+      "closingDocument": "2026-09-01 13:00:00",
+      "closingPhysic": "2026-09-01 15:00:00"
+    },
     {
       "vessel": "STARSHIP VENUS",
       "line": "NSS",
@@ -17,36 +32,6 @@
       "openStacking": "2026-08-29 01:00:00",
       "closingDocument": "2026-09-03 21:00:00",
       "closingPhysic": "2026-09-03 23:00:00"
-    },
-    {
-      "vessel": "SINAR BANGKA",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-09-05 11:00:00",
-      "ata": "2026-09-05 09:04:00",
-      "etd": "2026-09-06 01:00:00",
-      "atd": "",
-      "openStacking": "2026-08-31 18:00:00",
-      "closingDocument": "2026-09-04 16:00:00",
-      "closingPhysic": "2026-09-04 18:00:00"
-    },
-    {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "380N",
-      "voyOut": "380N",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-09-05 00:00:00",
-      "ata": "2026-09-04 22:30:00",
-      "etd": "2026-09-06 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-27 01:00:00",
-      "closingDocument": "2026-09-01 11:00:00",
-      "closingPhysic": "2026-09-01 13:00:00"
     },
     {
       "vessel": "EVER BEFIT",
@@ -512,21 +497,6 @@
       "openStacking": "2026-08-30 01:00:00",
       "closingDocument": "2026-09-05 21:59:00",
       "closingPhysic": "2026-09-05 23:59:00"
-    },
-    {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-09-06 03:00:00",
-      "ata": "",
-      "etd": "2026-09-07 05:00:00",
-      "atd": "",
-      "openStacking": "2026-08-28 01:00:00",
-      "closingDocument": "2026-09-01 13:00:00",
-      "closingPhysic": "2026-09-01 15:00:00"
     },
     {
       "vessel": "MARINA ONE",
