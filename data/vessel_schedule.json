@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-08T15:24:53.119Z",
-  "totalScraped": 69,
-  "totalFiltered": 36,
+  "lastUpdated": "2026-09-08T20:21:37.896Z",
+  "totalScraped": 68,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "MSC STELLA",
@@ -13,6 +13,36 @@
       "etb": "2026-09-08 01:00:00",
       "ata": "2026-09-07 22:58:00",
       "etd": "2026-09-09 20:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2624S",
+      "voyOut": "2625N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-09-22 15:00:00",
+      "ata": "",
+      "etd": "2026-09-23 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC BATANGAS",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-09-22 10:00:00",
+      "ata": "",
+      "etd": "2026-09-23 10:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
