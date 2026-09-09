@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-09T15:22:25.496Z",
-  "totalScraped": 68,
-  "totalFiltered": 37,
+  "lastUpdated": "2026-09-09T20:05:25.358Z",
+  "totalScraped": 66,
+  "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "EVER BIRTH",
+      "line": "EMA",
+      "voyIn": "1205-110B",
+      "voyOut": "1205-110B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-09-09 23:00:00",
+      "ata": "2026-09-09 22:27:00",
+      "etd": "2026-09-11 01:00:00",
+      "atd": "",
+      "openStacking": "2026-09-06 01:00:00",
+      "closingDocument": "2026-09-09 10:00:00",
+      "closingPhysic": "2026-09-09 12:00:00"
+    },
     {
       "vessel": "GREEN PACIFIC",
       "line": "SIT",
@@ -32,6 +47,36 @@
       "openStacking": "2026-09-04 01:00:00",
       "closingDocument": "2026-09-09 02:00:00",
       "closingPhysic": "2026-09-09 04:00:00"
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "638S",
+      "voyOut": "639W",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-09-23 22:00:00",
+      "ata": "",
+      "etd": "2026-09-25 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "AS PIA",
+      "line": "MCC",
+      "voyIn": "636S",
+      "voyOut": "639N",
+      "service": "IA8",
+      "status": "REGISTER",
+      "etb": "2026-09-23 13:00:00",
+      "ata": "",
+      "etd": "2026-09-24 14:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SINAR BANGKA",
@@ -497,21 +542,6 @@
       "openStacking": "2026-09-02 01:00:00",
       "closingDocument": "2026-09-06 03:00:00",
       "closingPhysic": "2026-09-06 05:00:00"
-    },
-    {
-      "vessel": "EVER BIRTH",
-      "line": "EMA",
-      "voyIn": "1205-110B",
-      "voyOut": "1205-110B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-09-09 23:00:00",
-      "ata": "",
-      "etd": "2026-09-11 01:00:00",
-      "atd": "",
-      "openStacking": "2026-09-06 01:00:00",
-      "closingDocument": "2026-09-09 10:00:00",
-      "closingPhysic": "2026-09-09 12:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
