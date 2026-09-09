@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-09T01:40:04.012Z",
+  "lastUpdated": "2026-09-09T10:10:19.259Z",
   "totalScraped": 68,
   "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "SPIL NIKEN",
+      "line": "MCC",
+      "voyIn": "634S",
+      "voyOut": "637N",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-09-09 12:00:00",
+      "ata": "2026-09-09 12:00:00",
+      "etd": "2026-09-10 05:00:00",
+      "atd": "",
+      "openStacking": "2026-09-04 01:00:00",
+      "closingDocument": "2026-09-09 02:00:00",
+      "closingPhysic": "2026-09-09 04:00:00"
+    },
     {
       "vessel": "MSC STELLA",
       "line": "MSC",
@@ -239,9 +254,9 @@
       "ata": "",
       "etd": "2026-09-17 18:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-11 01:00:00",
+      "closingDocument": "2026-09-16 09:00:00",
+      "closingPhysic": "2026-09-16 11:00:00"
     },
     {
       "vessel": "EVER ORIENT",
@@ -310,7 +325,7 @@
       "voyOut": "HW634A",
       "service": "PERTIWI",
       "status": "REGISTER",
-      "etb": "2026-09-15 05:00:00",
+      "etb": "2026-09-15 08:00:00",
       "ata": "",
       "etd": "2026-09-16 16:00:00",
       "atd": "",
@@ -415,7 +430,7 @@
       "voyOut": "637N",
       "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-09-11 20:00:00",
+      "etb": "2026-09-11 23:00:00",
       "ata": "",
       "etd": "2026-09-12 22:00:00",
       "atd": "",
@@ -460,7 +475,7 @@
       "voyOut": "637S",
       "service": "TX4",
       "status": "REGISTER",
-      "etb": "2026-09-10 11:00:00",
+      "etb": "2026-09-10 12:00:00",
       "ata": "",
       "etd": "2026-09-11 13:00:00",
       "atd": "",
@@ -512,21 +527,6 @@
       "openStacking": "2026-09-03 01:00:00",
       "closingDocument": "2026-09-07 13:00:00",
       "closingPhysic": "2026-09-07 15:00:00"
-    },
-    {
-      "vessel": "SPIL NIKEN",
-      "line": "MCC",
-      "voyIn": "634S",
-      "voyOut": "637N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-09-09 12:00:00",
-      "ata": "",
-      "etd": "2026-09-10 05:00:00",
-      "atd": "",
-      "openStacking": "2026-09-04 01:00:00",
-      "closingDocument": "2026-09-09 02:00:00",
-      "closingPhysic": "2026-09-09 04:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
