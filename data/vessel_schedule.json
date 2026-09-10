@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-10T15:15:50.342Z",
-  "totalScraped": 71,
-  "totalFiltered": 42,
+  "lastUpdated": "2026-09-10T20:07:44.561Z",
+  "totalScraped": 67,
+  "totalFiltered": 40,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "636S",
+      "voyOut": "637W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-09-11 01:00:00",
+      "ata": "2026-09-10 23:30:00",
+      "etd": "2026-09-12 16:00:00",
+      "atd": "",
+      "openStacking": "2026-09-05 01:00:00",
+      "closingDocument": "2026-09-09 12:00:00",
+      "closingPhysic": "2026-09-09 14:00:00"
+    },
     {
       "vessel": "OEL VARUN",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-09-02 01:00:00",
       "closingDocument": "2026-09-06 03:00:00",
       "closingPhysic": "2026-09-06 05:00:00"
-    },
-    {
-      "vessel": "EVER BIRTH",
-      "line": "EMA",
-      "voyIn": "1205-110B",
-      "voyOut": "1205-110B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-09-09 23:00:00",
-      "ata": "2026-09-09 22:27:00",
-      "etd": "2026-09-10 21:00:00",
-      "atd": "",
-      "openStacking": "2026-09-06 01:00:00",
-      "closingDocument": "2026-09-09 10:00:00",
-      "closingPhysic": "2026-09-09 12:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -574,21 +574,6 @@
       "closingPhysic": "2026-09-10 23:00:00"
     },
     {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "636S",
-      "voyOut": "637W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-09-11 01:00:00",
-      "ata": "",
-      "etd": "2026-09-12 16:00:00",
-      "atd": "",
-      "openStacking": "2026-09-05 01:00:00",
-      "closingDocument": "2026-09-09 12:00:00",
-      "closingPhysic": "2026-09-09 14:00:00"
-    },
-    {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
       "line": "SSD",
       "voyIn": "313JN",
@@ -613,21 +598,6 @@
       "etb": "2026-08-29 09:30:00",
       "ata": "",
       "etd": "2026-08-30 07:30:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "MSC MANU IV",
-      "line": "MSC",
-      "voyIn": "HW633A",
-      "voyOut": "HW633A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-08-27 22:00:00",
-      "ata": "",
-      "etd": "2026-08-28 12:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
