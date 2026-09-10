@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-09T20:05:25.358Z",
+  "lastUpdated": "2026-09-10T01:34:49.350Z",
   "totalScraped": 66,
-  "totalFiltered": 39,
+  "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "636E",
+      "voyOut": "637N",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-09-10 08:00:00",
+      "ata": "2026-09-10 08:13:35",
+      "etd": "2026-09-11 19:00:00",
+      "atd": "",
+      "openStacking": "2026-09-02 01:00:00",
+      "closingDocument": "2026-09-06 03:00:00",
+      "closingPhysic": "2026-09-06 05:00:00"
+    },
     {
       "vessel": "EVER BIRTH",
       "line": "EMA",
@@ -32,21 +47,6 @@
       "openStacking": "2026-09-03 01:00:00",
       "closingDocument": "2026-09-07 13:00:00",
       "closingPhysic": "2026-09-07 15:00:00"
-    },
-    {
-      "vessel": "SPIL NIKEN",
-      "line": "MCC",
-      "voyIn": "634S",
-      "voyOut": "637N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-09-09 12:00:00",
-      "ata": "2026-09-09 12:00:00",
-      "etd": "2026-09-10 05:00:00",
-      "atd": "",
-      "openStacking": "2026-09-04 01:00:00",
-      "closingDocument": "2026-09-09 02:00:00",
-      "closingPhysic": "2026-09-09 04:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -527,21 +527,6 @@
       "openStacking": "2026-09-05 01:00:00",
       "closingDocument": "2026-09-09 23:00:00",
       "closingPhysic": "2026-09-10 01:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "636E",
-      "voyOut": "637N",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-09-10 07:00:00",
-      "ata": "",
-      "etd": "2026-09-11 19:00:00",
-      "atd": "",
-      "openStacking": "2026-09-02 01:00:00",
-      "closingDocument": "2026-09-06 03:00:00",
-      "closingPhysic": "2026-09-06 05:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
