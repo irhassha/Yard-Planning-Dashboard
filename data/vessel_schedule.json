@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-11T10:03:20.877Z",
+  "lastUpdated": "2026-09-11T15:17:42.747Z",
   "totalScraped": 67,
   "totalFiltered": 40,
   "vessels": [
@@ -261,17 +261,17 @@
     {
       "vessel": "EVER BOOMY",
       "line": "EMA",
-      "voyIn": "093A",
-      "voyOut": "093B",
+      "voyIn": "1206-093B",
+      "voyOut": "1206-093B",
       "service": "JPI-B",
       "status": "REGISTER",
       "etb": "2026-09-19 09:00:00",
       "ata": "",
       "etd": "2026-09-20 10:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-16 01:00:00",
+      "closingDocument": "2026-09-18 21:59:00",
+      "closingPhysic": "2026-09-18 23:59:00"
     },
     {
       "vessel": "MSC TAMARA IV",
