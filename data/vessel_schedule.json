@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-11T01:34:03.208Z",
+  "lastUpdated": "2026-09-11T10:03:20.877Z",
   "totalScraped": 67,
   "totalFiltered": 40,
   "vessels": [
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-09-10 09:00:00",
       "ata": "2026-09-10 08:13:35",
-      "etd": "2026-09-11 19:00:00",
+      "etd": "2026-09-11 22:00:00",
       "atd": "",
       "openStacking": "2026-09-02 01:00:00",
       "closingDocument": "2026-09-06 03:00:00",
@@ -344,9 +344,9 @@
       "ata": "",
       "etd": "2026-09-18 04:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-14 01:00:00",
+      "closingDocument": "2026-09-16 21:59:00",
+      "closingPhysic": "2026-09-16 23:59:00"
     },
     {
       "vessel": "SEASPAN CALICANTO",
@@ -544,6 +544,21 @@
       "closingPhysic": "2026-09-07 18:00:00"
     },
     {
+      "vessel": "HMM HERITAGE",
+      "line": "HMM",
+      "voyIn": "0012S",
+      "voyOut": "0012N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-09-12 01:00:00",
+      "ata": "",
+      "etd": "2026-09-12 21:00:00",
+      "atd": "",
+      "openStacking": "2026-09-06 01:00:00",
+      "closingDocument": "2026-09-10 21:00:00",
+      "closingPhysic": "2026-09-10 23:00:00"
+    },
+    {
       "vessel": "OKEE CORNELIA",
       "line": "MCC",
       "voyIn": "636S",
@@ -557,21 +572,6 @@
       "openStacking": "2026-09-06 01:00:00",
       "closingDocument": "2026-09-11 04:00:00",
       "closingPhysic": "2026-09-11 06:00:00"
-    },
-    {
-      "vessel": "HMM HERITAGE",
-      "line": "HMM",
-      "voyIn": "0012S",
-      "voyOut": "0012N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-09-11 22:00:00",
-      "ata": "",
-      "etd": "2026-09-12 21:00:00",
-      "atd": "",
-      "openStacking": "2026-09-06 01:00:00",
-      "closingDocument": "2026-09-10 21:00:00",
-      "closingPhysic": "2026-09-10 23:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
