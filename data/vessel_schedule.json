@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-09-13T15:07:39.613Z",
-  "totalScraped": 65,
-  "totalFiltered": 35,
+  "lastUpdated": "2026-09-13T19:54:40.139Z",
+  "totalScraped": 64,
+  "totalFiltered": 36,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "637E",
+      "voyOut": "638N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-09-14 01:00:00",
+      "ata": "2026-09-14 00:28:47",
+      "etd": "2026-09-15 18:00:00",
+      "atd": "",
+      "openStacking": "2026-09-09 01:00:00",
+      "closingDocument": "2026-09-13 03:00:00",
+      "closingPhysic": "2026-09-13 05:00:00"
+    },
+    {
+      "vessel": "EVER BURLY",
+      "line": "EMC",
+      "voyIn": "S093",
+      "voyOut": "N093",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-09-13 22:00:00",
+      "ata": "2026-09-13 23:23:55",
+      "etd": "2026-09-15 06:00:00",
+      "atd": "",
+      "openStacking": "2026-09-08 01:00:00",
+      "closingDocument": "2026-09-11 10:00:00",
+      "closingPhysic": "2026-09-11 12:00:00"
+    },
     {
       "vessel": "EVER BLINK",
       "line": "EMA",
@@ -19,19 +49,34 @@
       "closingPhysic": "2026-09-10 07:00:00"
     },
     {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2624S",
-      "voyOut": "2625N",
-      "service": "JTH",
-      "status": "ACTIVE",
-      "etb": "2026-09-13 02:00:00",
-      "ata": "2026-09-13 02:51:00",
-      "etd": "2026-09-13 23:00:00",
-      "atd": "2026-09-13 21:52:00",
-      "openStacking": "2026-09-08 01:00:00",
-      "closingDocument": "2026-09-11 16:00:00",
-      "closingPhysic": "2026-09-11 18:00:00"
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "639E",
+      "voyOut": "640N",
+      "service": "JKF",
+      "status": "REGISTER",
+      "etb": "2026-09-27 15:00:00",
+      "ata": "",
+      "etd": "2026-09-29 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MSC VANESSA",
+      "line": "MSC",
+      "voyIn": "XI638A",
+      "voyOut": "XI638A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-09-27 01:00:00",
+      "ata": "",
+      "etd": "2026-09-28 02:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SKY PEACE",
@@ -360,8 +405,8 @@
       "etd": "2026-09-18 07:00:00",
       "atd": "",
       "openStacking": "2026-09-13 19:00:00",
-      "closingDocument": "2026-09-17 16:00:00",
-      "closingPhysic": "2026-09-17 18:00:00"
+      "closingDocument": "2026-09-17 06:00:00",
+      "closingPhysic": "2026-09-17 08:00:00"
     },
     {
       "vessel": "EVER OBEY",
@@ -482,36 +527,6 @@
       "openStacking": "2026-09-08 01:00:00",
       "closingDocument": "2026-09-12 13:00:00",
       "closingPhysic": "2026-09-12 15:00:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "637E",
-      "voyOut": "638N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-09-14 01:00:00",
-      "ata": "",
-      "etd": "2026-09-15 18:00:00",
-      "atd": "",
-      "openStacking": "2026-09-09 01:00:00",
-      "closingDocument": "2026-09-13 03:00:00",
-      "closingPhysic": "2026-09-13 05:00:00"
-    },
-    {
-      "vessel": "EVER BURLY",
-      "line": "EMC",
-      "voyIn": "S093",
-      "voyOut": "N093",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-09-13 22:00:00",
-      "ata": "",
-      "etd": "2026-09-15 06:00:00",
-      "atd": "",
-      "openStacking": "2026-09-08 01:00:00",
-      "closingDocument": "2026-09-11 10:00:00",
-      "closingPhysic": "2026-09-11 12:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
