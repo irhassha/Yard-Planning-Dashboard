@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-15T10:31:09.378Z",
-  "totalScraped": 63,
-  "totalFiltered": 35,
+  "lastUpdated": "2026-09-15T15:44:44.342Z",
+  "totalScraped": 64,
+  "totalFiltered": 36,
   "vessels": [
     {
       "vessel": "SEABREEZE",
@@ -274,6 +274,21 @@
       "closingPhysic": "2026-09-20 11:00:00"
     },
     {
+      "vessel": "EVER BLISS",
+      "line": "EMA",
+      "voyIn": "1209-116A",
+      "voyOut": "1209-116A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-09-21 21:00:00",
+      "ata": "",
+      "etd": "2026-09-22 22:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
       "voyIn": "638E",
@@ -462,7 +477,7 @@
       "status": "REGISTER",
       "etb": "2026-09-16 19:00:00",
       "ata": "",
-      "etd": "2026-09-17 19:00:00",
+      "etd": "2026-09-17 15:00:00",
       "atd": "",
       "openStacking": "2026-09-11 01:00:00",
       "closingDocument": "2026-09-16 09:00:00",
