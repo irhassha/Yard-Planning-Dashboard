@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-16T20:29:13.526Z",
+  "lastUpdated": "2026-09-17T01:52:56.333Z",
   "totalScraped": 65,
   "totalFiltered": 37,
   "vessels": [
@@ -284,9 +284,9 @@
       "ata": "",
       "etd": "2026-09-24 10:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-18 01:00:00",
+      "closingDocument": "2026-09-23 03:00:00",
+      "closingPhysic": "2026-09-23 05:00:00"
     },
     {
       "vessel": "INTERASIA ENGAGE",
