@@ -1,22 +1,22 @@
 {
-  "lastUpdated": "2026-09-17T10:30:04.905Z",
+  "lastUpdated": "2026-09-17T15:42:34.536Z",
   "totalScraped": 64,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
     {
-      "vessel": "BG. LL MASSIE - TB. LL MASERATII",
-      "line": "SSD",
-      "voyIn": "81 JN",
-      "voyOut": "81 JN",
-      "service": "SSD TRANS",
+      "vessel": "MERATUS MEDAN 5",
+      "line": "MAE",
+      "voyIn": "636S",
+      "voyOut": "637N",
+      "service": "TX4",
       "status": "ACTIVE",
-      "etb": "2026-09-17 17:00:00",
-      "ata": "2026-09-17 13:00:00",
-      "etd": "2026-09-17 22:00:00",
+      "etb": "2026-09-17 21:00:00",
+      "ata": "2026-09-17 15:22:00",
+      "etd": "2026-09-18 09:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-13 19:00:00",
+      "closingDocument": "2026-09-17 06:00:00",
+      "closingPhysic": "2026-09-17 08:00:00"
     },
     {
       "vessel": "MSC SHAULA",
@@ -482,21 +482,6 @@
       "openStacking": "2026-09-14 01:00:00",
       "closingDocument": "2026-09-16 21:59:00",
       "closingPhysic": "2026-09-16 23:59:00"
-    },
-    {
-      "vessel": "MERATUS MEDAN 5",
-      "line": "MAE",
-      "voyIn": "636S",
-      "voyOut": "637N",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-09-17 21:00:00",
-      "ata": "",
-      "etd": "2026-09-18 09:00:00",
-      "atd": "",
-      "openStacking": "2026-09-13 19:00:00",
-      "closingDocument": "2026-09-17 06:00:00",
-      "closingPhysic": "2026-09-17 08:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
