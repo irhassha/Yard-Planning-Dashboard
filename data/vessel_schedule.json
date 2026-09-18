@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-18T01:40:12.684Z",
-  "totalScraped": 64,
-  "totalFiltered": 33,
+  "lastUpdated": "2026-09-18T10:06:34.303Z",
+  "totalScraped": 65,
+  "totalFiltered": 34,
   "vessels": [
     {
       "vessel": "EVER OBEY",
@@ -27,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-09-16 22:00:00",
       "ata": "2026-09-16 22:03:00",
-      "etd": "2026-09-18 19:00:00",
+      "etd": "2026-09-18 15:00:00",
       "atd": "",
       "openStacking": "2026-09-07 01:00:00",
       "closingDocument": "2026-09-11 13:00:00",
@@ -102,7 +102,7 @@
       "status": "REGISTER",
       "etb": "2026-09-28 23:00:00",
       "ata": "",
-      "etd": "2026-09-29 21:00:00",
+      "etd": "2026-09-29 16:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -118,6 +118,21 @@
       "etb": "2026-09-28 11:00:00",
       "ata": "",
       "etd": "2026-09-29 11:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0494-050S",
+      "voyOut": "0494-050N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-09-28 03:00:00",
+      "ata": "",
+      "etd": "2026-09-28 21:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -205,13 +220,13 @@
       "voyOut": "639W",
       "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-09-25 16:00:00",
+      "etb": "2026-09-25 17:00:00",
       "ata": "",
-      "etd": "2026-09-27 13:00:00",
+      "etd": "2026-09-27 20:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-20 01:00:00",
+      "closingDocument": "2026-09-24 04:00:00",
+      "closingPhysic": "2026-09-24 06:00:00"
     },
     {
       "vessel": "EVER OASIS",
@@ -224,9 +239,9 @@
       "ata": "",
       "etd": "2026-09-26 04:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-22 01:00:00",
+      "closingDocument": "2026-09-24 21:59:00",
+      "closingPhysic": "2026-09-24 23:59:00"
     },
     {
       "vessel": "MARINA ONE",
