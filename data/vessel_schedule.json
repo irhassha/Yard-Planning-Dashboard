@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-17T20:36:31.737Z",
+  "lastUpdated": "2026-09-18T01:40:12.684Z",
   "totalScraped": 64,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "EVER OBEY",
@@ -17,21 +17,6 @@
       "openStacking": "2026-09-14 01:00:00",
       "closingDocument": "2026-09-16 21:59:00",
       "closingPhysic": "2026-09-16 23:59:00"
-    },
-    {
-      "vessel": "MERATUS MEDAN 5",
-      "line": "MAE",
-      "voyIn": "636S",
-      "voyOut": "637N",
-      "service": "TX4",
-      "status": "ACTIVE",
-      "etb": "2026-09-17 21:00:00",
-      "ata": "2026-09-17 15:22:00",
-      "etd": "2026-09-18 09:00:00",
-      "atd": "",
-      "openStacking": "2026-09-13 19:00:00",
-      "closingDocument": "2026-09-17 06:00:00",
-      "closingPhysic": "2026-09-17 08:00:00"
     },
     {
       "vessel": "MSC SHAULA",
