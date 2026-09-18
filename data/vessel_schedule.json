@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-09-18T15:15:23.684Z",
-  "totalScraped": 66,
-  "totalFiltered": 33,
+  "lastUpdated": "2026-09-18T20:02:19.121Z",
+  "totalScraped": 65,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "637S",
+      "voyOut": "638W",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-09-19 01:00:00",
+      "ata": "2026-09-19 00:08:00",
+      "etd": "2026-09-20 10:00:00",
+      "atd": "",
+      "openStacking": "2026-09-14 01:00:00",
+      "closingDocument": "2026-09-19 01:30:00",
+      "closingPhysic": "2026-09-19 03:30:00"
+    },
+    {
+      "vessel": "MSC BREMERHAVEN V",
+      "line": "MSC",
+      "voyIn": "HW635A",
+      "voyOut": "HW635A",
+      "service": "PERTIWI",
+      "status": "ACTIVE",
+      "etb": "2026-09-18 23:00:00",
+      "ata": "2026-09-18 21:59:00",
+      "etd": "2026-09-20 00:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "HF LUCKY",
       "line": "SIT",
@@ -17,6 +47,21 @@
       "openStacking": "2026-09-15 01:00:00",
       "closingDocument": "2026-09-18 16:00:00",
       "closingPhysic": "2026-09-18 18:00:00"
+    },
+    {
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2626S",
+      "voyOut": "2627N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-10-02 15:00:00",
+      "ata": "",
+      "etd": "2026-10-03 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SPIL NISAKA",
@@ -450,38 +495,8 @@
       "etd": "2026-09-20 16:00:00",
       "atd": "",
       "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-18 16:00:00",
-      "closingPhysic": "2026-09-18 18:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "637S",
-      "voyOut": "638W",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-09-19 01:00:00",
-      "ata": "",
-      "etd": "2026-09-20 10:00:00",
-      "atd": "",
-      "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-18 03:00:00",
-      "closingPhysic": "2026-09-18 05:00:00"
-    },
-    {
-      "vessel": "MSC BREMERHAVEN V",
-      "line": "MSC",
-      "voyIn": "HW635A",
-      "voyOut": "HW635A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-09-18 23:00:00",
-      "ata": "",
-      "etd": "2026-09-20 00:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "closingDocument": "2026-09-19 01:00:00",
+      "closingPhysic": "2026-09-19 03:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
