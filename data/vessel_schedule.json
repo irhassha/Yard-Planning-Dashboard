@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-19T09:47:44.324Z",
+  "lastUpdated": "2026-09-19T14:52:10.092Z",
   "totalScraped": 65,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-09-19 19:00:00",
+      "ata": "2026-09-19 16:58:27",
+      "etd": "2026-09-20 16:00:00",
+      "atd": "",
+      "openStacking": "2026-09-14 01:00:00",
+      "closingDocument": "2026-09-18 16:00:00",
+      "closingPhysic": "2026-09-18 18:00:00"
+    },
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
@@ -467,21 +482,6 @@
       "openStacking": "2026-09-16 01:00:00",
       "closingDocument": "2026-09-18 21:59:00",
       "closingPhysic": "2026-09-18 23:59:00"
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-09-19 19:00:00",
-      "ata": "",
-      "etd": "2026-09-20 16:00:00",
-      "atd": "",
-      "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-18 16:00:00",
-      "closingPhysic": "2026-09-18 18:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
