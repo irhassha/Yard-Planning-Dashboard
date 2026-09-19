@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-18T20:02:19.121Z",
+  "lastUpdated": "2026-09-19T01:44:54.941Z",
   "totalScraped": 65,
   "totalFiltered": 34,
   "vessels": [
@@ -15,8 +15,8 @@
       "etd": "2026-09-20 10:00:00",
       "atd": "",
       "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-19 01:30:00",
-      "closingPhysic": "2026-09-19 03:30:00"
+      "closingDocument": "2026-09-18 03:00:00",
+      "closingPhysic": "2026-09-18 05:00:00"
     },
     {
       "vessel": "MSC BREMERHAVEN V",
@@ -27,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-09-18 23:00:00",
       "ata": "2026-09-18 21:59:00",
-      "etd": "2026-09-20 00:00:00",
+      "etd": "2026-09-19 21:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-09-18 18:00:00",
       "ata": "2026-09-18 16:15:00",
-      "etd": "2026-09-19 13:00:00",
+      "etd": "2026-09-19 15:00:00",
       "atd": "",
       "openStacking": "2026-09-15 01:00:00",
       "closingDocument": "2026-09-18 16:00:00",
@@ -495,8 +495,8 @@
       "etd": "2026-09-20 16:00:00",
       "atd": "",
       "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-19 01:00:00",
-      "closingPhysic": "2026-09-19 03:00:00"
+      "closingDocument": "2026-09-18 16:00:00",
+      "closingPhysic": "2026-09-18 18:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
