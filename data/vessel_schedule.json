@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-09-19T19:37:54.621Z",
+  "lastUpdated": "2026-09-20T01:47:08.684Z",
   "totalScraped": 63,
   "totalFiltered": 33,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "JPI-B",
       "status": "ACTIVE",
       "etb": "2026-09-20 02:00:00",
-      "ata": "2026-09-20 00:10:59",
+      "ata": "2026-09-20 01:25:00",
       "etd": "2026-09-21 04:00:00",
       "atd": "",
       "openStacking": "2026-09-16 01:00:00",
