@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-21T17:14:16.490Z",
+  "lastUpdated": "2026-09-21T21:16:10.978Z",
   "totalScraped": 61,
-  "totalFiltered": 32,
+  "totalFiltered": 31,
   "vessels": [
     {
       "vessel": "EVER BLISS",
@@ -32,21 +32,6 @@
       "openStacking": "2026-09-16 01:00:00",
       "closingDocument": "2026-09-21 00:00:00",
       "closingPhysic": "2026-09-21 02:00:00"
-    },
-    {
-      "vessel": "MAERSK VIGO",
-      "line": "MCC",
-      "voyIn": "637S",
-      "voyOut": "638N",
-      "service": "I15",
-      "status": "ACTIVE",
-      "etb": "2026-09-20 20:00:00",
-      "ata": "2026-09-20 17:00:00",
-      "etd": "2026-09-22 03:00:00",
-      "atd": "",
-      "openStacking": "2026-09-14 01:00:00",
-      "closingDocument": "2026-09-19 04:00:00",
-      "closingPhysic": "2026-09-19 06:00:00"
     },
     {
       "vessel": "SITC DECHENG",
