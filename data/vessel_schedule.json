@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-20T19:51:49.101Z",
+  "lastUpdated": "2026-09-21T01:47:54.485Z",
   "totalScraped": 63,
   "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "638E",
+      "voyOut": "639N",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-09-21 07:00:00",
+      "ata": "2026-09-21 05:34:00",
+      "etd": "2026-09-22 19:00:00",
+      "atd": "",
+      "openStacking": "2026-09-16 01:00:00",
+      "closingDocument": "2026-09-21 00:00:00",
+      "closingPhysic": "2026-09-21 02:00:00"
+    },
     {
       "vessel": "MAERSK VIGO",
       "line": "MCC",
@@ -430,7 +445,7 @@
       "voyOut": "1209-116A",
       "service": "JPI-A",
       "status": "REGISTER",
-      "etb": "2026-09-21 23:00:00",
+      "etb": "2026-09-21 22:00:00",
       "ata": "",
       "etd": "2026-09-23 03:00:00",
       "atd": "",
@@ -452,21 +467,6 @@
       "openStacking": "2026-09-16 01:00:00",
       "closingDocument": "2026-09-20 09:00:00",
       "closingPhysic": "2026-09-20 11:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "638E",
-      "voyOut": "639N",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-09-21 07:00:00",
-      "ata": "",
-      "etd": "2026-09-22 19:00:00",
-      "atd": "",
-      "openStacking": "2026-09-16 01:00:00",
-      "closingDocument": "2026-09-21 00:00:00",
-      "closingPhysic": "2026-09-21 02:00:00"
     },
     {
       "vessel": "BG LL 2506 - TB LL IRAWAN",
