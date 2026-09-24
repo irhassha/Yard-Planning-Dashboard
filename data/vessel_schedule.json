@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-24T15:57:45.468Z",
-  "totalScraped": 62,
-  "totalFiltered": 31,
+  "lastUpdated": "2026-09-24T20:49:31.937Z",
+  "totalScraped": 60,
+  "totalFiltered": 30,
   "vessels": [
     {
       "vessel": "MARINA ONE",
@@ -10,7 +10,7 @@
       "voyOut": "0003N",
       "service": "KIS",
       "status": "ACTIVE",
-      "etb": "2026-09-24 17:00:00",
+      "etb": "2026-09-24 21:00:00",
       "ata": "2026-09-24 16:21:00",
       "etd": "2026-09-25 19:00:00",
       "atd": "",
@@ -32,21 +32,6 @@
       "openStacking": "2026-09-19 01:00:00",
       "closingDocument": "2026-09-21 21:59:00",
       "closingPhysic": "2026-09-21 23:59:00"
-    },
-    {
-      "vessel": "AS PIA",
-      "line": "MCC",
-      "voyIn": "636S",
-      "voyOut": "639N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-09-24 06:00:00",
-      "ata": "2026-09-24 04:36:00",
-      "etd": "2026-09-25 00:00:00",
-      "atd": "",
-      "openStacking": "2026-09-18 01:00:00",
-      "closingDocument": "2026-09-23 03:00:00",
-      "closingPhysic": "2026-09-23 05:00:00"
     },
     {
       "vessel": "SITC SHEKOU",
