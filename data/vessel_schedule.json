@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-25T10:37:27.464Z",
-  "totalScraped": 63,
-  "totalFiltered": 32,
+  "lastUpdated": "2026-09-25T15:58:20.314Z",
+  "totalScraped": 64,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "MSC TAMARA IV",
@@ -11,7 +11,7 @@
       "service": "PERTIWI",
       "status": "ACTIVE",
       "etb": "2026-09-25 17:00:00",
-      "ata": "2026-09-25 16:12:31",
+      "ata": "2026-09-25 15:20:00",
       "etd": "2026-09-26 17:00:00",
       "atd": "",
       "openStacking": "",
@@ -253,6 +253,21 @@
       "etb": "2026-10-02 08:00:00",
       "ata": "",
       "etd": "2026-10-02 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "640E",
+      "voyOut": "641N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-10-02 06:00:00",
+      "ata": "",
+      "etd": "2026-10-03 06:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
