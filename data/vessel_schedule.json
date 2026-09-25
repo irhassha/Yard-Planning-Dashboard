@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-09-25T15:58:20.314Z",
-  "totalScraped": 64,
+  "lastUpdated": "2026-09-25T20:47:12.785Z",
+  "totalScraped": 63,
   "totalFiltered": 33,
   "vessels": [
     {
@@ -85,7 +85,7 @@
       "voyOut": "2627N",
       "service": "CMI2",
       "status": "REGISTER",
-      "etb": "2026-10-06 05:00:00",
+      "etb": "2026-10-06 03:00:00",
       "ata": "",
       "etd": "2026-10-06 23:00:00",
       "atd": "",
@@ -109,19 +109,19 @@
       "closingPhysic": "2026-10-03 18:00:00"
     },
     {
-      "vessel": "STARSHIP VENUS",
-      "line": "NSS",
-      "voyIn": "2608S",
-      "voyOut": "2608N",
-      "service": "KCI",
+      "vessel": "OKEE CORNELIA",
+      "line": "MCC",
+      "voyIn": "639S",
+      "voyOut": "640N",
+      "service": "I15",
       "status": "REGISTER",
-      "etb": "2026-10-04 18:00:00",
+      "etb": "2026-10-04 23:00:00",
       "ata": "",
-      "etd": "2026-10-06 01:00:00",
+      "etd": "2026-10-05 23:00:00",
       "atd": "",
-      "openStacking": "2026-09-28 01:00:00",
-      "closingDocument": "2026-10-02 13:00:00",
-      "closingPhysic": "2026-10-02 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "BG LL 2515 - TB LL DJU MING",
@@ -154,19 +154,19 @@
       "closingPhysic": "2026-10-03 20:00:00"
     },
     {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1211-082A",
-      "voyOut": "1211-082A",
-      "service": "JPI-A",
+      "vessel": "STARSHIP VENUS",
+      "line": "NSS",
+      "voyIn": "2608S",
+      "voyOut": "2608N",
+      "service": "KCI",
       "status": "REGISTER",
-      "etb": "2026-10-04 06:00:00",
+      "etb": "2026-10-04 07:00:00",
       "ata": "",
-      "etd": "2026-10-05 06:15:00",
+      "etd": "2026-10-05 07:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-28 01:00:00",
+      "closingDocument": "2026-10-02 13:00:00",
+      "closingPhysic": "2026-10-02 15:00:00"
     },
     {
       "vessel": "MSC VANESSA",
@@ -199,15 +199,15 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "OKEE CORNELIA",
-      "line": "MCC",
-      "voyIn": "639S",
-      "voyOut": "640N",
-      "service": "I15",
+      "vessel": "EVER BEFIT",
+      "line": "EMA",
+      "voyIn": "1211-082A",
+      "voyOut": "1211-082A",
+      "service": "JPI-A",
       "status": "REGISTER",
       "etb": "2026-10-03 19:00:00",
       "ata": "",
-      "etd": "2026-10-04 16:00:00",
+      "etd": "2026-10-04 21:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
