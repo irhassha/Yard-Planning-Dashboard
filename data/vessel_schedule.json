@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-24T20:49:31.937Z",
+  "lastUpdated": "2026-09-25T02:00:47.752Z",
   "totalScraped": 60,
   "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "EVER OASIS",
+      "line": "EGH",
+      "voyIn": "0493-092S",
+      "voyOut": "0493-092N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-09-25 04:00:00",
+      "ata": "2026-09-25 03:19:00",
+      "etd": "2026-09-25 23:00:00",
+      "atd": "",
+      "openStacking": "2026-09-22 01:00:00",
+      "closingDocument": "2026-09-24 21:59:00",
+      "closingPhysic": "2026-09-24 23:59:00"
+    },
     {
       "vessel": "MARINA ONE",
       "line": "HMM",
@@ -437,21 +452,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "EVER OASIS",
-      "line": "EGH",
-      "voyIn": "0493-092S",
-      "voyOut": "0493-092N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-09-25 04:00:00",
-      "ata": "",
-      "etd": "2026-09-25 23:00:00",
-      "atd": "",
-      "openStacking": "2026-09-22 01:00:00",
-      "closingDocument": "2026-09-24 21:59:00",
-      "closingPhysic": "2026-09-24 23:59:00"
     }
   ]
 }
