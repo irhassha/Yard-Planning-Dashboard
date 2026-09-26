@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-26T10:20:47.603Z",
+  "lastUpdated": "2026-09-26T15:10:07.789Z",
   "totalScraped": 63,
-  "totalFiltered": 30,
+  "totalFiltered": 29,
   "vessels": [
     {
       "vessel": "IRENES RAY",
@@ -11,7 +11,7 @@
       "service": "IN1",
       "status": "ACTIVE",
       "etb": "2026-09-26 18:00:00",
-      "ata": "2026-09-26 16:10:49",
+      "ata": "2026-09-26 16:32:00",
       "etd": "2026-09-28 12:00:00",
       "atd": "",
       "openStacking": "2026-09-20 01:00:00",
@@ -32,21 +32,6 @@
       "openStacking": "2026-09-22 01:00:00",
       "closingDocument": "2026-09-25 16:00:00",
       "closingPhysic": "2026-09-25 18:00:00"
-    },
-    {
-      "vessel": "MSC TAMARA IV",
-      "line": "MSC",
-      "voyIn": "HW636A",
-      "voyOut": "HW636A",
-      "service": "PERTIWI",
-      "status": "ACTIVE",
-      "etb": "2026-09-25 17:00:00",
-      "ata": "2026-09-25 15:20:00",
-      "etd": "2026-09-26 17:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHEKOU",
