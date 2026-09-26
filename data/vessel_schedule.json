@@ -1,22 +1,37 @@
 {
-  "lastUpdated": "2026-09-26T02:06:22.316Z",
+  "lastUpdated": "2026-09-26T10:20:47.603Z",
   "totalScraped": 63,
-  "totalFiltered": 31,
+  "totalFiltered": 30,
   "vessels": [
     {
-      "vessel": "BG. LL 2517 / TB.LL LILY",
-      "line": "SSD",
-      "voyIn": "405JN",
-      "voyOut": "405JN",
-      "service": "SSD TRANS",
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "638S",
+      "voyOut": "639W",
+      "service": "IN1",
       "status": "ACTIVE",
-      "etb": "2026-09-26 07:00:00",
-      "ata": "2026-09-26 06:35:00",
-      "etd": "2026-09-26 12:00:00",
+      "etb": "2026-09-26 18:00:00",
+      "ata": "2026-09-26 16:10:49",
+      "etd": "2026-09-28 12:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-09-20 01:00:00",
+      "closingDocument": "2026-09-24 04:00:00",
+      "closingPhysic": "2026-09-24 06:00:00"
+    },
+    {
+      "vessel": "SITC LIANYUNGANG",
+      "line": "SIT",
+      "voyIn": "2626S",
+      "voyOut": "2627N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-09-26 12:00:00",
+      "ata": "2026-09-26 10:09:00",
+      "etd": "2026-09-27 10:00:00",
+      "atd": "",
+      "openStacking": "2026-09-22 01:00:00",
+      "closingDocument": "2026-09-25 16:00:00",
+      "closingPhysic": "2026-09-25 18:00:00"
     },
     {
       "vessel": "MSC TAMARA IV",
@@ -437,36 +452,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "638S",
-      "voyOut": "639W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-09-26 18:00:00",
-      "ata": "",
-      "etd": "2026-09-28 12:00:00",
-      "atd": "",
-      "openStacking": "2026-09-20 01:00:00",
-      "closingDocument": "2026-09-24 04:00:00",
-      "closingPhysic": "2026-09-24 06:00:00"
-    },
-    {
-      "vessel": "SITC LIANYUNGANG",
-      "line": "SIT",
-      "voyIn": "2626S",
-      "voyOut": "2627N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-09-26 12:00:00",
-      "ata": "",
-      "etd": "2026-09-27 10:00:00",
-      "atd": "",
-      "openStacking": "2026-09-22 01:00:00",
-      "closingDocument": "2026-09-25 16:00:00",
-      "closingPhysic": "2026-09-25 18:00:00"
     }
   ]
 }
