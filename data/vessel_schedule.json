@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-09-30T17:02:23.053Z",
-  "totalScraped": 68,
-  "totalFiltered": 37,
+  "lastUpdated": "2026-09-30T21:33:38.496Z",
+  "totalScraped": 67,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "WAN HAI 373",
@@ -11,12 +11,42 @@
       "service": "CIM",
       "status": "ACTIVE",
       "etb": "2026-09-30 22:00:00",
-      "ata": "2026-09-30 23:44:24",
+      "ata": "2026-09-30 22:30:00",
       "etd": "2026-10-02 05:00:00",
       "atd": "",
       "openStacking": "2026-09-27 01:00:00",
       "closingDocument": "2026-09-29 21:59:00",
       "closingPhysic": "2026-09-29 23:59:00"
+    },
+    {
+      "vessel": "EVER OBEY",
+      "line": "EMA",
+      "voyIn": "0477-054S",
+      "voyOut": "0477-054N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-10-14 17:00:00",
+      "ata": "",
+      "etd": "2026-10-15 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER BURLY",
+      "line": "EMC",
+      "voyIn": "S094",
+      "voyOut": "N094",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-10-14 12:00:00",
+      "ata": "",
+      "etd": "2026-10-15 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SINAR BANGKA",
