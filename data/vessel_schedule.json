@@ -1,22 +1,22 @@
 {
-  "lastUpdated": "2026-09-30T11:25:40.090Z",
+  "lastUpdated": "2026-09-30T17:02:23.053Z",
   "totalScraped": 68,
-  "totalFiltered": 38,
+  "totalFiltered": 37,
   "vessels": [
     {
-      "vessel": "ARTOTINA",
-      "line": "MCC",
-      "voyIn": "637S",
-      "voyOut": "640N",
-      "service": "IA8",
+      "vessel": "WAN HAI 373",
+      "line": "WHL",
+      "voyIn": "S029",
+      "voyOut": "N029",
+      "service": "CIM",
       "status": "ACTIVE",
-      "etb": "2026-09-30 07:00:00",
-      "ata": "2026-09-30 07:11:00",
-      "etd": "2026-09-30 23:00:00",
+      "etb": "2026-09-30 22:00:00",
+      "ata": "2026-09-30 23:44:24",
+      "etd": "2026-10-02 05:00:00",
       "atd": "",
-      "openStacking": "2026-09-25 01:00:00",
-      "closingDocument": "2026-09-30 03:00:00",
-      "closingPhysic": "2026-09-30 05:00:00"
+      "openStacking": "2026-09-27 01:00:00",
+      "closingDocument": "2026-09-29 21:59:00",
+      "closingPhysic": "2026-09-29 23:59:00"
     },
     {
       "vessel": "SINAR BANGKA",
@@ -148,6 +148,21 @@
       "etb": "2026-10-09 10:00:00",
       "ata": "",
       "etd": "2026-10-10 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "HF LUCKY",
+      "line": "SIT",
+      "voyIn": "2622S",
+      "voyOut": "2623N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-10-09 08:00:00",
+      "ata": "",
+      "etd": "2026-10-10 08:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -409,21 +424,6 @@
       "closingPhysic": "2026-10-02 18:00:00"
     },
     {
-      "vessel": "MSC VANESSA",
-      "line": "MSC",
-      "voyIn": "XI638A",
-      "voyOut": "XI638A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-10-03 23:00:00",
-      "ata": "",
-      "etd": "2026-10-05 23:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "CAPTAIN THANASIS I",
       "line": "MSC",
       "voyIn": "HW637A",
@@ -542,21 +542,6 @@
       "openStacking": "2026-09-26 01:00:00",
       "closingDocument": "2026-09-30 15:00:00",
       "closingPhysic": "2026-09-30 17:00:00"
-    },
-    {
-      "vessel": "WAN HAI 373",
-      "line": "WHL",
-      "voyIn": "S029",
-      "voyOut": "N029",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-09-30 22:00:00",
-      "ata": "",
-      "etd": "2026-10-02 05:00:00",
-      "atd": "",
-      "openStacking": "2026-09-27 01:00:00",
-      "closingDocument": "2026-09-29 21:59:00",
-      "closingPhysic": "2026-09-29 23:59:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
