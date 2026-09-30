@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-09-29T21:33:13.769Z",
+  "lastUpdated": "2026-09-30T02:31:51.724Z",
   "totalScraped": 68,
   "totalFiltered": 38,
   "vessels": [
+    {
+      "vessel": "ARTOTINA",
+      "line": "MCC",
+      "voyIn": "637S",
+      "voyOut": "640N",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-09-30 07:00:00",
+      "ata": "2026-09-30 07:11:00",
+      "etd": "2026-09-30 23:00:00",
+      "atd": "",
+      "openStacking": "2026-09-25 01:00:00",
+      "closingDocument": "2026-09-30 03:00:00",
+      "closingPhysic": "2026-09-30 05:00:00"
+    },
     {
       "vessel": "SINAR BANGKA",
       "line": "SIT",
@@ -490,9 +505,9 @@
       "voyOut": "2619N",
       "service": "CMI",
       "status": "REGISTER",
-      "etb": "2026-10-02 00:00:00",
+      "etb": "2026-10-02 01:00:00",
       "ata": "",
-      "etd": "2026-10-02 22:00:00",
+      "etd": "2026-10-03 00:00:00",
       "atd": "",
       "openStacking": "2026-09-25 01:00:00",
       "closingDocument": "2026-09-28 16:00:00",
@@ -542,21 +557,6 @@
       "openStacking": "2026-09-27 01:00:00",
       "closingDocument": "2026-09-29 21:59:00",
       "closingPhysic": "2026-09-29 23:59:00"
-    },
-    {
-      "vessel": "ARTOTINA",
-      "line": "MCC",
-      "voyIn": "637S",
-      "voyOut": "640N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-09-30 07:00:00",
-      "ata": "",
-      "etd": "2026-09-30 23:00:00",
-      "atd": "",
-      "openStacking": "2026-09-25 01:00:00",
-      "closingDocument": "2026-09-30 03:00:00",
-      "closingPhysic": "2026-09-30 05:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
