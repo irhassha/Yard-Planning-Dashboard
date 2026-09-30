@@ -31,7 +31,9 @@ const DEFAULT_CAPACITY = {
     "A01": { slots: 37, tier: 5, cap: 1110 }, "A02": { slots: 37, tier: 5, cap: 1110 }, "A03": { slots: 37, tier: 5, cap: 1110 }, "A04": { slots: 37, tier: 5, cap: 1110 }, "A05": { slots: 34, tier: 5, cap: 1020 }, "A06": { slots: 37, tier: 5, cap: 1110 }, "A07": { slots: 37, tier: 5, cap: 1110 }, "A08": { slots: 37, tier: 5, cap: 1110 },
     "B01": { slots: 37, tier: 5, cap: 1110 }, "B02": { slots: 37, tier: 5, cap: 1110 }, "B03": { slots: 37, tier: 5, cap: 1110 }, "B04": { slots: 37, tier: 5, cap: 1110 }, "B05": { slots: 37, tier: 5, cap: 1110 }, "B06": { slots: 37, tier: 5, cap: 1110 }, "B07": { slots: 23, tier: 5, cap: 690 }, "B08": { slots: 23, tier: 5, cap: 690 },
     "C01": { slots: 21, tier: 4, cap: 504 }, "D01": { slots: 24, tier: 3, cap: 360 }, "C02": { slots: 45, tier: 4, cap: 1080 }, "C03": { slots: 45, tier: 5, cap: 1350 }, "C04": { slots: 45, tier: 5, cap: 1350 }, "C05": { slots: 45, tier: 5, cap: 1350 }, "C06": { slots: 45, tier: 5, cap: 1350 }, "C07": { slots: 45, tier: 5, cap: 1350 }, "C08": { slots: 45, tier: 5, cap: 1350 },
-    "BR9": { slots: 18, tier: 5, cap: 540 }, "RC9": { slots: 16, tier: 5, cap: 480 }, "OOG": { slots: 25, tier: 1, cap: 150 }
+    "BR9": { slots: 18, tier: 5, cap: 540 }, "RC9": { slots: 16, tier: 5, cap: 480 }, "OOG": { slots: 25, tier: 1, cap: 150 },
+    "E11": { slots: 2, rows: 15, tier: 5, cap: 150 }, "E12": { slots: 2, rows: 14, tier: 5, cap: 140 }, "E13": { slots: 2, rows: 14, tier: 5, cap: 140 },
+    "E14": { slots: 2, rows: 18, tier: 5, cap: 180 }, "EA09": { slots: 2, rows: 16, tier: 5, cap: 160 }, "EAE": { slots: 2, rows: 22, tier: 5, cap: 220 }
 };
 // Always use DEFAULT_CAPACITY (slots are fixed, not editable)
 let activeCapacity = JSON.parse(JSON.stringify(DEFAULT_CAPACITY));

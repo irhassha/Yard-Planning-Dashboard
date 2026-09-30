@@ -65,9 +65,9 @@ function fitYardMapToScreen() {
     if (contentBox && grid && yardEl) {
         yardEl.style.zoom = 1; // Temporarily reset to measure width
         // Small delay to allow reflow, or direct measurement
-        const contentPadding = 64;
+        const contentPadding = 32;
         const availableWidth = contentBox.clientWidth - contentPadding;
-        const naturalWidth = grid.scrollWidth;
+        const naturalWidth = Math.max(grid.scrollWidth, yardEl.scrollWidth);
 
         if (naturalWidth > 0 && availableWidth > 0) {
             // Calculate scale to fit width
@@ -101,13 +101,20 @@ function isYardExport(item) {
     return !(move.includes('import') || move.includes('disc') || move.includes('vessel') || move.includes('transhipment') || move.includes('t/s'));
 }
 
+const normEBlock = b => {
+    const s = String(b || '').toUpperCase().replace(/[\s\-_]/g, '');
+    if (s === 'EA9' || s === 'E09') return 'EA09';
+    return s;
+};
+
 function buildYardColorMap() {
     yardCarrierColorMap = {};
     const counts = {};
     const allowedBlocks = new Set([
         'C08', 'C07', 'C06', 'C05', 'C04', 'C03', 'C02', 'C01',
         'B08', 'B07', 'B06', 'B05', 'B04', 'B03', 'B02', 'B01',
-        'A08', 'A07', 'A06', 'A05', 'A04', 'A03', 'A02', 'A01'
+        'A08', 'A07', 'A06', 'A05', 'A04', 'A03', 'A02', 'A01',
+        'E14', 'E13', 'E12', 'E11', 'EA09', 'EAE'
     ]);
 
     invData.forEach(c => {
@@ -117,7 +124,7 @@ function buildYardColorMap() {
             c.carrier !== '0' &&
             c.carrier !== 'NIL' &&
             c.carrier !== 'UNKNOWN' &&
-            allowedBlocks.has(c.block)
+            (allowedBlocks.has(c.block) || allowedBlocks.has(normEBlock(c.block)))
         ) {
             counts[c.carrier] = (counts[c.carrier] || 0) + 1;
         }
@@ -486,11 +493,211 @@ function renderYardMap() {
         </div>
     </div>`;
 
+    // ── Block E (Empty Yard) Configuration & Grid Data ──────────────
+    const BLOCK_E_CONFIG = {
+        'E14': { label: 'E14', slots: 2, rows: 18 },
+        'E13': { label: 'E13', slots: 2, rows: 14 },
+        'E12': { label: 'E12', slots: 2, rows: 14 },
+        'E11': { label: 'E11', slots: 2, rows: 15 },
+        'EA09': { label: 'EA09', slots: 2, rows: 16 },
+        'EAE': { label: 'EAE', slots: 2, rows: 22 }
+    };
+
+    function getEContainerPos(c, maxRows) {
+        let s = parseInt(c.slot) || 0;
+        let r = parseInt(c.row) || 0;
+
+        if ((s === 0 || r === 0) && c._raw_slot && c._raw_slot.includes('-')) {
+            const parts = c._raw_slot.split('-');
+            if (parts.length >= 2 && s === 0) s = parseInt(parts[1]) || 0;
+            if (parts.length >= 3 && r === 0) r = parseInt(parts[2]) || 0;
+        }
+
+        if (s > 2 && r <= 2 && r > 0) {
+            const tmp = s; s = r; r = tmp;
+        } else if (s > 2 && r === 0) {
+            r = s; s = 1;
+        }
+
+        if (s !== 1 && s !== 2) s = 1;
+        if (r < 1) r = 1;
+        if (r > maxRows) r = maxRows;
+
+        return { slot: s, row: r };
+    }
+
+    const eGridMap = {};
+    const eHas40AtRow = {};
+    Object.keys(BLOCK_E_CONFIG).forEach(b => {
+        eGridMap[b] = { 1: {}, 2: {} };
+        eHas40AtRow[b] = {};
+        for (let r = 1; r <= BLOCK_E_CONFIG[b].rows; r++) {
+            eGridMap[b][1][r] = [];
+            eGridMap[b][2][r] = [];
+            eHas40AtRow[b][r] = false;
+        }
+    });
+
+    invData.forEach(c => {
+        if (!c.block) return;
+        const b = normEBlock(c.block);
+        const cfg = BLOCK_E_CONFIG[b];
+        if (cfg) {
+            const pos = getEContainerPos(c, cfg.rows);
+            const is40 = String(c.length || '20').startsWith('4');
+            if (is40) {
+                // 40ft container takes both Slot 01 and Slot 02
+                if (eGridMap[b][1][pos.row]) eGridMap[b][1][pos.row].push(c);
+                if (eGridMap[b][2][pos.row]) eGridMap[b][2][pos.row].push(c);
+                eHas40AtRow[b][pos.row] = true;
+            } else {
+                if (eGridMap[b][pos.slot] && eGridMap[b][pos.slot][pos.row]) {
+                    eGridMap[b][pos.slot][pos.row].push(c);
+                }
+            }
+        }
+    });
+
+    const renderECell = (bn, slot, row, colIdx, gridRow) => {
+        const ctrs = (eGridMap[bn] && eGridMap[bn][slot] && eGridMap[bn][slot][row]) || [];
+        const sStr = String(slot).padStart(2, '0');
+        const rStr = String(row).padStart(2, '0');
+        const stylePos = `grid-row: ${gridRow}; grid-column: ${colIdx};`;
+
+        if (!ctrs || ctrs.length === 0) {
+            return `<div class="ym-e-cell ym-empty" style="${stylePos}" data-block="${bn}" data-slot="${slot}" data-row="${row}" 
+                onclick="showYardSlotDetail('${bn}', ${slot})" 
+                title="Block ${bn} · Slot ${sStr} · Row ${rStr}: Empty"></div>`;
+        }
+
+        const topC = ctrs[0];
+        const isExp = isYardExport(topC);
+        const ls = String(topC.loadStatus || '').toUpperCase();
+        const isMty = ls.includes('EMPTY') || ls === 'MT' || ls === 'E' || ls === 'MTY';
+
+        let col = '#0ea5e9'; // default cyan
+        if (isExp && topC.carrier && yardCarrierColorMap[topC.carrier]) {
+            col = yardCarrierColorMap[topC.carrier];
+        } else if (isMty) {
+            col = '#06b6d4';
+        } else if (!isExp) {
+            col = '#ffffff';
+        }
+
+        const tc = yardContrastText(col);
+        const borderCol = isExp ? 'rgba(0,0,0,0.2)' : '#94a3b8';
+        const title = `Block ${bn} · Slot ${sStr} · Row ${rStr} · ${ctrs.length} unit(s) · ${topC.carrier || 'UNKNOWN'} (${topC.length || '20'}' ${isMty ? 'MTY' : 'FULL'})`;
+
+        return `<div class="ym-e-cell ym-occupied ${isExp ? 'ym-exp' : 'ym-imp'}" 
+            style="${stylePos} background: ${col}; border-color: ${borderCol};" 
+            data-block="${bn}" data-slot="${slot}" data-row="${row}" data-carrier="${topC.carrier || ''}" data-unit="${topC.unit || topC.id || ''}"
+            onclick="showYardSlotDetail('${bn}', ${slot})" 
+            title="${title}">
+            ${topC.carrier ? `<span style="color:${tc}">${topC.carrier}</span>` : ''}
+        </div>`;
+    };
+
+    const renderBlockEComponent = (bn) => {
+        const cfg = BLOCK_E_CONFIG[bn];
+        if (!cfg) return '';
+        const maxRows = cfg.rows;
+        const cellW = 6;
+
+        const blockUnits = invData.filter(c => normEBlock(c.block) === bn);
+        const totalUnits = blockUnits.length;
+
+        let html = `<div class="ym-e-block-wrapper" data-block="${bn}">`;
+        html += `<div class="ym-e-block-label" onclick="showYardBlockEDetail('${bn}')" title="Click to view Block ${bn} summary">${bn}</div>`;
+        html += `<div class="ym-e-block-body">`;
+        html += `<div class="ym-e-grid" style="grid-template-columns: repeat(${maxRows}, ${cellW}px); grid-template-rows: repeat(2, 10px);">`;
+
+        // Render each row column (maxRows down to 1)
+        for (let r = maxRows; r >= 1; r--) {
+            const colIdx = maxRows - r + 1;
+            const rStr = String(r).padStart(2, '0');
+
+            if (eHas40AtRow[bn] && eHas40AtRow[bn][r]) {
+                // 40ft container occupies both Slot 01 and Slot 02 (vertical span across 2 rows)
+                const ctrs40 = (eGridMap[bn][1][r] || []).filter(c => String(c.length || '20').startsWith('4'));
+                const topC = ctrs40[0] || (eGridMap[bn][1][r] || [])[0];
+                const isExp = isYardExport(topC);
+                const ls = String(topC.loadStatus || '').toUpperCase();
+                const isMty = ls.includes('EMPTY') || ls === 'MT' || ls === 'E' || ls === 'MTY';
+
+                let col = '#0ea5e9';
+                if (isExp && topC.carrier && yardCarrierColorMap[topC.carrier]) {
+                    col = yardCarrierColorMap[topC.carrier];
+                } else if (isMty) {
+                    col = '#06b6d4';
+                } else if (!isExp) {
+                    col = '#ffffff';
+                }
+
+                const tc = yardContrastText(col);
+                const borderCol = isExp ? 'rgba(0,0,0,0.25)' : '#94a3b8';
+                const title = `Block ${bn} · Slot 01 & 02 · Row ${rStr} · ${topC.carrier || 'UNKNOWN'} (${topC.length || '40'}' ${isMty ? 'MTY' : 'FULL'}) · ${ctrs40.length} unit(s)`;
+
+                html += `<div class="ym-e-cell ym-occupied ym-e-cell-40 ${isExp ? 'ym-exp' : 'ym-imp'}" 
+                    style="grid-row: 1 / span 2; grid-column: ${colIdx}; background: ${col}; border-color: ${borderCol}; height: 21px;" 
+                    data-block="${bn}" data-slot="1-2" data-row="${r}" data-carrier="${topC.carrier || ''}" data-unit="${topC.unit || topC.id || ''}"
+                    onclick="showYardSlotDetail('${bn}', 1)" 
+                    title="${title}">
+                    ${topC.carrier ? `<span style="color:${tc}">${topC.carrier}</span>` : ''}
+                </div>`;
+            } else {
+                // 20ft or empty: Slot 2 (top, grid-row: 1) and Slot 1 (bottom, grid-row: 2)
+                html += renderECell(bn, 2, r, colIdx, 1);
+                html += renderECell(bn, 1, r, colIdx, 2);
+            }
+        }
+
+        html += `</div>`; // .ym-e-grid
+
+        // Row ticks
+        html += `<div class="ym-e-ticks" style="grid-template-columns: repeat(${maxRows}, ${cellW}px);">`;
+        for (let r = maxRows; r >= 1; r--) {
+            html += `<span>${r}</span>`;
+        }
+        html += `</div>`; // .ym-e-ticks
+        html += `</div>`; // .ym-e-block-body
+
+        // Lane indicators (02 on top, 01 on bottom)
+        html += `<div class="ym-e-lanes">
+            <div class="ym-e-lane-badge" onclick="showYardSlotDetail('${bn}', 2)" title="Block ${bn} Slot 02">02</div>
+            <div class="ym-e-lane-badge" onclick="showYardSlotDetail('${bn}', 1)" title="Block ${bn} Slot 01">01</div>
+        </div>`;
+
+        if (totalUnits > 0) {
+            html += `<div class="ym-e-count-pill" title="${totalUnits} units in Block ${bn}">${totalUnits}</div>`;
+        }
+
+        html += `</div>`; // .ym-e-block-wrapper
+        return html;
+    };
+
     html += '<div class="ym-sections-grid">';
 
     // ── Sections C → B → A ───────────────────────────────────────────
     sections.forEach(sec => {
-        html += `<div class="ym-section"><div class="ym-section-header">${sec.label}</div>`;
+        html += '<div class="ym-section">';
+
+        if (sec.label === 'BLOCK C') {
+            html += `<div class="ym-e-section-row ym-e-section-c">
+                ${renderBlockEComponent('E14')}
+                ${renderBlockEComponent('E13')}
+                ${renderBlockEComponent('E12')}
+                ${renderBlockEComponent('E11')}
+            </div>`;
+        } else if (sec.label === 'BLOCK B') {
+            html += `<div class="ym-e-section-row ym-e-section-empty"></div>`;
+        } else if (sec.label === 'BLOCK A') {
+            html += `<div class="ym-e-section-row ym-e-section-a">
+                ${renderBlockEComponent('EA09')}
+                ${renderBlockEComponent('EAE')}
+            </div>`;
+        }
+
+        html += `<div class="ym-section-header">${sec.label}</div>`;
 
         // Group blocks in pairs: [08,07] [06,05] [04,03] [02,01]
         for (let p = 0; p < sec.blocks.length; p += 2) {
@@ -563,6 +770,10 @@ function renderYardMap() {
     if (yardTextHidden) {
         document.querySelector('#yardMapContent .ym-yard')?.classList.add('ym-text-hidden');
     }
+
+    if (yardActiveHighlight.size > 0) {
+        highlightYardCarrier();
+    }
 }
 
 // ── Carrier Highlight ───────────────────────────────────────────────
@@ -570,7 +781,7 @@ function renderYardMap() {
 function highlightYardCarrier(carrier) {
     if (carrier === null) {
         yardActiveHighlight.clear();
-    } else {
+    } else if (carrier !== undefined) {
         if (yardActiveHighlight.has(carrier)) {
             yardActiveHighlight.delete(carrier);
         } else {
@@ -583,7 +794,7 @@ function highlightYardCarrier(carrier) {
     const legend = document.getElementById('yardMapLegend');
 
     if (content) {
-        content.querySelectorAll('.ym-slot[data-carrier]').forEach(el => {
+        content.querySelectorAll('.ym-slot[data-carrier], .ym-e-cell[data-carrier]').forEach(el => {
             if (!hasSelection) {
                 el.style.opacity = '1';
                 el.style.filter = '';
@@ -632,7 +843,7 @@ function highlightYardContainers(containerIds) {
     const content = document.getElementById('yardMapContent');
 
     if (content) {
-        content.querySelectorAll('.ym-slot[data-unit]').forEach(el => {
+        content.querySelectorAll('.ym-slot[data-unit], .ym-e-cell[data-unit]').forEach(el => {
             const unit = (el.dataset.unit || '').toUpperCase();
             if (!hasSelection) {
                 el.style.opacity = '1';
@@ -659,20 +870,66 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!content) return;
     content.addEventListener('click', function(e) {
         const slot = e.target.closest('.ym-slot[data-block][data-slot]');
-        if (!slot) return;
-        const block = slot.dataset.block;
-        const slotNum = parseInt(slot.dataset.slot);
-        if (!block || isNaN(slotNum)) return;
-        showYardSlotDetail(block, slotNum);
+        if (slot) {
+            const block = slot.dataset.block;
+            const slotNum = parseInt(slot.dataset.slot);
+            if (block && !isNaN(slotNum)) {
+                showYardSlotDetail(block, slotNum);
+                return;
+            }
+        }
+        const eBlock = e.target.closest('.ym-e-block[data-block]');
+        if (eBlock) {
+            const block = eBlock.dataset.block;
+            if (block) {
+                showYardBlockEDetail(block);
+            }
+        }
     });
 });
 
 function showYardSlotDetail(block, slotNum) {
     if (!invData || !invData.length) return;
-    const blockRows = invData.filter(it => it.block === block);
-    if (blockRows.length === 0) return;
+
+    const BLOCK_E_CFG = {
+        'E14': { rows: 18 }, 'E13': { rows: 14 }, 'E12': { rows: 14 },
+        'E11': { rows: 15 }, 'EA09': { rows: 16 }, 'EAE': { rows: 22 }
+    };
+    const norm = b => {
+        const s = String(b || '').toUpperCase().replace(/[\s\-_]/g, '');
+        if (s === 'EA9' || s === 'E09') return 'EA09';
+        return s;
+    };
+    const targetNorm = norm(block);
+    const cfgE = BLOCK_E_CFG[targetNorm];
+
+    function getEContainerPos(c, maxRows) {
+        let s = parseInt(c.slot) || 0;
+        let r = parseInt(c.row) || 0;
+        if ((s === 0 || r === 0) && c._raw_slot && c._raw_slot.includes('-')) {
+            const parts = c._raw_slot.split('-');
+            if (parts.length >= 2 && s === 0) s = parseInt(parts[1]) || 0;
+            if (parts.length >= 3 && r === 0) r = parseInt(parts[2]) || 0;
+        }
+        if (s > 2 && r <= 2 && r > 0) {
+            const tmp = s; s = r; r = tmp;
+        } else if (s > 2 && r === 0) {
+            r = s; s = 1;
+        }
+        if (s !== 1 && s !== 2) s = 1;
+        if (r < 1) r = 1;
+        if (r > maxRows) r = maxRows;
+        return { slot: s, row: r };
+    }
+
+    const blockRows = invData.filter(it => norm(it.block) === targetNorm);
+    if (blockRows.length === 0 && !cfgE) return;
+
     const slotRows = blockRows.filter(it => {
-        const s = parseInt(it.slot) || 0;
+        let s = parseInt(it.slot) || 0;
+        if (cfgE) {
+            s = getEContainerPos(it, cfgE.rows).slot;
+        }
         const len = String(it.length || '20');
         const is40 = len.startsWith('40') || len.startsWith('45');
         return s === slotNum || (is40 && (s === slotNum || s + 1 === slotNum));
@@ -693,7 +950,10 @@ function showYardSlotDetail(block, slotNum) {
     const blockTierMax = (CAP[block] && CAP[block].tier) || 5;
     const rowTierMap = {}; let maxTier = blockTierMax;
     slotRows.forEach(it => {
-        const r = it.row || parseRow(it._raw_slot);
+        let r = it.row || parseRow(it._raw_slot);
+        if (cfgE) {
+            r = getEContainerPos(it, cfgE.rows).row;
+        }
         const t = parseTier(it._raw_slot);
         if (t > maxTier) maxTier = t;
         if (!rowTierMap[r]) rowTierMap[r] = {};
@@ -705,7 +965,7 @@ function showYardSlotDetail(block, slotNum) {
         rowTierMap[r][t] = {size:sz, spod:String(it.spod||'UNKNOWN').toUpperCase(), wc:String(it.wtcl||'-').toUpperCase(), carrier:it.carrier||'', fe, isExport:isExp};
     });
     const rows = Object.keys(rowTierMap).map(Number).sort((a,b) => a-b);
-    let maxRow = Math.max(6, ...rows);
+    let maxRow = cfgE ? cfgE.rows : Math.max(6, ...rows);
     const allRows = []; for (let r = 1; r <= maxRow; r++) allRows.push(r);
     const expCnt = slotRows.filter(it => { const m = String(it.move||'').toLowerCase(); return !m.includes('import') && !m.includes('disc') && !m.includes('vessel'); }).length;
     const othCnt = slotRows.length - expCnt;
@@ -796,3 +1056,119 @@ function showYardSlotDetail(block, slotNum) {
     if (overlay) overlay.classList.remove('hidden');
     if (drawer) drawer.classList.remove('translate-x-full');
 }
+
+// ── Block E Detail Drawer ───────────────────────────────────────────
+
+function showYardBlockEDetail(blockName) {
+    if (!invData) return;
+    const norm = b => {
+        const s = String(b || '').toUpperCase().replace(/[\s\-_]/g, '');
+        if (s === 'EA9' || s === 'E09') return 'EA09';
+        return s;
+    };
+    const targetNorm = norm(blockName);
+    const blockRows = invData.filter(it => norm(it.block) === targetNorm);
+
+    let teuTotal = 0;
+    let mtyCount = 0;
+    let fullCount = 0;
+    let expCount = 0;
+    let impCount = 0;
+
+    blockRows.forEach(it => {
+        const teu = String(it.length || '20').startsWith('4') ? 2 : 1;
+        teuTotal += teu;
+        const ls = String(it.loadStatus || '').toUpperCase();
+        if (ls.includes('EMPTY') || ls === 'MT' || ls === 'E' || ls === 'MTY') {
+            mtyCount += teu;
+        } else {
+            fullCount += teu;
+        }
+        const mv = String(it.move || '').toLowerCase();
+        if (mv.includes('import') || mv.includes('disc') || mv.includes('vessel')) {
+            impCount += teu;
+        } else {
+            expCount += teu;
+        }
+    });
+
+    let h = `<div class="mb-4">
+        <div class="flex items-center gap-2 mb-1">
+            <span class="text-xl font-black text-slate-800">Block ${blockName}</span>
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">Empty / Outside Yard Area</span>
+        </div>
+        <p class="text-xs text-slate-500">Detail unit kontainer di area penumpukan Block ${blockName}</p>
+    </div>`;
+
+    // KPI Cards
+    h += `<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4">
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Units</div>
+            <div class="text-lg font-black text-slate-800 mt-0.5">${blockRows.length} <span class="text-xs font-semibold text-slate-400">(${teuTotal} TEU)</span></div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Empty (MTY)</div>
+            <div class="text-lg font-black text-emerald-600 mt-0.5">${mtyCount} <span class="text-xs font-semibold text-slate-400">TEU</span></div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Full</div>
+            <div class="text-lg font-black text-blue-600 mt-0.5">${fullCount} <span class="text-xs font-semibold text-slate-400">TEU</span></div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
+            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Export / Import</div>
+            <div class="text-sm font-black text-slate-700 mt-1">${expCount} <span class="text-[10px] text-slate-400">EXP</span> · ${impCount} <span class="text-[10px] text-slate-400">IMP</span></div>
+        </div>
+    </div>`;
+
+    if (blockRows.length === 0) {
+        h += `<div class="p-8 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">
+            <span class="material-symbols-outlined text-4xl block mb-2 opacity-40 text-slate-400">inventory_2</span>
+            <p class="text-sm font-bold text-slate-600">Tidak Ada Kontainer</p>
+            <p class="text-xs text-slate-400 mt-0.5">Saat ini tidak ada unit kontainer yang tercatat di Block ${blockName} pada file yang diupload.</p>
+        </div>`;
+    } else {
+        h += `<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-3 border-b border-slate-100 flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px] text-slate-400">list_alt</span> Container List (${blockRows.length})
+                </span>
+            </div>
+            <div class="overflow-x-auto max-h-[380px] custom-scrollbar">
+                <table class="w-full text-left text-[11px] border-collapse">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-[9px] sticky top-0 border-b border-slate-200">
+                        <tr>
+                            <th class="px-3 py-2 font-bold text-slate-500">No</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Slot / Pos</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Size</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Carrier</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Status</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Move</th>
+                            <th class="px-3 py-2 font-bold text-slate-500">Arrival</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">`;
+        
+        blockRows.forEach((c, idx) => {
+            const isMty = (c.loadStatus || '').toUpperCase().includes('MT') || (c.loadStatus || '').toUpperCase() === 'E';
+            h += `<tr class="hover:bg-slate-50/80 transition-colors">
+                <td class="px-3 py-2 text-slate-400 font-mono text-[10px]">${idx + 1}</td>
+                <td class="px-3 py-2 font-bold text-slate-800">${c._raw_slot || c.unit || (c.slot ? `Slot ${c.slot}` : '-')}</td>
+                <td class="px-3 py-2 font-semibold text-slate-600">${c.length || '20'}'</td>
+                <td class="px-3 py-2 font-bold text-indigo-600">${c.carrier || '-'}</td>
+                <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[9px] font-bold ${isMty ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${c.loadStatus || 'FULL'}</span></td>
+                <td class="px-3 py-2 text-slate-500 capitalize text-[10px]">${c.move || '-'}</td>
+                <td class="px-3 py-2 text-slate-400 text-[10px]">${c.arrivalDate || '-'}</td>
+            </tr>`;
+        });
+        h += `</tbody></table></div></div>`;
+    }
+
+    const cd = document.getElementById('clusterDetailContent');
+    if (!cd) return;
+    cd.innerHTML = h;
+    const drawer = document.getElementById('clusterDetailDrawer');
+    const overlay = document.getElementById('clusterDetailOverlay');
+    if (overlay) overlay.classList.remove('hidden');
+    if (drawer) drawer.classList.remove('translate-x-full');
+}
+window.showYardBlockEDetail = showYardBlockEDetail;

@@ -533,7 +533,10 @@ body.ai-chat-sidebar-open {
 .ym-yard {
     background: linear-gradient(145deg, #3d4f5f, #4a5d6e, #3d4f5f);
     border-radius: 14px;
-    padding: 16px;
+    padding: 16px 12px;
+    display: inline-block;
+    width: fit-content;
+    max-width: fit-content;
     min-width: fit-content;
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.15);
     /* For Zoom feature and GPU composite layer promotion for smooth scrolling */
@@ -571,6 +574,199 @@ body.ai-chat-sidebar-open {
 
 .ym-section {
     flex: 0 0 auto;
+}
+
+/* Block E (Empty / Outside Yard Area) Section Headers */
+.ym-e-section-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 8px;
+    min-height: 38px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.ym-e-section-c {
+    gap: 3px;
+    justify-content: flex-start;
+}
+
+.ym-e-section-empty {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.ym-e-section-a {
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.ym-e-block-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    padding: 2px 3px;
+    gap: 2px;
+    position: relative;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.ym-e-block-wrapper:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ym-e-block-label {
+    font-size: 8px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.45);
+    padding: 2px 2px;
+    border-radius: 3px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    height: 23px;
+    min-width: 18px;
+    font-family: 'Plus Jakarta Sans', monospace;
+}
+
+.ym-e-block-label:hover {
+    background: #0284c7;
+    color: #fff;
+}
+
+.ym-e-block-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.ym-e-grid {
+    display: grid;
+    gap: 1px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 1px;
+    border-radius: 2px;
+}
+
+.ym-e-cell {
+    width: 6px;
+    height: 10px;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: transform 0.1s ease, filter 0.1s ease, opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 3.5px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.ym-e-cell:hover {
+    transform: scale(1.4);
+    z-index: 20;
+    filter: brightness(1.2);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.ym-e-cell.ym-empty {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.ym-e-cell.ym-occupied {
+    border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.ym-e-cell.ym-e-cell-40 {
+    height: 21px;
+    border-radius: 1.5px;
+}
+
+.ym-e-cell.ym-e-cell-40 span {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg) scale(0.7);
+    font-size: 3px;
+}
+
+.ym-e-cell span {
+    display: block;
+    transform: scale(0.7);
+    white-space: nowrap;
+}
+
+.ym-yard.ym-text-hidden .ym-e-cell span {
+    display: none !important;
+}
+
+.ym-e-ticks {
+    display: grid;
+    gap: 1px;
+    padding: 0 1px;
+    height: 7px;
+    align-items: center;
+}
+
+.ym-e-ticks span {
+    width: 6px;
+    text-align: center;
+    font-size: 4.5px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1;
+    user-select: none;
+}
+
+.ym-e-lanes {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.ym-e-lane-badge {
+    font-size: 5.5px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.65);
+    background: rgba(0, 0, 0, 0.35);
+    height: 10px;
+    padding: 0 1.5px;
+    border-radius: 1.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    font-family: 'Plus Jakarta Sans', monospace;
+}
+
+.ym-e-lane-badge:hover {
+    color: #38bdf8;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.ym-e-count-pill {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #0284c7;
+    color: #fff;
+    font-size: 7.5px;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 9999px;
+    border: 1px solid #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .ym-section-header {
