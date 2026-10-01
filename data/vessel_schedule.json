@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-01T11:52:44.204Z",
+  "lastUpdated": "2026-10-01T17:32:36.794Z",
   "totalScraped": 67,
-  "totalFiltered": 39,
+  "totalFiltered": 40,
   "vessels": [
+    {
+      "vessel": "SITC BATANGAS",
+      "line": "SIT",
+      "voyIn": "2618S",
+      "voyOut": "2619N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-10-01 23:00:00",
+      "ata": "2026-10-01 23:11:53",
+      "etd": "2026-10-02 21:00:00",
+      "atd": "",
+      "openStacking": "2026-09-25 01:00:00",
+      "closingDocument": "2026-09-28 16:00:00",
+      "closingPhysic": "2026-09-28 18:00:00"
+    },
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
@@ -12,26 +27,11 @@
       "status": "ACTIVE",
       "etb": "2026-10-01 13:00:00",
       "ata": "2026-10-01 12:37:00",
-      "etd": "2026-10-02 20:00:00",
+      "etd": "2026-10-02 18:00:00",
       "atd": "",
       "openStacking": "2026-09-25 01:00:00",
       "closingDocument": "2026-09-29 03:00:00",
       "closingPhysic": "2026-09-29 05:00:00"
-    },
-    {
-      "vessel": "ERASMUS CHIEF",
-      "line": "MCC",
-      "voyIn": "639S",
-      "voyOut": "640N",
-      "service": "TX4",
-      "status": "ACTIVE",
-      "etb": "2026-10-01 06:00:00",
-      "ata": "2026-10-01 05:36:00",
-      "etd": "2026-10-01 20:00:00",
-      "atd": "",
-      "openStacking": "2026-09-26 01:00:00",
-      "closingDocument": "2026-09-30 15:00:00",
-      "closingPhysic": "2026-09-30 17:00:00"
     },
     {
       "vessel": "WAN HAI 373",
@@ -47,6 +47,21 @@
       "openStacking": "2026-09-27 01:00:00",
       "closingDocument": "2026-09-29 21:59:00",
       "closingPhysic": "2026-09-29 23:59:00"
+    },
+    {
+      "vessel": "EVER OBEY",
+      "line": "EMA",
+      "voyIn": "0496-058S",
+      "voyOut": "0496-058N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-10-15 02:00:00",
+      "ata": "",
+      "etd": "2026-10-16 03:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER OBEY",
@@ -334,6 +349,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "YM CENTENNIAL",
+      "line": "YML",
+      "voyIn": "071S",
+      "voyOut": "071N",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-10-08 07:00:00",
+      "ata": "",
+      "etd": "2026-10-09 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "BG LL 2515 - TB LL DJU MING",
       "line": "SSD",
       "voyIn": "121JN",
@@ -557,21 +587,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "SITC BATANGAS",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-10-01 23:00:00",
-      "ata": "",
-      "etd": "2026-10-02 21:00:00",
-      "atd": "",
-      "openStacking": "2026-09-25 01:00:00",
-      "closingDocument": "2026-09-28 16:00:00",
-      "closingPhysic": "2026-09-28 18:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
