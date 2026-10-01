@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-01T17:32:36.794Z",
+  "lastUpdated": "2026-10-01T22:02:19.849Z",
   "totalScraped": 67,
-  "totalFiltered": 40,
+  "totalFiltered": 39,
   "vessels": [
     {
       "vessel": "SITC BATANGAS",
@@ -11,7 +11,7 @@
       "service": "CMI",
       "status": "ACTIVE",
       "etb": "2026-10-01 23:00:00",
-      "ata": "2026-10-01 23:11:53",
+      "ata": "2026-10-01 23:15:00",
       "etd": "2026-10-02 21:00:00",
       "atd": "",
       "openStacking": "2026-09-25 01:00:00",
@@ -32,21 +32,6 @@
       "openStacking": "2026-09-25 01:00:00",
       "closingDocument": "2026-09-29 03:00:00",
       "closingPhysic": "2026-09-29 05:00:00"
-    },
-    {
-      "vessel": "WAN HAI 373",
-      "line": "WHL",
-      "voyIn": "S029",
-      "voyOut": "N029",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-09-30 22:00:00",
-      "ata": "2026-09-30 22:30:00",
-      "etd": "2026-10-01 23:00:00",
-      "atd": "",
-      "openStacking": "2026-09-27 01:00:00",
-      "closingDocument": "2026-09-29 21:59:00",
-      "closingPhysic": "2026-09-29 23:59:00"
     },
     {
       "vessel": "EVER OBEY",
