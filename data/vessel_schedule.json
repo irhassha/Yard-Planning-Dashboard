@@ -1,38 +1,8 @@
 {
-  "lastUpdated": "2026-10-02T11:25:11.444Z",
+  "lastUpdated": "2026-10-02T16:51:54.600Z",
   "totalScraped": 67,
-  "totalFiltered": 39,
+  "totalFiltered": 37,
   "vessels": [
-    {
-      "vessel": "SITC BATANGAS",
-      "line": "SIT",
-      "voyIn": "2618S",
-      "voyOut": "2619N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-10-01 23:00:00",
-      "ata": "2026-10-01 23:15:00",
-      "etd": "2026-10-02 21:00:00",
-      "atd": "",
-      "openStacking": "2026-09-25 01:00:00",
-      "closingDocument": "2026-09-28 16:00:00",
-      "closingPhysic": "2026-09-28 18:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "639E",
-      "voyOut": "640N",
-      "service": "JKF",
-      "status": "ACTIVE",
-      "etb": "2026-10-01 13:00:00",
-      "ata": "2026-10-01 12:37:00",
-      "etd": "2026-10-02 18:00:00",
-      "atd": "",
-      "openStacking": "2026-09-25 01:00:00",
-      "closingDocument": "2026-09-29 03:00:00",
-      "closingPhysic": "2026-09-29 05:00:00"
-    },
     {
       "vessel": "EVER OBEY",
       "line": "EMA",
