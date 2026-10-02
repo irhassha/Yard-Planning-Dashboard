@@ -1,8 +1,53 @@
 {
-  "lastUpdated": "2026-10-02T16:51:54.600Z",
-  "totalScraped": 67,
-  "totalFiltered": 37,
+  "lastUpdated": "2026-10-02T21:27:55.379Z",
+  "totalScraped": 66,
+  "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "EVER BLINK",
+      "line": "EMA",
+      "voyIn": "1207-084B",
+      "voyOut": "1207-084B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-10-03 04:00:00",
+      "ata": "2026-10-03 03:51:02",
+      "etd": "2026-10-04 05:00:00",
+      "atd": "",
+      "openStacking": "2026-09-28 01:00:00",
+      "closingDocument": "2026-10-01 10:00:00",
+      "closingPhysic": "2026-10-01 12:00:00"
+    },
+    {
+      "vessel": "MARINA ONE",
+      "line": "HMM",
+      "voyIn": "0004S",
+      "voyOut": "0004N",
+      "service": "KIS",
+      "status": "REGISTER",
+      "etb": "2026-10-16 10:00:00",
+      "ata": "",
+      "etd": "2026-10-17 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC LIANYUNGANG",
+      "line": "SIT",
+      "voyIn": "2628S",
+      "voyOut": "2629N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-10-16 08:00:00",
+      "ata": "",
+      "etd": "2026-10-17 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "EVER OBEY",
       "line": "EMA",
@@ -512,21 +557,6 @@
       "openStacking": "2026-09-29 18:00:00",
       "closingDocument": "2026-10-02 16:00:00",
       "closingPhysic": "2026-10-02 18:00:00"
-    },
-    {
-      "vessel": "EVER BLINK",
-      "line": "EMA",
-      "voyIn": "1207-084B",
-      "voyOut": "1207-084B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-10-03 04:00:00",
-      "ata": "",
-      "etd": "2026-10-04 05:00:00",
-      "atd": "",
-      "openStacking": "2026-09-28 01:00:00",
-      "closingDocument": "2026-10-01 10:00:00",
-      "closingPhysic": "2026-10-01 12:00:00"
     },
     {
       "vessel": "BG. SINDO GARUDA KENCANA / TB. SD DIAMOND",
