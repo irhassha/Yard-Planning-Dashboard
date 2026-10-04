@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-04T16:01:01.699Z",
+  "lastUpdated": "2026-10-04T20:32:08.880Z",
   "totalScraped": 71,
-  "totalFiltered": 44,
+  "totalFiltered": 47,
   "vessels": [
     {
       "vessel": "JOSEPHINE MAERSK",
@@ -47,6 +47,51 @@
       "openStacking": "2026-09-28 01:00:00",
       "closingDocument": "2026-10-03 03:00:00",
       "closingPhysic": "2026-10-03 05:00:00"
+    },
+    {
+      "vessel": "MAERSK NADI",
+      "line": "MCC",
+      "voyIn": "640Y",
+      "voyOut": "641X",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-10-18 23:00:00",
+      "ata": "",
+      "etd": "2026-10-19 19:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MERATUS JAYAWIJAYA",
+      "line": "MCC",
+      "voyIn": "640S",
+      "voyOut": "642N",
+      "service": "IA1",
+      "status": "REGISTER",
+      "etb": "2026-10-18 18:00:00",
+      "ata": "",
+      "etd": "2026-10-20 00:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER OPTIMA",
+      "line": "EGH",
+      "voyIn": "0498-051S",
+      "voyOut": "0498-051N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-10-18 12:00:00",
+      "ata": "",
+      "etd": "2026-10-19 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BEFIT",
