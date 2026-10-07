@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-07T12:07:11.469Z",
-  "totalScraped": 71,
+  "lastUpdated": "2026-10-07T22:19:27.481Z",
+  "totalScraped": 70,
   "totalFiltered": 43,
   "vessels": [
+    {
+      "vessel": "MARSA PRIDE",
+      "line": "MCC",
+      "voyIn": "638S",
+      "voyOut": "641N",
+      "service": "IA8",
+      "status": "ACTIVE",
+      "etb": "2026-10-08 03:00:00",
+      "ata": "2026-10-08 02:23:54",
+      "etd": "2026-10-09 01:00:00",
+      "atd": "",
+      "openStacking": "2026-10-02 18:00:00",
+      "closingDocument": "2026-10-07 07:00:00",
+      "closingPhysic": "2026-10-07 09:00:00"
+    },
     {
       "vessel": "ITAL BONNY",
       "line": "LT",
@@ -34,19 +49,19 @@
       "closingPhysic": "2026-10-05 15:00:00"
     },
     {
-      "vessel": "OKEE CORNELIA",
-      "line": "MCC",
-      "voyIn": "639S",
-      "voyOut": "640N",
-      "service": "I15",
-      "status": "ACTIVE",
-      "etb": "2026-10-07 05:00:00",
-      "ata": "2026-10-07 06:16:00",
-      "etd": "2026-10-08 01:00:00",
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S126",
+      "voyOut": "N126",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-10-21 12:00:00",
+      "ata": "",
+      "etd": "2026-10-22 12:00:00",
       "atd": "",
-      "openStacking": "2026-10-01 01:00:00",
-      "closingDocument": "2026-10-06 06:00:00",
-      "closingPhysic": "2026-10-06 08:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "GREEN PACIFIC",
@@ -79,21 +94,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "MAERSK NADI",
-      "line": "MCC",
-      "voyIn": "640Y",
-      "voyOut": "641X",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-10-19 15:00:00",
-      "ata": "",
-      "etd": "2026-10-20 13:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "EVER BOOMY",
       "line": "EMA",
       "voyIn": "1214-094A",
@@ -103,6 +103,21 @@
       "etb": "2026-10-19 15:00:00",
       "ata": "",
       "etd": "2026-10-20 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MAERSK NADI",
+      "line": "MCC",
+      "voyIn": "640Y",
+      "voyOut": "641X",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-10-19 15:00:00",
+      "ata": "",
+      "etd": "2026-10-20 13:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -269,9 +284,9 @@
       "ata": "",
       "etd": "2026-10-17 06:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-10-10 01:00:00",
+      "closingDocument": "2026-10-12 21:59:00",
+      "closingPhysic": "2026-10-12 23:59:00"
     },
     {
       "vessel": "EVER OBEY",
@@ -389,9 +404,9 @@
       "ata": "",
       "etd": "2026-10-14 19:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-10-10 01:00:00",
+      "closingDocument": "2026-10-12 21:59:00",
+      "closingPhysic": "2026-10-12 23:59:00"
     },
     {
       "vessel": "SINAR BANGKA",
@@ -602,21 +617,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "MARSA PRIDE",
-      "line": "MCC",
-      "voyIn": "638S",
-      "voyOut": "641N",
-      "service": "IA8",
-      "status": "REGISTER",
-      "etb": "2026-10-08 03:00:00",
-      "ata": "",
-      "etd": "2026-10-09 01:00:00",
-      "atd": "",
-      "openStacking": "2026-10-02 18:00:00",
-      "closingDocument": "2026-10-07 07:00:00",
-      "closingPhysic": "2026-10-07 09:00:00"
     },
     {
       "vessel": "BG. SINDO GARUDA KENCANA / TB. SD DIAMOND",
