@@ -1388,22 +1388,22 @@ function renderYardTemplate() {
     if (legend) {
         if (ytIsSimulationMode) {
             legend.innerHTML = `
-                <div class="flex items-center justify-between gap-3 flex-wrap text-[10px]">
+                <div class="flex items-center justify-between gap-3 flex-wrap text-[10px] w-full min-h-[26px] py-0.5">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 border border-purple-300 font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                        <span class="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-900 border border-purple-300 font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm shrink-0">
                             <span class="material-symbols-outlined text-[13px] text-purple-700 animate-pulse">science</span> Mode Simulasi: Yard Kosong
                         </span>
-                        <div class="h-3 w-px bg-slate-300"></div>
+                        <div class="h-3 w-px bg-slate-300 hidden sm:block"></div>
                         <span class="text-slate-600 font-medium">Semua slot yard bersih dari kontainer eksisting. Rencanakan blok dan slot baru secara bebas.</span>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-500 font-mono text-[10px]">
-                        <span>Kapasitas Slot Kosong: <strong>30 TEU / slot</strong> (6 Row × 5 Tier)</span>
+                    <div class="flex items-center gap-2 text-slate-500 font-mono text-[10px] shrink-0">
+                        <span>Kapasitas Slot Kosong: <strong class="text-slate-700">30 TEU / slot</strong> (6 Row × 5 Tier)</span>
                     </div>
                 </div>`;
         } else {
             const entries = Object.entries(yardCarrierColorMap).sort((a, b) => a[0].localeCompare(b[0]));
-            let lh = `<div class="flex items-center gap-2 flex-wrap text-[10px]">
-                <span class="font-bold text-slate-500 uppercase tracking-wider">Export Vessels</span>
+            let lh = `<div class="flex items-center gap-2 flex-wrap text-[10px] w-full min-h-[26px] py-0.5">
+                <span class="font-bold text-slate-500 uppercase tracking-wider shrink-0">Export Vessels</span>
                 <div class="h-3 w-px bg-slate-300"></div>
                 <div class="ym-legend-chip ${!ytSelectedVessel ? 'ym-legend-active' : ''}" onclick="ytClearVesselSelection()" title="Clear selection">
                     <span class="w-3 h-3 rounded-sm bg-white border border-slate-300 inline-block"></span>
@@ -1426,9 +1426,9 @@ function renderYardTemplate() {
         }
     }
 
-    let html = '<div class="ym-yard yt-yard">';
+    let html = '';
 
-    // Simulation Banner
+    // Simulation Banner (rendered outside ym-yard so zoom scaling does not impact it)
     if (ytIsSimulationMode) {
         html += `
             <div class="yt-simulation-banner mb-3 p-3 rounded-xl bg-gradient-to-r from-purple-900 via-indigo-950 to-purple-900 border border-purple-500/40 text-white flex flex-wrap items-center justify-between gap-3 shadow-lg">
@@ -1450,12 +1450,14 @@ function renderYardTemplate() {
                     <button onclick="ytClearAllReservations(); event.stopPropagation();" class="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer" title="Bersihkan semua alokasi slot template">
                         <span class="material-symbols-outlined text-[14px]">delete_sweep</span> Bersihkan Plan
                     </button>
-                    <button onclick="ytToggleSimulationMode()" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all">
+                    <button onclick="ytToggleSimulationMode(); event.stopPropagation();" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer">
                         <span class="material-symbols-outlined text-[14px]">undo</span> Keluar Simulasi
                     </button>
                 </div>
             </div>`;
     }
+
+    html += '<div class="ym-yard yt-yard">';
 
     // Mode indicator banner
     if (ytSelectedVessel) {
@@ -2385,14 +2387,6 @@ function ytClearVesselReservations(vesselKey) {
 }
 
 function ytClearAllReservations() {
-    const hasReservations = ytReservations && Object.keys(ytReservations).length > 0;
-    if (!hasReservations && !ytSelectedVessel && !ytRangeStart) {
-        if (typeof ytShowToast === 'function') {
-            ytShowToast('Belum ada rencana slot template yang dibuat', 'info', '#64748b');
-        }
-        return;
-    }
-
     ytRecordHistory();
     ytReservations = {};
     ytRangeStart = null;
@@ -2405,9 +2399,7 @@ function ytClearAllReservations() {
     renderYardTemplateClashes();
     renderFullscreenActiveVessels();
     ytUpdateUndoRedoUI();
-    if (typeof ytShowToast === 'function') {
-        ytShowToast('Semua rencana slot template berhasil dibersihkan', 'delete_sweep', '#ef4444');
-    }
+    ytShowToast('Semua rencana slot template berhasil dibersihkan', 'delete_sweep', '#ef4444');
 }
 
 // ── Smart Slot Recommendation (Auto-Suggest Best Blocks) ────────────

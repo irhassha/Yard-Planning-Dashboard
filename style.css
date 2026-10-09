@@ -1575,10 +1575,23 @@ body.yt-fullscreen-active #stickyTabContainer {
     color: #f8fafc !important;
 }
 
+#ytYardLegend {
+    overflow-y: hidden !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    flex-shrink: 0 !important;
+}
+
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytYardLegend {
     background: #1e293b !important;
     border-color: #334155 !important;
     padding: 0.5rem 1rem !important;
+    overflow-y: hidden !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    flex-shrink: 0 !important;
 }
 
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytYardContent {
