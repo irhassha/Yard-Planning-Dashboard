@@ -1565,18 +1565,14 @@ body.yt-fullscreen-active #stickyTabContainer {
     border: none !important;
 }
 
-:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) .p-4.border-b {
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) > .border-b {
     background: #1e293b !important;
     border-color: #334155 !important;
-    padding: 0.75rem 1.25rem !important;
+    padding: 0.5rem 1rem !important;
 }
 
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) h2 {
     color: #f8fafc !important;
-}
-
-:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) p {
-    color: #94a3b8 !important;
 }
 
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytYardLegend {
@@ -1668,6 +1664,20 @@ body.yt-fullscreen-active #stickyTabContainer {
 
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytUndoBtn:not(:disabled):hover,
 :is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytRedoBtn:not(:disabled):hover {
+    background: #334155 !important;
+    color: #ffffff !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytZoomGroup {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytZoomGroup button {
+    color: #cbd5e1 !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytZoomGroup button:hover {
     background: #334155 !important;
     color: #ffffff !important;
 }

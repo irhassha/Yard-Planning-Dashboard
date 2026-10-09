@@ -1336,49 +1336,48 @@
 
                 <!-- PANEL 2: YARD TEMPLATE VISUAL -->
                 <div id="ytVisualCard" class="glass-panel rounded-2xl shadow-glass overflow-hidden border border-white/40 transition-all duration-300">
-                    <div class="p-4 border-b border-slate-200/50 bg-white/20 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-600">
-                                <span class="material-symbols-outlined text-2xl">edit_note</span>
+                    <div class="p-2.5 sm:px-4 border-b border-slate-200/50 bg-white/20 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2.5">
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[20px]">edit_note</span>
                             </div>
-                            <div>
-                                <h2 class="text-xl font-semibold text-slate-800">Yard Template</h2>
-                                <p class="text-xs text-slate-500">Existing containers + reservation plan overlay · Click & drag empty slots to reserve · Double-click vessel for Fullscreen</p>
-                            </div>
+                            <h2 class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">Yard Template</h2>
                         </div>
-                        <div class="flex items-center gap-2 flex-wrap justify-end">
+                        <div class="flex items-center gap-1.5 flex-wrap justify-end">
                             <!-- Undo & Redo buttons -->
-                            <div class="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200/90 shadow-sm" id="ytUndoRedoGroup">
-                                <button onclick="ytUndo()" id="ytUndoBtn" class="secondary-pill text-xs px-2.5 py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Undo perubahan reservasi (Ctrl+Z)" disabled>
+                            <div class="flex items-center gap-0.5 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200/90 shadow-sm" id="ytUndoRedoGroup">
+                                <button onclick="ytUndo()" id="ytUndoBtn" class="secondary-pill text-xs !px-2.5 !py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Undo perubahan reservasi (Ctrl+Z)" disabled>
                                     <span class="material-symbols-outlined text-[15px]">undo</span> Undo
                                 </button>
-                                <button onclick="ytRedo()" id="ytRedoBtn" class="secondary-pill text-xs px-2.5 py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Redo perubahan reservasi (Ctrl+Y)" disabled>
+                                <button onclick="ytRedo()" id="ytRedoBtn" class="secondary-pill text-xs !px-2.5 !py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Redo perubahan reservasi (Ctrl+Y)" disabled>
                                     <span class="material-symbols-outlined text-[15px]">redo</span> Redo
                                 </button>
                             </div>
                             <!-- Hapus Reservasi / Eraser Mode button -->
-                            <button onclick="ytToggleEraserMode()" id="ytEraserBtn" class="secondary-pill text-xs font-semibold" style="color:#ef4444;border-color:#fca5a5;" title="Mode Hapus: Klik atau seret slot yang sudah direservasi untuk menghapusnya">
-                                <span class="material-symbols-outlined text-[16px]">ink_eraser</span> Hapus Reservasi
+                            <button onclick="ytToggleEraserMode()" id="ytEraserBtn" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1" style="color:#ef4444;border-color:#fca5a5;" title="Mode Hapus: Klik atau seret slot yang sudah direservasi untuk menghapusnya">
+                                <span class="material-symbols-outlined text-[15px]">ink_eraser</span> Hapus Reservasi
                             </button>
-                            <button onclick="ytToggleSimulationMode()" id="ytSimulationBtn" class="secondary-pill text-xs font-semibold" style="color:#7c3aed;border-color:#ddd6fe;" title="Mode Simulasi: Semua blok yard dalam kondisi kosong">
-                                <span class="material-symbols-outlined text-[16px]">science</span> Mode Simulasi
+                            <button onclick="ytToggleSimulationMode()" id="ytSimulationBtn" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1" style="color:#7c3aed;border-color:#ddd6fe;" title="Mode Simulasi: Semua blok yard dalam kondisi kosong">
+                                <span class="material-symbols-outlined text-[15px]">science</span> Mode Simulasi
                             </button>
-                            <button onclick="ytToggleFullscreen()" id="ytFullscreenBtn" class="secondary-pill text-xs font-semibold" style="color:#0284c7;border-color:#bae6fd;" title="Toggle Fullscreen Mode (or double-click any vessel in schedule table)">
-                                <span class="material-symbols-outlined text-[16px]">fullscreen</span> Fullscreen
+                            <button onclick="ytToggleFullscreen()" id="ytFullscreenBtn" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1" style="color:#0284c7;border-color:#bae6fd;" title="Toggle Fullscreen Mode (or double-click any vessel in schedule table)">
+                                <span class="material-symbols-outlined text-[15px]">fullscreen</span> Fullscreen
                             </button>
-                            <button onclick="ytExportReservationExcel()" class="secondary-pill text-xs" style="color:#059669;border-color:#a7f3d0;" title="Export Yard Template Plan to Excel">
-                                <span class="material-symbols-outlined text-[16px]">file_download</span> Export Plan (Excel)
+                            <button onclick="ytExportReservationExcel()" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1" style="color:#059669;border-color:#a7f3d0;" title="Export Yard Template Plan to Excel">
+                                <span class="material-symbols-outlined text-[15px]">file_download</span> Export Plan
                             </button>
-                            <button onclick="ytZoom(-0.1)" class="secondary-pill text-xs px-2" title="Zoom Out">
-                                <span class="material-symbols-outlined text-[16px]">zoom_out</span></button>
-                            <button onclick="ytZoom(0)" class="secondary-pill text-xs px-2" title="Reset Zoom">
-                                <span class="material-symbols-outlined text-[16px]">search</span></button>
-                            <button onclick="ytZoom(0.1)" class="secondary-pill text-xs px-2" title="Zoom In">
-                                <span class="material-symbols-outlined text-[16px]">zoom_in</span></button>
-                            <button onclick="ytToggleText()" id="ytTextToggleBtn" class="secondary-pill text-xs">
-                                <span class="material-symbols-outlined text-[16px]">visibility</span> Show Text</button>
-                            <button onclick="ytClearAllReservations()" class="secondary-pill text-xs" style="color:#ef4444;border-color:#fca5a5;" title="Hapus semua slot reservasi">
-                                <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear All</button>
+                            <!-- Zoom Controls Group -->
+                            <div class="flex items-center bg-slate-100/90 p-0.5 rounded-xl border border-slate-200/90 shadow-sm" id="ytZoomGroup">
+                                <button onclick="ytZoom(-0.1)" class="p-1 px-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors flex items-center justify-center" title="Zoom Out (-)"><span class="material-symbols-outlined text-[16px]">zoom_out</span></button>
+                                <button onclick="ytZoom(0)" class="p-1 px-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors flex items-center justify-center" title="Fit to Screen"><span class="material-symbols-outlined text-[16px]">fit_screen</span></button>
+                                <button onclick="ytZoom(0.1)" class="p-1 px-1.5 hover:bg-white rounded-lg text-slate-600 transition-colors flex items-center justify-center" title="Zoom In (+)"><span class="material-symbols-outlined text-[16px]">zoom_in</span></button>
+                            </div>
+                            <button onclick="ytToggleText()" id="ytTextToggleBtn" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[15px]">visibility</span> Show Text
+                            </button>
+                            <button onclick="ytClearAllReservations()" class="secondary-pill text-xs !px-2.5 !py-1 font-semibold flex items-center gap-1" style="color:#ef4444;border-color:#fca5a5;" title="Hapus semua slot reservasi">
+                                <span class="material-symbols-outlined text-[15px]">delete_sweep</span> Clear All
+                            </button>
                         </div>
                     </div>
                     <!-- FULLSCREEN ACTIVE & UPCOMING OPEN STACK VESSELS PANEL (Visible in fullscreen mode) -->
