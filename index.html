@@ -2527,6 +2527,110 @@
         </div>
     </div>
 
+    <!-- YARD TEMPLATE: MANUAL RESERVATION MODAL (MODE KETIK BLOCK & SLOT) -->
+    <div id="ytManualReserveModal" class="fixed inset-0 z-[250] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 transition-all" onclick="if(event.target === this) ytCloseManualReserveModal();">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all">
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                        <span class="material-symbols-outlined text-[20px]">post_add</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm">Tambah Reservasi Manual</h3>
+                        <p class="text-[11px] text-slate-400">Ketik nama blok & rentang slot (from - to)</p>
+                    </div>
+                </div>
+                <button onclick="ytCloseManualReserveModal()" class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors flex items-center justify-center text-sm font-bold">✕</button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 space-y-4">
+                <!-- Vessel Info Card -->
+                <div id="ytManualModalVesselCard" class="p-3 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-between">
+                    <!-- Rendered dynamically -->
+                </div>
+
+                <!-- Block Input with Autocomplete -->
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1">
+                            <span>Blok Yard</span>
+                            <span class="text-rose-500">*</span>
+                        </label>
+                        <span id="ytManualBlockInfo" class="text-[10px] text-slate-400 font-mono">Pilih dari daftar atau ketik huruf</span>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="ytManualBlockInput" 
+                            class="w-full uppercase font-bold tracking-wider font-mono px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder:font-sans placeholder:font-normal placeholder:text-slate-400"
+                            placeholder="Ketik huruf blok, misal: A..."
+                            autocomplete="off"
+                            oninput="ytOnManualBlockInput(this.value)"
+                            onkeydown="ytOnManualBlockKeydown(event)"
+                            onfocus="ytShowBlockSuggestions(this.value)">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none material-symbols-outlined text-[18px]">domain</span>
+                    </div>
+
+                    <!-- Autocomplete Dropdown List -->
+                    <div id="ytBlockSuggestionsDropdown" class="hidden absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 p-1 custom-scrollbar">
+                        <!-- Populated dynamically as user types -->
+                    </div>
+                </div>
+
+                <!-- Slot Range: From & To -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                            <span>Slot Mulai (From)</span>
+                            <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="number" id="ytManualSlotFrom" min="1" max="45" value="1"
+                            class="w-full font-mono font-bold px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                            placeholder="1"
+                            oninput="ytValidateManualForm()"
+                            onkeydown="if(event.key === 'Enter') ytSubmitManualReservation();">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-200 mb-1.5">
+                            <span>Slot Selesai (To)</span>
+                            <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="number" id="ytManualSlotTo" min="1" max="45" value="10"
+                            class="w-full font-mono font-bold px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                            placeholder="10"
+                            oninput="ytValidateManualForm()"
+                            onkeydown="if(event.key === 'Enter') ytSubmitManualReservation();">
+                    </div>
+                </div>
+
+                <!-- Quick Preset Chips -->
+                <div>
+                    <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1.5">Preset Cepat Rentang Slot</div>
+                    <div class="flex items-center gap-1.5 flex-wrap" id="ytManualPresets">
+                        <button type="button" onclick="ytSetManualPreset(1, 10)" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">1–10 (10s)</button>
+                        <button type="button" onclick="ytSetManualPreset(11, 20)" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">11–20 (10s)</button>
+                        <button type="button" onclick="ytSetManualPreset(21, 30)" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">21–30 (10s)</button>
+                        <button type="button" onclick="ytSetManualFullBlockPreset()" id="ytManualFullBlockBtn" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-colors">Full Block</button>
+                    </div>
+                </div>
+
+                <!-- Live Validation & Capacity Preview -->
+                <div id="ytManualValidationBox" class="p-3 rounded-2xl border text-xs transition-all">
+                    <!-- Dynamically updated -->
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 py-3.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex items-center justify-end gap-2.5">
+                <button type="button" onclick="ytCloseManualReserveModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200/60 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                <button type="button" id="ytManualSubmitBtn" onclick="ytSubmitManualReservation()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/30 flex items-center gap-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                    <span>Simpan Reservasi</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         // Set worker source for PDF.js

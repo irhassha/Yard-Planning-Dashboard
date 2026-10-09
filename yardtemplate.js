@@ -257,6 +257,525 @@ function ytUpdateUndoRedoUI() {
     }
 }
 
+// ── Manual Reservation Modal (Mode Ketik Blok & Slot) ────────────
+
+const ALL_YARD_BLOCKS = [
+    'A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08',
+    'B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08',
+    'C01', 'C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08',
+    'D01'
+];
+
+let ytManualTargetVesselKey = null;
+let ytSuggestionSelectedIndex = -1;
+let ytCurrentBlockSuggestions = [];
+
+function ytIsManualModalOpen() {
+    const modal = document.getElementById('ytManualReserveModal');
+    return modal && !modal.classList.contains('hidden');
+}
+
+function ytOpenManualReserveModal(vesselKey) {
+    if (!vesselKey) return;
+    ytManualTargetVesselKey = vesselKey;
+
+    // Look for vessel in schedule maps
+    const allKnown = [...(ytVesselScheduleMap || []), ...getActiveOpenStackVessels(), ...getUpcomingOpenStackVessels()];
+    let vInfo = allKnown.find(v => v.key === vesselKey);
+
+    if (!vInfo) {
+        const parts = vesselKey.split('||');
+        vInfo = {
+            key: vesselKey,
+            vesselName: parts[0] || 'Unknown Vessel',
+            service: parts[1] || '—',
+            invCarrier: parts[0] || '—',
+            color: getYardColor(parts[0])
+        };
+    }
+
+    // Select this vessel so visual template aligns
+    ytSelectVessel(vesselKey, vInfo.vesselName, vInfo.service, vInfo.invCarrier);
+
+    // Populate vessel card in modal
+    const vCard = document.getElementById('ytManualModalVesselCard');
+    if (vCard) {
+        const color = getYardColor(vInfo.invCarrier || vInfo.vesselName);
+        const resList = ytReservations[vesselKey] || [];
+        const resCount = resList.reduce((sum, r) => sum + (r.slotEnd - r.slotStart + 1), 0);
+        const isUpcoming = vInfo.diffMs != null && vInfo.diffMs > 0;
+
+        let statusText = '';
+        if (isUpcoming) {
+            const totalMins = Math.round(vInfo.diffMs / 60000);
+            const hrs = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            statusText = `⏳ Upcoming in ${hrs > 0 ? hrs + 'h ' : ''}${mins}m`;
+        } else {
+            statusText = `🟢 Active Open Stack`;
+        }
+
+        vCard.innerHTML = `
+            <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm" style="background:${color}"></span>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <strong class="text-xs text-slate-800 dark:text-white font-bold truncate">${vInfo.vesselName}</strong>
+                        <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono border border-slate-200 dark:border-slate-700">${vInfo.service}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">(${vInfo.invCarrier})</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
+                        <span>${statusText}</span>
+                        <span>·</span>
+                        <span class="font-mono ${resCount > 0 ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''}">${resCount > 0 ? `${resCount} slot terencana` : 'Belum ada alokasi'}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right shrink-0">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                    Mode Ketik
+                </span>
+            </div>`;
+    }
+
+    // Smart prefill: if smart recommendation exists, prefill it!
+    const rec = ytFindBestBlockRecommendation(vesselKey);
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const slotFromInput = document.getElementById('ytManualSlotFrom');
+    const slotToInput = document.getElementById('ytManualSlotTo');
+
+    if (rec && blockInput && slotFromInput && slotToInput) {
+        blockInput.value = rec.block;
+        slotFromInput.value = rec.slotStart;
+        slotToInput.value = rec.slotEnd;
+    } else {
+        if (blockInput) blockInput.value = 'A01';
+        if (slotFromInput) slotFromInput.value = '1';
+        if (slotToInput) slotToInput.value = '10';
+    }
+
+    // Show modal
+    const modal = document.getElementById('ytManualReserveModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    // Hide dropdown initially
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+
+    ytValidateManualForm();
+
+    // Focus input
+    setTimeout(() => {
+        if (blockInput) {
+            blockInput.focus();
+            blockInput.select();
+        }
+    }, 80);
+}
+
+function ytCloseManualReserveModal() {
+    const modal = document.getElementById('ytManualReserveModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    if (dropdown) dropdown.classList.add('hidden');
+    ytManualTargetVesselKey = null;
+    ytSuggestionSelectedIndex = -1;
+}
+
+function ytOnManualBlockInput(val) {
+    ytShowBlockSuggestions(val);
+    ytValidateManualForm();
+}
+
+function ytShowBlockSuggestions(query) {
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    if (!dropdown) return;
+
+    const q = (query || '').trim().toUpperCase();
+    let matches = [];
+
+    if (!q) {
+        matches = [...ALL_YARD_BLOCKS];
+    } else {
+        // Blocks starting with query first, then containing query
+        const starts = ALL_YARD_BLOCKS.filter(b => b.startsWith(q));
+        const contains = ALL_YARD_BLOCKS.filter(b => !b.startsWith(q) && b.includes(q));
+        matches = [...starts, ...contains];
+    }
+
+    ytCurrentBlockSuggestions = matches;
+    ytSuggestionSelectedIndex = -1;
+
+    if (matches.length === 0) {
+        dropdown.innerHTML = `<div class="p-2.5 text-center text-xs text-slate-400 italic">Tidak ada blok yang cocok dengan "${query}"</div>`;
+        dropdown.classList.remove('hidden');
+        return;
+    }
+
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const inv = window.invData || [];
+
+    let html = '';
+    matches.forEach((bn, idx) => {
+        const ms = (CAP[bn] || {}).slots || 37;
+        const occCount = ytIsSimulationMode ? 0 : inv.filter(it => (it.block || '').toUpperCase() === bn).length;
+        const resSlotsInBlock = ytGetBlockReservedSlotsCount(bn);
+        const freeEst = Math.max(0, ms - occCount - resSlotsInBlock);
+
+        const isExport = ['A01','A02','A03','A04','A05','B01','B02','B03','B04','B05','C03','C04'].includes(bn);
+
+        html += `
+            <div class="yt-block-suggestion-item p-2 rounded-lg cursor-pointer flex items-center justify-between gap-2 text-xs hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors"
+                 id="ytSuggestionItem_${idx}"
+                 onmousedown="ytSelectBlockSuggestion('${bn}'); event.preventDefault();">
+                <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-indigo-600/10 text-indigo-700 dark:text-indigo-300 font-mono font-bold text-xs flex items-center justify-center">${bn}</span>
+                    <div>
+                        <div class="font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                            <span>Blok ${bn}</span>
+                            <span class="px-1.5 py-0.2 rounded text-[9px] font-bold ${isExport ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'}">${isExport ? 'Export' : 'Import'}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-mono">${ms} slot total</div>
+                    </div>
+                </div>
+                <div class="text-right font-mono text-[11px]">
+                    <span class="px-1.5 py-0.5 rounded ${freeEst > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'} font-bold">
+                        ${freeEst} kosong
+                    </span>
+                </div>
+            </div>`;
+    });
+
+    dropdown.innerHTML = html;
+    dropdown.classList.remove('hidden');
+}
+
+function ytGetBlockReservedSlotsCount(block) {
+    let count = 0;
+    const countedSlots = new Set();
+    Object.values(ytReservations).forEach(list => {
+        (list || []).forEach(r => {
+            if (r.block === block) {
+                for (let s = r.slotStart; s <= r.slotEnd; s++) {
+                    countedSlots.add(s);
+                }
+            }
+        });
+    });
+    return countedSlots.size;
+}
+
+function ytSelectBlockSuggestion(blockName) {
+    const input = document.getElementById('ytManualBlockInput');
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    const info = document.getElementById('ytManualBlockInfo');
+    const slotTo = document.getElementById('ytManualSlotTo');
+
+    if (input) input.value = blockName;
+    if (dropdown) dropdown.classList.add('hidden');
+
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const ms = (CAP[blockName] || {}).slots || 37;
+
+    if (info) info.textContent = `Blok ${blockName} · Kapasitas: 1 s/d ${ms} slot`;
+
+    if (slotTo) {
+        slotTo.max = ms;
+        if (parseInt(slotTo.value) > ms) {
+            slotTo.value = ms;
+        }
+    }
+
+    ytValidateManualForm();
+
+    const slotFrom = document.getElementById('ytManualSlotFrom');
+    if (slotFrom) {
+        slotFrom.focus();
+        slotFrom.select();
+    }
+}
+
+function ytOnManualBlockKeydown(e) {
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    const isDropdownVisible = dropdown && !dropdown.classList.contains('hidden');
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!isDropdownVisible) {
+            ytShowBlockSuggestions(e.target.value);
+            return;
+        }
+        ytSuggestionSelectedIndex = Math.min(ytSuggestionSelectedIndex + 1, ytCurrentBlockSuggestions.length - 1);
+        ytHighlightSuggestion(ytSuggestionSelectedIndex);
+        return;
+    }
+
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (isDropdownVisible) {
+            ytSuggestionSelectedIndex = Math.max(ytSuggestionSelectedIndex - 1, 0);
+            ytHighlightSuggestion(ytSuggestionSelectedIndex);
+        }
+        return;
+    }
+
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        if (isDropdownVisible && ytSuggestionSelectedIndex >= 0 && ytSuggestionSelectedIndex < ytCurrentBlockSuggestions.length) {
+            ytSelectBlockSuggestion(ytCurrentBlockSuggestions[ytSuggestionSelectedIndex]);
+        } else {
+            // Pick first matching or accept value
+            const val = e.target.value.trim().toUpperCase();
+            if (ALL_YARD_BLOCKS.includes(val)) {
+                ytSelectBlockSuggestion(val);
+            } else if (ytCurrentBlockSuggestions.length > 0) {
+                ytSelectBlockSuggestion(ytCurrentBlockSuggestions[0]);
+            } else {
+                const slotFrom = document.getElementById('ytManualSlotFrom');
+                if (slotFrom) slotFrom.focus();
+            }
+        }
+        return;
+    }
+
+    if (e.key === 'Escape') {
+        if (isDropdownVisible) {
+            dropdown.classList.add('hidden');
+            e.stopPropagation();
+        }
+    }
+}
+
+function ytHighlightSuggestion(index) {
+    const items = document.querySelectorAll('.yt-block-suggestion-item');
+    items.forEach((it, i) => {
+        if (i === index) {
+            it.classList.add('selected', 'bg-indigo-50', 'dark:bg-slate-700');
+            it.scrollIntoView({ block: 'nearest' });
+        } else {
+            it.classList.remove('selected', 'bg-indigo-50', 'dark:bg-slate-700');
+        }
+    });
+}
+
+// Close suggestions dropdown on outside click
+document.addEventListener('click', function(e) {
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const dropdown = document.getElementById('ytBlockSuggestionsDropdown');
+    if (!dropdown || dropdown.classList.contains('hidden')) return;
+
+    if (!blockInput || (!blockInput.contains(e.target) && !dropdown.contains(e.target))) {
+        dropdown.classList.add('hidden');
+    }
+});
+
+function ytSetManualPreset(from, to) {
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const slotFrom = document.getElementById('ytManualSlotFrom');
+    const slotTo = document.getElementById('ytManualSlotTo');
+    const bn = (blockInput ? blockInput.value : '').trim().toUpperCase();
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const ms = (CAP[bn] || {}).slots || 37;
+
+    if (slotFrom) slotFrom.value = Math.min(from, ms);
+    if (slotTo) slotTo.value = Math.min(to, ms);
+    ytValidateManualForm();
+}
+
+function ytSetManualFullBlockPreset() {
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const bn = (blockInput ? blockInput.value : '').trim().toUpperCase();
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const ms = (CAP[bn] || {}).slots || 37;
+
+    ytSetManualPreset(1, ms);
+}
+
+function ytCheckSlotRangeStatus(block, slotStart, slotEnd) {
+    const minS = Math.min(slotStart, slotEnd);
+    const maxS = Math.max(slotStart, slotEnd);
+    const unavailableSlots = [];
+    const reservedSlots = [];
+    const occupiedSlots = [];
+
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+    const maxSlots = (CAP[block] || {}).slots || 37;
+
+    for (let s = minS; s <= maxS; s++) {
+        if (s > maxSlots) {
+            unavailableSlots.push({ slot: s, reason: `Melebihi batas blok (${maxSlots})` });
+            continue;
+        }
+
+        // 1. Check already reserved by any vessel
+        let isRes = false;
+        for (const [vk, resList] of Object.entries(ytReservations)) {
+            for (const r of resList) {
+                if (r.block === block && s >= r.slotStart && s <= r.slotEnd) {
+                    const vName = vk.split('||')[0];
+                    reservedSlots.push({ slot: s, vessel: vName, key: vk });
+                    unavailableSlots.push({ slot: s, reason: `Sudah direservasi oleh ${vName}` });
+                    isRes = true;
+                    break;
+                }
+            }
+            if (isRes) break;
+        }
+        if (isRes) continue;
+
+        // 2. Check occupied by existing containers (only if not simulation mode)
+        if (!ytIsSimulationMode) {
+            const inv = window.invData || [];
+            const occ = inv.find(it => (it.block || '').toUpperCase() === block && parseInt(it.slot) === s);
+            if (occ) {
+                occupiedSlots.push({ slot: s, carrier: occ.carrier, move: occ.move });
+                unavailableSlots.push({ slot: s, reason: `Terisi kontainer eksisting (${occ.carrier || 'aktual'})` });
+            }
+        }
+    }
+
+    return {
+        totalRequested: (maxS - minS + 1),
+        isValid: unavailableSlots.length === 0,
+        unavailableSlots,
+        reservedSlots,
+        occupiedSlots
+    };
+}
+
+function ytValidateManualForm() {
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const slotFromInput = document.getElementById('ytManualSlotFrom');
+    const slotToInput = document.getElementById('ytManualSlotTo');
+    const box = document.getElementById('ytManualValidationBox');
+    const submitBtn = document.getElementById('ytManualSubmitBtn');
+
+    if (!blockInput || !slotFromInput || !slotToInput || !box) return;
+
+    const block = blockInput.value.trim().toUpperCase();
+    const from = parseInt(slotFromInput.value);
+    const to = parseInt(slotToInput.value);
+
+    const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
+
+    if (!block) {
+        box.className = 'p-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-500 text-xs';
+        box.innerHTML = `<span class="material-symbols-outlined text-[15px] align-middle mr-1 text-slate-400">info</span> Silakan pilih atau ketik nama blok yard.`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+    }
+
+    if (!ALL_YARD_BLOCKS.includes(block)) {
+        box.className = 'p-3 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 text-xs';
+        box.innerHTML = `<span class="material-symbols-outlined text-[15px] align-middle mr-1">error</span> Blok <strong>${block}</strong> tidak terdaftar di Yard NPCT1.`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+    }
+
+    const maxSlots = (CAP[block] || {}).slots || 37;
+
+    if (isNaN(from) || isNaN(to) || from < 1 || to < 1) {
+        box.className = 'p-3 rounded-2xl border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs';
+        box.innerHTML = `<span class="material-symbols-outlined text-[15px] align-middle mr-1">warning</span> Nomor slot harus berupa angka positif mulai dari 1.`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+    }
+
+    if (from > to) {
+        box.className = 'p-3 rounded-2xl border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs';
+        box.innerHTML = `<span class="material-symbols-outlined text-[15px] align-middle mr-1">warning</span> Slot Mulai (${from}) tidak boleh lebih besar dari Slot Selesai (${to}).`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+    }
+
+    if (to > maxSlots) {
+        box.className = 'p-3 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-300 text-xs';
+        box.innerHTML = `<span class="material-symbols-outlined text-[15px] align-middle mr-1">error</span> Slot ${to} melebihi kapasitas maksimum Blok ${block} (Maks: ${maxSlots} slot).`;
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+    }
+
+    const status = ytCheckSlotRangeStatus(block, from, to);
+    const count = to - from + 1;
+    const estTEU = count * 30;
+
+    if (status.isValid) {
+        box.className = 'p-3 rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 text-xs';
+        box.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-emerald-600 dark:text-emerald-400">check_circle</span>
+                    <div>
+                        <strong class="font-bold">Semua ${count} slot tersedia!</strong>
+                        <div class="text-[11px] text-emerald-700 dark:text-emerald-300">${block}: Slot ${from}–${to} bersih tanpa konflik.</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="px-2 py-0.5 rounded-lg bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-mono font-bold text-xs">
+                        +${estTEU} TEU
+                    </span>
+                </div>
+            </div>`;
+        if (submitBtn) submitBtn.disabled = false;
+    } else {
+        box.className = 'p-3 rounded-2xl border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 text-xs';
+        const sampleReason = status.unavailableSlots.slice(0, 3).map(u => `Slot ${u.slot} (${u.reason})`).join(', ');
+        const moreTxt = status.unavailableSlots.length > 3 ? ` dan ${status.unavailableSlots.length - 3} slot lainnya` : '';
+
+        box.innerHTML = `
+            <div class="flex items-start gap-2">
+                <span class="material-symbols-outlined text-[18px] text-rose-600 dark:text-rose-400 shrink-0 mt-0.5">cancel</span>
+                <div>
+                    <strong class="font-bold">${status.unavailableSlots.length} slot tidak dapat direservasi:</strong>
+                    <div class="text-[11px] text-rose-700 dark:text-rose-300 mt-0.5">${sampleReason}${moreTxt}.</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Pilih rentang slot lain yang kosong atau aktifkan Mode Simulasi jika ingin merencanakan yard kosong.</div>
+                </div>
+            </div>`;
+        if (submitBtn) submitBtn.disabled = true;
+    }
+}
+
+function ytSubmitManualReservation() {
+    if (!ytManualTargetVesselKey) return;
+    const blockInput = document.getElementById('ytManualBlockInput');
+    const slotFromInput = document.getElementById('ytManualSlotFrom');
+    const slotToInput = document.getElementById('ytManualSlotTo');
+
+    if (!blockInput || !slotFromInput || !slotToInput) return;
+
+    const block = blockInput.value.trim().toUpperCase();
+    const from = parseInt(slotFromInput.value);
+    const to = parseInt(slotToInput.value);
+
+    const status = ytCheckSlotRangeStatus(block, from, to);
+    if (!status.isValid) {
+        alert('Rentang slot yang dipilih mengandung slot yang tidak tersedia atau sudah direservasi!');
+        return;
+    }
+
+    const vKey = ytManualTargetVesselKey;
+    const vName = vKey.split('||')[0];
+
+    ytAddReservation(vKey, block, from, to);
+    ytCloseManualReserveModal();
+
+    renderYardTemplate();
+    renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
+    renderReservationSummary();
+    renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+
+    const count = to - from + 1;
+    ytShowToast(`✓ Berhasil reservasi ${block}: Slot ${from}–${to} (+${count * 30} TEU) untuk ${vName}`, 'check_circle', '#10b981');
+}
+
 // ── Persistence (localStorage) ───────────────────────────────────────
 const YT_STORAGE_KEY = 'npct1_yard_template_reservations_v1';
 
@@ -941,6 +1460,9 @@ function renderYardTemplate() {
             ` : ''}
             <div class="flex items-center gap-2">
                 ${ytRangeStart ? `<span class="yt-range-indicator"><span class="material-symbols-outlined text-[14px]">radio_button_checked</span> Start: ${ytRangeStart.block}-${ytRangeStart.slot}</span>` : `<span class="yt-mode-hint">Click two empty slots in the same block to reserve</span>`}
+                <button onclick="ytOpenManualReserveModal('${ytSelectedVessel.key}')" class="px-2 py-0.5 rounded text-[11px] font-bold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 flex items-center gap-1 shadow-sm transition-colors" title="Ketik blok & rentang slot secara manual">
+                    <span class="material-symbols-outlined text-[13px]">post_add</span> Ketik Slot
+                </button>
                 ${(ytReservations[ytSelectedVessel.key] && ytReservations[ytSelectedVessel.key].length > 0) ? `
                     <button onclick="ytClearVesselReservations('${ytSelectedVessel.key}')" class="px-2 py-0.5 rounded text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 flex items-center gap-1 transition-colors" title="Hapus semua reservasi kapal ini">
                         <span class="material-symbols-outlined text-[13px]">delete</span> Hapus Reservasi (${ytReservations[ytSelectedVessel.key].length})
@@ -1253,7 +1775,13 @@ function renderActiveVesselTable() {
                 ${resList.length > 0 ? `<div class="flex flex-wrap gap-1">${resDetail}</div>` : '<span class="text-slate-300">—</span>'}
             </td>
             <td class="px-2 py-2 text-center" onclick="event.stopPropagation();">
-                ${resList.length > 0 ? `<button onclick="ytClearVesselReservations('${v.key}'); event.stopPropagation();" class="px-2 py-1 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition-colors">Clear</button>` : '<span class="text-slate-300">—</span>'}
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" class="px-2 py-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-600 hover:text-white border border-indigo-200 rounded-lg flex items-center gap-0.5 transition-all shadow-sm" title="Tambah reservasi dengan mengetik blok & slot">
+                        <span class="material-symbols-outlined text-[13px]">add</span>
+                        <span>Plan</span>
+                    </button>
+                    ${resList.length > 0 ? `<button onclick="ytClearVesselReservations('${v.key}'); event.stopPropagation();" class="px-1.5 py-1 text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors" title="Hapus semua reservasi kapal ini"><span class="material-symbols-outlined text-[13px]">delete</span></button>` : ''}
+                </div>
             </td>
         </tr>`;
     });
@@ -1345,7 +1873,13 @@ function renderUpcomingOpenStackVessels() {
                 ${resList.length > 0 ? `<div class="flex flex-wrap gap-1">${resDetail}</div>` : '<span class="text-slate-300">—</span>'}
             </td>
             <td class="px-2 py-2 text-center" onclick="event.stopPropagation();">
-                ${resList.length > 0 ? `<button onclick="ytClearVesselReservations('${v.key}'); event.stopPropagation();" class="px-2 py-1 text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition-colors">Clear</button>` : `<button onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}'); event.stopPropagation();" class="px-2.5 py-0.5 text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded hover:bg-indigo-100 transition-colors">Pre-Plan</button>`}
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" class="px-2 py-1 text-[10px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-600 hover:text-white border border-indigo-200 rounded-lg flex items-center gap-0.5 transition-all shadow-sm" title="Tambah reservasi dengan mengetik blok & slot">
+                        <span class="material-symbols-outlined text-[13px]">add</span>
+                        <span>Plan</span>
+                    </button>
+                    ${resList.length > 0 ? `<button onclick="ytClearVesselReservations('${v.key}'); event.stopPropagation();" class="px-1.5 py-1 text-[10px] font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors" title="Hapus semua reservasi kapal ini"><span class="material-symbols-outlined text-[13px]">delete</span></button>` : ''}
+                </div>
             </td>
         </tr>`;
     });
@@ -1545,8 +2079,12 @@ document.addEventListener('keydown', function (e) {
         return;
     }
 
-    // Escape: exit eraser mode first, or exit fullscreen
+    // Escape: exit manual modal first, then eraser mode, then fullscreen
     if (e.key === 'Escape') {
+        if (ytIsManualModalOpen()) {
+            ytCloseManualReserveModal();
+            return;
+        }
         if (ytIsEraserMode) {
             ytToggleEraserMode();
             return;
@@ -3192,10 +3730,15 @@ function renderFullscreenVesselsCards(vessels, container) {
                     <div class="text-[9px] font-mono text-slate-400">
                         ${reservedSlots > 0 ? `<span class="text-indigo-300 font-bold">${reservedSlots} slot terencana</span>` : '<span>Belum ada slot</span>'}
                     </div>
-                    <div>
+                    <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
+                        <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" 
+                            class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600/90 hover:bg-indigo-600 text-white flex items-center gap-0.5 shadow-sm transition-colors" 
+                            title="Ketik blok & slot reservasi">
+                            <span class="material-symbols-outlined text-[11px]">add</span> Plan
+                        </button>
                         ${isSelected 
                             ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-500 text-white shadow-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[11px]">check</span> ACTIVE</span>' 
-                            : `<span class="text-slate-400 hover:text-indigo-300 text-[10px] font-semibold flex items-center gap-0.5">${isUpcoming ? 'Pre-Plan' : 'Pilih'} <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>`
+                            : `<span onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" class="text-slate-400 hover:text-indigo-300 text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">${isUpcoming ? 'Pre-Plan' : 'Pilih'} <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>`
                         }
                     </div>
                 </div>
@@ -3289,10 +3832,15 @@ function renderFullscreenVesselsTable(vessels, container) {
                 <td class="px-2 py-1.5 text-center font-bold">${ytIsSimulationMode ? '<span class="text-purple-300">0 bx</span>' : `${existing.totalBox} bx`}</td>
                 <td class="px-2 py-1.5 text-center font-bold text-violet-300">${reservedSlots > 0 ? `${reservedSlots}s` : '—'}</td>
                 <td class="px-2 py-1.5 text-center font-bold text-emerald-400">${planTEU > 0 ? `+${planTEU} TEU` : '—'}</td>
-                <td class="px-2 py-1.5 text-center">
-                    ${isSelected 
-                        ? '<span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold text-[9px]">PILIH</span>' 
-                        : `<span class="text-slate-400 hover:text-white text-[9px]">${isUpcoming ? 'Pre-Plan' : 'Pilih'}</span>`}
+                <td class="px-2 py-1.5 text-center" onclick="event.stopPropagation();">
+                    <div class="flex items-center justify-center gap-1">
+                        <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-0.5 transition-colors shadow-sm" title="Ketik blok & rentang slot">
+                            <span class="material-symbols-outlined text-[11px]">add</span> Plan
+                        </button>
+                        ${isSelected 
+                            ? '<span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold text-[9px]">PILIH</span>' 
+                            : `<span onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" class="text-slate-400 hover:text-white text-[9px] cursor-pointer">${isUpcoming ? 'Pre-Plan' : 'Pilih'}</span>`}
+                    </div>
                 </td>
             </tr>`;
     });

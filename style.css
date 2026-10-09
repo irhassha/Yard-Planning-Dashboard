@@ -1664,6 +1664,23 @@ body.yt-fullscreen-active #stickyTabContainer {
     color: #ffffff !important;
 }
 
+/* Manual Reservation Modal & Autocomplete Suggestions */
+.yt-block-suggestion-item {
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.yt-block-suggestion-item:hover,
+.yt-block-suggestion-item.selected {
+    background-color: #f1f5f9;
+}
+
+.dark .yt-block-suggestion-item:hover,
+.dark .yt-block-suggestion-item.selected {
+    background-color: #334155;
+}
+
+
 
 
 
