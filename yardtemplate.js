@@ -1711,13 +1711,13 @@ function renderYardTemplate() {
 // ── Active Vessel Table ──────────────────────────────────────────────
 
 function renderActiveVesselTable() {
-    const body = document.getElementById('ytVesselBody');
-    const countEl = document.getElementById('ytVesselCount');
-    if (!body) return;
-
     const vessels = getActiveOpenStackVessels();
     const upcomingVessels = getUpcomingOpenStackVessels();
     ytVesselScheduleMap = [...vessels, ...upcomingVessels];
+
+    const body = document.getElementById('ytVesselBody');
+    const countEl = document.getElementById('ytVesselCount');
+    if (!body) return;
 
     if (countEl) countEl.textContent = `${vessels.length} vessel${vessels.length !== 1 ? 's' : ''}`;
 
