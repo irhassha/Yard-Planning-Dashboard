@@ -15,6 +15,247 @@ let ytTemplateZoom = null;
 let ytTemplateTextHidden = true;
 let ytShowBerthed = false;
 let ytShowUpcoming = false;
+let ytIsSimulationMode = false;       // Simulation mode: all yard blocks empty
+let ytFsVesselViewMode = 'cards';     // Fullscreen vessels view mode: 'cards' or 'table'
+let ytFsVesselsCollapsed = false;     // Fullscreen vessels bar collapse state
+let ytFsVesselTab = 'active';         // Fullscreen tab: 'active', 'upcoming', or 'all'
+let ytHistory = [];                   // History stack for Undo
+let ytRedoStack = [];                 // Redo stack
+let ytIsEraserMode = false;           // Eraser mode: click/drag to delete reservations
+let ytIsEraserDragging = false;       // Mouse drag state in eraser mode
+
+// ── Undo / Redo & Eraser History State ──────────────────────────────
+
+function ytCloneReservations(resObj) {
+    const clone = {};
+    if (!resObj || typeof resObj !== 'object') return clone;
+    for (const k of Object.keys(resObj)) {
+        if (Array.isArray(resObj[k])) {
+            clone[k] = resObj[k].map(r => ({ ...r }));
+        }
+    }
+    return clone;
+}
+
+function ytRecordHistory() {
+    ytHistory.push(ytCloneReservations(ytReservations));
+    if (ytHistory.length > 50) {
+        ytHistory.shift();
+    }
+    ytRedoStack = [];
+    ytUpdateUndoRedoUI();
+}
+
+function ytUndo() {
+    if (!ytHistory || ytHistory.length === 0) {
+        ytShowToast('Tidak ada aksi yang dapat di-undo', 'info', '#64748b');
+        return;
+    }
+    ytRedoStack.push(ytCloneReservations(ytReservations));
+    ytReservations = ytHistory.pop();
+    ytSaveReservationsToStorage();
+    ytRangeStart = null;
+
+    renderYardTemplate();
+    renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
+    renderReservationSummary();
+    renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+    ytUpdateUndoRedoUI();
+    ytShowToast('Undo berhasil', 'undo', '#6366f1');
+}
+
+function ytRedo() {
+    if (!ytRedoStack || ytRedoStack.length === 0) {
+        ytShowToast('Tidak ada aksi yang dapat di-redo', 'info', '#64748b');
+        return;
+    }
+    ytHistory.push(ytCloneReservations(ytReservations));
+    ytReservations = ytRedoStack.pop();
+    ytSaveReservationsToStorage();
+    ytRangeStart = null;
+
+    renderYardTemplate();
+    renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
+    renderReservationSummary();
+    renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+    ytUpdateUndoRedoUI();
+    ytShowToast('Redo berhasil', 'redo', '#6366f1');
+}
+
+function ytIsSlotReserved(block, slot) {
+    if (!block || !slot) return false;
+    for (const resList of Object.values(ytReservations)) {
+        for (const res of resList) {
+            if (res.block === block && slot >= res.slotStart && slot <= res.slotEnd) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function ytRemoveSlotReservation(block, slot, skipHistory = false) {
+    let found = false;
+    for (const vKey of Object.keys(ytReservations)) {
+        const list = ytReservations[vKey];
+        if (!list || !list.length) continue;
+        for (let i = list.length - 1; i >= 0; i--) {
+            const r = list[i];
+            if (r.block === block && slot >= r.slotStart && slot <= r.slotEnd) {
+                if (!found && !skipHistory) {
+                    ytRecordHistory();
+                }
+                found = true;
+                if (r.slotStart === slot && r.slotEnd === slot) {
+                    // Single slot -> remove range item
+                    list.splice(i, 1);
+                } else if (r.slotStart === slot) {
+                    // Start of range
+                    r.slotStart = slot + 1;
+                } else if (r.slotEnd === slot) {
+                    // End of range
+                    r.slotEnd = slot - 1;
+                } else {
+                    // Middle slot -> split range
+                    const originalEnd = r.slotEnd;
+                    r.slotEnd = slot - 1;
+                    list.push({
+                        block: r.block,
+                        slotStart: slot + 1,
+                        slotEnd: originalEnd
+                    });
+                }
+            }
+        }
+        if (list.length === 0) {
+            delete ytReservations[vKey];
+        }
+    }
+
+    if (found) {
+        ytSaveReservationsToStorage();
+        renderYardTemplate();
+        renderActiveVesselTable();
+        renderUpcomingOpenStackVessels();
+        renderReservationSummary();
+        renderYardTemplateClashes();
+        renderFullscreenActiveVessels();
+        ytUpdateUndoRedoUI();
+    }
+    return found;
+}
+
+function ytToggleEraserMode() {
+    ytIsEraserMode = !ytIsEraserMode;
+    ytIsEraserDragging = false;
+    ytRangeStart = null; // Clear pending range selection
+
+    const yardEls = document.querySelectorAll('.ym-yard');
+    yardEls.forEach(el => {
+        if (ytIsEraserMode) {
+            el.classList.add('yt-eraser-active');
+        } else {
+            el.classList.remove('yt-eraser-active');
+        }
+    });
+
+    ytUpdateUndoRedoUI();
+
+    ytShowToast(
+        ytIsEraserMode 
+            ? '🧹 Mode Hapus Reservasi Aktif: Klik atau seret slot terencana untuk menghapusnya.' 
+            : 'Mode Hapus dinonaktifkan.',
+        ytIsEraserMode ? 'ink_eraser' : 'check_circle',
+        ytIsEraserMode ? '#ef4444' : '#10b981'
+    );
+}
+
+function ytUpdateUndoRedoUI() {
+    const canUndo = ytHistory.length > 0;
+    const canRedo = ytRedoStack.length > 0;
+
+    // Normal Toolbar Undo / Redo
+    const undoBtn = document.getElementById('ytUndoBtn');
+    const redoBtn = document.getElementById('ytRedoBtn');
+    if (undoBtn) {
+        undoBtn.disabled = !canUndo;
+        if (canUndo) {
+            undoBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            undoBtn.classList.add('hover:bg-slate-200');
+        } else {
+            undoBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            undoBtn.classList.remove('hover:bg-slate-200');
+        }
+    }
+    if (redoBtn) {
+        redoBtn.disabled = !canRedo;
+        if (canRedo) {
+            redoBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            redoBtn.classList.add('hover:bg-slate-200');
+        } else {
+            redoBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            redoBtn.classList.remove('hover:bg-slate-200');
+        }
+    }
+
+    // Fullscreen Undo / Redo
+    const fsUndoBtn = document.getElementById('ytFsUndoBtn');
+    const fsRedoBtn = document.getElementById('ytFsRedoBtn');
+    if (fsUndoBtn) {
+        fsUndoBtn.disabled = !canUndo;
+        if (canUndo) {
+            fsUndoBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            fsUndoBtn.classList.add('hover:bg-slate-700/60');
+        } else {
+            fsUndoBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            fsUndoBtn.classList.remove('hover:bg-slate-700/60');
+        }
+    }
+    if (fsRedoBtn) {
+        fsRedoBtn.disabled = !canRedo;
+        if (canRedo) {
+            fsRedoBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+            fsRedoBtn.classList.add('hover:bg-slate-700/60');
+        } else {
+            fsRedoBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            fsRedoBtn.classList.remove('hover:bg-slate-700/60');
+        }
+    }
+
+    // Normal Toolbar Eraser Button
+    const eraserBtn = document.getElementById('ytEraserBtn');
+    if (eraserBtn) {
+        if (ytIsEraserMode) {
+            eraserBtn.className = 'secondary-pill text-xs font-bold transition-all shadow-md';
+            eraserBtn.style.color = '#ffffff';
+            eraserBtn.style.backgroundColor = '#ef4444';
+            eraserBtn.style.borderColor = '#dc2626';
+            eraserBtn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-pulse">ink_eraser</span> Mode Hapus: AKTIF`;
+        } else {
+            eraserBtn.className = 'secondary-pill text-xs font-semibold transition-all';
+            eraserBtn.style.color = '#ef4444';
+            eraserBtn.style.backgroundColor = '';
+            eraserBtn.style.borderColor = '#fca5a5';
+            eraserBtn.innerHTML = `<span class="material-symbols-outlined text-[16px]">ink_eraser</span> Hapus Reservasi`;
+        }
+    }
+
+    // Fullscreen Eraser Button
+    const fsEraserBtn = document.getElementById('ytFsEraserBtn');
+    if (fsEraserBtn) {
+        if (ytIsEraserMode) {
+            fsEraserBtn.className = 'px-2.5 py-0.5 rounded text-[11px] font-black bg-red-600 text-white border border-red-500 shadow-sm flex items-center gap-1 transition-all animate-pulse';
+            fsEraserBtn.innerHTML = `<span class="material-symbols-outlined text-[13px]">ink_eraser</span> Hapus: AKTIF`;
+        } else {
+            fsEraserBtn.className = 'px-2 py-0.5 rounded text-[11px] font-semibold text-red-400 hover:text-red-200 hover:bg-red-500/20 transition-colors flex items-center gap-1';
+            fsEraserBtn.innerHTML = `<span class="material-symbols-outlined text-[13px]">ink_eraser</span> Hapus`;
+        }
+    }
+}
 
 // ── Persistence (localStorage) ───────────────────────────────────────
 const YT_STORAGE_KEY = 'npct1_yard_template_reservations_v1';
@@ -97,14 +338,23 @@ function getActiveOpenStackVessels() {
 
     // 1. Filter schedule for active open stacking: openStacking <= now and closingPhysic >= now
     const activeFromSchedule = schedule.filter(v => {
-        if (!v.openStacking) return false;
-        const os = new Date(v.openStacking);
-        if (isNaN(os) || os > now) return false;
-
-        if (v.closingPhysic) {
-            const cp = new Date(v.closingPhysic);
-            if (!isNaN(cp) && cp < now) return false; // Closing has passed
+        let os = null;
+        if (v.openStacking) {
+            os = new Date(v.openStacking);
+        } else if (v.etb) {
+            // Default 4 days prior to ETB if not explicitly set
+            os = new Date(new Date(v.etb).getTime() - 4 * 24 * 3600 * 1000);
         }
+        if (!os || isNaN(os) || os > now) return false;
+
+        let cp = null;
+        if (v.closingPhysic) {
+            cp = new Date(v.closingPhysic);
+        } else if (v.etb) {
+            cp = new Date(v.etb);
+        }
+        if (cp && !isNaN(cp) && cp < now) return false; // Closing has passed
+
         return true;
     });
 
@@ -560,7 +810,7 @@ function renderYardTemplate() {
     const legend = document.getElementById('ytYardLegend');
     if (!content) return;
 
-    if (!isInvLoaded || !invData.length) {
+    if (!ytIsSimulationMode && (!isInvLoaded || !invData.length)) {
         content.innerHTML = `<div class="p-12 text-center text-slate-400 border-dashed border-2 border-slate-200 rounded-2xl bg-white/30">
             <span class="material-symbols-outlined text-5xl block mb-2 opacity-50">grid_view</span>
             Upload Unit List to visualize yard template.
@@ -571,12 +821,14 @@ function renderYardTemplate() {
 
     buildYardColorMap();
 
-    // Group by block
+    // Group by block (in simulation mode, treat as empty yard)
     const blockMap = {};
-    invData.forEach(c => {
-        if (!c.block || !c.slot || c.slot <= 0) return;
-        (blockMap[c.block] = blockMap[c.block] || []).push(c);
-    });
+    if (!ytIsSimulationMode && typeof invData !== 'undefined' && Array.isArray(invData)) {
+        invData.forEach(c => {
+            if (!c.block || !c.slot || c.slot <= 0) return;
+            (blockMap[c.block] = blockMap[c.block] || []).push(c);
+        });
+    }
 
     const CAP = typeof activeCapacity !== 'undefined' ? activeCapacity : DEFAULT_CAPACITY;
     const sections = [
@@ -598,31 +850,76 @@ function renderYardTemplate() {
 
     // Legend
     if (legend) {
-        const entries = Object.entries(yardCarrierColorMap).sort((a, b) => a[0].localeCompare(b[0]));
-        let lh = `<div class="flex items-center gap-2 flex-wrap text-[10px]">
-            <span class="font-bold text-slate-500 uppercase tracking-wider">Export Vessels</span>
-            <div class="h-3 w-px bg-slate-300"></div>
-            <div class="ym-legend-chip ${!ytSelectedVessel ? 'ym-legend-active' : ''}" onclick="ytClearVesselSelection()" title="Clear selection">
-                <span class="w-3 h-3 rounded-sm bg-white border border-slate-300 inline-block"></span>
-                <span class="font-bold text-slate-500">All</span>
-            </div>
-            <div class="h-3 w-px bg-slate-300"></div>`;
-        entries.forEach(([c, col]) => {
-            const isMatch = ytSelectedVessel ? isVesselContainerMatch(c, true) : false;
-            let chipCls = 'ym-legend-chip';
-            if (ytSelectedVessel) {
-                chipCls += isMatch ? ' ym-legend-active' : ' opacity-30';
-            }
-            lh += `<div class="${chipCls}" data-carrier="${c}" title="${c}">
-                <span class="w-3 h-3 rounded-sm inline-block" style="background:${col}"></span>
-                <span class="font-bold text-slate-600">${c}</span>
-            </div>`;
-        });
-        lh += '</div>';
-        legend.innerHTML = lh;
+        if (ytIsSimulationMode) {
+            legend.innerHTML = `
+                <div class="flex items-center justify-between gap-3 flex-wrap text-[10px]">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 border border-purple-300 font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+                            <span class="material-symbols-outlined text-[13px] text-purple-700 animate-pulse">science</span> Mode Simulasi: Yard Kosong
+                        </span>
+                        <div class="h-3 w-px bg-slate-300"></div>
+                        <span class="text-slate-600 font-medium">Semua slot yard bersih dari kontainer eksisting. Rencanakan blok dan slot baru secara bebas.</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-500 font-mono text-[10px]">
+                        <span>Kapasitas Slot Kosong: <strong>30 TEU / slot</strong> (6 Row × 5 Tier)</span>
+                    </div>
+                </div>`;
+        } else {
+            const entries = Object.entries(yardCarrierColorMap).sort((a, b) => a[0].localeCompare(b[0]));
+            let lh = `<div class="flex items-center gap-2 flex-wrap text-[10px]">
+                <span class="font-bold text-slate-500 uppercase tracking-wider">Export Vessels</span>
+                <div class="h-3 w-px bg-slate-300"></div>
+                <div class="ym-legend-chip ${!ytSelectedVessel ? 'ym-legend-active' : ''}" onclick="ytClearVesselSelection()" title="Clear selection">
+                    <span class="w-3 h-3 rounded-sm bg-white border border-slate-300 inline-block"></span>
+                    <span class="font-bold text-slate-500">All</span>
+                </div>
+                <div class="h-3 w-px bg-slate-300"></div>`;
+            entries.forEach(([c, col]) => {
+                const isMatch = ytSelectedVessel ? isVesselContainerMatch(c, true) : false;
+                let chipCls = 'ym-legend-chip';
+                if (ytSelectedVessel) {
+                    chipCls += isMatch ? ' ym-legend-active' : ' opacity-30';
+                }
+                lh += `<div class="${chipCls}" data-carrier="${c}" title="${c}">
+                    <span class="w-3 h-3 rounded-sm inline-block" style="background:${col}"></span>
+                    <span class="font-bold text-slate-600">${c}</span>
+                </div>`;
+            });
+            lh += '</div>';
+            legend.innerHTML = lh;
+        }
     }
 
     let html = '<div class="ym-yard yt-yard">';
+
+    // Simulation Banner
+    if (ytIsSimulationMode) {
+        html += `
+            <div class="yt-simulation-banner mb-3 p-3 rounded-xl bg-gradient-to-r from-purple-900 via-indigo-950 to-purple-900 border border-purple-500/40 text-white flex flex-wrap items-center justify-between gap-3 shadow-lg">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 shrink-0">
+                        <span class="material-symbols-outlined text-[20px] text-amber-300 animate-pulse">science</span>
+                    </div>
+                    <div>
+                        <div class="font-bold text-xs flex items-center gap-2">
+                            <span>MODE SIMULASI YARD KOSONG</span>
+                            <span class="px-2 py-0.2 rounded-full text-[9px] font-black bg-purple-500 text-white shadow-sm">AKTIF</span>
+                        </div>
+                        <div class="text-[11px] text-purple-200/80">
+                            Semua blok disimulasikan kosong tanpa kontainer eksisting. Klik atau seret slot kosong mana saja untuk merencanakan template alokasi slot kapal.
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="ytClearAllReservations()" class="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-semibold flex items-center gap-1 transition-all">
+                        <span class="material-symbols-outlined text-[14px]">delete_sweep</span> Bersihkan Plan
+                    </button>
+                    <button onclick="ytToggleSimulationMode()" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all">
+                        <span class="material-symbols-outlined text-[14px]">undo</span> Keluar Simulasi
+                    </button>
+                </div>
+            </div>`;
+    }
 
     // Mode indicator banner
     if (ytSelectedVessel) {
@@ -644,6 +941,11 @@ function renderYardTemplate() {
             ` : ''}
             <div class="flex items-center gap-2">
                 ${ytRangeStart ? `<span class="yt-range-indicator"><span class="material-symbols-outlined text-[14px]">radio_button_checked</span> Start: ${ytRangeStart.block}-${ytRangeStart.slot}</span>` : `<span class="yt-mode-hint">Click two empty slots in the same block to reserve</span>`}
+                ${(ytReservations[ytSelectedVessel.key] && ytReservations[ytSelectedVessel.key].length > 0) ? `
+                    <button onclick="ytClearVesselReservations('${ytSelectedVessel.key}')" class="px-2 py-0.5 rounded text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 flex items-center gap-1 transition-colors" title="Hapus semua reservasi kapal ini">
+                        <span class="material-symbols-outlined text-[13px]">delete</span> Hapus Reservasi (${ytReservations[ytSelectedVessel.key].length})
+                    </button>
+                ` : ''}
                 <button onclick="ytClearVesselSelection()" class="yt-mode-close" title="Exit reservation mode">
                     <span class="material-symbols-outlined text-[16px]">close</span>
                 </button>
@@ -824,7 +1126,9 @@ function renderYardTemplate() {
                 // Block count + reserved count
                 const reservedCount = Object.keys(blockReserved).length;
                 let countHtml = '';
-                if (ytSelectedVessel) {
+                if (ytIsSimulationMode) {
+                    countHtml = reservedCount > 0 ? `<span class="yt-reserved-badge">+${reservedCount}P</span>` : `<span class="text-slate-400 opacity-60 text-[10px]">0</span>`;
+                } else if (ytSelectedVessel) {
                     const vesselUnitsInBlock = ctrs.filter(c => isVesselContainerMatch(c.carrier, isYardExport(c))).length;
                     if (vesselUnitsInBlock > 0) {
                         countHtml = `<span class="font-bold text-indigo-700">${vesselUnitsInBlock}</span><span class="text-[9px] text-slate-400">/${count}</span>`;
@@ -835,10 +1139,10 @@ function renderYardTemplate() {
                     countHtml = `${count}`;
                 }
 
-                if (reservedCount > 0) {
+                if (!ytIsSimulationMode && reservedCount > 0) {
                     countHtml += ` <span class="yt-reserved-badge">+${reservedCount}P</span>`;
                 }
-                html += `<div class="ym-block-count" title="${count} existing units${reservedCount ? ', ' + reservedCount + ' plan slots' : ''}">${countHtml}</div>`;
+                html += `<div class="ym-block-count" title="${ytIsSimulationMode ? 'Mode Simulasi (Yard Kosong)' : count + ' existing units'}${reservedCount ? ', ' + reservedCount + ' plan slots' : ''}">${countHtml}</div>`;
                 html += `</div>`; // ym-block
             }
 
@@ -856,9 +1160,10 @@ function renderYardTemplate() {
     // Auto-fit
     ytFitToScreen();
 
-    if (ytTemplateTextHidden) {
-        const yard = content.querySelector('.ym-yard');
-        if (yard) yard.classList.add('ym-text-hidden');
+    const yard = content.querySelector('.ym-yard');
+    if (yard) {
+        if (ytTemplateTextHidden) yard.classList.add('ym-text-hidden');
+        if (ytIsEraserMode) yard.classList.add('yt-eraser-active');
     }
 }
 
@@ -932,8 +1237,8 @@ function renderActiveVesselTable() {
             <td class="px-2 py-2 text-center font-mono text-[10px]">${formatDt(v.etb)}</td>
             <td class="px-2 py-2 text-center font-mono text-[10px] bg-amber-50/30">${formatDt(v.openStacking)}</td>
             <td class="px-2 py-2 text-center font-mono text-[10px] bg-red-50/30">${formatDt(v.closingPhysic)}</td>
-            <td class="px-3 py-2 text-center font-black text-slate-700 text-[11px]" title="${existing.box20}x20' + ${existing.box40 + existing.box45}x40'">
-                ${existing.totalBox}
+            <td class="px-3 py-2 text-center font-black ${ytIsSimulationMode ? 'text-purple-600' : 'text-slate-700'} text-[11px]" title="${ytIsSimulationMode ? 'Mode Simulasi: Yard Kosong (Eksisting aktual: ' + existing.totalBox + ' box)' : existing.box20 + 'x20\' + ' + (existing.box40 + existing.box45) + 'x40\''}">
+                ${ytIsSimulationMode ? '0 <span class="text-[9px] font-normal text-purple-400">(Sim)</span>' : existing.totalBox}
             </td>
             <td class="px-3 py-2 text-center font-black text-emerald-700 text-[11px] bg-emerald-50/30" title="${avail.avail20}x20' + ${avail.avail40}x40'">
                 ${avail.totalAvailBox}
@@ -1024,8 +1329,8 @@ function renderUpcomingOpenStackVessels() {
                 ${formatDt(v.openStacking)} ${countdownBadge}
             </td>
             <td class="px-2 py-2 text-center font-mono text-[10px] bg-red-50/30">${formatDt(v.closingPhysic)}</td>
-            <td class="px-3 py-2 text-center font-black text-slate-700 text-[11px]" title="${existing.box20}x20' + ${existing.box40 + existing.box45}x40'">
-                ${existing.totalBox}
+            <td class="px-3 py-2 text-center font-black ${ytIsSimulationMode ? 'text-purple-600' : 'text-slate-700'} text-[11px]" title="${ytIsSimulationMode ? 'Mode Simulasi: Yard Kosong (Eksisting aktual: ' + existing.totalBox + ' box)' : existing.box20 + 'x20\' + ' + (existing.box40 + existing.box45) + 'x40\''}">
+                ${ytIsSimulationMode ? '0 <span class="text-[9px] font-normal text-purple-400">(Sim)</span>' : existing.totalBox}
             </td>
             <td class="px-3 py-2 text-center font-black text-emerald-700 text-[11px] bg-emerald-50/30" title="${avail.avail20}x20' + ${avail.avail40}x40'">
                 ${avail.totalAvailBox}
@@ -1112,9 +1417,12 @@ function ytSelectVessel(key, vesselName, service, carrier) {
     renderActiveVesselTable();
     renderYardTemplate();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
 
-    // Auto scroll to Yard Template visual
-    ytScrollToReservationView();
+    // Auto scroll to Yard Template visual (only in normal mode, keep view stable in fullscreen)
+    if (!ytIsFullscreen) {
+        ytScrollToReservationView();
+    }
 }
 
 // ── Fullscreen Reservation Mode ──────────────────────────────────────
@@ -1151,6 +1459,9 @@ function ytEnterFullscreen() {
     // Initialize mouse scroll wheel zoom listener
     ytInitFullscreenWheelZoom();
 
+    // Render Fullscreen Active Vessels Panel
+    renderFullscreenActiveVessels();
+
     const btn = document.getElementById('ytFullscreenBtn');
     if (btn) {
         btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">fullscreen_exit</span> Exit Fullscreen (Esc)`;
@@ -1178,6 +1489,9 @@ function ytExitFullscreen() {
     ytIsFullscreen = false;
     card.classList.remove('yt-fullscreen');
     document.body.classList.remove('yt-fullscreen-active');
+
+    // Hide Fullscreen Active Vessels Panel
+    renderFullscreenActiveVessels();
 
     const btn = document.getElementById('ytFullscreenBtn');
     if (btn) {
@@ -1215,8 +1529,32 @@ function ytSelectVesselFullscreen(key, vesselName, service, carrier) {
 }
 
 document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && ytIsFullscreen) {
-        ytExitFullscreen();
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+    // Ctrl+Z: Undo
+    if (e.ctrlKey && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        ytUndo();
+        return;
+    }
+
+    // Ctrl+Y or Ctrl+Shift+Z: Redo
+    if ((e.ctrlKey && e.key.toLowerCase() === 'y') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'z')) {
+        e.preventDefault();
+        ytRedo();
+        return;
+    }
+
+    // Escape: exit eraser mode first, or exit fullscreen
+    if (e.key === 'Escape') {
+        if (ytIsEraserMode) {
+            ytToggleEraserMode();
+            return;
+        }
+        if (ytIsFullscreen) {
+            ytExitFullscreen();
+            return;
+        }
     }
 });
 
@@ -1239,6 +1577,7 @@ function ytClearVesselSelection() {
     renderUpcomingOpenStackVessels();
     renderYardTemplate();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
 }
 
 // ── Slot Availability & Drag-to-Select State ─────────────────────────
@@ -1258,10 +1597,12 @@ function ytIsSlotAvailable(block, slot) {
             }
         }
     }
-    // Check if slot is occupied by existing container
-    const inv = window.invData || [];
-    const isOccupied = inv.some(it => (it.block || '').toUpperCase() === block && parseInt(it.slot) === slot);
-    if (isOccupied) return false;
+    // Check if slot is occupied by existing container (only in real mode, not in simulation mode!)
+    if (!ytIsSimulationMode) {
+        const inv = window.invData || [];
+        const isOccupied = inv.some(it => (it.block || '').toUpperCase() === block && parseInt(it.slot) === slot);
+        if (isOccupied) return false;
+    }
 
     return true;
 }
@@ -1276,8 +1617,18 @@ function ytValidateRange(block, slotStart, slotEnd) {
 }
 
 function ytSlotMouseDown(e, block, slot) {
-    if (!ytSelectedVessel) return;
     if (e.button !== 0) return; // Only left mouse button
+
+    if (ytIsEraserMode) {
+        if (ytIsSlotReserved(block, slot)) {
+            e.preventDefault();
+            ytIsEraserDragging = true;
+            ytRemoveSlotReservation(block, slot, false);
+        }
+        return;
+    }
+
+    if (!ytSelectedVessel) return;
     if (!ytIsSlotAvailable(block, slot)) return;
 
     e.preventDefault(); // Prevent text/box selection during drag
@@ -1293,6 +1644,13 @@ function ytSlotMouseDown(e, block, slot) {
 }
 
 function ytSlotMouseEnter(block, slot) {
+    if (ytIsEraserMode && ytIsEraserDragging) {
+        if (ytIsSlotReserved(block, slot)) {
+            ytRemoveSlotReservation(block, slot, true);
+        }
+        return;
+    }
+
     if (!ytIsDragging || !ytDragStart) return;
     if (ytDragStart.block !== block) return; // Keep drag within same block
 
@@ -1330,6 +1688,11 @@ function ytClearDragPreview() {
 }
 
 function ytSlotMouseUp(e, block, slot) {
+    if (ytIsEraserMode) {
+        ytIsEraserDragging = false;
+        return;
+    }
+
     if (!ytIsDragging || !ytDragStart) return;
 
     const blk = ytDragStart.block;
@@ -1354,6 +1717,7 @@ function ytSlotMouseUp(e, block, slot) {
             renderUpcomingOpenStackVessels();
             renderReservationSummary();
             renderYardTemplateClashes();
+            renderFullscreenActiveVessels();
         } else {
             alert('Range contains occupied or already reserved slots! Please select a completely empty range.');
         }
@@ -1362,6 +1726,9 @@ function ytSlotMouseUp(e, block, slot) {
 
 // Global safety mouseup listener
 window.addEventListener('mouseup', function (e) {
+    if (ytIsEraserDragging) {
+        ytIsEraserDragging = false;
+    }
     if (ytIsDragging) {
         const currentB = ytDragCurrent ? ytDragCurrent.block : null;
         const currentS = ytDragCurrent ? ytDragCurrent.slot : null;
@@ -1371,6 +1738,14 @@ window.addEventListener('mouseup', function (e) {
 
 function ytSlotClick(block, slot) {
     if (Date.now() - ytLastDragMouseUpTime < 150) return;
+
+    if (ytIsEraserMode) {
+        if (ytIsSlotReserved(block, slot)) {
+            ytRemoveSlotReservation(block, slot, false);
+        }
+        return;
+    }
+
     if (!ytSelectedVessel) return;
     if (!ytIsSlotAvailable(block, slot)) return;
 
@@ -1405,44 +1780,59 @@ function ytSlotClick(block, slot) {
         renderUpcomingOpenStackVessels();
         renderReservationSummary();
         renderYardTemplateClashes();
+        renderFullscreenActiveVessels();
     }
 }
 
 function ytAddReservation(vesselKey, block, slotStart, slotEnd) {
+    ytRecordHistory();
     if (!ytReservations[vesselKey]) ytReservations[vesselKey] = [];
     ytReservations[vesselKey].push({ block, slotStart, slotEnd });
     ytSaveReservationsToStorage();
+    ytUpdateUndoRedoUI();
 }
 
 function ytRemoveReservation(vesselKey, index) {
     if (!ytReservations[vesselKey]) return;
+    ytRecordHistory();
     ytReservations[vesselKey].splice(index, 1);
     if (ytReservations[vesselKey].length === 0) delete ytReservations[vesselKey];
     ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
     renderReservationSummary();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+    ytUpdateUndoRedoUI();
 }
 
 function ytClearVesselReservations(vesselKey) {
     if (!confirm(`Clear all reservations for this vessel?`)) return;
+    ytRecordHistory();
     delete ytReservations[vesselKey];
     ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
     renderReservationSummary();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+    ytUpdateUndoRedoUI();
 }
 
 function ytClearAllReservations() {
     if (!confirm('Clear ALL reservations?')) return;
+    ytRecordHistory();
     ytReservations = {};
     ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
     renderReservationSummary();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+    ytUpdateUndoRedoUI();
 }
 
 // ── Smart Slot Recommendation (Auto-Suggest Best Blocks) ────────────
@@ -1532,6 +1922,7 @@ function ytApplyRecommendation(vesselKey, block, slotStart, slotEnd) {
     renderActiveVesselTable();
     renderReservationSummary();
     renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
 }
 
 // ── Export Yard Template Plan (Excel) ────────────────────────────────
@@ -1764,29 +2155,31 @@ function getYardTemplateClashMap() {
             (vName || '').toUpperCase().trim()
         ]);
 
-        // 1. Existing export containers
-        inv.forEach(it => {
-            if (!it.block || !it.slot || !it.move || !it.move.includes('export')) return;
-            const blk = (it.block || '').toUpperCase().trim();
-            if (isYardClashIgnoredBlock(blk)) return;
+        // 1. Existing export containers (only if not simulation mode)
+        if (!ytIsSimulationMode) {
+            inv.forEach(it => {
+                if (!it.block || !it.slot || !it.move || !it.move.includes('export')) return;
+                const blk = (it.block || '').toUpperCase().trim();
+                if (isYardClashIgnoredBlock(blk)) return;
 
-            const c = (it.carrier || '').toUpperCase().trim();
-            const s = (it.service || '').toUpperCase().trim();
-            if (!c) return;
+                const c = (it.carrier || '').toUpperCase().trim();
+                const s = (it.service || '').toUpperCase().trim();
+                if (!c) return;
 
-            const isC = matchingCarriers.has(c) || c === vCarrier || isVesselCodeMatch(vName, c);
-            const isS = !vService || !s || s === vService;
+                const isC = matchingCarriers.has(c) || c === vCarrier || isVesselCodeMatch(vName, c);
+                const isS = !vService || !s || s === vService;
 
-            if (isC && isS) {
-                const slotNum = parseInt(it.slot);
-                if (slotNum > 0) {
-                    if (!slotsByBlock[blk]) slotsByBlock[blk] = new Set();
-                    slotsByBlock[blk].add(slotNum);
-                    const is40 = String(it.length || '').startsWith('4');
-                    if (is40) slotsByBlock[blk].add(slotNum + 1);
+                if (isC && isS) {
+                    const slotNum = parseInt(it.slot);
+                    if (slotNum > 0) {
+                        if (!slotsByBlock[blk]) slotsByBlock[blk] = new Set();
+                        slotsByBlock[blk].add(slotNum);
+                        const is40 = String(it.length || '').startsWith('4');
+                        if (is40) slotsByBlock[blk].add(slotNum + 1);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // 2. Planned reservations
         const myRes = ytReservations[vKey] || [];
@@ -2579,4 +2972,370 @@ function renderYardTemplateTab() {
     renderAvailableCapacitySummary();
     renderOperationalVessels();
     renderYardTemplateClashes();
+    ytUpdateSimulationUI();
+    ytUpdateUndoRedoUI();
+    renderFullscreenActiveVessels();
 }
+
+// ── Mode Simulasi (Empty Yard Simulation) ───────────────────────────
+
+function ytToggleSimulationMode() {
+    ytIsSimulationMode = !ytIsSimulationMode;
+    ytUpdateSimulationUI();
+    renderYardTemplate();
+    renderActiveVesselTable();
+    renderUpcomingOpenStackVessels();
+    renderReservationSummary();
+    renderYardTemplateClashes();
+    renderFullscreenActiveVessels();
+
+    ytShowToast(
+        ytIsSimulationMode 
+            ? '🧪 Mode Simulasi Aktif: Semua yard dalam kondisi kosong.' 
+            : 'Mode Normal: Kontainer aktual yard ditampilkan kembali.',
+        ytIsSimulationMode ? 'science' : 'view_module',
+        ytIsSimulationMode ? '#a855f7' : '#0284c7'
+    );
+}
+
+function ytUpdateSimulationUI() {
+    const btn = document.getElementById('ytSimulationBtn');
+    const badge = document.getElementById('ytFsSimBadge');
+    if (btn) {
+        if (ytIsSimulationMode) {
+            btn.className = 'secondary-pill text-xs font-bold transition-all shadow-md';
+            btn.style.color = '#ffffff';
+            btn.style.backgroundColor = '#7c3aed';
+            btn.style.borderColor = '#6d28d9';
+            btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-pulse text-amber-300">science</span> Simulasi: AKTIF`;
+        } else {
+            btn.className = 'secondary-pill text-xs font-semibold transition-all';
+            btn.style.color = '#7c3aed';
+            btn.style.backgroundColor = '';
+            btn.style.borderColor = '#ddd6fe';
+            btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">science</span> Mode Simulasi`;
+        }
+    }
+    if (badge) {
+        if (ytIsSimulationMode) badge.classList.remove('hidden');
+        else badge.classList.add('hidden');
+    }
+}
+
+// ── Fullscreen Active & Upcoming Open Stack Vessels Panel ────────────
+
+function ytSetFsVesselTab(tab) {
+    ytFsVesselTab = tab;
+
+    const activeBtn = document.getElementById('ytFsTabActiveBtn');
+    const upcomingBtn = document.getElementById('ytFsTabUpcomingBtn');
+    const allBtn = document.getElementById('ytFsTabAllBtn');
+
+    const activeCls = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm';
+    const inactiveCls = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5';
+
+    if (activeBtn) activeBtn.className = (tab === 'active') ? activeCls : inactiveCls;
+    if (upcomingBtn) upcomingBtn.className = (tab === 'upcoming') ? activeCls : inactiveCls;
+    if (allBtn) allBtn.className = (tab === 'all') ? activeCls : inactiveCls;
+
+    renderFullscreenActiveVessels();
+}
+
+function renderFullscreenActiveVessels() {
+    const panel = document.getElementById('ytFsActiveVesselsPanel');
+    const content = document.getElementById('ytFsVesselsContent');
+    const activeBadge = document.getElementById('ytFsActiveCountBadge');
+    const upcomingBadge = document.getElementById('ytFsUpcomingCountBadge');
+    const allBadge = document.getElementById('ytFsAllCountBadge');
+    const simBadge = document.getElementById('ytFsSimBadge');
+    if (!panel || !content) return;
+
+    if (!ytIsFullscreen) {
+        panel.classList.add('hidden');
+        return;
+    }
+    panel.classList.remove('hidden');
+
+    if (simBadge) {
+        if (ytIsSimulationMode) simBadge.classList.remove('hidden');
+        else simBadge.classList.add('hidden');
+    }
+
+    const activeVessels = getActiveOpenStackVessels();
+    const upcomingVessels = getUpcomingOpenStackVessels();
+    const allVessels = [...activeVessels, ...upcomingVessels];
+
+    if (activeBadge) activeBadge.textContent = activeVessels.length;
+    if (upcomingBadge) upcomingBadge.textContent = upcomingVessels.length;
+    if (allBadge) allBadge.textContent = allVessels.length;
+
+    let vessels = [];
+    if (ytFsVesselTab === 'upcoming') {
+        vessels = upcomingVessels;
+    } else if (ytFsVesselTab === 'all') {
+        vessels = allVessels;
+    } else {
+        vessels = activeVessels;
+    }
+
+    if (!vessels.length) {
+        const emptyMsg = ytFsVesselTab === 'upcoming'
+            ? 'Tidak ada kapal yang akan open stack dalam 8 jam ke depan.'
+            : (ytFsVesselTab === 'all'
+                ? 'Tidak ada kapal active atau upcoming open stack saat ini.'
+                : 'Tidak ada kapal dengan status Open Stack aktif saat ini.');
+
+        content.innerHTML = `
+            <div class="p-3 text-center text-slate-400 text-xs italic bg-slate-800/40 rounded-xl border border-slate-700/60">
+                <span class="material-symbols-outlined text-[18px] align-middle mr-1 text-slate-500">directions_boat</span>
+                ${emptyMsg}
+            </div>`;
+        return;
+    }
+
+    if (ytFsVesselsCollapsed) {
+        content.classList.add('hidden');
+        return;
+    } else {
+        content.classList.remove('hidden');
+    }
+
+    if (ytFsVesselViewMode === 'table') {
+        renderFullscreenVesselsTable(vessels, content);
+    } else {
+        renderFullscreenVesselsCards(vessels, content);
+    }
+}
+
+function renderFullscreenVesselsCards(vessels, container) {
+    const formatDt = (raw) => {
+        if (!raw) return '—';
+        const d = new Date(raw);
+        if (isNaN(d)) return raw;
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm} ${hh}:${mi}`;
+    };
+
+    let html = '<div class="flex items-stretch gap-2.5 overflow-x-auto custom-scrollbar py-1 px-0.5">';
+
+    vessels.forEach(v => {
+        const isSelected = ytSelectedVessel && ytSelectedVessel.key === v.key;
+        const color = getYardColor(v.invCarrier);
+        const existing = calculateExistingCapacity(v.invCarrier, v.service);
+
+        const resList = ytReservations[v.key] || [];
+        const reservedSlots = resList.reduce((sum, r) => sum + (r.slotEnd - r.slotStart + 1), 0);
+        const planTEU = reservedSlots * 30;
+
+        const isUpcoming = v.diffMs != null && v.diffMs > 0;
+        let countdownBadge = '';
+        if (isUpcoming) {
+            const totalMins = Math.round(v.diffMs / 60000);
+            const hrs = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            countdownBadge = `<span class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-mono font-bold shrink-0">⏳ in ${hrs > 0 ? hrs + 'h ' : ''}${mins}m</span>`;
+        } else {
+            countdownBadge = `<span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-mono font-bold shrink-0 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>ACTIVE</span>`;
+        }
+
+        const cardCls = isSelected 
+            ? 'yt-vessel-card-fs yt-vessel-card-selected' 
+            : 'yt-vessel-card-fs bg-slate-800/90 border-slate-700 hover:border-slate-500';
+
+        html += `
+            <div class="${cardCls} shrink-0 w-[275px] p-2.5 rounded-xl border flex flex-col justify-between gap-2 cursor-pointer"
+                 onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')"
+                 title="Klik untuk ${isUpcoming ? 'pre-plan' : 'rencanakan'} slot reservasi kapal ini">
+                <div>
+                    <div class="flex items-center justify-between gap-1 mb-1.5">
+                        <div class="flex items-center gap-1.5 min-w-0">
+                            <span class="w-3 h-3 rounded-full shrink-0 shadow-sm" style="background:${color};"></span>
+                            <span class="font-bold text-white text-xs truncate" title="${v.vesselName}">${v.vesselName}</span>
+                        </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-slate-700 text-slate-200 font-mono shrink-0">${v.service}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mb-1.5">
+                        <div class="flex items-center gap-1">
+                            <span>Code: <strong class="text-slate-300 font-bold">${v.invCarrier}</strong></span>
+                        </div>
+                        ${countdownBadge}
+                    </div>
+
+                    <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono mb-1.5">
+                        <span>ETB: <strong class="text-slate-200">${formatDt(v.etb)}</strong></span>
+                        <span>Open: <strong class="text-amber-300/90">${formatDt(v.openStacking)}</strong></span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1.5 p-1.5 rounded-lg bg-slate-900/60 border border-slate-700/40 text-[10px]">
+                        <div>
+                            <div class="text-slate-400 text-[9px]">Eksisting Yard</div>
+                            <div class="font-mono font-bold ${ytIsSimulationMode ? 'text-purple-300' : 'text-slate-200'}">
+                                ${ytIsSimulationMode ? '0 bx <span class="text-[8px] text-purple-400">(Sim)</span>' : `${existing.totalBox} bx`}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400 text-[9px]">Rencana Plan</div>
+                            <div class="font-mono font-bold ${planTEU > 0 ? 'text-emerald-400' : 'text-slate-500'}">
+                                ${planTEU > 0 ? `+${planTEU} TEU` : '0 TEU'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-1 border-t border-slate-700/50 text-[10px]">
+                    <div class="text-[9px] font-mono text-slate-400">
+                        ${reservedSlots > 0 ? `<span class="text-indigo-300 font-bold">${reservedSlots} slot terencana</span>` : '<span>Belum ada slot</span>'}
+                    </div>
+                    <div>
+                        ${isSelected 
+                            ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-500 text-white shadow-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[11px]">check</span> ACTIVE</span>' 
+                            : `<span class="text-slate-400 hover:text-indigo-300 text-[10px] font-semibold flex items-center gap-0.5">${isUpcoming ? 'Pre-Plan' : 'Pilih'} <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>`
+                        }
+                    </div>
+                </div>
+            </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function renderFullscreenVesselsTable(vessels, container) {
+    const formatDt = (raw) => {
+        if (!raw) return '<span class="text-slate-500">—</span>';
+        const d = new Date(raw);
+        if (isNaN(d)) return `<span class="text-slate-400">${raw}</span>`;
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm} <span class="text-slate-400">${hh}:${mi}</span>`;
+    };
+
+    let html = `
+        <table class="w-full text-left text-[11px] table-fixed">
+            <colgroup>
+                <col style="width: 3%; min-width: 25px;">
+                <col style="width: 17%; min-width: 135px;">
+                <col style="width: 6%; min-width: 45px;">
+                <col style="width: 9%; min-width: 75px;">
+                <col style="width: 10%; min-width: 80px;">
+                <col style="width: 13%; min-width: 105px;">
+                <col style="width: 11%; min-width: 90px;">
+                <col style="width: 8%; min-width: 65px;">
+                <col style="width: 8%; min-width: 65px;">
+                <col style="width: 9%; min-width: 75px;">
+                <col style="width: 6%; min-width: 55px;">
+            </colgroup>
+            <thead class="bg-slate-800 text-[10px] uppercase font-bold text-slate-300 border-b border-slate-700">
+                <tr>
+                    <th class="px-2 py-1.5 text-center">#</th>
+                    <th class="px-2 py-1.5">Vessel Name</th>
+                    <th class="px-2 py-1.5 text-center">Service</th>
+                    <th class="px-2 py-1.5 text-center">Status</th>
+                    <th class="px-2 py-1.5 text-center">ETB</th>
+                    <th class="px-2 py-1.5 text-center text-amber-300">Open Stack</th>
+                    <th class="px-2 py-1.5 text-center text-red-300">Closing</th>
+                    <th class="px-2 py-1.5 text-center">Eksisting</th>
+                    <th class="px-2 py-1.5 text-center text-violet-300">Planned</th>
+                    <th class="px-2 py-1.5 text-center text-emerald-300">Capacity</th>
+                    <th class="px-2 py-1.5 text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/80 bg-slate-900/60 font-mono text-[10px]">`;
+
+    vessels.forEach((v, idx) => {
+        const isSelected = ytSelectedVessel && ytSelectedVessel.key === v.key;
+        const color = getYardColor(v.invCarrier);
+        const existing = calculateExistingCapacity(v.invCarrier, v.service);
+        const resList = ytReservations[v.key] || [];
+        const reservedSlots = resList.reduce((sum, r) => sum + (r.slotEnd - r.slotStart + 1), 0);
+        const planTEU = reservedSlots * 30;
+
+        const isUpcoming = v.diffMs != null && v.diffMs > 0;
+        let statusBadge = '';
+        if (isUpcoming) {
+            const totalMins = Math.round(v.diffMs / 60000);
+            const hrs = Math.floor(totalMins / 60);
+            const mins = totalMins % 60;
+            statusBadge = `<span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[9px] font-bold">in ${hrs > 0 ? hrs + 'h ' : ''}${mins}m</span>`;
+        } else {
+            statusBadge = `<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">ACTIVE</span>`;
+        }
+
+        const rowBg = isSelected ? 'bg-indigo-950/80 text-white' : 'hover:bg-slate-800/60 text-slate-200';
+
+        html += `
+            <tr class="${rowBg} cursor-pointer transition-colors" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')">
+                <td class="px-2 py-1.5 text-center text-slate-400">${idx + 1}</td>
+                <td class="px-2 py-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full shrink-0" style="background:${color}"></span>
+                        <span class="font-bold truncate text-white">${v.vesselName}</span>
+                        <span class="text-[9px] text-slate-400">(${v.invCarrier})</span>
+                    </div>
+                </td>
+                <td class="px-2 py-1.5 text-center"><span class="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-bold">${v.service}</span></td>
+                <td class="px-2 py-1.5 text-center">${statusBadge}</td>
+                <td class="px-2 py-1.5 text-center">${formatDt(v.etb)}</td>
+                <td class="px-2 py-1.5 text-center text-amber-300/90">${formatDt(v.openStacking)}</td>
+                <td class="px-2 py-1.5 text-center text-red-300/90">${formatDt(v.closingPhysic)}</td>
+                <td class="px-2 py-1.5 text-center font-bold">${ytIsSimulationMode ? '<span class="text-purple-300">0 bx</span>' : `${existing.totalBox} bx`}</td>
+                <td class="px-2 py-1.5 text-center font-bold text-violet-300">${reservedSlots > 0 ? `${reservedSlots}s` : '—'}</td>
+                <td class="px-2 py-1.5 text-center font-bold text-emerald-400">${planTEU > 0 ? `+${planTEU} TEU` : '—'}</td>
+                <td class="px-2 py-1.5 text-center">
+                    ${isSelected 
+                        ? '<span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold text-[9px]">PILIH</span>' 
+                        : `<span class="text-slate-400 hover:text-white text-[9px]">${isUpcoming ? 'Pre-Plan' : 'Pilih'}</span>`}
+                </td>
+            </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function ytToggleFsVesselViewMode() {
+    ytFsVesselViewMode = ytFsVesselViewMode === 'cards' ? 'table' : 'cards';
+    const label = document.getElementById('ytFsViewModeLabel');
+    if (label) label.textContent = ytFsVesselViewMode === 'cards' ? 'Tabel' : 'Kartu';
+    renderFullscreenActiveVessels();
+}
+
+function ytToggleFsVesselsCollapse() {
+    ytFsVesselsCollapsed = !ytFsVesselsCollapsed;
+    const label = document.getElementById('ytFsCollapseLabel');
+    const icon = document.getElementById('ytFsCollapseIcon');
+    if (label) label.textContent = ytFsVesselsCollapsed ? 'Buka' : 'Tutup';
+    if (icon) icon.textContent = ytFsVesselsCollapsed ? 'expand_more' : 'expand_less';
+    renderFullscreenActiveVessels();
+}
+
+let ytToastTimer = null;
+function ytShowToast(msg, icon = 'info', color = '#0284c7') {
+    let toast = document.getElementById('ytToast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'ytToast';
+        toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[100000] px-4 py-2 rounded-xl bg-slate-900/95 text-white text-xs font-semibold shadow-2xl border border-white/20 backdrop-blur-md transition-all duration-300 pointer-events-none flex items-center gap-2';
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<span class="material-symbols-outlined text-[17px]" style="color:${color}">${icon}</span> <span>${msg}</span>`;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translate(-50%, 0)';
+
+    clearTimeout(ytToastTimer);
+    ytToastTimer = setTimeout(() => {
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translate(-50%, 10px)';
+        }
+    }, 2500);
+}
+

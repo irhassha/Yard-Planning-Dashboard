@@ -1347,6 +1347,22 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap justify-end">
+                            <!-- Undo & Redo buttons -->
+                            <div class="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200/90 shadow-sm" id="ytUndoRedoGroup">
+                                <button onclick="ytUndo()" id="ytUndoBtn" class="secondary-pill text-xs px-2.5 py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Undo perubahan reservasi (Ctrl+Z)" disabled>
+                                    <span class="material-symbols-outlined text-[15px]">undo</span> Undo
+                                </button>
+                                <button onclick="ytRedo()" id="ytRedoBtn" class="secondary-pill text-xs px-2.5 py-1 opacity-40 cursor-not-allowed flex items-center gap-1 font-semibold" title="Redo perubahan reservasi (Ctrl+Y)" disabled>
+                                    <span class="material-symbols-outlined text-[15px]">redo</span> Redo
+                                </button>
+                            </div>
+                            <!-- Hapus Reservasi / Eraser Mode button -->
+                            <button onclick="ytToggleEraserMode()" id="ytEraserBtn" class="secondary-pill text-xs font-semibold" style="color:#ef4444;border-color:#fca5a5;" title="Mode Hapus: Klik atau seret slot yang sudah direservasi untuk menghapusnya">
+                                <span class="material-symbols-outlined text-[16px]">ink_eraser</span> Hapus Reservasi
+                            </button>
+                            <button onclick="ytToggleSimulationMode()" id="ytSimulationBtn" class="secondary-pill text-xs font-semibold" style="color:#7c3aed;border-color:#ddd6fe;" title="Mode Simulasi: Semua blok yard dalam kondisi kosong">
+                                <span class="material-symbols-outlined text-[16px]">science</span> Mode Simulasi
+                            </button>
                             <button onclick="ytToggleFullscreen()" id="ytFullscreenBtn" class="secondary-pill text-xs font-semibold" style="color:#0284c7;border-color:#bae6fd;" title="Toggle Fullscreen Mode (or double-click any vessel in schedule table)">
                                 <span class="material-symbols-outlined text-[16px]">fullscreen</span> Fullscreen
                             </button>
@@ -1361,8 +1377,64 @@
                                 <span class="material-symbols-outlined text-[16px]">zoom_in</span></button>
                             <button onclick="ytToggleText()" id="ytTextToggleBtn" class="secondary-pill text-xs">
                                 <span class="material-symbols-outlined text-[16px]">visibility</span> Show Text</button>
-                            <button onclick="ytClearAllReservations()" class="secondary-pill text-xs" style="color:#ef4444;border-color:#fca5a5;">
-                                <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear All Reservations</button>
+                            <button onclick="ytClearAllReservations()" class="secondary-pill text-xs" style="color:#ef4444;border-color:#fca5a5;" title="Hapus semua slot reservasi">
+                                <span class="material-symbols-outlined text-[16px]">delete_sweep</span> Clear All</button>
+                        </div>
+                    </div>
+                    <!-- FULLSCREEN ACTIVE & UPCOMING OPEN STACK VESSELS PANEL (Visible in fullscreen mode) -->
+                    <div id="ytFsActiveVesselsPanel" class="hidden border-b border-slate-700/60 bg-slate-900/95 text-white transition-all duration-300">
+                        <div class="px-3.5 py-2 bg-slate-800/80 border-b border-slate-700/50 flex flex-wrap items-center justify-between gap-2">
+                            <!-- Left: Category Tabs (Active vs Upcoming vs All) -->
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <div class="flex items-center gap-1 bg-slate-900/80 p-0.5 rounded-xl border border-slate-700/60 text-xs">
+                                    <button onclick="ytSetFsVesselTab('active')" id="ytFsTabActiveBtn" class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm" title="Tampilkan kapal dengan open stack aktif sekarang">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span>Active Open Stack</span>
+                                        <span id="ytFsActiveCountBadge" class="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] font-bold">0</span>
+                                    </button>
+                                    <button onclick="ytSetFsVesselTab('upcoming')" id="ytFsTabUpcomingBtn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5" title="Tampilkan kapal open stack yang akan datang (≤ 8 jam)">
+                                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                        <span>Upcoming Open Stack</span>
+                                        <span id="ytFsUpcomingCountBadge" class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[10px] font-bold">0</span>
+                                    </button>
+                                    <button onclick="ytSetFsVesselTab('all')" id="ytFsTabAllBtn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5" title="Tampilkan semua kapal (Active + Upcoming)">
+                                        <span>Semua</span>
+                                        <span id="ytFsAllCountBadge" class="px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 text-[10px] font-bold">0</span>
+                                    </button>
+                                </div>
+                                <span id="ytFsActiveVesselHint" class="text-[11px] text-slate-400 hidden xl:inline">· Klik kapal untuk rencanakan alokasi slot template</span>
+                            </div>
+
+                            <!-- Right: Controls (Undo/Redo/Eraser, Simulation Badge, View Mode, Collapse) -->
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <!-- Fullscreen Quick Action: Undo & Redo -->
+                                <div class="flex items-center gap-1 bg-slate-900/80 p-0.5 rounded-lg border border-slate-700/60">
+                                    <button onclick="ytUndo()" id="ytFsUndoBtn" class="px-2 py-0.5 rounded text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-700/60 transition-colors flex items-center gap-1 opacity-40 cursor-not-allowed" title="Undo (Ctrl+Z)" disabled>
+                                        <span class="material-symbols-outlined text-[13px]">undo</span> Undo
+                                    </button>
+                                    <button onclick="ytRedo()" id="ytFsRedoBtn" class="px-2 py-0.5 rounded text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-700/60 transition-colors flex items-center gap-1 opacity-40 cursor-not-allowed" title="Redo (Ctrl+Y)" disabled>
+                                        <span class="material-symbols-outlined text-[13px]">redo</span> Redo
+                                    </button>
+                                    <button onclick="ytToggleEraserMode()" id="ytFsEraserBtn" class="px-2 py-0.5 rounded text-[11px] font-semibold text-red-400 hover:text-red-200 hover:bg-red-500/20 transition-colors flex items-center gap-1" title="Mode Hapus: Klik/seret slot terencana untuk menghapusnya">
+                                        <span class="material-symbols-outlined text-[13px]">ink_eraser</span> Hapus
+                                    </button>
+                                </div>
+
+                                <span id="ytFsSimBadge" class="hidden px-2 py-0.5 rounded-full bg-purple-500/25 text-purple-200 border border-purple-400/30 text-[10px] font-bold">
+                                    🧪 SIMULASI KOSONG
+                                </span>
+                                <button onclick="ytToggleFsVesselViewMode()" id="ytFsViewModeBtn" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-700/60 hover:bg-slate-700 text-slate-200 border border-slate-600/60 flex items-center gap-1 transition-colors" title="Toggle Tampilan Kartu / Tabel">
+                                    <span class="material-symbols-outlined text-[14px]">table_rows</span>
+                                    <span id="ytFsViewModeLabel">Tabel</span>
+                                </button>
+                                <button onclick="ytToggleFsVesselsCollapse()" id="ytFsCollapseBtn" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-slate-700/60 hover:bg-slate-700 text-slate-200 border border-slate-600/60 flex items-center gap-1 transition-colors" title="Sembunyikan / Tampilkan Daftar Kapal">
+                                    <span class="material-symbols-outlined text-[14px]" id="ytFsCollapseIcon">expand_less</span>
+                                    <span id="ytFsCollapseLabel">Tutup</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="ytFsVesselsContent" class="overflow-x-auto custom-scrollbar p-2.5 transition-all">
+                            <!-- Rendered by renderFullscreenActiveVessels() -->
                         </div>
                     </div>
                     <div id="ytYardLegend" class="p-3 border-b border-slate-200/50 bg-slate-50/50 overflow-x-auto custom-scrollbar"></div>

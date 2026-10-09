@@ -1602,6 +1602,70 @@ body.yt-fullscreen-active #stickyTabContainer {
     color: #f1f5f9 !important;
 }
 
+/* Fullscreen Active Open Stack Vessels Panel */
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytFsActiveVesselsPanel {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+    flex-shrink: 0 !important;
+}
+
+.yt-vessel-card-fs {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.yt-vessel-card-fs:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px -2px rgba(0, 0, 0, 0.5);
+}
+
+.yt-vessel-card-fs.yt-vessel-card-selected {
+    border-color: #818cf8 !important;
+    background: linear-gradient(135deg, rgba(49, 46, 129, 0.75), rgba(30, 27, 75, 0.9)) !important;
+    box-shadow: 0 0 16px rgba(99, 102, 241, 0.4), inset 0 0 0 1px rgba(129, 140, 248, 0.3) !important;
+}
+
+/* Simulation Mode Styling */
+.yt-sim-mode-active {
+    box-shadow: 0 0 0 2px #8b5cf6, 0 10px 25px -5px rgba(139, 92, 246, 0.25) !important;
+}
+
+.yt-simulation-banner {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Eraser Mode (Mode Hapus Reservasi) */
+.ym-yard.yt-eraser-active .ym-slot.yt-reserved {
+    cursor: crosshair !important;
+}
+
+.ym-yard.yt-eraser-active .ym-slot.yt-reserved:hover {
+    outline: 2px dashed #ef4444 !important;
+    outline-offset: -1px !important;
+    background: repeating-linear-gradient(-45deg, rgba(239, 68, 68, 0.45), rgba(239, 68, 68, 0.45) 3px, rgba(239, 68, 68, 0.15) 3px, rgba(239, 68, 68, 0.15) 6px) !important;
+    border-color: #ef4444 !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytUndoRedoGroup {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytUndoBtn,
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytRedoBtn {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+}
+
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytUndoBtn:not(:disabled):hover,
+:is(#ytVisualCard.yt-fullscreen, #ytVisualCard:fullscreen) #ytRedoBtn:not(:disabled):hover {
+    background: #334155 !important;
+    color: #ffffff !important;
+}
+
+
+
 
 
 
