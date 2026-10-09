@@ -270,6 +270,22 @@ let ytManualTargetVesselKey = null;
 let ytSuggestionSelectedIndex = -1;
 let ytCurrentBlockSuggestions = [];
 
+function ytEnsureManualModalPlacement() {
+    const modal = document.getElementById('ytManualReserveModal');
+    if (!modal) return;
+    const card = document.getElementById('ytVisualCard');
+    const isFs = ytIsFullscreen || !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+    if (isFs && card) {
+        if (modal.parentElement !== card) {
+            card.appendChild(modal);
+        }
+    } else {
+        if (modal.parentElement !== document.body) {
+            document.body.appendChild(modal);
+        }
+    }
+}
+
 function ytIsManualModalOpen() {
     const modal = document.getElementById('ytManualReserveModal');
     return modal && !modal.classList.contains('hidden');
@@ -277,6 +293,7 @@ function ytIsManualModalOpen() {
 
 function ytOpenManualReserveModal(vesselKey) {
     if (!vesselKey) return;
+    ytEnsureManualModalPlacement();
     ytManualTargetVesselKey = vesselKey;
 
     // Look for vessel in schedule maps
@@ -1987,6 +2004,9 @@ function ytEnterFullscreen() {
     card.classList.add('yt-fullscreen');
     document.body.classList.add('yt-fullscreen-active');
 
+    // Ensure manual modal is placed within fullscreen container
+    ytEnsureManualModalPlacement();
+
     // Default ON for Show Text in Fullscreen Mode
     ytSetShowText(true);
 
@@ -2023,6 +2043,9 @@ function ytExitFullscreen() {
     ytIsFullscreen = false;
     card.classList.remove('yt-fullscreen');
     document.body.classList.remove('yt-fullscreen-active');
+
+    // Ensure manual modal is moved back to body outside fullscreen
+    ytEnsureManualModalPlacement();
 
     // Hide Fullscreen Active Vessels Panel
     renderFullscreenActiveVessels();
@@ -2100,6 +2123,8 @@ function ytOnFullscreenChange() {
     const isNativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
     if (!isNativeFs && ytIsFullscreen) {
         ytExitFullscreen();
+    } else {
+        ytEnsureManualModalPlacement();
     }
 }
 
@@ -3690,11 +3715,11 @@ function renderFullscreenVesselsCards(vessels, container) {
                 <div>
                     <div class="flex items-center justify-between gap-1 mb-1.5">
                         <div class="flex items-center gap-1.5 min-w-0">
-                            <span class="w-3 h-3 rounded-full shrink-0 shadow-sm" style="background:${color};"></span>
-                            <span class="font-bold text-white text-xs truncate" title="${v.vesselName}">${v.vesselName}</span>
+                            <span class="w-3 h-3 rounded-full shrink-0 shadow-sm ${isSelected ? 'ring-2 ring-indigo-400 ring-offset-1 ring-offset-slate-900 animate-pulse' : ''}" style="background:${color};"></span>
+                            <span class="font-bold text-white text-xs truncate ${isSelected ? 'text-indigo-200' : ''}" title="${v.vesselName}">${v.vesselName}</span>
                         </div>
                         <div class="flex items-center gap-1 shrink-0">
-                            <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-slate-700 text-slate-200 font-mono shrink-0">${v.service}</span>
+                            <span class="px-1.5 py-0.5 rounded text-[9px] font-black ${isSelected ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-700 text-slate-200'} font-mono shrink-0">${v.service}</span>
                         </div>
                     </div>
 
@@ -3732,14 +3757,10 @@ function renderFullscreenVesselsCards(vessels, container) {
                     </div>
                     <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
                         <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" 
-                            class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600/90 hover:bg-indigo-600 text-white flex items-center gap-0.5 shadow-sm transition-colors" 
+                            class="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-0.5 shadow-sm transition-colors" 
                             title="Ketik blok & slot reservasi">
                             <span class="material-symbols-outlined text-[11px]">add</span> Plan
                         </button>
-                        ${isSelected 
-                            ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-indigo-500 text-white shadow-sm flex items-center gap-0.5"><span class="material-symbols-outlined text-[11px]">check</span> ACTIVE</span>' 
-                            : `<span onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" class="text-slate-400 hover:text-indigo-300 text-[10px] font-semibold flex items-center gap-0.5 cursor-pointer">${isUpcoming ? 'Pre-Plan' : 'Pilih'} <span class="material-symbols-outlined text-[12px]">arrow_forward</span></span>`
-                        }
                     </div>
                 </div>
             </div>`;
@@ -3812,19 +3833,21 @@ function renderFullscreenVesselsTable(vessels, container) {
             statusBadge = `<span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[9px] font-bold">ACTIVE</span>`;
         }
 
-        const rowBg = isSelected ? 'bg-indigo-950/80 text-white' : 'hover:bg-slate-800/60 text-slate-200';
+        const rowBg = isSelected 
+            ? 'bg-gradient-to-r from-indigo-950 via-indigo-900/90 to-indigo-950 text-white font-semibold border-l-4 border-indigo-400 shadow-inner ring-1 ring-inset ring-indigo-500/30' 
+            : 'hover:bg-slate-800/60 text-slate-200 border-l-4 border-transparent';
 
         html += `
             <tr class="${rowBg} cursor-pointer transition-colors" onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')">
                 <td class="px-2 py-1.5 text-center text-slate-400">${idx + 1}</td>
                 <td class="px-2 py-1.5">
                     <div class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full shrink-0" style="background:${color}"></span>
-                        <span class="font-bold truncate text-white">${v.vesselName}</span>
+                        <span class="w-2.5 h-2.5 rounded-full shrink-0 ${isSelected ? 'ring-2 ring-white animate-pulse' : ''}" style="background:${color}"></span>
+                        <span class="font-bold truncate text-white ${isSelected ? 'text-indigo-200' : ''}">${v.vesselName}</span>
                         <span class="text-[9px] text-slate-400">(${v.invCarrier})</span>
                     </div>
                 </td>
-                <td class="px-2 py-1.5 text-center"><span class="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-bold">${v.service}</span></td>
+                <td class="px-2 py-1.5 text-center"><span class="px-1.5 py-0.5 rounded ${isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-300'} font-bold font-mono">${v.service}</span></td>
                 <td class="px-2 py-1.5 text-center">${statusBadge}</td>
                 <td class="px-2 py-1.5 text-center">${formatDt(v.etb)}</td>
                 <td class="px-2 py-1.5 text-center text-amber-300/90">${formatDt(v.openStacking)}</td>
@@ -3833,13 +3856,10 @@ function renderFullscreenVesselsTable(vessels, container) {
                 <td class="px-2 py-1.5 text-center font-bold text-violet-300">${reservedSlots > 0 ? `${reservedSlots}s` : '—'}</td>
                 <td class="px-2 py-1.5 text-center font-bold text-emerald-400">${planTEU > 0 ? `+${planTEU} TEU` : '—'}</td>
                 <td class="px-2 py-1.5 text-center" onclick="event.stopPropagation();">
-                    <div class="flex items-center justify-center gap-1">
-                        <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-0.5 transition-colors shadow-sm" title="Ketik blok & rentang slot">
+                    <div class="flex items-center justify-center">
+                        <button onclick="ytOpenManualReserveModal('${v.key}'); event.stopPropagation();" class="px-2 py-0.5 rounded text-[9px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-0.5 transition-colors shadow-sm" title="Ketik blok & rentang slot">
                             <span class="material-symbols-outlined text-[11px]">add</span> Plan
                         </button>
-                        ${isSelected 
-                            ? '<span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold text-[9px]">PILIH</span>' 
-                            : `<span onclick="ytSelectVessel('${v.key}', '${v.vesselName.replace(/'/g, "\\'")}', '${v.service}', '${v.invCarrier}')" class="text-slate-400 hover:text-white text-[9px] cursor-pointer">${isUpcoming ? 'Pre-Plan' : 'Pilih'}</span>`}
                     </div>
                 </td>
             </tr>`;
