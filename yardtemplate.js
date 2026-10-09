@@ -1447,7 +1447,7 @@ function renderYardTemplate() {
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-wrap">
-                    <button onclick="ytClearAllReservations()" class="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-semibold flex items-center gap-1 transition-all">
+                    <button onclick="ytClearAllReservations(); event.stopPropagation();" class="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/40 text-red-200 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer" title="Bersihkan semua alokasi slot template">
                         <span class="material-symbols-outlined text-[14px]">delete_sweep</span> Bersihkan Plan
                     </button>
                     <button onclick="ytToggleSimulationMode()" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold flex items-center gap-1 transition-all">
@@ -2385,9 +2385,18 @@ function ytClearVesselReservations(vesselKey) {
 }
 
 function ytClearAllReservations() {
-    if (!confirm('Clear ALL reservations?')) return;
+    const hasReservations = ytReservations && Object.keys(ytReservations).length > 0;
+    if (!hasReservations && !ytSelectedVessel && !ytRangeStart) {
+        if (typeof ytShowToast === 'function') {
+            ytShowToast('Belum ada rencana slot template yang dibuat', 'info', '#64748b');
+        }
+        return;
+    }
+
     ytRecordHistory();
     ytReservations = {};
+    ytRangeStart = null;
+    ytSelectedVessel = null;
     ytSaveReservationsToStorage();
     renderYardTemplate();
     renderActiveVesselTable();
@@ -2396,6 +2405,9 @@ function ytClearAllReservations() {
     renderYardTemplateClashes();
     renderFullscreenActiveVessels();
     ytUpdateUndoRedoUI();
+    if (typeof ytShowToast === 'function') {
+        ytShowToast('Semua rencana slot template berhasil dibersihkan', 'delete_sweep', '#ef4444');
+    }
 }
 
 // ── Smart Slot Recommendation (Auto-Suggest Best Blocks) ────────────
