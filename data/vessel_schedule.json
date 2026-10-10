@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-10T11:25:54.790Z",
+  "lastUpdated": "2026-10-10T16:25:00.395Z",
   "totalScraped": 68,
   "totalFiltered": 40,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "JPI-A",
       "status": "ACTIVE",
       "etb": "2026-10-10 16:00:00",
-      "ata": "2026-10-10 08:12:00",
+      "ata": "2026-10-10 17:05:00",
       "etd": "2026-10-12 01:00:00",
       "atd": "",
       "openStacking": "2026-10-06 01:00:00",
@@ -45,8 +45,8 @@
       "etd": "2026-10-11 08:00:00",
       "atd": "",
       "openStacking": "2026-10-05 16:15:00",
-      "closingDocument": "2026-10-09 13:00:00",
-      "closingPhysic": "2026-10-09 15:00:00"
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHIDAO",
@@ -214,6 +214,21 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "BIG BREEZY",
+      "line": "MCC",
+      "voyIn": "642N",
+      "voyOut": "642N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-10-18 19:00:00",
+      "ata": "",
+      "etd": "2026-10-19 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "EVER OPTIMA",
       "line": "EGH",
       "voyIn": "0498-051S",
@@ -274,21 +289,6 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "641S",
-      "voyOut": "642W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-10-17 12:00:00",
-      "ata": "",
-      "etd": "2026-10-19 09:00:00",
-      "atd": "",
-      "openStacking": "2026-10-11 15:00:00",
-      "closingDocument": "2026-10-15 23:00:00",
-      "closingPhysic": "2026-10-16 01:00:00"
-    },
-    {
       "vessel": "EVER BURLY",
       "line": "EMC",
       "voyIn": "S094",
@@ -319,19 +319,19 @@
       "closingPhysic": "2026-10-16 18:00:00"
     },
     {
-      "vessel": "BIG BREEZY",
+      "vessel": "IRENES RAY",
       "line": "MCC",
-      "voyIn": "642N",
-      "voyOut": "642N",
-      "service": "I15",
+      "voyIn": "641S",
+      "voyOut": "642W",
+      "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-10-16 17:00:00",
+      "etb": "2026-10-16 19:00:00",
       "ata": "",
-      "etd": "2026-10-17 10:00:00",
+      "etd": "2026-10-18 16:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-10-11 15:00:00",
+      "closingDocument": "2026-10-15 23:00:00",
+      "closingPhysic": "2026-10-16 01:00:00"
     },
     {
       "vessel": "MARINA ONE",
