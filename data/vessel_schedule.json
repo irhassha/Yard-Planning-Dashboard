@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-11T16:49:17.871Z",
-  "totalScraped": 67,
+  "lastUpdated": "2026-10-11T21:06:36.027Z",
+  "totalScraped": 65,
   "totalFiltered": 39,
   "vessels": [
+    {
+      "vessel": "ERASMUS CHIEF",
+      "line": "MCC",
+      "voyIn": "641S",
+      "voyOut": "642N",
+      "service": "TX4",
+      "status": "ACTIVE",
+      "etb": "2026-10-12 03:00:00",
+      "ata": "2026-10-12 01:18:00",
+      "etd": "2026-10-12 21:00:00",
+      "atd": "",
+      "openStacking": "2026-10-05 12:00:00",
+      "closingDocument": "2026-10-10 01:00:00",
+      "closingPhysic": "2026-10-10 03:00:00"
+    },
     {
       "vessel": "HF LUCKY",
       "line": "SIT",
@@ -11,7 +26,7 @@
       "service": "JTH",
       "status": "ACTIVE",
       "etb": "2026-10-11 23:00:00",
-      "ata": "2026-10-11 21:47:36",
+      "ata": "2026-10-11 20:34:00",
       "etd": "2026-10-12 19:00:00",
       "atd": "",
       "openStacking": "2026-10-06 01:00:00",
@@ -32,6 +47,21 @@
       "openStacking": "2026-10-06 01:00:00",
       "closingDocument": "2026-10-10 19:00:00",
       "closingPhysic": "2026-10-10 21:00:00"
+    },
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "643E",
+      "voyOut": "644N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-10-25 13:00:00",
+      "ata": "",
+      "etd": "2026-10-26 13:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHIDAO",
@@ -179,9 +209,9 @@
       "ata": "",
       "etd": "2026-10-20 15:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-10-13 01:00:00",
+      "closingDocument": "2026-10-18 10:00:00",
+      "closingPhysic": "2026-10-18 12:00:00"
     },
     {
       "vessel": "SITC BATANGAS",
@@ -529,21 +559,6 @@
       "closingPhysic": "2026-10-11 05:00:00"
     },
     {
-      "vessel": "ERASMUS CHIEF",
-      "line": "MCC",
-      "voyIn": "641S",
-      "voyOut": "642N",
-      "service": "TX4",
-      "status": "REGISTER",
-      "etb": "2026-10-12 03:00:00",
-      "ata": "",
-      "etd": "2026-10-12 21:00:00",
-      "atd": "",
-      "openStacking": "2026-10-05 12:00:00",
-      "closingDocument": "2026-10-10 01:00:00",
-      "closingPhysic": "2026-10-10 03:00:00"
-    },
-    {
       "vessel": "BG LL 2515 - TB LL DJU MING",
       "line": "SSD",
       "voyIn": "121JN",
@@ -568,21 +583,6 @@
       "etb": "2026-10-02 09:00:00",
       "ata": "",
       "etd": "2026-10-02 15:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "TB AQUARIUS - BG PSB 2510",
-      "line": "PUL",
-      "voyIn": "013E",
-      "voyOut": "013E",
-      "service": "SIS",
-      "status": "REGISTER",
-      "etb": "2026-09-27 06:00:00",
-      "ata": "",
-      "etd": "2026-09-27 12:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
