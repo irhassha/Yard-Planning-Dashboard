@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-10T20:45:38.041Z",
+  "lastUpdated": "2026-10-11T02:20:08.331Z",
   "totalScraped": 67,
-  "totalFiltered": 42,
+  "totalFiltered": 41,
   "vessels": [
     {
       "vessel": "EVER BEAMY",
@@ -32,21 +32,6 @@
       "openStacking": "2026-10-03 01:00:00",
       "closingDocument": "2026-10-07 21:00:00",
       "closingPhysic": "2026-10-07 23:00:00"
-    },
-    {
-      "vessel": "SITC SHEKOU",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-10-10 12:00:00",
-      "ata": "2026-10-10 10:56:00",
-      "etd": "2026-10-11 08:00:00",
-      "atd": "2026-10-11 03:27:00",
-      "openStacking": "2026-10-05 16:15:00",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHIDAO",
