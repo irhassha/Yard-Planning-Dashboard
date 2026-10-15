@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-15T15:48:41.320Z",
-  "totalScraped": 73,
-  "totalFiltered": 41,
+  "lastUpdated": "2026-10-15T20:34:34.289Z",
+  "totalScraped": 72,
+  "totalFiltered": 43,
   "vessels": [
     {
       "vessel": "SINAR BANGKA",
@@ -47,6 +47,36 @@
       "openStacking": "2026-10-08 17:30:00",
       "closingDocument": "2026-10-12 22:01:00",
       "closingPhysic": "2026-10-13 00:01:00"
+    },
+    {
+      "vessel": "MSC BREMERHAVEN V",
+      "line": "MSC",
+      "voyIn": "HW642A",
+      "voyOut": "HW642A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-10-29 22:00:00",
+      "ata": "",
+      "etd": "2026-10-30 12:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER BLINK",
+      "line": "EMA",
+      "voyIn": "1215-085A",
+      "voyOut": "1215-085A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-10-29 15:00:00",
+      "ata": "",
+      "etd": "2026-10-30 15:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "AS PENELOPE",
@@ -274,21 +304,6 @@
       "closingPhysic": "2026-10-21 03:00:00"
     },
     {
-      "vessel": "EVER ORIENT",
-      "line": "EMC",
-      "voyIn": "0495-113S",
-      "voyOut": "0495-113N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-10-21 12:00:00",
-      "ata": "",
-      "etd": "2026-10-22 13:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "ITAL BONUS",
       "line": "LT",
       "voyIn": "S126",
@@ -302,6 +317,21 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
+    },
+    {
+      "vessel": "EVER ORIENT",
+      "line": "EMC",
+      "voyIn": "0495-113S",
+      "voyOut": "0495-113N",
+      "service": "CIT",
+      "status": "REGISTER",
+      "etb": "2026-10-21 12:00:00",
+      "ata": "",
+      "etd": "2026-10-22 13:00:00",
+      "atd": "",
+      "openStacking": "2026-10-18 01:00:00",
+      "closingDocument": "2026-10-20 21:59:00",
+      "closingPhysic": "2026-10-20 23:59:00"
     },
     {
       "vessel": "AS PENELOPE",
