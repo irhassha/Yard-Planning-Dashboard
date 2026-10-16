@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-10-16T15:37:19.438Z",
-  "totalScraped": 71,
+  "lastUpdated": "2026-10-16T20:08:41.599Z",
+  "totalScraped": 72,
   "totalFiltered": 39,
   "vessels": [
     {
@@ -34,19 +34,19 @@
       "closingPhysic": "2026-10-15 23:59:00"
     },
     {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1209-116B",
-      "voyOut": "1209-116B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-10-16 01:00:00",
-      "ata": "2026-10-16 04:16:00",
-      "etd": "2026-10-17 04:00:00",
+      "vessel": "HF LUCKY",
+      "line": "SIT",
+      "voyIn": "2624S",
+      "voyOut": "2625N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-10-30 08:00:00",
+      "ata": "",
+      "etd": "2026-10-31 08:00:00",
       "atd": "",
-      "openStacking": "2026-10-12 01:00:00",
-      "closingDocument": "2026-10-14 21:59:00",
-      "closingPhysic": "2026-10-14 23:59:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MSC BREMERHAVEN V",
