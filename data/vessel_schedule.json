@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-15T20:34:34.289Z",
+  "lastUpdated": "2026-10-16T01:46:56.880Z",
   "totalScraped": 72,
-  "totalFiltered": 43,
+  "totalFiltered": 42,
   "vessels": [
+    {
+      "vessel": "EVER BLISS",
+      "line": "EMA",
+      "voyIn": "1209-116B",
+      "voyOut": "1209-116B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-10-16 01:00:00",
+      "ata": "2026-10-16 04:16:00",
+      "etd": "2026-10-17 04:00:00",
+      "atd": "",
+      "openStacking": "2026-10-12 01:00:00",
+      "closingDocument": "2026-10-14 21:59:00",
+      "closingPhysic": "2026-10-14 23:59:00"
+    },
     {
       "vessel": "SINAR BANGKA",
       "line": "SIT",
@@ -32,21 +47,6 @@
       "openStacking": "2026-10-09 20:00:00",
       "closingDocument": "2026-10-14 12:00:00",
       "closingPhysic": "2026-10-14 14:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "641E",
-      "voyOut": "642N",
-      "service": "IN1",
-      "status": "ACTIVE",
-      "etb": "2026-10-14 12:00:00",
-      "ata": "2026-10-14 12:09:00",
-      "etd": "2026-10-15 23:00:00",
-      "atd": "",
-      "openStacking": "2026-10-08 17:30:00",
-      "closingDocument": "2026-10-12 22:01:00",
-      "closingPhysic": "2026-10-13 00:01:00"
     },
     {
       "vessel": "MSC BREMERHAVEN V",
@@ -199,6 +199,36 @@
       "closingPhysic": ""
     },
     {
+      "vessel": "EVER BEFIT",
+      "line": "EMA",
+      "voyIn": "1211-082B",
+      "voyOut": "1211-082B",
+      "service": "JPI-B",
+      "status": "REGISTER",
+      "etb": "2026-10-24 02:00:00",
+      "ata": "",
+      "etd": "2026-10-25 04:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S126",
+      "voyOut": "N126",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-10-23 08:00:00",
+      "ata": "",
+      "etd": "2026-10-24 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "SITC SHIDAO",
       "line": "SIT",
       "voyIn": "2628S",
@@ -302,21 +332,6 @@
       "openStacking": "2026-10-16 01:00:00",
       "closingDocument": "2026-10-21 01:00:00",
       "closingPhysic": "2026-10-21 03:00:00"
-    },
-    {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S126",
-      "voyOut": "N126",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-10-21 12:00:00",
-      "ata": "",
-      "etd": "2026-10-22 12:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "EVER ORIENT",
@@ -514,21 +529,6 @@
       "closingPhysic": "2026-10-17 12:00:00"
     },
     {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1211-082B",
-      "voyOut": "1211-082B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-10-17 15:00:00",
-      "ata": "",
-      "etd": "2026-10-18 15:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
       "vessel": "IRENES RAY",
       "line": "MCC",
       "voyIn": "641S",
@@ -587,21 +587,6 @@
       "openStacking": "2026-10-13 01:00:00",
       "closingDocument": "2026-10-15 21:59:00",
       "closingPhysic": "2026-10-15 23:59:00"
-    },
-    {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1209-116B",
-      "voyOut": "1209-116B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-10-16 01:00:00",
-      "ata": "",
-      "etd": "2026-10-17 04:00:00",
-      "atd": "",
-      "openStacking": "2026-10-12 01:00:00",
-      "closingDocument": "2026-10-14 21:59:00",
-      "closingPhysic": "2026-10-14 23:59:00"
     },
     {
       "vessel": "EVER OBEY",
