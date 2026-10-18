@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-18T14:55:28.684Z",
+  "lastUpdated": "2026-10-18T19:43:40.009Z",
   "totalScraped": 72,
-  "totalFiltered": 38,
+  "totalFiltered": 40,
   "vessels": [
     {
       "vessel": "MERATUS JAYAWIJAYA",
@@ -47,6 +47,36 @@
       "openStacking": "2026-10-11 15:00:00",
       "closingDocument": "2026-10-17 07:00:00",
       "closingPhysic": "2026-10-17 09:00:00"
+    },
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "644E",
+      "voyOut": "645N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-11-01 13:00:00",
+      "ata": "",
+      "etd": "2026-11-02 19:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "ERASMUS LEO",
+      "line": "MCC",
+      "voyIn": "643S",
+      "voyOut": "644N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-11-01 10:00:00",
+      "ata": "",
+      "etd": "2026-11-02 02:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "JULIUS-S",
