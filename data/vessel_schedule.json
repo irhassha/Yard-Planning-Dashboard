@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-17T19:44:44.603Z",
+  "lastUpdated": "2026-10-18T01:37:21.430Z",
   "totalScraped": 72,
   "totalFiltered": 40,
   "vessels": [
@@ -27,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-10-17 19:00:00",
       "ata": "2026-10-17 18:16:00",
-      "etd": "2026-10-19 17:00:00",
+      "etd": "2026-10-19 15:00:00",
       "atd": "",
       "openStacking": "2026-10-11 15:00:00",
       "closingDocument": "2026-10-17 07:00:00",
@@ -147,7 +147,7 @@
       "status": "REGISTER",
       "etb": "2026-10-28 08:00:00",
       "ata": "",
-      "etd": "2026-10-30 01:00:00",
+      "etd": "2026-10-29 20:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
