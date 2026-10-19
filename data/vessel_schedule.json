@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-19T17:48:29.498Z",
+  "lastUpdated": "2026-10-19T21:46:11.725Z",
   "totalScraped": 67,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "BG. LL MASSIE - TB. LL MASERATII",
+      "line": "SSD",
+      "voyIn": "83 JN",
+      "voyOut": "83 JN",
+      "service": "SSD TRANS",
+      "status": "ACTIVE",
+      "etb": "2026-10-20 01:00:00",
+      "ata": "2026-10-20 04:34:36",
+      "etd": "2026-10-20 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "EVER BIRTH",
       "line": "EMA",
@@ -482,21 +497,6 @@
       "openStacking": "2026-10-13 01:00:00",
       "closingDocument": "2026-10-18 10:00:00",
       "closingPhysic": "2026-10-18 12:00:00"
-    },
-    {
-      "vessel": "BG. LL MASSIE - TB. LL MASERATII",
-      "line": "SSD",
-      "voyIn": "83 JN",
-      "voyOut": "83 JN",
-      "service": "SSD TRANS",
-      "status": "REGISTER",
-      "etb": "2026-10-20 01:00:00",
-      "ata": "",
-      "etd": "2026-10-20 10:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "EVER OBEY",
