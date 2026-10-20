@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-20T15:52:14.993Z",
+  "lastUpdated": "2026-10-20T20:56:06.268Z",
   "totalScraped": 67,
-  "totalFiltered": 32,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "GREEN PACIFIC",
@@ -11,7 +11,7 @@
       "service": "CMI2",
       "status": "ACTIVE",
       "etb": "2026-10-20 23:00:00",
-      "ata": "2026-10-20 22:32:35",
+      "ata": "2026-10-20 21:45:00",
       "etd": "2026-10-21 17:00:00",
       "atd": "",
       "openStacking": "2026-10-15 01:00:00",
@@ -32,6 +32,21 @@
       "openStacking": "2026-10-13 01:00:00",
       "closingDocument": "2026-10-18 10:00:00",
       "closingPhysic": "2026-10-18 12:00:00"
+    },
+    {
+      "vessel": "SINAR BANGKA",
+      "line": "SIT",
+      "voyIn": "2628S",
+      "voyOut": "2629V",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-11-03 08:00:00",
+      "ata": "",
+      "etd": "2026-11-04 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SPIL NISAKA",
