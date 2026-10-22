@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-21T20:56:36.525Z",
+  "lastUpdated": "2026-10-22T02:00:46.197Z",
   "totalScraped": 66,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2622S",
+      "voyOut": "2623N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-10-22 05:00:00",
+      "ata": "2026-10-22 04:21:00",
+      "etd": "2026-10-23 00:00:00",
+      "atd": "",
+      "openStacking": "2026-10-13 17:20:00",
+      "closingDocument": "2026-10-19 16:00:00",
+      "closingPhysic": "2026-10-19 18:00:00"
+    },
     {
       "vessel": "EVER ORIENT",
       "line": "EMC",
@@ -27,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-10-21 15:00:00",
       "ata": "2026-10-21 13:42:00",
-      "etd": "2026-10-22 13:00:00",
+      "etd": "2026-10-22 09:00:00",
       "atd": "",
       "openStacking": "2026-10-16 01:00:00",
       "closingDocument": "2026-10-21 01:00:00",
@@ -467,21 +482,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "SITC NANSHA",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-10-22 05:00:00",
-      "ata": "",
-      "etd": "2026-10-23 00:00:00",
-      "atd": "",
-      "openStacking": "2026-10-13 17:20:00",
-      "closingDocument": "2026-10-19 16:00:00",
-      "closingPhysic": "2026-10-19 18:00:00"
     },
     {
       "vessel": "EVER OBEY",
