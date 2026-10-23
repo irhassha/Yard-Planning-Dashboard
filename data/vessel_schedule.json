@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-22T20:52:47.967Z",
+  "lastUpdated": "2026-10-23T02:05:04.824Z",
   "totalScraped": 67,
   "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "INTERASIA ENGAGE",
+      "line": "IAL",
+      "voyIn": "S045",
+      "voyOut": "N045",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-10-23 07:00:00",
+      "ata": "2026-10-23 06:22:00",
+      "etd": "2026-10-24 11:00:00",
+      "atd": "",
+      "openStacking": "2026-10-18 01:00:00",
+      "closingDocument": "2026-10-22 13:00:00",
+      "closingPhysic": "2026-10-22 15:00:00"
+    },
     {
       "vessel": "MSC SHAULA",
       "line": "MSC",
@@ -12,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-10-22 16:00:00",
       "ata": "2026-10-22 14:09:00",
-      "etd": "2026-10-23 17:00:00",
+      "etd": "2026-10-23 14:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -452,21 +467,6 @@
       "openStacking": "2026-10-20 01:00:00",
       "closingDocument": "2026-10-22 21:59:00",
       "closingPhysic": "2026-10-22 23:59:00"
-    },
-    {
-      "vessel": "INTERASIA ENGAGE",
-      "line": "IAL",
-      "voyIn": "S045",
-      "voyOut": "N045",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-10-23 07:00:00",
-      "ata": "",
-      "etd": "2026-10-24 11:00:00",
-      "atd": "",
-      "openStacking": "2026-10-18 01:00:00",
-      "closingDocument": "2026-10-22 13:00:00",
-      "closingPhysic": "2026-10-22 15:00:00"
     },
     {
       "vessel": "EVER OBEY",
