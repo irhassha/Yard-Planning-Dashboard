@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-23T15:57:39.730Z",
-  "totalScraped": 66,
-  "totalFiltered": 30,
+  "lastUpdated": "2026-10-23T20:41:20.409Z",
+  "totalScraped": 64,
+  "totalFiltered": 31,
   "vessels": [
     {
       "vessel": "AS PENELOPE",
@@ -47,6 +47,21 @@
       "openStacking": "2026-10-18 01:00:00",
       "closingDocument": "2026-10-22 13:00:00",
       "closingPhysic": "2026-10-22 15:00:00"
+    },
+    {
+      "vessel": "SITC LIANYUNGANG",
+      "line": "SIT",
+      "voyIn": "2630S",
+      "voyOut": "2631N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-11-06 08:00:00",
+      "ata": "",
+      "etd": "2026-11-07 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SEABREEZE",
@@ -364,21 +379,6 @@
       "closingPhysic": "2026-10-25 23:00:00"
     },
     {
-      "vessel": "EVER BOOMY",
-      "line": "EMA",
-      "voyIn": "1214-094A",
-      "voyOut": "1214-094A",
-      "service": "JPI-A",
-      "status": "REGISTER",
-      "etb": "2026-10-25 16:00:00",
-      "ata": "",
-      "etd": "2026-10-26 21:00:00",
-      "atd": "",
-      "openStacking": "2026-10-21 01:00:00",
-      "closingDocument": "2026-10-23 21:59:00",
-      "closingPhysic": "2026-10-23 23:59:00"
-    },
-    {
       "vessel": "EVER BEFIT",
       "line": "EMA",
       "voyIn": "1211-082B",
@@ -392,6 +392,21 @@
       "openStacking": "2026-10-21 01:00:00",
       "closingDocument": "2026-10-24 10:00:00",
       "closingPhysic": "2026-10-24 12:00:00"
+    },
+    {
+      "vessel": "EVER BOOMY",
+      "line": "EMA",
+      "voyIn": "1214-094A",
+      "voyOut": "1214-094A",
+      "service": "JPI-A",
+      "status": "REGISTER",
+      "etb": "2026-10-25 16:00:00",
+      "ata": "",
+      "etd": "2026-10-26 21:00:00",
+      "atd": "",
+      "openStacking": "2026-10-21 01:00:00",
+      "closingDocument": "2026-10-23 21:59:00",
+      "closingPhysic": "2026-10-23 23:59:00"
     },
     {
       "vessel": "SPIL NISAKA",
