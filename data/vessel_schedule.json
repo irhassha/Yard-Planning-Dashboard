@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-23T10:34:46.437Z",
+  "lastUpdated": "2026-10-23T15:57:39.730Z",
   "totalScraped": 66,
   "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "642E",
+      "voyOut": "643N",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-10-23 20:00:00",
+      "ata": "2026-10-23 18:54:00",
+      "etd": "2026-10-25 06:00:00",
+      "atd": "",
+      "openStacking": "2026-10-16 01:00:00",
+      "closingDocument": "2026-10-20 03:00:00",
+      "closingPhysic": "2026-10-20 05:00:00"
+    },
     {
       "vessel": "ITAL BONUS",
       "line": "LT",
@@ -422,21 +437,6 @@
       "openStacking": "2026-10-20 01:00:00",
       "closingDocument": "2026-10-23 16:00:00",
       "closingPhysic": "2026-10-23 18:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "642E",
-      "voyOut": "643N",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-10-23 20:00:00",
-      "ata": "",
-      "etd": "2026-10-25 06:00:00",
-      "atd": "",
-      "openStacking": "2026-10-16 01:00:00",
-      "closingDocument": "2026-10-20 03:00:00",
-      "closingPhysic": "2026-10-20 05:00:00"
     },
     {
       "vessel": "EVER OBEY",
