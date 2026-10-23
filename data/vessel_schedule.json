@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-23T02:05:04.824Z",
-  "totalScraped": 67,
-  "totalFiltered": 32,
+  "lastUpdated": "2026-10-23T10:34:46.437Z",
+  "totalScraped": 66,
+  "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S126",
+      "voyOut": "N126",
+      "service": "CIM",
+      "status": "ACTIVE",
+      "etb": "2026-10-23 15:00:00",
+      "ata": "2026-10-23 13:19:00",
+      "etd": "2026-10-24 17:00:00",
+      "atd": "",
+      "openStacking": "2026-10-20 01:00:00",
+      "closingDocument": "2026-10-22 21:59:00",
+      "closingPhysic": "2026-10-22 23:59:00"
+    },
     {
       "vessel": "INTERASIA ENGAGE",
       "line": "IAL",
@@ -17,21 +32,6 @@
       "openStacking": "2026-10-18 01:00:00",
       "closingDocument": "2026-10-22 13:00:00",
       "closingPhysic": "2026-10-22 15:00:00"
-    },
-    {
-      "vessel": "MSC SHAULA",
-      "line": "MSC",
-      "voyIn": "HW639A",
-      "voyOut": "HW639A",
-      "service": "PERTIWI",
-      "status": "ACTIVE",
-      "etb": "2026-10-22 16:00:00",
-      "ata": "2026-10-22 14:09:00",
-      "etd": "2026-10-23 14:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "SEABREEZE",
@@ -192,7 +192,7 @@
       "status": "REGISTER",
       "etb": "2026-10-30 23:00:00",
       "ata": "",
-      "etd": "2026-11-01 04:00:00",
+      "etd": "2026-10-31 22:00:00",
       "atd": "",
       "openStacking": "2026-10-25 23:30:00",
       "closingDocument": "2026-10-30 15:00:00",
@@ -244,6 +244,21 @@
       "closingPhysic": "2026-10-28 23:59:00"
     },
     {
+      "vessel": "OKEE CORNELIA",
+      "line": "MCC",
+      "voyIn": "642S",
+      "voyOut": "643N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-10-29 04:00:00",
+      "ata": "",
+      "etd": "2026-10-30 02:00:00",
+      "atd": "",
+      "openStacking": "2026-10-23 01:00:00",
+      "closingDocument": "2026-10-27 22:01:00",
+      "closingPhysic": "2026-10-28 00:01:00"
+    },
+    {
       "vessel": "AS PIA",
       "line": "MCC",
       "voyIn": "641S",
@@ -259,30 +274,15 @@
       "closingPhysic": "2026-10-28 09:00:00"
     },
     {
-      "vessel": "OKEE CORNELIA",
-      "line": "MCC",
-      "voyIn": "642S",
-      "voyOut": "643N",
-      "service": "I15",
-      "status": "REGISTER",
-      "etb": "2026-10-28 21:00:00",
-      "ata": "",
-      "etd": "2026-10-30 00:00:00",
-      "atd": "",
-      "openStacking": "2026-10-23 01:00:00",
-      "closingDocument": "2026-10-27 22:01:00",
-      "closingPhysic": "2026-10-28 00:01:00"
-    },
-    {
       "vessel": "EVER OASIS",
       "line": "EGH",
       "voyIn": "0497-093S",
       "voyOut": "0497-093N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-10-27 22:00:00",
+      "etb": "2026-10-28 02:00:00",
       "ata": "",
-      "etd": "2026-10-28 17:00:00",
+      "etd": "2026-10-29 01:00:00",
       "atd": "",
       "openStacking": "2026-10-22 01:00:00",
       "closingDocument": "2026-10-25 10:00:00",
@@ -315,8 +315,8 @@
       "etd": "2026-10-28 20:00:00",
       "atd": "",
       "openStacking": "2026-10-21 01:00:00",
-      "closingDocument": "2026-10-25 23:00:00",
-      "closingPhysic": "2026-10-26 01:00:00"
+      "closingDocument": "2026-10-26 15:00:00",
+      "closingPhysic": "2026-10-26 17:00:00"
     },
     {
       "vessel": "SITC YUHE",
@@ -340,28 +340,13 @@
       "voyOut": "0004N",
       "service": "KIS",
       "status": "REGISTER",
-      "etb": "2026-10-26 20:00:00",
+      "etb": "2026-10-26 22:00:00",
       "ata": "",
-      "etd": "2026-10-27 20:00:00",
+      "etd": "2026-10-27 23:00:00",
       "atd": "",
       "openStacking": "2026-10-21 01:00:00",
       "closingDocument": "2026-10-25 21:00:00",
       "closingPhysic": "2026-10-25 23:00:00"
-    },
-    {
-      "vessel": "SITC DECHENG",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-10-26 15:00:00",
-      "ata": "",
-      "etd": "2026-10-27 15:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "EVER BOOMY",
@@ -432,7 +417,7 @@
       "status": "REGISTER",
       "etb": "2026-10-24 13:00:00",
       "ata": "",
-      "etd": "2026-10-25 11:00:00",
+      "etd": "2026-10-25 12:00:00",
       "atd": "",
       "openStacking": "2026-10-20 01:00:00",
       "closingDocument": "2026-10-23 16:00:00",
@@ -452,21 +437,6 @@
       "openStacking": "2026-10-16 01:00:00",
       "closingDocument": "2026-10-20 03:00:00",
       "closingPhysic": "2026-10-20 05:00:00"
-    },
-    {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S126",
-      "voyOut": "N126",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-10-23 12:00:00",
-      "ata": "",
-      "etd": "2026-10-24 17:00:00",
-      "atd": "",
-      "openStacking": "2026-10-20 01:00:00",
-      "closingDocument": "2026-10-22 21:59:00",
-      "closingPhysic": "2026-10-22 23:59:00"
     },
     {
       "vessel": "EVER OBEY",
