@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-24T09:52:34.476Z",
+  "lastUpdated": "2026-10-24T14:55:57.799Z",
   "totalScraped": 67,
-  "totalFiltered": 33,
+  "totalFiltered": 32,
   "vessels": [
     {
       "vessel": "SITC SHIDAO",
@@ -32,21 +32,6 @@
       "openStacking": "2026-10-16 01:00:00",
       "closingDocument": "2026-10-20 03:00:00",
       "closingPhysic": "2026-10-20 05:00:00"
-    },
-    {
-      "vessel": "ITAL BONUS",
-      "line": "LT",
-      "voyIn": "S126",
-      "voyOut": "N126",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-10-23 15:00:00",
-      "ata": "2026-10-23 13:19:00",
-      "etd": "2026-10-24 17:00:00",
-      "atd": "",
-      "openStacking": "2026-10-20 01:00:00",
-      "closingDocument": "2026-10-22 21:59:00",
-      "closingPhysic": "2026-10-22 23:59:00"
     },
     {
       "vessel": "ARTOTINA",
