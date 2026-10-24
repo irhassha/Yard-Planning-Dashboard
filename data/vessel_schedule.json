@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-23T20:41:20.409Z",
+  "lastUpdated": "2026-10-24T02:03:43.999Z",
   "totalScraped": 64,
   "totalFiltered": 31,
   "vessels": [
@@ -235,9 +235,9 @@
       "voyOut": "0498-051N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-10-30 10:00:00",
+      "etb": "2026-10-30 07:00:00",
       "ata": "",
-      "etd": "2026-10-31 05:00:00",
+      "etd": "2026-10-31 04:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
