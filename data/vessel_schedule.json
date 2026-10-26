@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-26T11:36:20.010Z",
-  "totalScraped": 67,
-  "totalFiltered": 33,
+  "lastUpdated": "2026-10-26T17:41:34.001Z",
+  "totalScraped": 64,
+  "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "SITC BATANGAS",
+      "line": "SIT",
+      "voyIn": "2620S",
+      "voyOut": "2621N",
+      "service": "CMI",
+      "status": "ACTIVE",
+      "etb": "2026-10-26 23:00:00",
+      "ata": "2026-10-26 23:13:25",
+      "etd": "2026-10-28 00:00:00",
+      "atd": "",
+      "openStacking": "2026-10-23 01:00:00",
+      "closingDocument": "2026-10-26 16:00:00",
+      "closingPhysic": "2026-10-26 18:00:00"
+    },
     {
       "vessel": "EVER BEFIT",
       "line": "EMA",
@@ -32,6 +47,21 @@
       "openStacking": "2026-10-20 01:00:00",
       "closingDocument": "2026-10-24 05:00:00",
       "closingPhysic": "2026-10-24 07:00:00"
+    },
+    {
+      "vessel": "MSC TAMARA IV",
+      "line": "MSC",
+      "voyIn": "HW643A",
+      "voyOut": "HW643A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-11-09 09:00:00",
+      "ata": "",
+      "etd": "2026-11-10 09:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SKY PEACE",
@@ -467,21 +497,6 @@
       "openStacking": "2026-10-21 01:00:00",
       "closingDocument": "2026-10-25 21:00:00",
       "closingPhysic": "2026-10-25 23:00:00"
-    },
-    {
-      "vessel": "SITC BATANGAS",
-      "line": "SIT",
-      "voyIn": "2620S",
-      "voyOut": "2621N",
-      "service": "CMI",
-      "status": "REGISTER",
-      "etb": "2026-10-26 23:00:00",
-      "ata": "",
-      "etd": "2026-10-28 00:00:00",
-      "atd": "",
-      "openStacking": "2026-10-23 01:00:00",
-      "closingDocument": "2026-10-26 16:00:00",
-      "closingPhysic": "2026-10-26 18:00:00"
     },
     {
       "vessel": "EVER OBEY",
