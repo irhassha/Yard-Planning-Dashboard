@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-26T17:41:34.001Z",
+  "lastUpdated": "2026-10-26T21:57:05.990Z",
   "totalScraped": 64,
   "totalFiltered": 34,
   "vessels": [
@@ -11,7 +11,7 @@
       "service": "CMI",
       "status": "ACTIVE",
       "etb": "2026-10-26 23:00:00",
-      "ata": "2026-10-26 23:13:25",
+      "ata": "2026-10-26 21:37:00",
       "etd": "2026-10-28 00:00:00",
       "atd": "",
       "openStacking": "2026-10-23 01:00:00",
