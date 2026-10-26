@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-25T20:02:24.126Z",
+  "lastUpdated": "2026-10-26T01:52:45.098Z",
   "totalScraped": 65,
   "totalFiltered": 32,
   "vessels": [
@@ -42,7 +42,7 @@
       "status": "ACTIVE",
       "etb": "2026-10-25 15:00:00",
       "ata": "2026-10-25 16:04:00",
-      "etd": "2026-10-26 21:00:00",
+      "etd": "2026-10-26 18:00:00",
       "atd": "",
       "openStacking": "2026-10-21 01:00:00",
       "closingDocument": "2026-10-23 21:59:00",
