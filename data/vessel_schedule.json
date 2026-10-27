@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-26T21:57:05.990Z",
+  "lastUpdated": "2026-10-27T02:31:10.015Z",
   "totalScraped": 64,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "MARINA ONE",
+      "line": "HMM",
+      "voyIn": "0004S",
+      "voyOut": "0004N",
+      "service": "KIS",
+      "status": "ACTIVE",
+      "etb": "2026-10-27 06:00:00",
+      "ata": "2026-10-27 05:24:00",
+      "etd": "2026-10-28 11:00:00",
+      "atd": "",
+      "openStacking": "2026-10-21 01:00:00",
+      "closingDocument": "2026-10-25 21:00:00",
+      "closingPhysic": "2026-10-25 23:00:00"
+    },
     {
       "vessel": "SITC BATANGAS",
       "line": "SIT",
@@ -17,21 +32,6 @@
       "openStacking": "2026-10-23 01:00:00",
       "closingDocument": "2026-10-26 16:00:00",
       "closingPhysic": "2026-10-26 18:00:00"
-    },
-    {
-      "vessel": "EVER BEFIT",
-      "line": "EMA",
-      "voyIn": "1211-082B",
-      "voyOut": "1211-082B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-10-25 21:00:00",
-      "ata": "2026-10-25 19:32:00",
-      "etd": "2026-10-27 03:00:00",
-      "atd": "",
-      "openStacking": "2026-10-21 01:00:00",
-      "closingDocument": "2026-10-24 10:00:00",
-      "closingPhysic": "2026-10-24 12:00:00"
     },
     {
       "vessel": "SPIL NISAKA",
@@ -205,7 +205,7 @@
       "voyOut": "HW642A",
       "service": "PERTIWI",
       "status": "REGISTER",
-      "etb": "2026-11-03 23:00:00",
+      "etb": "2026-11-04 05:00:00",
       "ata": "",
       "etd": "2026-11-05 07:00:00",
       "atd": "",
@@ -342,11 +342,11 @@
       "status": "REGISTER",
       "etb": "2026-10-31 05:00:00",
       "ata": "",
-      "etd": "2026-11-01 01:00:00",
+      "etd": "2026-10-31 23:00:00",
       "atd": "",
       "openStacking": "2026-10-27 01:00:00",
-      "closingDocument": "2026-10-30 08:00:00",
-      "closingPhysic": "2026-10-30 10:00:00"
+      "closingDocument": "2026-10-30 16:00:00",
+      "closingPhysic": "2026-10-30 18:00:00"
     },
     {
       "vessel": "MSC DIEGO",
@@ -460,9 +460,9 @@
       "voyOut": "2629N",
       "service": "CMI2",
       "status": "REGISTER",
-      "etb": "2026-10-28 04:00:00",
+      "etb": "2026-10-28 07:00:00",
       "ata": "",
-      "etd": "2026-10-28 23:00:00",
+      "etd": "2026-10-29 02:00:00",
       "atd": "",
       "openStacking": "2026-10-22 01:00:00",
       "closingDocument": "2026-10-26 13:00:00",
@@ -482,21 +482,6 @@
       "openStacking": "2026-10-21 01:00:00",
       "closingDocument": "2026-10-26 15:00:00",
       "closingPhysic": "2026-10-26 17:00:00"
-    },
-    {
-      "vessel": "MARINA ONE",
-      "line": "HMM",
-      "voyIn": "0004S",
-      "voyOut": "0004N",
-      "service": "KIS",
-      "status": "REGISTER",
-      "etb": "2026-10-27 06:00:00",
-      "ata": "",
-      "etd": "2026-10-28 11:00:00",
-      "atd": "",
-      "openStacking": "2026-10-21 01:00:00",
-      "closingDocument": "2026-10-25 21:00:00",
-      "closingPhysic": "2026-10-25 23:00:00"
     },
     {
       "vessel": "EVER OBEY",
