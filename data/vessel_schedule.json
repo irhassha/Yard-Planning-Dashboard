@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-10-28T11:42:46.165Z",
-  "totalScraped": 67,
-  "totalFiltered": 34,
+  "lastUpdated": "2026-10-28T17:27:50.481Z",
+  "totalScraped": 62,
+  "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "EVER OASIS",
+      "line": "EGH",
+      "voyIn": "0497-093S",
+      "voyOut": "0497-093N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-10-28 20:00:00",
+      "ata": "2026-10-28 19:10:00",
+      "etd": "2026-10-29 15:00:00",
+      "atd": "",
+      "openStacking": "2026-10-22 01:00:00",
+      "closingDocument": "2026-10-25 10:00:00",
+      "closingPhysic": "2026-10-25 12:00:00"
+    },
     {
       "vessel": "SITC YUHE",
       "line": "SIT",
@@ -34,11 +49,11 @@
       "closingPhysic": "2026-10-26 17:00:00"
     },
     {
-      "vessel": "GREEN PACIFIC",
+      "vessel": "SITC SHEKOU",
       "line": "SIT",
-      "voyIn": "2630S",
-      "voyOut": "2631N",
-      "service": "CMI2",
+      "voyIn": "2622S",
+      "voyOut": "2623N",
+      "service": "CMI",
       "status": "REGISTER",
       "etb": "2026-11-10 08:00:00",
       "ata": "",
@@ -49,11 +64,11 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "SITC SHEKOU",
+      "vessel": "GREEN PACIFIC",
       "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI",
+      "voyIn": "2630S",
+      "voyOut": "2631N",
+      "service": "CMI2",
       "status": "REGISTER",
       "etb": "2026-11-10 08:00:00",
       "ata": "",
@@ -482,36 +497,6 @@
       "openStacking": "2026-10-23 01:00:00",
       "closingDocument": "2026-10-27 22:01:00",
       "closingPhysic": "2026-10-28 00:01:00"
-    },
-    {
-      "vessel": "EVER OASIS",
-      "line": "EGH",
-      "voyIn": "0497-093S",
-      "voyOut": "0497-093N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-10-28 16:00:00",
-      "ata": "",
-      "etd": "2026-10-29 11:00:00",
-      "atd": "",
-      "openStacking": "2026-10-22 01:00:00",
-      "closingDocument": "2026-10-25 10:00:00",
-      "closingPhysic": "2026-10-25 12:00:00"
-    },
-    {
-      "vessel": "EVER OBEY",
-      "line": "EMA",
-      "voyIn": "0477-054S",
-      "voyOut": "0477-054N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-10-14 17:00:00",
-      "ata": "",
-      "etd": "2026-10-15 15:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     }
   ]
 }
