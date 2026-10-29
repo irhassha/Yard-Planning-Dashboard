@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-28T21:55:28.166Z",
+  "lastUpdated": "2026-10-29T02:59:06.303Z",
   "totalScraped": 62,
-  "totalFiltered": 33,
+  "totalFiltered": 32,
   "vessels": [
     {
       "vessel": "EVER OASIS",
@@ -17,21 +17,6 @@
       "openStacking": "2026-10-22 01:00:00",
       "closingDocument": "2026-10-25 10:00:00",
       "closingPhysic": "2026-10-25 12:00:00"
-    },
-    {
-      "vessel": "SITC YUHE",
-      "line": "SIT",
-      "voyIn": "2628S",
-      "voyOut": "2629N",
-      "service": "CMI2",
-      "status": "ACTIVE",
-      "etb": "2026-10-28 13:00:00",
-      "ata": "2026-10-28 13:00:00",
-      "etd": "2026-10-29 09:00:00",
-      "atd": "",
-      "openStacking": "2026-10-22 01:00:00",
-      "closingDocument": "2026-10-26 13:00:00",
-      "closingPhysic": "2026-10-26 15:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -409,34 +394,34 @@
       "closingPhysic": ""
     },
     {
-      "vessel": "MSC DIEGO",
-      "line": "MSC",
-      "voyIn": "FH633R",
-      "voyOut": "FH633R",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-10-31 10:00:00",
-      "ata": "",
-      "etd": "2026-11-01 08:00:00",
-      "atd": "",
-      "openStacking": "2026-10-25 23:30:00",
-      "closingDocument": "2026-10-30 15:00:00",
-      "closingPhysic": "2026-10-30 17:00:00"
-    },
-    {
       "vessel": "M ATLAS",
       "line": "SIT",
       "voyIn": "2630S",
       "voyOut": "2631N",
       "service": "JTH",
       "status": "REGISTER",
-      "etb": "2026-10-30 19:00:00",
+      "etb": "2026-10-31 04:00:00",
       "ata": "",
-      "etd": "2026-10-31 17:00:00",
+      "etd": "2026-10-31 22:00:00",
       "atd": "",
       "openStacking": "2026-10-27 01:00:00",
       "closingDocument": "2026-10-30 16:00:00",
       "closingPhysic": "2026-10-30 18:00:00"
+    },
+    {
+      "vessel": "MSC DIEGO",
+      "line": "MSC",
+      "voyIn": "FH633R",
+      "voyOut": "FH633R",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-10-30 23:00:00",
+      "ata": "",
+      "etd": "2026-10-31 16:00:00",
+      "atd": "",
+      "openStacking": "2026-10-25 23:30:00",
+      "closingDocument": "2026-10-30 15:00:00",
+      "closingPhysic": "2026-10-30 17:00:00"
     },
     {
       "vessel": "EVER OPTIMA",
@@ -460,9 +445,9 @@
       "voyOut": "1212-083B",
       "service": "JPI-B",
       "status": "REGISTER",
-      "etb": "2026-10-30 08:00:00",
+      "etb": "2026-10-30 07:00:00",
       "ata": "",
-      "etd": "2026-10-31 08:00:00",
+      "etd": "2026-10-31 02:00:00",
       "atd": "",
       "openStacking": "2026-10-26 01:00:00",
       "closingDocument": "2026-10-28 21:59:00",
