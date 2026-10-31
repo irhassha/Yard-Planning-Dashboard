@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-10-30T21:42:55.847Z",
-  "totalScraped": 60,
-  "totalFiltered": 30,
+  "lastUpdated": "2026-10-31T02:50:15.318Z",
+  "totalScraped": 63,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "M ATLAS",
@@ -11,7 +11,7 @@
       "service": "JTH",
       "status": "ACTIVE",
       "etb": "2026-10-31 04:00:00",
-      "ata": "2026-10-31 02:12:39",
+      "ata": "2026-10-31 05:23:00",
       "etd": "2026-10-31 22:00:00",
       "atd": "",
       "openStacking": "2026-10-27 01:00:00",
@@ -49,6 +49,21 @@
       "closingPhysic": "2026-10-29 23:59:00"
     },
     {
+      "vessel": "OKEE CORNELIA",
+      "line": "MCC",
+      "voyIn": "645S",
+      "voyOut": "646N",
+      "service": "I15",
+      "status": "REGISTER",
+      "etb": "2026-11-13 10:00:00",
+      "ata": "",
+      "etd": "2026-11-14 07:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
       "vessel": "SITC SHIDAO",
       "line": "SIT",
       "voyIn": "2630S",
@@ -58,6 +73,36 @@
       "etb": "2026-11-13 08:00:00",
       "ata": "",
       "etd": "2026-11-14 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SPIL NISAKA",
+      "line": "MCC",
+      "voyIn": "645S",
+      "voyOut": "646W",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-11-11 22:00:00",
+      "ata": "",
+      "etd": "2026-11-13 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "MARSA PRIDE",
+      "line": "MCC",
+      "voyIn": "643S",
+      "voyOut": "646N",
+      "service": "IA8",
+      "status": "REGISTER",
+      "etb": "2026-11-11 13:00:00",
+      "ata": "",
+      "etd": "2026-11-12 14:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
