@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2026-11-02T13:55:20.818Z",
-  "totalScraped": 63,
+  "lastUpdated": "2026-11-03T00:05:02.679Z",
+  "totalScraped": 62,
   "totalFiltered": 31,
   "vessels": [
     {
@@ -12,26 +12,26 @@
       "status": "ACTIVE",
       "etb": "2026-11-02 15:00:00",
       "ata": "2026-11-02 14:27:00",
-      "etd": "2026-11-03 10:00:00",
+      "etd": "2026-11-03 08:00:00",
       "atd": "",
       "openStacking": "2026-10-27 01:00:00",
       "closingDocument": "2026-11-01 13:00:00",
       "closingPhysic": "2026-11-01 15:00:00"
     },
     {
-      "vessel": "HMM HARVEST",
-      "line": "HMM",
-      "voyIn": "0016S",
-      "voyOut": "0016N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-11-02 08:00:00",
-      "ata": "2026-11-02 05:00:00",
-      "etd": "2026-11-03 02:00:00",
+      "vessel": "MAERSK NADI",
+      "line": "MCC",
+      "voyIn": "643X",
+      "voyOut": "643X",
+      "service": "TX4",
+      "status": "REGISTER",
+      "etb": "2026-11-16 09:00:00",
+      "ata": "",
+      "etd": "2026-11-18 06:00:00",
       "atd": "",
-      "openStacking": "2026-10-28 01:00:00",
-      "closingDocument": "2026-11-01 21:00:00",
-      "closingPhysic": "2026-11-01 23:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "IRENES RAY",
