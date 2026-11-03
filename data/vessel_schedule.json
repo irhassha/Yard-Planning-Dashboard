@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-03T13:03:41.337Z",
-  "totalScraped": 63,
-  "totalFiltered": 31,
+  "lastUpdated": "2026-11-03T22:36:47.123Z",
+  "totalScraped": 62,
+  "totalFiltered": 33,
   "vessels": [
     {
       "vessel": "AS PENELOPE",
@@ -17,6 +17,36 @@
       "openStacking": "2026-10-29 05:00:00",
       "closingDocument": "2026-11-01 23:00:00",
       "closingPhysic": "2026-11-02 01:00:00"
+    },
+    {
+      "vessel": "SITC NANSHA",
+      "line": "SIT",
+      "voyIn": "2624S",
+      "voyOut": "2625N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-11-17 08:00:00",
+      "ata": "",
+      "etd": "2026-11-18 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "SITC YUHE",
+      "line": "SIT",
+      "voyIn": "2630S",
+      "voyOut": "2631N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-11-17 08:00:00",
+      "ata": "",
+      "etd": "2026-11-18 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MAERSK NADI",
