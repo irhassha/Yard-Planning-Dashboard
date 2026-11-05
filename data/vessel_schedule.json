@@ -1,38 +1,8 @@
 {
-  "lastUpdated": "2026-11-04T22:56:01.525Z",
+  "lastUpdated": "2026-11-05T03:49:25.439Z",
   "totalScraped": 61,
-  "totalFiltered": 32,
+  "totalFiltered": 30,
   "vessels": [
-    {
-      "vessel": "BG LL 2515 - TB LL DJU MING",
-      "line": "SSD",
-      "voyIn": "123JN",
-      "voyOut": "123JN",
-      "service": "SSD TRANS",
-      "status": "ACTIVE",
-      "etb": "2026-11-05 04:00:00",
-      "ata": "2026-11-05 03:49:21",
-      "etd": "2026-11-05 12:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
-    },
-    {
-      "vessel": "SITC YUNCHENG",
-      "line": "SIT",
-      "voyIn": "2622S",
-      "voyOut": "2623N",
-      "service": "CMI",
-      "status": "ACTIVE",
-      "etb": "2026-11-04 09:00:00",
-      "ata": "2026-11-04 09:10:00",
-      "etd": "2026-11-05 06:00:00",
-      "atd": "",
-      "openStacking": "2026-10-30 01:00:00",
-      "closingDocument": "2026-11-02 16:00:00",
-      "closingPhysic": "2026-11-02 18:00:00"
-    },
     {
       "vessel": "CAPTAIN THANASIS I",
       "line": "MSC",
