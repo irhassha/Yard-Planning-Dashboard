@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-05T13:32:09.671Z",
-  "totalScraped": 62,
-  "totalFiltered": 31,
+  "lastUpdated": "2026-11-05T22:56:53.236Z",
+  "totalScraped": 61,
+  "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "STARSHIP VENUS",
+      "line": "NSS",
+      "voyIn": "2609S",
+      "voyOut": "2609N",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-11-05 23:30:00",
+      "ata": "2026-11-05 22:49:00",
+      "etd": "2026-11-07 08:30:00",
+      "atd": "",
+      "openStacking": "2026-11-01 01:00:00",
+      "closingDocument": "2026-11-05 13:00:00",
+      "closingPhysic": "2026-11-05 15:00:00"
+    },
     {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
@@ -17,6 +32,21 @@
       "openStacking": "2026-10-30 01:00:00",
       "closingDocument": "2026-11-03 17:00:00",
       "closingPhysic": "2026-11-03 19:00:00"
+    },
+    {
+      "vessel": "MSC VOYAGER III",
+      "line": "MSC",
+      "voyIn": "HW645A",
+      "voyOut": "HW645A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-11-19 22:00:00",
+      "ata": "",
+      "etd": "2026-11-20 22:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "CAPTAIN THANASIS I",
@@ -224,9 +254,9 @@
       "ata": "",
       "etd": "2026-11-13 08:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-06 01:00:00",
+      "closingDocument": "2026-11-11 11:00:00",
+      "closingPhysic": "2026-11-11 13:00:00"
     },
     {
       "vessel": "AS PENELOPE",
@@ -417,7 +447,7 @@
       "status": "REGISTER",
       "etb": "2026-11-06 21:00:00",
       "ata": "",
-      "etd": "2026-11-07 20:00:00",
+      "etd": "2026-11-07 21:00:00",
       "atd": "",
       "openStacking": "2026-11-03 01:00:00",
       "closingDocument": "2026-11-06 16:00:00",
@@ -437,21 +467,6 @@
       "openStacking": "2026-11-02 01:00:00",
       "closingDocument": "2026-11-05 21:00:00",
       "closingPhysic": "2026-11-05 23:00:00"
-    },
-    {
-      "vessel": "STARSHIP VENUS",
-      "line": "NSS",
-      "voyIn": "2609S",
-      "voyOut": "2609N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-11-05 23:30:00",
-      "ata": "",
-      "etd": "2026-11-07 08:30:00",
-      "atd": "",
-      "openStacking": "2026-11-01 01:00:00",
-      "closingDocument": "2026-11-05 13:00:00",
-      "closingPhysic": "2026-11-05 15:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
