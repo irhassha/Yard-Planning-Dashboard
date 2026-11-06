@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-06T13:17:33.817Z",
-  "totalScraped": 64,
+  "lastUpdated": "2026-11-06T22:27:07.097Z",
+  "totalScraped": 62,
   "totalFiltered": 34,
   "vessels": [
+    {
+      "vessel": "SITC LIANYUNGANG",
+      "line": "SIT",
+      "voyIn": "2630S",
+      "voyOut": "2631N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-11-06 22:00:00",
+      "ata": "2026-11-06 22:37:00",
+      "etd": "2026-11-07 21:00:00",
+      "atd": "",
+      "openStacking": "2026-11-03 01:00:00",
+      "closingDocument": "2026-11-06 16:00:00",
+      "closingPhysic": "2026-11-06 18:00:00"
+    },
     {
       "vessel": "WAN HAI 373",
       "line": "WHL",
@@ -19,19 +34,19 @@
       "closingPhysic": "2026-11-05 23:00:00"
     },
     {
-      "vessel": "STARSHIP VENUS",
-      "line": "NSS",
-      "voyIn": "2609S",
-      "voyOut": "2609N",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-11-05 23:30:00",
-      "ata": "2026-11-05 22:49:00",
-      "etd": "2026-11-06 21:00:00",
+      "vessel": "M ATLAS",
+      "line": "SIT",
+      "voyIn": "2632S",
+      "voyOut": "2633N",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-11-20 08:00:00",
+      "ata": "",
+      "etd": "2026-11-21 08:00:00",
       "atd": "",
-      "openStacking": "2026-11-01 01:00:00",
-      "closingDocument": "2026-11-05 13:00:00",
-      "closingPhysic": "2026-11-05 15:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "MSC VOYAGER III",
@@ -482,21 +497,6 @@
       "openStacking": "2026-11-02 01:00:00",
       "closingDocument": "2026-11-05 05:00:00",
       "closingPhysic": "2026-11-05 07:00:00"
-    },
-    {
-      "vessel": "SITC LIANYUNGANG",
-      "line": "SIT",
-      "voyIn": "2630S",
-      "voyOut": "2631N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-11-06 21:00:00",
-      "ata": "",
-      "etd": "2026-11-07 21:00:00",
-      "atd": "",
-      "openStacking": "2026-11-03 01:00:00",
-      "closingDocument": "2026-11-06 16:00:00",
-      "closingPhysic": "2026-11-06 18:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
