@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-07T17:13:47.671Z",
+  "lastUpdated": "2026-11-07T21:06:51.441Z",
   "totalScraped": 63,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
     {
       "vessel": "MSC BREMERHAVEN V",
@@ -27,26 +27,11 @@
       "status": "ACTIVE",
       "etb": "2026-11-07 19:00:00",
       "ata": "2026-11-07 19:00:00",
-      "etd": "2026-11-08 15:00:00",
+      "etd": "2026-11-08 17:00:00",
       "atd": "",
       "openStacking": "2026-11-01 01:00:00",
       "closingDocument": "2026-11-06 23:00:00",
       "closingPhysic": "2026-11-07 01:00:00"
-    },
-    {
-      "vessel": "EVER BLISS",
-      "line": "EMA",
-      "voyIn": "1216-117A",
-      "voyOut": "1216-117A",
-      "service": "JPI-A",
-      "status": "ACTIVE",
-      "etb": "2026-11-07 07:00:00",
-      "ata": "2026-11-07 07:26:50",
-      "etd": "2026-11-08 05:00:00",
-      "atd": "",
-      "openStacking": "2026-11-02 01:00:00",
-      "closingDocument": "2026-11-05 05:00:00",
-      "closingPhysic": "2026-11-05 07:00:00"
     },
     {
       "vessel": "ERASMUS LEO",
