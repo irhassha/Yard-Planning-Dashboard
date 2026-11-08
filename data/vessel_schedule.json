@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-08T12:16:04.013Z",
-  "totalScraped": 63,
+  "lastUpdated": "2026-11-08T21:23:49.233Z",
+  "totalScraped": 61,
   "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "644S",
+      "voyOut": "645W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-11-09 04:00:00",
+      "ata": "2026-11-09 00:00:00",
+      "etd": "2026-11-10 21:00:00",
+      "atd": "",
+      "openStacking": "2026-11-01 01:00:00",
+      "closingDocument": "2026-11-06 23:00:00",
+      "closingPhysic": "2026-11-07 01:00:00"
+    },
     {
       "vessel": "EVER BLINK",
       "line": "EMA",
@@ -34,19 +49,19 @@
       "closingPhysic": "2026-11-07 09:00:00"
     },
     {
-      "vessel": "ARTOTINA",
+      "vessel": "SPIL NISAKA",
       "line": "MCC",
-      "voyIn": "642S",
-      "voyOut": "645N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-11-07 19:00:00",
-      "ata": "2026-11-07 19:00:00",
-      "etd": "2026-11-08 15:30:00",
+      "voyIn": "647E",
+      "voyOut": "648N",
+      "service": "IN1",
+      "status": "REGISTER",
+      "etb": "2026-11-22 13:00:00",
+      "ata": "",
+      "etd": "2026-11-24 08:00:00",
       "atd": "",
-      "openStacking": "2026-11-01 01:00:00",
-      "closingDocument": "2026-11-06 23:00:00",
-      "closingPhysic": "2026-11-07 01:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ERASMUS LEO",
@@ -467,21 +482,6 @@
       "openStacking": "2026-11-05 01:00:00",
       "closingDocument": "2026-11-08 10:00:00",
       "closingPhysic": "2026-11-08 12:00:00"
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "644S",
-      "voyOut": "645W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-11-09 04:00:00",
-      "ata": "",
-      "etd": "2026-11-10 21:00:00",
-      "atd": "",
-      "openStacking": "2026-11-01 01:00:00",
-      "closingDocument": "2026-11-06 23:00:00",
-      "closingPhysic": "2026-11-07 01:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
