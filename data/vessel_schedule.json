@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-11T13:00:19.942Z",
-  "totalScraped": 65,
-  "totalFiltered": 34,
+  "lastUpdated": "2026-11-11T23:44:44.866Z",
+  "totalScraped": 64,
+  "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "645E",
+      "voyOut": "646N",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-11-12 05:00:00",
+      "ata": "2026-11-12 03:06:00",
+      "etd": "2026-11-13 16:00:00",
+      "atd": "",
+      "openStacking": "2026-11-07 20:00:00",
+      "closingDocument": "2026-11-11 18:00:00",
+      "closingPhysic": "2026-11-11 20:00:00"
+    },
     {
       "vessel": "SKY PEACE",
       "line": "MCC",
@@ -32,6 +47,21 @@
       "openStacking": "2026-11-08 01:00:00",
       "closingDocument": "2026-11-10 16:00:00",
       "closingPhysic": "2026-11-10 18:00:00"
+    },
+    {
+      "vessel": "ITAL BONUS",
+      "line": "LT",
+      "voyIn": "S127",
+      "voyOut": "N127",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-11-25 10:00:00",
+      "ata": "",
+      "etd": "2026-11-26 10:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "EVER BLINK",
@@ -482,21 +512,6 @@
       "openStacking": "2026-11-06 01:00:00",
       "closingDocument": "2026-11-09 16:00:00",
       "closingPhysic": "2026-11-09 18:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "645E",
-      "voyOut": "646N",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-11-12 05:00:00",
-      "ata": "",
-      "etd": "2026-11-13 16:00:00",
-      "atd": "",
-      "openStacking": "2026-11-07 20:00:00",
-      "closingDocument": "2026-11-11 18:00:00",
-      "closingPhysic": "2026-11-11 20:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
