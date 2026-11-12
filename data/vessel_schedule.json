@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-12T14:01:59.992Z",
-  "totalScraped": 64,
-  "totalFiltered": 34,
+  "lastUpdated": "2026-11-12T22:54:36.909Z",
+  "totalScraped": 63,
+  "totalFiltered": 35,
   "vessels": [
+    {
+      "vessel": "MSC TAMARA IV",
+      "line": "MSC",
+      "voyIn": "HW643A",
+      "voyOut": "HW643A",
+      "service": "PERTIWI",
+      "status": "ACTIVE",
+      "etb": "2026-11-13 04:00:00",
+      "ata": "2026-11-13 05:48:19",
+      "etd": "2026-11-14 01:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
     {
       "vessel": "SITC SHEKOU",
       "line": "SIT",
@@ -42,11 +57,26 @@
       "status": "ACTIVE",
       "etb": "2026-11-11 19:00:00",
       "ata": "2026-11-11 17:29:00",
-      "etd": "2026-11-12 23:00:00",
-      "atd": "",
+      "etd": "2026-11-13 02:00:00",
+      "atd": "2026-11-13 03:41:00",
       "openStacking": "2026-11-06 01:00:00",
       "closingDocument": "2026-11-11 10:00:00",
       "closingPhysic": "2026-11-11 12:00:00"
+    },
+    {
+      "vessel": "MSC JAPAN III",
+      "line": "MSC",
+      "voyIn": "HW646A",
+      "voyOut": "HW646A",
+      "service": "PERTIWI",
+      "status": "REGISTER",
+      "etb": "2026-11-26 22:00:00",
+      "ata": "",
+      "etd": "2026-11-27 22:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "ITAL BONUS",
@@ -482,21 +512,6 @@
       "openStacking": "2026-11-06 01:00:00",
       "closingDocument": "2026-11-11 11:00:00",
       "closingPhysic": "2026-11-11 13:00:00"
-    },
-    {
-      "vessel": "MSC TAMARA IV",
-      "line": "MSC",
-      "voyIn": "HW643A",
-      "voyOut": "HW643A",
-      "service": "PERTIWI",
-      "status": "REGISTER",
-      "etb": "2026-11-13 01:00:00",
-      "ata": "",
-      "etd": "2026-11-13 23:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
