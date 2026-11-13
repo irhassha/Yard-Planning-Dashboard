@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-12T22:54:36.909Z",
+  "lastUpdated": "2026-11-13T03:41:46.993Z",
   "totalScraped": 63,
-  "totalFiltered": 35,
+  "totalFiltered": 34,
   "vessels": [
     {
       "vessel": "MSC TAMARA IV",
@@ -47,21 +47,6 @@
       "openStacking": "2026-11-07 20:00:00",
       "closingDocument": "2026-11-11 18:00:00",
       "closingPhysic": "2026-11-11 20:00:00"
-    },
-    {
-      "vessel": "SKY PEACE",
-      "line": "MCC",
-      "voyIn": "644S",
-      "voyOut": "645N",
-      "service": "IA1",
-      "status": "ACTIVE",
-      "etb": "2026-11-11 19:00:00",
-      "ata": "2026-11-11 17:29:00",
-      "etd": "2026-11-13 02:00:00",
-      "atd": "2026-11-13 03:41:00",
-      "openStacking": "2026-11-06 01:00:00",
-      "closingDocument": "2026-11-11 10:00:00",
-      "closingPhysic": "2026-11-11 12:00:00"
     },
     {
       "vessel": "MSC JAPAN III",
