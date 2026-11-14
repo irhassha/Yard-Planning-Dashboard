@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-13T22:56:27.728Z",
+  "lastUpdated": "2026-11-14T03:40:40.833Z",
   "totalScraped": 62,
-  "totalFiltered": 34,
+  "totalFiltered": 33,
   "vessels": [
+    {
+      "vessel": "SITC SHIDAO",
+      "line": "SIT",
+      "voyIn": "2630S",
+      "voyOut": "2631N",
+      "service": "JTH",
+      "status": "ACTIVE",
+      "etb": "2026-11-14 10:00:00",
+      "ata": "2026-11-14 08:39:00",
+      "etd": "2026-11-15 08:00:00",
+      "atd": "",
+      "openStacking": "2026-11-10 01:00:00",
+      "closingDocument": "2026-11-13 16:00:00",
+      "closingPhysic": "2026-11-13 18:00:00"
+    },
     {
       "vessel": "SEABREEZE",
       "line": "HMM",
@@ -11,7 +26,7 @@
       "service": "KIS",
       "status": "ACTIVE",
       "etb": "2026-11-14 02:00:00",
-      "ata": "2026-11-14 04:16:02",
+      "ata": "2026-11-14 03:23:00",
       "etd": "2026-11-15 06:00:00",
       "atd": "",
       "openStacking": "2026-11-07 01:00:00",
@@ -32,21 +47,6 @@
       "openStacking": "2026-11-06 01:00:00",
       "closingDocument": "2026-11-11 11:00:00",
       "closingPhysic": "2026-11-11 13:00:00"
-    },
-    {
-      "vessel": "MSC TAMARA IV",
-      "line": "MSC",
-      "voyIn": "HW643A",
-      "voyOut": "HW643A",
-      "service": "PERTIWI",
-      "status": "ACTIVE",
-      "etb": "2026-11-13 07:00:00",
-      "ata": "2026-11-13 05:48:19",
-      "etd": "2026-11-14 07:00:00",
-      "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
     },
     {
       "vessel": "SITC LIANYUNGANG",
@@ -475,28 +475,13 @@
       "voyOut": "646W",
       "service": "IN1",
       "status": "REGISTER",
-      "etb": "2026-11-14 18:00:00",
+      "etb": "2026-11-14 16:00:00",
       "ata": "",
       "etd": "2026-11-16 08:00:00",
       "atd": "",
       "openStacking": "2026-11-08 01:00:00",
       "closingDocument": "2026-11-12 12:00:00",
       "closingPhysic": "2026-11-12 14:00:00"
-    },
-    {
-      "vessel": "SITC SHIDAO",
-      "line": "SIT",
-      "voyIn": "2630S",
-      "voyOut": "2631N",
-      "service": "JTH",
-      "status": "REGISTER",
-      "etb": "2026-11-14 12:00:00",
-      "ata": "",
-      "etd": "2026-11-15 10:00:00",
-      "atd": "",
-      "openStacking": "2026-11-10 01:00:00",
-      "closingDocument": "2026-11-13 16:00:00",
-      "closingPhysic": "2026-11-13 18:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
