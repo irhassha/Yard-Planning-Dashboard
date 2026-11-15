@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-14T21:42:35.717Z",
+  "lastUpdated": "2026-11-15T03:16:00.323Z",
   "totalScraped": 65,
-  "totalFiltered": 37,
+  "totalFiltered": 36,
   "vessels": [
+    {
+      "vessel": "EVER BOOMY",
+      "line": "EMA",
+      "voyIn": "1214-094B",
+      "voyOut": "1214-094B",
+      "service": "JPI-B",
+      "status": "ACTIVE",
+      "etb": "2026-11-15 08:00:00",
+      "ata": "2026-11-15 05:37:00",
+      "etd": "2026-11-16 09:00:00",
+      "atd": "",
+      "openStacking": "2026-11-12 01:00:00",
+      "closingDocument": "2026-11-14 16:00:00",
+      "closingPhysic": "2026-11-14 18:00:00"
+    },
     {
       "vessel": "SPIL NISAKA",
       "line": "MCC",
@@ -32,21 +47,6 @@
       "openStacking": "2026-11-10 01:00:00",
       "closingDocument": "2026-11-13 16:00:00",
       "closingPhysic": "2026-11-13 18:00:00"
-    },
-    {
-      "vessel": "SEABREEZE",
-      "line": "HMM",
-      "voyIn": "0004S",
-      "voyOut": "0004N",
-      "service": "KIS",
-      "status": "ACTIVE",
-      "etb": "2026-11-14 02:00:00",
-      "ata": "2026-11-14 03:23:00",
-      "etd": "2026-11-15 06:00:00",
-      "atd": "",
-      "openStacking": "2026-11-07 01:00:00",
-      "closingDocument": "2026-11-11 21:00:00",
-      "closingPhysic": "2026-11-11 23:00:00"
     },
     {
       "vessel": "JULIUS-S",
@@ -179,9 +179,9 @@
       "ata": "",
       "etd": "2026-11-25 15:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-19 01:00:00",
+      "closingDocument": "2026-11-23 13:00:00",
+      "closingPhysic": "2026-11-23 15:00:00"
     },
     {
       "vessel": "EVER BLINK",
@@ -345,8 +345,8 @@
       "etd": "2026-11-22 05:00:00",
       "atd": "",
       "openStacking": "2026-11-17 01:00:00",
-      "closingDocument": "2026-11-19 23:00:00",
-      "closingPhysic": "2026-11-20 01:00:00"
+      "closingDocument": "2026-11-20 16:00:00",
+      "closingPhysic": "2026-11-20 18:00:00"
     },
     {
       "vessel": "AS CASPRIA",
@@ -417,7 +417,7 @@
       "status": "REGISTER",
       "etb": "2026-11-18 21:00:00",
       "ata": "",
-      "etd": "2026-11-19 19:00:00",
+      "etd": "2026-11-19 16:00:00",
       "atd": "",
       "openStacking": "2026-11-12 01:00:00",
       "closingDocument": "2026-11-16 13:00:00",
@@ -445,9 +445,9 @@
       "voyOut": "0500-059N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-11-18 08:00:00",
+      "etb": "2026-11-18 06:00:00",
       "ata": "",
-      "etd": "2026-11-19 06:00:00",
+      "etd": "2026-11-19 05:00:00",
       "atd": "",
       "openStacking": "2026-11-15 01:00:00",
       "closingDocument": "2026-11-17 21:59:00",
@@ -490,9 +490,9 @@
       "voyOut": "N106",
       "service": "CIM",
       "status": "REGISTER",
-      "etb": "2026-11-16 21:00:00",
+      "etb": "2026-11-16 22:00:00",
       "ata": "",
-      "etd": "2026-11-18 06:00:00",
+      "etd": "2026-11-18 04:00:00",
       "atd": "",
       "openStacking": "2026-11-13 01:00:00",
       "closingDocument": "2026-11-16 16:00:00",
@@ -507,7 +507,7 @@
       "status": "REGISTER",
       "etb": "2026-11-16 12:00:00",
       "ata": "",
-      "etd": "2026-11-16 20:00:00",
+      "etd": "2026-11-16 18:00:00",
       "atd": "",
       "openStacking": "",
       "closingDocument": "",
@@ -527,21 +527,6 @@
       "openStacking": "2026-11-11 01:00:00",
       "closingDocument": "2026-11-15 00:00:00",
       "closingPhysic": "2026-11-15 02:00:00"
-    },
-    {
-      "vessel": "EVER BOOMY",
-      "line": "EMA",
-      "voyIn": "1214-094B",
-      "voyOut": "1214-094B",
-      "service": "JPI-B",
-      "status": "REGISTER",
-      "etb": "2026-11-15 08:00:00",
-      "ata": "",
-      "etd": "2026-11-16 09:00:00",
-      "atd": "",
-      "openStacking": "2026-11-12 01:00:00",
-      "closingDocument": "2026-11-14 16:00:00",
-      "closingPhysic": "2026-11-14 18:00:00"
     },
     {
       "vessel": "TB AQUARIUS - BG PSB 2510",
