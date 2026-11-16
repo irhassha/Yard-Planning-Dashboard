@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-15T22:08:00.998Z",
+  "lastUpdated": "2026-11-16T03:18:48.497Z",
   "totalScraped": 63,
-  "totalFiltered": 36,
+  "totalFiltered": 34,
   "vessels": [
     {
       "vessel": "MAERSK NADI",
@@ -17,36 +17,6 @@
       "openStacking": "2026-11-11 01:00:00",
       "closingDocument": "2026-11-15 00:00:00",
       "closingPhysic": "2026-11-15 02:00:00"
-    },
-    {
-      "vessel": "EVER BOOMY",
-      "line": "EMA",
-      "voyIn": "1214-094B",
-      "voyOut": "1214-094B",
-      "service": "JPI-B",
-      "status": "ACTIVE",
-      "etb": "2026-11-15 08:00:00",
-      "ata": "2026-11-15 04:00:00",
-      "etd": "2026-11-16 09:00:00",
-      "atd": "",
-      "openStacking": "2026-11-12 01:00:00",
-      "closingDocument": "2026-11-14 16:00:00",
-      "closingPhysic": "2026-11-14 18:00:00"
-    },
-    {
-      "vessel": "SPIL NISAKA",
-      "line": "MCC",
-      "voyIn": "645S",
-      "voyOut": "646W",
-      "service": "IN1",
-      "status": "ACTIVE",
-      "etb": "2026-11-14 16:00:00",
-      "ata": "2026-11-14 16:13:32",
-      "etd": "2026-11-16 08:00:00",
-      "atd": "",
-      "openStacking": "2026-11-08 01:00:00",
-      "closingDocument": "2026-11-12 12:00:00",
-      "closingPhysic": "2026-11-12 14:00:00"
     },
     {
       "vessel": "EVER OPTIMA",
@@ -366,8 +336,8 @@
     {
       "vessel": "AS PENELOPE",
       "line": "HLC",
-      "voyIn": "646N",
-      "voyOut": "646S",
+      "voyIn": "646S",
+      "voyOut": "647W",
       "service": "JKF",
       "status": "REGISTER",
       "etb": "2026-11-21 05:00:00",
@@ -394,19 +364,19 @@
       "closingPhysic": "2026-11-18 15:00:00"
     },
     {
-      "vessel": "MSC VOYAGER III",
-      "line": "MSC",
-      "voyIn": "HW645A",
-      "voyOut": "HW645A",
-      "service": "PERTIWI",
+      "vessel": "NIKEN",
+      "line": "MCC",
+      "voyIn": "644S",
+      "voyOut": "647N",
+      "service": "IA8",
       "status": "REGISTER",
-      "etb": "2026-11-20 04:00:00",
+      "etb": "2026-11-20 05:00:00",
       "ata": "",
       "etd": "2026-11-21 03:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-13 01:00:00",
+      "closingDocument": "2026-11-18 01:00:00",
+      "closingPhysic": "2026-11-18 03:00:00"
     },
     {
       "vessel": "EVER BURLY",
@@ -424,19 +394,19 @@
       "closingPhysic": "2026-11-18 23:59:00"
     },
     {
-      "vessel": "NIKEN",
-      "line": "MCC",
-      "voyIn": "644S",
-      "voyOut": "647N",
-      "service": "IA8",
+      "vessel": "MSC VOYAGER III",
+      "line": "MSC",
+      "voyIn": "HW645A",
+      "voyOut": "HW645A",
+      "service": "PERTIWI",
       "status": "REGISTER",
-      "etb": "2026-11-19 08:00:00",
+      "etb": "2026-11-19 07:00:00",
       "ata": "",
       "etd": "2026-11-20 05:00:00",
       "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-18 01:00:00",
-      "closingPhysic": "2026-11-18 03:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC YUHE",
@@ -499,6 +469,21 @@
       "closingPhysic": "2026-11-16 18:00:00"
     },
     {
+      "vessel": "ITAL BONNY",
+      "line": "LT",
+      "voyIn": "S106",
+      "voyOut": "N106",
+      "service": "CIM",
+      "status": "REGISTER",
+      "etb": "2026-11-17 06:00:00",
+      "ata": "",
+      "etd": "2026-11-18 04:00:00",
+      "atd": "",
+      "openStacking": "2026-11-13 01:00:00",
+      "closingDocument": "2026-11-16 16:00:00",
+      "closingPhysic": "2026-11-16 18:00:00"
+    },
+    {
       "vessel": "OKEE CORNELIA",
       "line": "MCC",
       "voyIn": "645S",
@@ -512,21 +497,6 @@
       "openStacking": "2026-11-11 01:00:00",
       "closingDocument": "2026-11-16 19:00:00",
       "closingPhysic": "2026-11-16 21:00:00"
-    },
-    {
-      "vessel": "ITAL BONNY",
-      "line": "LT",
-      "voyIn": "S106",
-      "voyOut": "N106",
-      "service": "CIM",
-      "status": "REGISTER",
-      "etb": "2026-11-17 01:00:00",
-      "ata": "",
-      "etd": "2026-11-18 04:00:00",
-      "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-16 16:00:00",
-      "closingPhysic": "2026-11-16 18:00:00"
     },
     {
       "vessel": "BG LL 2528 -TB LL DODI",
