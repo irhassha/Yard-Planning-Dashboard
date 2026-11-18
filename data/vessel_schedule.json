@@ -1,7 +1,7 @@
 {
-  "lastUpdated": "2026-11-17T14:57:22.933Z",
-  "totalScraped": 65,
-  "totalFiltered": 36,
+  "lastUpdated": "2026-11-18T00:03:59.228Z",
+  "totalScraped": 66,
+  "totalFiltered": 38,
   "vessels": [
     {
       "vessel": "SITC NANSHA",
@@ -42,11 +42,41 @@
       "status": "ACTIVE",
       "etb": "2026-11-17 02:00:00",
       "ata": "2026-11-17 00:51:21",
-      "etd": "2026-11-18 10:00:00",
+      "etd": "2026-11-18 11:00:00",
       "atd": "",
       "openStacking": "2026-11-11 01:00:00",
       "closingDocument": "2026-11-16 19:00:00",
       "closingPhysic": "2026-11-16 21:00:00"
+    },
+    {
+      "vessel": "SITC YUNCHENG",
+      "line": "SIT",
+      "voyIn": "2624S",
+      "voyOut": "2625N",
+      "service": "CMI",
+      "status": "REGISTER",
+      "etb": "2026-12-01 08:00:00",
+      "ata": "",
+      "etd": "2026-12-02 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
+    },
+    {
+      "vessel": "GREEN PACIFIC",
+      "line": "SIT",
+      "voyIn": "2632S",
+      "voyOut": "2633N",
+      "service": "CMI2",
+      "status": "REGISTER",
+      "etb": "2026-12-01 08:00:00",
+      "ata": "",
+      "etd": "2026-12-02 08:00:00",
+      "atd": "",
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "BIG BREEZY",
@@ -535,7 +565,7 @@
       "voyOut": "0500-059N",
       "service": "CIT",
       "status": "REGISTER",
-      "etb": "2026-11-18 12:00:00",
+      "etb": "2026-11-18 13:00:00",
       "ata": "",
       "etd": "2026-11-19 09:00:00",
       "atd": "",
