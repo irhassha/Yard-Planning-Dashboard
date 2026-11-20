@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-11-19T23:56:02.670Z",
+  "lastUpdated": "2026-11-20T04:36:47.064Z",
   "totalScraped": 61,
   "totalFiltered": 33,
   "vessels": [
@@ -12,7 +12,7 @@
       "status": "ACTIVE",
       "etb": "2026-11-19 20:00:00",
       "ata": "2026-11-19 19:26:00",
-      "etd": "2026-11-21 02:00:00",
+      "etd": "2026-11-21 09:00:00",
       "atd": "",
       "openStacking": "2026-11-16 01:00:00",
       "closingDocument": "2026-11-18 21:59:00",
@@ -28,7 +28,7 @@
       "etb": "2026-11-19 12:00:00",
       "ata": "2026-11-19 11:28:00",
       "etd": "2026-11-20 12:00:00",
-      "atd": "",
+      "atd": "2026-11-20 11:15:00",
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
@@ -179,9 +179,9 @@
       "ata": "",
       "etd": "2026-11-29 21:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-24 01:00:00",
+      "closingDocument": "2026-11-27 10:00:00",
+      "closingPhysic": "2026-11-27 12:00:00"
     },
     {
       "vessel": "ITAL BONUS",
@@ -239,9 +239,9 @@
       "ata": "",
       "etd": "2026-11-28 12:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-21 01:00:00",
+      "closingDocument": "2026-11-26 21:00:00",
+      "closingPhysic": "2026-11-26 23:00:00"
     },
     {
       "vessel": "IRENES RAY",
@@ -435,8 +435,8 @@
       "etd": "2026-11-23 05:00:00",
       "atd": "",
       "openStacking": "2026-11-16 01:00:00",
-      "closingDocument": "2026-11-20 16:00:00",
-      "closingPhysic": "2026-11-20 18:00:00"
+      "closingDocument": "2026-11-21 16:00:00",
+      "closingPhysic": "2026-11-21 18:00:00"
     },
     {
       "vessel": "TS NAGOYA",
@@ -460,9 +460,9 @@
       "voyOut": "382N",
       "service": "KCI",
       "status": "REGISTER",
-      "etb": "2026-11-21 04:00:00",
+      "etb": "2026-11-21 11:00:00",
       "ata": "",
-      "etd": "2026-11-22 10:00:00",
+      "etd": "2026-11-22 17:00:00",
       "atd": "",
       "openStacking": "2026-11-13 01:00:00",
       "closingDocument": "2026-11-18 13:00:00",
