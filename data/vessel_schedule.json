@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-20T23:25:38.027Z",
+  "lastUpdated": "2026-11-21T04:21:31.534Z",
   "totalScraped": 60,
-  "totalFiltered": 32,
+  "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "TS NAGOYA",
+      "line": "TSL",
+      "voyIn": "2634S",
+      "voyOut": "2634N",
+      "service": "KCI",
+      "status": "ACTIVE",
+      "etb": "2026-11-21 12:00:00",
+      "ata": "2026-11-21 11:07:29",
+      "etd": "2026-11-22 16:00:00",
+      "atd": "",
+      "openStacking": "2026-11-13 01:00:00",
+      "closingDocument": "2026-11-17 13:00:00",
+      "closingPhysic": "2026-11-17 15:00:00"
+    },
     {
       "vessel": "M ATLAS",
       "line": "SIT",
@@ -11,42 +26,12 @@
       "service": "JTH",
       "status": "ACTIVE",
       "etb": "2026-11-21 06:00:00",
-      "ata": "2026-11-21 05:45:50",
+      "ata": "2026-11-21 04:37:00",
       "etd": "2026-11-22 02:00:00",
       "atd": "",
       "openStacking": "2026-11-17 01:00:00",
       "closingDocument": "2026-11-20 16:00:00",
       "closingPhysic": "2026-11-20 18:00:00"
-    },
-    {
-      "vessel": "NIKEN",
-      "line": "MCC",
-      "voyIn": "644S",
-      "voyOut": "647N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-11-20 14:00:00",
-      "ata": "2026-11-20 13:00:00",
-      "etd": "2026-11-21 09:00:00",
-      "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-19 16:00:00",
-      "closingPhysic": "2026-11-19 18:00:00"
-    },
-    {
-      "vessel": "EVER BURLY",
-      "line": "EMC",
-      "voyIn": "S095",
-      "voyOut": "N095",
-      "service": "CIM",
-      "status": "ACTIVE",
-      "etb": "2026-11-19 20:00:00",
-      "ata": "2026-11-19 19:26:00",
-      "etd": "2026-11-21 10:00:00",
-      "atd": "",
-      "openStacking": "2026-11-16 01:00:00",
-      "closingDocument": "2026-11-18 21:59:00",
-      "closingPhysic": "2026-11-18 23:59:00"
     },
     {
       "vessel": "SITC SHIDAO",
@@ -452,21 +437,6 @@
       "openStacking": "2026-11-16 01:00:00",
       "closingDocument": "2026-11-21 16:00:00",
       "closingPhysic": "2026-11-21 18:00:00"
-    },
-    {
-      "vessel": "TS NAGOYA",
-      "line": "TSL",
-      "voyIn": "2634S",
-      "voyOut": "2634N",
-      "service": "KCI",
-      "status": "REGISTER",
-      "etb": "2026-11-21 12:00:00",
-      "ata": "",
-      "etd": "2026-11-22 16:00:00",
-      "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-17 13:00:00",
-      "closingPhysic": "2026-11-17 15:00:00"
     },
     {
       "vessel": "AS CASPRIA",
