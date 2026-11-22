@@ -1,8 +1,38 @@
 {
-  "lastUpdated": "2026-11-22T03:36:24.663Z",
+  "lastUpdated": "2026-11-22T13:39:13.518Z",
   "totalScraped": 61,
-  "totalFiltered": 32,
+  "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "AS PENELOPE",
+      "line": "HLC",
+      "voyIn": "646S",
+      "voyOut": "647W",
+      "service": "JKF",
+      "status": "ACTIVE",
+      "etb": "2026-11-22 19:00:00",
+      "ata": "2026-11-22 18:37:39",
+      "etd": "2026-11-24 06:00:00",
+      "atd": "",
+      "openStacking": "2026-11-17 01:00:00",
+      "closingDocument": "2026-11-21 01:00:00",
+      "closingPhysic": "2026-11-21 03:00:00"
+    },
+    {
+      "vessel": "EVER ORIENT",
+      "line": "EMC",
+      "voyIn": "0499-114S",
+      "voyOut": "0499-114N",
+      "service": "CIT",
+      "status": "ACTIVE",
+      "etb": "2026-11-22 16:00:00",
+      "ata": "2026-11-22 15:00:00",
+      "etd": "2026-11-23 11:00:00",
+      "atd": "",
+      "openStacking": "2026-11-19 01:00:00",
+      "closingDocument": "2026-11-22 05:00:00",
+      "closingPhysic": "2026-11-22 07:00:00"
+    },
     {
       "vessel": "MERATUS JAYAWIJAYA",
       "line": "MCC",
@@ -17,36 +47,6 @@
       "openStacking": "2026-11-16 01:00:00",
       "closingDocument": "2026-11-21 16:00:00",
       "closingPhysic": "2026-11-21 18:00:00"
-    },
-    {
-      "vessel": "TS NAGOYA",
-      "line": "TSL",
-      "voyIn": "2634S",
-      "voyOut": "2634N",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-11-21 12:00:00",
-      "ata": "2026-11-21 10:07:00",
-      "etd": "2026-11-22 12:00:00",
-      "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-17 13:00:00",
-      "closingPhysic": "2026-11-17 15:00:00"
-    },
-    {
-      "vessel": "AS CASPRIA",
-      "line": "GSL",
-      "voyIn": "382N",
-      "voyOut": "382N",
-      "service": "KCI",
-      "status": "ACTIVE",
-      "etb": "2026-11-21 12:00:00",
-      "ata": "2026-11-21 11:20:58",
-      "etd": "2026-11-22 17:00:00",
-      "atd": "",
-      "openStacking": "2026-11-13 01:00:00",
-      "closingDocument": "2026-11-18 13:00:00",
-      "closingPhysic": "2026-11-18 15:00:00"
     },
     {
       "vessel": "OKEE CORNELIA",
@@ -314,9 +314,9 @@
       "ata": "",
       "etd": "2026-11-28 02:00:00",
       "atd": "",
-      "openStacking": "",
-      "closingDocument": "",
-      "closingPhysic": ""
+      "openStacking": "2026-11-23 01:00:00",
+      "closingDocument": "2026-11-26 10:00:00",
+      "closingPhysic": "2026-11-26 12:00:00"
     },
     {
       "vessel": "SEASPAN CALICANTO",
@@ -375,8 +375,8 @@
       "etd": "2026-11-26 17:00:00",
       "atd": "",
       "openStacking": "2026-11-18 01:00:00",
-      "closingDocument": "2026-11-23 01:00:00",
-      "closingPhysic": "2026-11-23 03:00:00"
+      "closingDocument": "2026-11-24 18:00:00",
+      "closingPhysic": "2026-11-24 20:00:00"
     },
     {
       "vessel": "EVER BLISS",
@@ -430,7 +430,7 @@
       "voyOut": "1218-090A",
       "service": "JPI-A",
       "status": "REGISTER",
-      "etb": "2026-11-23 19:00:00",
+      "etb": "2026-11-23 14:00:00",
       "ata": "",
       "etd": "2026-11-25 02:00:00",
       "atd": "",
@@ -452,36 +452,6 @@
       "openStacking": "2026-11-17 01:00:00",
       "closingDocument": "2026-11-22 07:00:00",
       "closingPhysic": "2026-11-22 09:00:00"
-    },
-    {
-      "vessel": "AS PENELOPE",
-      "line": "HLC",
-      "voyIn": "646S",
-      "voyOut": "647W",
-      "service": "JKF",
-      "status": "REGISTER",
-      "etb": "2026-11-22 19:00:00",
-      "ata": "",
-      "etd": "2026-11-24 06:00:00",
-      "atd": "",
-      "openStacking": "2026-11-17 01:00:00",
-      "closingDocument": "2026-11-21 01:00:00",
-      "closingPhysic": "2026-11-21 03:00:00"
-    },
-    {
-      "vessel": "EVER ORIENT",
-      "line": "EMC",
-      "voyIn": "0499-114S",
-      "voyOut": "0499-114N",
-      "service": "CIT",
-      "status": "REGISTER",
-      "etb": "2026-11-22 18:00:00",
-      "ata": "",
-      "etd": "2026-11-23 17:00:00",
-      "atd": "",
-      "openStacking": "2026-11-19 01:00:00",
-      "closingDocument": "2026-11-22 05:00:00",
-      "closingPhysic": "2026-11-22 07:00:00"
     }
   ]
 }
