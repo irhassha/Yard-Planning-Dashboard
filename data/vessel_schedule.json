@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-21T22:28:53.452Z",
+  "lastUpdated": "2026-11-22T03:36:24.663Z",
   "totalScraped": 61,
   "totalFiltered": 32,
   "vessels": [
+    {
+      "vessel": "MERATUS JAYAWIJAYA",
+      "line": "MCC",
+      "voyIn": "645S",
+      "voyOut": "646N",
+      "service": "IA1",
+      "status": "ACTIVE",
+      "etb": "2026-11-22 06:00:00",
+      "ata": "2026-11-22 03:16:00",
+      "etd": "2026-11-23 11:00:00",
+      "atd": "",
+      "openStacking": "2026-11-16 01:00:00",
+      "closingDocument": "2026-11-21 16:00:00",
+      "closingPhysic": "2026-11-21 18:00:00"
+    },
     {
       "vessel": "TS NAGOYA",
       "line": "TSL",
@@ -12,7 +27,7 @@
       "status": "ACTIVE",
       "etb": "2026-11-21 12:00:00",
       "ata": "2026-11-21 10:07:00",
-      "etd": "2026-11-22 16:00:00",
+      "etd": "2026-11-22 12:00:00",
       "atd": "",
       "openStacking": "2026-11-13 01:00:00",
       "closingDocument": "2026-11-17 13:00:00",
@@ -456,7 +471,7 @@
     {
       "vessel": "EVER ORIENT",
       "line": "EMC",
-      "voyIn": "0499-114N",
+      "voyIn": "0499-114S",
       "voyOut": "0499-114N",
       "service": "CIT",
       "status": "REGISTER",
@@ -467,21 +482,6 @@
       "openStacking": "2026-11-19 01:00:00",
       "closingDocument": "2026-11-22 05:00:00",
       "closingPhysic": "2026-11-22 07:00:00"
-    },
-    {
-      "vessel": "MERATUS JAYAWIJAYA",
-      "line": "MCC",
-      "voyIn": "645S",
-      "voyOut": "646N",
-      "service": "IA1",
-      "status": "REGISTER",
-      "etb": "2026-11-22 06:00:00",
-      "ata": "",
-      "etd": "2026-11-23 11:00:00",
-      "atd": "",
-      "openStacking": "2026-11-16 01:00:00",
-      "closingDocument": "2026-11-21 16:00:00",
-      "closingPhysic": "2026-11-21 18:00:00"
     }
   ]
 }
