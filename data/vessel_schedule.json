@@ -1,8 +1,23 @@
 {
-  "lastUpdated": "2026-11-27T15:40:21.423Z",
-  "totalScraped": 61,
+  "lastUpdated": "2026-11-28T00:44:14.705Z",
+  "totalScraped": 60,
   "totalFiltered": 30,
   "vessels": [
+    {
+      "vessel": "IRENES RAY",
+      "line": "MCC",
+      "voyIn": "647S",
+      "voyOut": "648W",
+      "service": "IN1",
+      "status": "ACTIVE",
+      "etb": "2026-11-28 03:00:00",
+      "ata": "2026-11-28 06:01:26",
+      "etd": "2026-11-30 04:00:00",
+      "atd": "",
+      "openStacking": "2026-11-23 01:00:00",
+      "closingDocument": "2026-11-27 05:00:00",
+      "closingPhysic": "2026-11-27 07:00:00"
+    },
     {
       "vessel": "SITC LIANYUNGANG",
       "line": "SIT",
@@ -34,19 +49,19 @@
       "closingPhysic": "2026-11-26 12:00:00"
     },
     {
-      "vessel": "SEASPAN CALICANTO",
-      "line": "MCC",
-      "voyIn": "645S",
-      "voyOut": "648N",
-      "service": "IA8",
-      "status": "ACTIVE",
-      "etb": "2026-11-26 23:00:00",
-      "ata": "2026-11-27 00:40:00",
-      "etd": "2026-11-28 00:00:00",
+      "vessel": "M ATLAS",
+      "line": "SIT",
+      "voyIn": "2634S",
+      "voyOut": "2635",
+      "service": "JTH",
+      "status": "REGISTER",
+      "etb": "2026-12-11 08:00:00",
+      "ata": "",
+      "etd": "2026-12-12 08:00:00",
       "atd": "",
-      "openStacking": "2026-11-20 01:00:00",
-      "closingDocument": "2026-11-25 01:00:00",
-      "closingPhysic": "2026-11-25 03:00:00"
+      "openStacking": "",
+      "closingDocument": "",
+      "closingPhysic": ""
     },
     {
       "vessel": "SITC SHEKOU",
@@ -437,21 +452,6 @@
       "openStacking": "",
       "closingDocument": "",
       "closingPhysic": ""
-    },
-    {
-      "vessel": "IRENES RAY",
-      "line": "MCC",
-      "voyIn": "647S",
-      "voyOut": "648W",
-      "service": "IN1",
-      "status": "REGISTER",
-      "etb": "2026-11-28 02:00:00",
-      "ata": "",
-      "etd": "2026-11-30 04:00:00",
-      "atd": "",
-      "openStacking": "2026-11-23 01:00:00",
-      "closingDocument": "2026-11-27 05:00:00",
-      "closingPhysic": "2026-11-27 07:00:00"
     }
   ]
 }
